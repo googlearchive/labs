@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scrubbing: Panels</title>
+  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
+  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="src/utils.js"></script>
+  <script src="src/lerp.js"></script>
+  <script src="src/Animator.js"></script>
+  <script src="src/Timeline.js"></script>
+  <script src="src/Animation.js"></script>
+	<style>
+    body {
+      font-family: sans-serif;
+    }
+    
+    .header {
+      padding: 10px;
+      font-size: 34px;
+    }
+    .sub-header {
+      padding: 0 14px;
+      font-size: 16px;
+    }
+    
+    .panels {
+      position: absolute;
+      overflow: hidden;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      height: 80%;
+      border: 1px solid #ccc;
+      -webkit-user-select: none;
+      cursor: default;
+    }
+
+    .panels > * {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: -webkit-flex;
+      -webkit-justify-content: center;
+      -webkit-align-items: center;
+      font-size: 50px;
+
+    }
+
+	</style>
+</head>
+<body>
+  <div class="header">Scrubbing: Panels</div>
+  <div class="sub-header">Drag panels right-left</div>
+  <div class="panels"></div>
+	<script>
+    // construct panels
+    makePanels = function(inContainer, inCount) {
+      for (var i=0; i<inCount; i++) {
+        inContainer.appendChild(makePanel(i));
+      }
+    }
+
+    makePanel = function(inIndex) {
+      var p = document.createElement('div');
+      p.style.background = 'hsla(' + ((inIndex * 36) % 360) + ', 75%, 20%, 0.8)';
+      p.id = inIndex;
+      p.innerHTML = inIndex;
+      return p;
+    }
+    
+    // keyframes for n panels
+    makeKeyframes = function(inCount) {
+      var keyframes = [];
+      var h = Math.round(inCount/2);
+      for (var i=0, x, s; i<inCount; i++) {
+        x = i > h ? i - inCount : i;
+        //x = i - h;
+        s = 1 - Math.min(1, (Math.abs(x) * .75));
+        // set position, scale, and opacity
+        keyframes.push({x: x * 100, zIndex: x == 0 ? 10 : 0,
+           scale: s, opacity: s});
+      }
+      return keyframes;
+    }
+    
+    // make an Animation for each panel
+    makeAnimations = function(inContainer, inTimeline, inKeyframes) {
+      var p$ = inContainer.children, count = p$.length;
+      for (var i=0, x, p; (p=p$[i]); i++) {
+        x = i / count;
+        inTimeline.snapPoints.push(x);
+        new scrubbing.Animation(p, {
+          timeline: inTimeline,
+          keyframes: inKeyframes,
+          offset: x
+        });
+      }
+    }
+
+    // there will be count panels in container
+    var count = 9;
+    var container = document.querySelector('.panels');
+    makePanels(container, count);
+    // make timeline and animations
+    var timeline = new scrubbing.Timeline({trackingNode: container, 
+          snapPoints: [], dragScale: count, duration: 500 * count});
+    // need only 1 set of keyframes and use an offset for each panel
+    var keyframes = makeKeyframes(count);
+    makeAnimations(container, timeline, keyframes);
+	</script>
+</body>
+</html>
