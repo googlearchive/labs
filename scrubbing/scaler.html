@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scrubbing: Scaling Grid</title>
+  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
+  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="src/utils.js"></script>
+  <script src="src/lerp.js"></script>
+  <script src="src/Animator.js"></script>
+  <script src="src/Timeline.js"></script>
+  <script src="src/Animation.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      -webkit-user-select: none;
+      overflow: hidden;
+      display: -webkit-flex;
+      -webkit-flex-flow: column;
+    }
+    
+    .header {
+      padding: 10px;
+      font-size: 34px;
+    }
+    
+    .sub-header {
+      padding: 0 14px;
+      font-size: 16px;
+    }
+    
+    .grid-container {
+      overflow: hidden;
+      -webkit-flex: 1;
+      display: -webkit-flex;
+    }
+    
+    .grid {
+      -webkit-transform-origin: 0 0;
+      -webkit-flex: 1;
+      display: -webkit-flex;
+      -webkit-flex-flow: row wrap;
+    }
+    
+    .grid-cell {
+      box-sizing: border-box;
+      display: -webkit-flex;
+      -webkit-flex-flow: column;
+      -webkit-justify-content: center;
+      -webkit-align-items: center;
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background: whitesmoke;
+      font-size: 24px;
+      padding: 2px;
+      margin: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Scrubbing: Scaling Grid</div>
+  <div class="sub-header">Drag grid cells right-left</div>
+  <div class="grid-container">
+    <div class="grid"></div>
+  </div>
+  <script>
+    var grid = document.querySelector('.grid');
+    
+    // create our grid of content
+    function makeGridCell(inIndex, inCols) {
+      var d = document.createElement('div');
+      d.classList.add('grid-cell');
+      // add some slop to allow for margin (could use calc)
+      var w = 100 / inCols - 5;
+      d.style.webkitFlex = '1 1 ' + w + '%';
+      d.innerHTML = '<img draggable="false" src="images/' + (inIndex % 4) +
+          '.png">' + '<div>' + inIndex + '</div>';
+      return d;
+    }
+    
+    function makeGridCells(inRows, inCols) {
+      for (var i=0, l=inRows * inCols; i < l; i++) {
+        grid.appendChild(makeGridCell(i, inCols));
+      }
+    }
+    
+    makeGridCells(4, 4);
+    
+    // setup timeline/ and animation to scale scrub content.
+    var timeline = new scrubbing.Timeline({trackingNode: grid, noWrap: true,
+        duration: 500});
+    new scrubbing.Animation(grid, {timeline: timeline, unit: 'px', noWrap: true});
+    
+    
+    function targetForEvent(inEvent) {
+      var n = inEvent.target;
+      while (n.parentNode != grid) {
+        n = n.parentNode;
+      }
+      return n;
+    }
+    
+    // when scrubbing begins (here just using trackstart
+    // start update animation keyframes based on what's being tracked
+    grid.addEventListener('tktrackstart', function(e) {
+      if (timeline.position % 2 == 0) {
+        var t = targetForEvent(e);
+        var gridRect = grid.getBoundingClientRect();
+        var cols = Math.floor(gridRect.width / t.offsetWidth);
+        var rows = Math.ceil(grid.children.length / cols);
+        // get cell info
+        var i = Array.prototype.indexOf.call(grid.children, t);
+        var targetRow = Math.floor(i / cols);
+        var targetCol = i % cols;
+        // calc sizes
+        w = grid.clientWidth * cols;
+        h = grid.clientHeight * rows;
+        x = (targetCol * w/cols);
+        y = (targetRow * h/rows);
+        // make keyframes for animation
+        grid.animation.keyframes = [
+          {x: 0, y: 0, scaleX: 1, scaleY: 1},
+          {x: -x, y: -y, scaleX: cols, scaleY: rows}
+        ];
+      }
+    });
+  </script>
+</body>
+</html>
