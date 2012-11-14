@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scrubbing: Collapsing Panels</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, 
+          minimum-scale = 1, maximum-scale = 1,user-scalable=no">
+  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
+  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="src/utils.js"></script>
+  <script src="src/lerp.js"></script>
+  <script src="src/Animator.js"></script>
+  <script src="src/Timeline.js"></script>
+  <script src="src/Animation.js"></script>
+	<style>
+    body {
+      font-family: sans-serif;
+    }
+    
+    .header {
+      padding: 10px;
+      font-size: 34px;
+    }
+    .sub-header {
+      padding: 0 14px;
+      font-size: 16px;
+    }
+    
+    .panels {
+      position: absolute;
+      overflow: hidden;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      height: 80%;
+      border: 1px solid #ccc;
+      -webkit-user-select: none;
+      cursor: default;
+    }
+
+    .panels > * {
+      position: absolute;
+      -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.5);
+      top: 0;
+      left: 0;
+      height: 100%;
+      display: -webkit-flex;
+      -webkit-justify-content: center;
+      -webkit-align-items: center;
+      font-size: 50px;
+
+    }
+
+	</style>
+</head>
+<body>
+  <div class="header">Scrubbing: Collapsing Panels</div>
+  <div class="sub-header">Drag panels right-left</div>
+  <div class="panels"></div>
+	<script>
+    // construct panels
+    makePanels = function(inContainer, inCount) {
+      for (var i=0, l=0, p; i<inCount; i++) {
+        p = makePanel(i, l, inCount);
+        inContainer.appendChild(p);
+        l += p.offsetWidth;
+      }
+    }
+    
+    makePanel = function(inIndex, inLeftOffset, inCount) {
+      var p = document.createElement('div');
+      p.style.background = 'hsla(' + Math.round(Math.random() * 360) + ', 60%, 30%, 1)';
+      p.style.width = inIndex == inCount -1 ? '100%' :
+          Math.round(100 + 250 * Math.random()) + 'px';
+      p.style.left = inLeftOffset + 'px';
+      p.id = 'p' + inIndex;
+      p.innerHTML = inIndex;
+      return p;
+    }
+    
+    // keyframes for n panels
+    makeKeyframes = function(inContainer, inIndex) {
+      var keyframes = [], x=0;
+      var p = inContainer.children[inIndex];
+      Array.prototype.forEach.call(inContainer.children, function(c, i) {
+        keyframes.push({x: Math.max(-x, -p.offsetLeft)});
+        x += c.offsetWidth;
+      });
+      return keyframes;
+    }
+    
+    // make an Animation for each panel
+    makeAnimations = function(inContainer, inTimeline) {
+      var p$ = inContainer.children, count = p$.length;
+      for (var i=0, x, p; (p=p$[i]); i++) {
+        x = i / (count-1);
+        //x = i / count;
+        inTimeline.snapPoints.push(x);
+        new scrubbing.Animation(p, {
+          timeline: inTimeline,
+          keyframes: makeKeyframes(inContainer, i),
+          noWrap: true,
+          unit: 'px'/*,
+          offset: x*/
+        });
+      }
+    }
+
+    // there will be count panels in container
+    var count = 9;
+    var container = document.querySelector('.panels');
+    makePanels(container, count);
+    // make timeline and animations
+    var timeline = new scrubbing.Timeline({trackingNode: container, 
+          snapPoints: [], dragScale: -1, duration: 500 * count, noWrap: true});
+    // need only 1 set of keyframes and use an offset for each panel
+    //var keyframes = makeKeyframes(container);
+    makeAnimations(container, timeline);
+	</script>
+</body>
+</html>
