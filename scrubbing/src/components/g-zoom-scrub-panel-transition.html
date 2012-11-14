@@ -58,7 +58,7 @@
           this.from = this.panels.getSelectedPanel();
           this.to = this.panels.panelAtIndex(this.panels.index + d);
           if (!(this.from && this.to)) {
-            console.warn('missing from?', this.from, 'to?', this.to);
+            //console.warn('missing from?', this.from, 'to?', this.to);
             inScrub.stopScrubbing();
             return;
           }
@@ -67,7 +67,7 @@
           if (this.forward) {
             var t = this.targetForEvent(event);
             if (!t) {
-              console.warn('bad scrub target');
+              //console.warn('bad scrub target');
               inScrub.stopScrubbing();
               return;
             }
