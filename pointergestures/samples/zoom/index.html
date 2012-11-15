@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="UTF8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Zoom sample</title>
+<style>
+  body, html {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    -ms-touch-action: none;
+    touch-action: none;
+  }
+  body {
+    background: whitesmoke;
+  }
+  #movebox {
+    width: 100px;
+    height: 100px;
+    background: lightblue;
+    font-size: 8pt;
+    overflow: hidden;
+    line-height: 100px;
+    vertical-align: center;
+    text-align: center;
+  }
+</style>
+
+<script src="rAF.js"></script>
+<script src="../../libs/PointerEvents/src/pointerevents.js"></script>
+<script src="../../src/pointergestures.js"></script>
+
+<div id="movebox">UP</div>
+
+<script>
+  'use strict';
+  var afid;
+  function paint() {
+    var zoom = z * startz;
+    var xc = x - 50 + 'px';
+    var yc = y - 50 + 'px';
+    var offset = xc + ',' + yc;
+    var rotate = (r + startr) % 360;
+    var t = 'translate(' + offset + ') scale(' + zoom + ') rotate(' + rotate +
+      'deg)';
+    movebox.style.webkitTransform = movebox.style.transform = t;
+    afid = requestAnimationFrame(paint);
+  }
+  var movebox = document.getElementById('movebox');
+  var z = 1, startz = 1, x = 0, y = 0, r = 0, startr = 0;
+  document.addEventListener('tkgesturestart', function(e) {
+    x = e.x;
+    y = e.y;
+    r = e.angle;
+    paint();
+  });
+  document.addEventListener('tkgesture', function(e) {
+    z = e.zoom;
+    x = e.x,
+    y = e.y
+    r = e.angle;
+  });
+  document.addEventListener('tkgestureend', function(e) {
+    startz = startz * e.zoom;
+    z = 1;
+    startr = (startr + e.angle) % 360;
+    r = 0;
+    cancelAnimationFrame(afid);
+  });
+</script>

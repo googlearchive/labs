@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>PointerGestureShim testing ground</title>
+    <style>
+      body, html {
+        margin: 0;
+        height: 100%;
+        position: relative;
+        -ms-touch-action: none;
+      }
+      body {
+        overflow: auto;
+      }
+      #capture {
+        background-color: orange;
+        height: 300px;
+        width: 300px;
+        text-align: center;
+        -webkit-user-select: none;
+      }
+      #enterleave {
+        background-color: blue;
+        height: 150px;
+        width: 150px;
+        text-align: center;
+        vertical-align: center;
+        line-height: 150px;
+        left: 25%;
+        top: 25%;
+        position: relative;
+      }
+      #output {
+        width: 300px;
+        height: 150px;
+        overflow: scroll;
+        white-space: pre;
+      }
+    </style>
+    <script src="../../libs/PointerEvents/src/pointerevents.js"></script>
+    <script src="../../src/pointergestures.js"></script>
+  </head>
+  <body>
+    <div id="capture">
+      <div id="enterleave">
+      </div>
+    </div>
+    <div id="output"></div>
+    <script>
+      var events = [
+        'tkflick',
+        'tktrackstart',
+        'tktrack',
+        'tktrackend',
+        'tkgesturestart',
+        'tkgesture',
+        'tkgestureend',
+        'tkhold',
+        'tkholdpulse',
+        'tkrelease'
+      ];
+      var find = function(/*...inEls*/) {
+        [].forEach.call(arguments, function(el) {
+          this[el] = document.getElementById(el);
+        });
+      };
+      find('capture', 'output');
+      function appendOutput(inString) {
+        var t = output.textContent;
+        output.textContent = inString + '\n' + t;
+      };
+      events.forEach(function(en) {
+        capture.addEventListener(en, function(inEvent) {
+          console.log(inEvent);
+          appendOutput(inEvent.type);
+        });
+      });
+    </script>
+  </body>
+</html>
