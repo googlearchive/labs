@@ -16,8 +16,7 @@
     
     var toFadeKeyframes = [
       {opacity: 0, zIndex: 0},
-      {opacity: 0},
-      {opacity: 0},
+      {opacity: 0, zIndex: 0},
       {opacity: 1, zIndex: 1}
     ];
     
@@ -33,7 +32,7 @@
             node: this.panels, 
             scrubClick: true,
             dragScale: -1,
-            duration: 500,
+            duration: 300,
             onEnd: this.animationEnd.bind(this),
             onStartScrub: this.startScrub.bind(this)
           });
@@ -153,7 +152,7 @@
           inAnim.startValue = 0;
           inAnim.endValue = 1;
           // TODO(sorvell): debug issue with hiding and then synchronously showing node
-          //this.highlander = false;
+          this.highlander = false;
           this.updating = true;
           if (this.didScrub) {
             this.didScrub = false;
@@ -166,7 +165,7 @@
             }
           }
           this.finish();
-          //this.highlander = true;
+          this.highlander = true;
           this.updating = false;
         },
         canTransition: function(inFrom, inTo, inForward) {
@@ -187,6 +186,11 @@
           if (this.scrub.tracking) {
             this.scrub.stopScrubbing();
           }
+        },
+        finish: function() {
+          this.highlander = false;
+          this.base.finish.call(this);
+          this.highlander = true;
         }
       }
     });
