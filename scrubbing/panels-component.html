@@ -16,8 +16,10 @@
 		}
 
 		body {
-			display: -webkit-flex;
+			display: -webkit-box;
+      display: -webkit-flex;
 			-webkit-flex-flow: column;
+      -webkit-box-orient: vertical;
       opacity: 0;
 		}
 
@@ -27,7 +29,8 @@
 		
 		g-panels {
       counter-reset: section;
-			-webkit-flex: 1;
+			-webkit-box-flex: 1;
+      -webkit-flex: 1;
 			outline: none;
 			border: 1px solid #ccc;
 			position: relative;

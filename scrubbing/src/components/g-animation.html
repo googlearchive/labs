@@ -61,6 +61,7 @@
       /* Animation */
       scope.Animation = function(inProps) {
         scope.mixinProps(this, inProps);
+        this.p$ = {};
         this._next = this.next.bind(this);
       }
 
@@ -104,8 +105,15 @@
         play: function(inProps) {
           scope.mixinProps(this, inProps);
           this.stop();
-          this.reversed = false;
-          this.t0 = this.t1 = Date.now();
+          var d = Date.now();
+          this.p$ = {
+            startValue: this.startValue,
+            endValue: this.endValue,
+            duration: this.duration,
+            fraction: 1,
+            t0: d,
+            t1: d
+          }
           this.job = true;
           this.next();
           return this;
@@ -114,9 +122,12 @@
           this.node = null;
         },
         //* Stops the animation and fires the _onStop_ event.
-        stop: function() {
+        stop: function(inApplyEndValue) {
           if (this.isAnimating()) {
             this.cancel();
+            if (inApplyEndValue) {
+              this.value = this.playEndValue;
+            }
             scope.invoke(this, "onStop", this);
             return this;
           }
@@ -124,21 +135,6 @@
         //* play from current value to inValue
         seek: function(inValue) {
           this.play({startValue: this.value, endValue: inValue});
-        },
-        //* Reverses the direction of a running animation; returns self if animating.
-        reverse: function() {
-          if (this.isAnimating()) {
-            this.reversed = !this.reversed;
-            var now = this.t1 = Date.now();
-            // adjust start time (t0) to allow for animation done so far to replay
-            var elapsed = now - this.t0;
-            this.t0 = now + elapsed - this.duration;
-            // swap start and end values
-            var startValue = this.startValue;
-            this.startValue = this.endValue;
-            this.endValue = startValue;
-            return this;
-          }
         },
         //* Returns true if animation is in progress.
         isAnimating: function() {
@@ -148,24 +144,31 @@
           this.job = webkitRequestAnimationFrame(this._next, this.node);
         },
         cancel: function() {
-          this.dt = this.t1 = this.t0 = 0;
+          this.p$ = {};
           this.fraction = 0;
           webkitCancelRequestAnimationFrame(this.job);
           this.job = null;
         },
         shouldEnd: function() {
-          return (this.fraction >= 1) || (this.dt >= this.duration);
+          return (this.fraction >= this.p$.fraction) || (this.time >= this.p$.duration);
         },
-        next: function() {
-          this.t1 = Date.now();
-          this.dt = this.t1 - this.t0;
+        get time() {
+          return this._time;
+        },
+        set time(inValue) {
+          this._time = inValue;
           // time independent
-          this.fraction = this.easedLerp(this.t0, this.duration, 
-            this.easingFunction, this.reversed);
-          var end = this.shouldEnd();
+          this.fraction = this.easedLerp(this.time, this.duration, 
+            this.easingFunction);
+          this.allowNext = !this.shouldEnd();
           this.value = this.startValue + this.fraction * 
               (this.endValue - this.startValue);
-          if (!end) {
+        },
+        next: function() {
+          this.p$.t1 = Date.now();
+          this.allowNext = true;
+          this.time = this.p$.t1 - this.p$.t0
+          if (this.allowNext) {
             this.requestNext();
           }
         },
@@ -189,13 +192,9 @@
           this.cancel();
           scope.invoke(this, "onEnd", this);
         },
-        easedLerp: function(inT0, inDuration, inEasing, inReverse) {
-          var lerp = (Date.now() - inT0) / inDuration;
-          if (inReverse) {
-            return lerp >= 1 ? 0 : (1 - inEasing(1 - lerp));
-          } else {
-            return lerp >= 1 ? 1 : inEasing(lerp);
-          }
+        easedLerp: function(inTime, inDuration, inEasing) {
+          var lerp = inTime / inDuration;
+          return lerp >= 1 ? 1 : inEasing(lerp);
         }
       };
 
@@ -395,14 +394,16 @@
             inNode[m](info.type, info.handler);
           })
         },
+        isScrubbing: function() {
+          return this.scrubbing || this.isAnimating();
+        },
         trackStart: function(e) {  
-          this.stop();
-          this.resetScrub();
           this.directionProp = this.scrubType + 'Direction';
+          this.resetScrub();
           this.maybeTrack(e);
         },
         maybeTrack: function(e) {
-          if (!this.trackingStopped && e[this.directionProp]) {
+          if (!this.trackingStopped && !this.isAnimating() && e[this.directionProp]) {
             this.beginTrack(e);
           }
         },
@@ -454,7 +455,7 @@
         },
         click: function(e) {
           if (this.scrubClick) {
-            if (!this.squelchClick) {
+            if (!this.squelchClick && !this.isAnimating()) {
               this.forward = true;
               this.trackEvent = e;
               scope.invoke(this, "onStartScrub", this);
