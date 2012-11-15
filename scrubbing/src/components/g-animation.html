@@ -1,0 +1,502 @@
+<!--
+/*
+ * Copyright 2012 The Toolkitchen Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<element name="g-animation">
+  <script>
+    var animation = {};
+    (function(scope) {
+      scope = scope || {};
+      /* utils */
+      scope.mixinProps = function(inObject, inProps) {
+        if (inProps) {
+          Object.keys(inProps).forEach(function(key) {
+            inObject[key] = inProps[key];
+          });
+        }
+      }
+
+      scope.invoke = function(inObject, inEventName /* args */) {
+        var fn = inObject[inEventName];
+        if (fn) {
+          var args = Array.prototype.slice.call(arguments, 2);
+          fn.apply(inObject.context || window, args);
+        }
+      }
+
+      /* lerp */
+      scope.lerp = {
+        // linear interpolation
+        interpolateValues: function(inA, inB, inT) {
+          return (inB - inA) * inT + inA;
+        },
+        // lerp between two hashes
+        interpolateObjects: function(inA, inB, inT) {
+          var result = {}, v;
+          for (var n in inA) {
+            v = this.interpolateValues(inA[n], inB[n], inT);
+            result[n] = isNaN(v) ? inA[n] : v;
+          }
+          return result;
+        },
+        // piecewise-lerp vectored hashes
+        interpolateVector: function(inA, inT) {
+          // integer part
+          var ti = Math.floor(inT);
+          // fraction
+          var tf = inT - ti;
+          // calculate vector members to interpolate between
+          var s = ti % inA.length;
+          s = s >= 0 ? s : inA.length + s;
+          var e = (ti + 1) % inA.length;
+          e = e >= 0 ? e : inA.length + e; 
+          //console.log(s, e, tf);
+          return this.interpolateObjects(inA[s], inA[e], tf);
+        }
+      };
+
+      /* Animation */
+      scope.Animation = function(inProps) {
+        scope.mixinProps(this, inProps);
+        this.p$ = {};
+        this._next = this.next.bind(this);
+      }
+
+      scope.Animation.easing = {
+        cubicIn: function(n) {
+          return Math.pow(n, 3);
+        },
+        cubicOut: function(n) {
+          return Math.pow(n - 1, 3) + 1;
+        },
+        expoOut: function(n) {
+          return (n == 1) ? 1 : (-1 * Math.pow(2, -10 * n) + 1);
+        },
+        quadInOut: function(n){
+          n = n * 2;
+          if (n < 1) {
+            return Math.pow(n, 2) / 2;
+          }
+          return -1 * ((--n) * (n - 2) - 1) / 2;
+        },
+        linear: function(n) {
+          return n;
+        }
+      };
+
+      scope.Animation.prototype = {
+        _value: null,
+        //* Animation duration in milliseconds
+        duration: 350,
+        //* Value of _value_ property at the beginning of an animation
+        startValue: 0,
+        //* Value of _value_ property at the end of an animation
+        endValue: 1,
+        //* Node that must be visible in order for the animation to continue.
+        //* This reference is destroyed when the animation ceases.
+        node: null,
+        //* Function that determines how the animation progresses from
+        //* _startValue_ to _endValue_
+        easingFunction: scope.Animation.easing.cubicOut,
+        //* Plays the animation.
+        play: function(inProps) {
+          scope.mixinProps(this, inProps);
+          this.stop();
+          var d = Date.now();
+          this.p$ = {
+            startValue: this.startValue,
+            endValue: this.endValue,
+            duration: this.duration,
+            fraction: 1,
+            t0: d,
+            t1: d
+          }
+          this.job = true;
+          this.next();
+          return this;
+        },
+        clear: function() {
+          this.node = null;
+        },
+        //* Stops the animation and fires the _onStop_ event.
+        stop: function(inApplyEndValue) {
+          if (this.isAnimating()) {
+            this.cancel();
+            if (inApplyEndValue) {
+              this.value = this.playEndValue;
+            }
+            scope.invoke(this, "onStop", this);
+            return this;
+          }
+        },
+        //* play from current value to inValue
+        seek: function(inValue) {
+          this.play({startValue: this.value, endValue: inValue});
+        },
+        //* Returns true if animation is in progress.
+        isAnimating: function() {
+          return Boolean(this.job);
+        },
+        requestNext: function() {
+          this.job = webkitRequestAnimationFrame(this._next, this.node);
+        },
+        cancel: function() {
+          this.p$ = {};
+          this.fraction = 0;
+          webkitCancelRequestAnimationFrame(this.job);
+          this.job = null;
+        },
+        shouldEnd: function() {
+          return (this.fraction >= this.p$.fraction) || (this.time >= this.p$.duration);
+        },
+        get time() {
+          return this._time;
+        },
+        set time(inValue) {
+          this._time = inValue;
+          // time independent
+          this.fraction = this.easedLerp(this.time, this.duration, 
+            this.easingFunction);
+          this.allowNext = !this.shouldEnd();
+          this.value = this.startValue + this.fraction * 
+              (this.endValue - this.startValue);
+        },
+        next: function() {
+          this.p$.t1 = Date.now();
+          this.allowNext = true;
+          this.time = this.p$.t1 - this.p$.t0
+          if (this.allowNext) {
+            this.requestNext();
+          }
+        },
+        get value() {
+          return this._value;
+        },
+        set value(inValue) {
+          var old = this.value;
+          this._value = inValue;
+          if (this.value != old) {
+            this.valueChanged();
+          }
+          if (this.shouldEnd()) {
+            this.end();
+          }
+        },
+        valueChanged: function() {
+          scope.invoke(this, "onValueChange", this);
+        },
+        end: function() {
+          this.cancel();
+          scope.invoke(this, "onEnd", this);
+        },
+        easedLerp: function(inTime, inDuration, inEasing) {
+          var lerp = inTime / inDuration;
+          return lerp >= 1 ? 1 : inEasing(lerp);
+        }
+      };
+
+      /* KeyframeAnimation */
+      var makeTransformValue = function(inState, inProp, inDefault, inUnit) {
+        var v = inState[inProp] || inDefault;
+        return v + inUnit;
+      }
+
+      var stateToTransformProp = function(inState, inProp, inDefault, inUnit) {
+        var v = '', propX = inProp + 'X', propY = inProp + 'Y', unit = inUnit || '';
+        if (inState[inProp]) {
+          v = inProp + '(' + makeTransformValue(inState, inProp, inDefault, unit) + ')';
+        }
+        if (inState[propX]) {
+          v += ' ' + propX + '(' + makeTransformValue(inState, propX, inDefault, unit) + ')';
+        }
+        if (inState[propY]) {
+          v += ' ' + propY + '(' + makeTransformValue(inState, propY, inDefault, unit) + ')';
+        }
+        return v;
+      }
+
+      var stateToStyle = function(inState, inStyle, inUnit) {
+        var kScale = 1;
+        var unit = inUnit || '%';
+        // transform
+        // translate
+        var translate = '';
+        if (inState.x != null || inState.y != null || inState.z != null) {
+          var x = inState.x * kScale || 0, y = inState.y * kScale || 0,
+            z = inState.z * kScale || 0;
+          translate = 'translate3d(' + x + unit + ',' + y + unit + ','
+              + z + 'px)';
+        }
+        // scale
+        var scale = stateToTransformProp(inState, 'scale', 1);
+        var rotate = stateToTransformProp(inState, 'rotate', 0, 'deg');
+        if (translate || scale || rotate) {
+          inStyle.webkitTransform = translate + ' ' + scale + ' ' + rotate;
+        }
+        // opacity
+        if (inStyle.opacity != null) {
+          inStyle.opacity = inState.opacity;
+        }
+        // z-index
+        if (inState.zIndex != null) {
+          inStyle.zIndex = Math.floor(inState.zIndex);
+        }
+        // display
+        if (inState.display !== undefined) {
+          inStyle.display = inState.display;
+        }
+      }
+
+      scope.KeyframeAnimation = function(inProps) {
+        scope.Animation.call(this, inProps);
+      };
+
+      scope.KeyframeAnimation.prototype = {
+        offset: 0,
+        unit: '%',
+        //
+        valueChanged: function() {
+          scope.Animation.prototype.valueChanged.call(this);
+          this.renderValue();
+        },
+        clampValue: function(inValue) {
+          return this.wrap ? inValue % 1 : Math.max(0, Math.min(inValue, 1));
+        },
+        renderValue: function() {
+          if (this.keyframes && this.node) {
+            var o = this.wrap ? 0 : 1;
+            var p =  ((this.value + (this.offset || 0)) * (this.keyframes.length-o)) % 
+                this.keyframes.length;
+            var state = scope.lerp.interpolateVector(this.keyframes, p);
+            //console.log('renderValue', p, state);
+            stateToStyle(state, this.node.style, this.unit);
+          }
+        },
+        previousSnap: function() {
+          if (this.snapPoints) {
+            var p = this.calcSnapPoints(this.value - 1e-8).start;
+            this.seek(p);
+          }
+        },
+        nextSnap: function() {
+          var p = this.calcSnapPoints(this.value).end;
+          this.seek(p);
+        },
+        calcSnapPoints: function(inValue) {
+          var snapPoints = [0];
+          snapPoints = snapPoints.concat(this.snapPoints || []);
+          snapPoints.push(1);
+          var sign = inValue >= 0 ? 1 : -1;
+          var p = Math.abs(inValue), l;
+          for (var i=0, l=snapPoints.length, prev=0, snap, s, e; i<l; i++) {
+            snap = snapPoints[i];
+            if (prev <= p && snap > p) {
+              s = sign * prev;
+              e = sign * snap;
+              return {start: Math.min(s, e), end: Math.max(s, e)};
+            }
+            prev = snap;
+          }
+          return {start: 0, end: 1};
+        }
+      };
+      
+      scope.KeyframeAnimation.prototype.__proto__ = scope.Animation.prototype;
+      
+      /* AnimationGroup */
+      scope.AnimationGroup = function(inProps) {
+        this.animations = [];
+        scope.KeyframeAnimation.call(this, inProps);
+      };
+
+      scope.AnimationGroup.prototype = {
+        add: function(inAnimation) {
+          this.animations.push(inAnimation);
+          inAnimation.value = this.value;
+        },
+        remove: function(inAnimation) {
+          var i = this.animations.indexOf(inAnimation);
+          if (i >= 0) {
+            this.animations.splice(i, 1);
+          }
+        },
+        removeAll: function() {
+          while (this.animations.length) {
+            a = this.animations[0];
+            this.remove(a);
+          }
+        },
+        clear: function() {
+          scope.KeyframeAnimation.prototype.clear.call(this);
+          var a;
+          while (this.animations.length) {
+            a = this.animations[0];
+            a.clear();
+            this.remove(a);
+          }
+        },
+        renderValue: function() {
+          scope.KeyframeAnimation.prototype.renderValue.call(this);
+          this.animations.forEach(function(a) {
+            a.value = this.value;
+          }, this);
+        }
+      };
+      
+      scope.AnimationGroup.prototype.__proto__ = scope.KeyframeAnimation.prototype;
+
+      /* Scrubbed Animation */
+      scope.ScrubbedAnimation = function(inProps) {
+        scope.AnimationGroup.call(this, inProps);
+      };
+
+      scope.ScrubbedAnimation.prototype = {
+        dragScale: 1,
+        scrubType: 'x',
+        get node () {
+          return this._node;
+        },
+        set node(inNode) {
+          if (this.node) {
+            this.enableEvents(this.node, this.trackingEventInfo, false);
+          }
+          this._node = inNode;
+          if (this.node) {
+            this.trackingEventInfo = [
+              {type: 'click', handler: this.click.bind(this)}
+              
+            ];
+            var scrubEvents = [];
+            // zoom only if possible
+            if (this.scrubType == 'zoom' && ('ontouchstart' in window)) {
+              scrubEvents = [
+                {type: 'tkgesturestart', handler: this.gestureStart.bind(this)},
+                {type: 'tkgesture', handler: this.gesture.bind(this)},
+                {type: 'tkgestureend', handler: this.gestureEnd.bind(this)}
+              ];
+            } else {
+              scrubEvents = [
+                {type: 'tktrackstart', handler: this.trackStart.bind(this)},
+                {type: 'tktrack', handler: this.track.bind(this)},
+                {type: 'tktrackend', handler: this.trackEnd.bind(this)}
+              ];
+            }
+            this.trackingEventInfo = this.trackingEventInfo.concat(scrubEvents);
+            this.enableEvents(this.node, this.trackingEventInfo, true);
+          }
+        },
+        enableEvents: function(inNode, inEventInfos, inEnable) {
+          var m = inEnable ? 'addEventListener' : 'removeEventListener';
+          inEventInfos.forEach(function(info) {
+            inNode[m](info.type, info.handler);
+          })
+        },
+        isScrubbing: function() {
+          return this.scrubbing || this.isAnimating();
+        },
+        trackStart: function(e) {  
+          this.directionProp = this.scrubType + 'Direction';
+          this.resetScrub();
+          this.maybeTrack(e);
+        },
+        maybeTrack: function(e) {
+          if (!this.trackingStopped && !this.isAnimating() && e[this.directionProp]) {
+            this.beginTrack(e);
+          }
+        },
+        beginTrack: function(e) {
+          this.trackEvent = e;
+          var d = e[this.directionProp];
+          this.forward = d < 0;
+          scope.invoke(this, "onStartScrub", this);
+          if (!this.scrubbingStopped) {
+            this.tracking = {
+              dragProp: 'd' + this.scrubType,
+              startValue: this.value,
+              dragScalar: this.dragScale * this.node[this.scrubType == 'y' ? 
+                'offsetHeight' : 'offsetWidth']
+            }
+          }
+        },
+        track: function(e) {
+          if (this.tracking) {
+            var p = this.tracking.startValue + 
+                e[this.tracking.dragProp] / this.tracking.dragScalar;
+            this.value = p;
+          } else {
+            this.maybeTrack(e);
+          }
+        },
+        trackEnd: function(e) {
+          if (this.tracking) {
+            var snaps = this.calcSnapPoints(this.value);
+            var x = (e[this.directionProp] * this.dragScale) > 0 ? 
+                snaps.end : snaps.start;
+            this.seek(x);
+            this.resetScrub();
+          }
+          // squelch click
+          this.squelchClick = true;
+          setTimeout(function() {
+            this.squelchClick = false;
+          }.bind(this), 0);
+        },
+        gesturestart: function(e) {
+          
+        },
+        gesture: function(e) {
+          
+        },
+        gestureend: function(e) {
+          
+        },
+        click: function(e) {
+          if (this.scrubClick) {
+            if (!this.squelchClick && !this.isAnimating()) {
+              this.forward = true;
+              this.trackEvent = e;
+              scope.invoke(this, "onStartScrub", this);
+              if (!this.scrubbingStopped) {
+                this.play({startValue: 0, endValue: 1});
+              }
+              this.resetScrub();
+            }
+            e.preventDefault();
+          }
+        },
+        stopScrubbing: function() {
+          this.scrubbingStopped = true;
+          this.tracking = null;
+        },
+        resetScrub: function() {
+          this.tracking = null;
+          this.trackEvent = null;
+          this.scrubbingStopped = false;
+        },
+        shouldEnd: function() {
+          return scope.KeyframeAnimation.prototype.shouldEnd.call(this) ||
+            this.isOob();
+        },
+        isOob: function() {
+          var lower = Math.min(this.startValue, this.endValue);
+          var upper = Math.max(this.startValue, this.endValue);
+          return (this.value < lower) || (this.value > upper);
+        }
+      };
+      
+      scope.ScrubbedAnimation.prototype.__proto__ = scope.AnimationGroup.prototype;
+    })(animation);
+    
+    this.component({
+      prototype: {
+        Animation: animation.Animation,
+        KeyframeAnimation: animation.KeyframeAnimation,
+        AnimationGroup: animation.AnimationGroup,
+        ScrubbedAnimation: animation.ScrubbedAnimation
+      }
+    });
+  </script>
+</element>

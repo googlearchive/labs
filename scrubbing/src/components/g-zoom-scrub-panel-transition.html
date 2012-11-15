@@ -1,0 +1,199 @@
+<!--
+/*
+ * Copyright 2012 The Toolkitchen Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<element name="g-zoom-scrub-panel-transition" extends="g-panel-transition">        
+  <link rel="components" href="g-animation.html">
+  <script>
+    
+    var fromFadeKeyframes = [
+      {opacity: 1, zIndex: 1},
+      {opacity: 0, zIndex: 0}
+    ];
+    
+    var toFadeKeyframes = [
+      {opacity: 0, zIndex: 0},
+      {opacity: 0, zIndex: 0},
+      {opacity: 1, zIndex: 1}
+    ];
+    
+    this.component({
+      prototype: {      
+        transitionClass: '',
+        zoomClass: 'g-zoomable',
+        setup: function(inPanels) {
+          // keyframes for n panels
+          this.base.setup.call(this, inPanels);
+          this.api = document.createElement('g-animation');
+          this.scrub = new this.api.ScrubbedAnimation({
+            node: this.panels, 
+            scrubClick: true,
+            dragScale: -1,
+            duration: 300,
+            onEnd: this.animationEnd.bind(this),
+            onStartScrub: this.startScrub.bind(this)
+          });
+        },
+        setupPanel: function(inPanel, inIndex) {
+          this.base.setupPanel.call(this, inPanel, inIndex);
+          inPanel.style.webkitTransformOrigin = '0 0';
+        },
+        teardown: function() {
+          this.scrub.clear();
+          this.base.teardown.call(this);
+        },
+        teardownPanel: function(inPanel, inIndex) {
+          this.base.teardownPanel.call(this, inPanel, inIndex);
+          inPanel.style.webkitTransformOrigin = null;
+        },
+        startScrub: function(inScrub) {
+          var event = inScrub.trackEvent;
+          this.didScrub = true;
+          this.forward = inScrub.forward;
+          var d = this.forward ? 1 : -1;
+          this.from = this.panels.getSelectedPanel();
+          this.to = this.panels.panelAtIndex(this.panels.index + d);
+          if (!(this.from && this.to)) {
+            //console.warn('missing from?', this.from, 'to?', this.to);
+            inScrub.stopScrubbing();
+            return;
+          }
+          this._transitioning = true;
+          //console.log('scrub from', this.from.id, 'to', this.to.id);
+          if (this.forward) {
+            var t = this.targetForEvent(event);
+            if (!t) {
+              //console.warn('bad scrub target');
+              inScrub.stopScrubbing();
+              return;
+            }
+            var keyframes = this.keyframesForTarget(t);
+            this.makeAnimations(this.from, this.to, keyframes.from, keyframes.to);
+            this.scrub.value = 0;
+          } else {
+            // TODO(sorvell): weird, using to as from to go backwards
+            this.animationsFromPanel(this.to);
+            this.scrub.value = 1;
+          }
+        },
+        keyframesForTarget: function(inTarget) {
+          var r = inTarget.getBoundingClientRect();
+          var pr = this.panels.getBoundingClientRect();
+          // calc sizes
+          var m = 0;
+          var x = pr.left - r.left + m;
+          var y = pr.top - r.top + m;
+          var scaleY = pr.height / (r.height + m*2);
+          var scaleX = pr.width / (r.width + m*2);
+          // make keyframes for animation
+          var from = [
+            {x: 0, y: 0, scaleX: 1, scaleY: 1},
+            {x: x * scaleX, y: y * scaleY, scaleX: scaleX, scaleY: scaleY}
+          ];
+          var to = [
+            {x: -x, y: -y, scaleX: 1/scaleX, scaleY: 1/scaleY},
+            {x: 0, y: 0, scaleX: 1, scaleY: 1}
+          ];
+          return {from: from, to: to};
+        },
+        targetForEvent: function(inEvent) {
+          var n = inEvent.target;
+          var p = this.panels.getSelectedPanel()
+          while (n && n != p && n.classList && !n.classList.contains('g-zoomable')) {
+            n = n.parentNode;
+          }
+          return n == document ? null : n;
+        },
+        makeAnimations: function(inFromPanel, inToPanel, inFromKeyframes, inToKeyframes) {
+          inFromPanel._animations = {
+            fromFade: new this.api.KeyframeAnimation({
+              node: inFromPanel,
+              keyframes: fromFadeKeyframes
+            }),
+            toFade: new this.api.KeyframeAnimation({
+              node: inToPanel,
+              keyframes: toFadeKeyframes
+            }),
+            from: new this.api.KeyframeAnimation({
+              node: inFromPanel,
+              unit: 'px',
+              keyframes: inFromKeyframes
+            }),
+            to: new this.api.KeyframeAnimation({
+              node: inToPanel,
+              unit: 'px',
+              keyframes: inToKeyframes
+            })
+          };
+          this.animationsFromPanel(inFromPanel);
+        },
+        animationsFromPanel: function(inPanel) {
+          var animations = inPanel._animations;
+          if (animations) {
+            this.scrub.removeAll();
+            var a;
+            Object.keys(animations).forEach(function(k) {
+              a = animations[k];
+              this.scrub.add(a);
+              this.panels.enablePanelShowing(a.node, true);
+            }, this);
+          }
+        },
+        panelsHasAnimations: function(inPanel) {
+          return Boolean(inPanel._animations);
+        },
+        // TODO(sorvell): tracking logic does not currently handle > 1 
+        // scrub boundary.
+        animationEnd: function(inAnim) {
+          //console.log('animationEnd', inAnim.value, inAnim.startValue, inAnim.endValue);
+          inAnim.startValue = 0;
+          inAnim.endValue = 1;
+          // TODO(sorvell): debug issue with hiding and then synchronously showing node
+          this.highlander = false;
+          this.updating = true;
+          if (this.didScrub) {
+            this.didScrub = false;
+            if ((this.forward && (inAnim.value >= inAnim.endValue)) || 
+                (!this.forward && (inAnim.value <= inAnim.startValue))) {
+              //console.log('animationEnd: move index');
+              this.panels.index += inAnim.value >= inAnim.endValue ? 1 : -1;
+            } else {
+              this.scrub.value = 0;
+            }
+          }
+          this.finish();
+          this.highlander = true;
+          this.updating = false;
+        },
+        canTransition: function(inFrom, inTo, inForward) {
+          return !this.updating && ((inForward && this.panelsHasAnimations(inFrom)) ||
+            (!inForward && this.panelsHasAnimations(inTo)));
+        },
+        // transitions typically override begin/complete
+        begin: function() {
+          this._transitioning = true;
+          this.animationsFromPanel(this.forward ? this.from : this.to);
+          var s = this.forward ? 0 : 1, e = this.forward ? 1 : 0;
+          //console.log(this.from.id, this.to.id, s, e);
+          this.scrub.value = s;
+          this.scrub.seek(e);
+        },
+        complete: function() {
+          //console.log('complete');
+          if (this.scrub.tracking) {
+            this.scrub.stopScrubbing();
+          }
+        },
+        finish: function() {
+          this.highlander = false;
+          this.base.finish.call(this);
+          this.highlander = true;
+        }
+      }
+    });
+  </script>
+</element>
+

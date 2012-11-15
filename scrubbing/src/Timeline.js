@@ -14,7 +14,6 @@
     duration: 500,
     snapPoints: null,
     noWrap: false,
-    duration: 500,
     dragScale: 1,
     direction: 'x',
     addAnimation: function(inAnimation) {
@@ -39,7 +38,7 @@
       
     },
     previous: function() {
-      this.animateToPosition(this.calcSnapPoints(this.position - 0.00000001).start);
+      this.animateToPosition(this.calcSnapPoints(this.position - 1e-8).start);
     },
     next: function() {
       this.animateToPosition(this.calcSnapPoints(this.position).end);
