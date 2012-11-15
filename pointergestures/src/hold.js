@@ -21,12 +21,11 @@
 
 (function(scope) {
   var dispatcher = scope.dispatcher;
-  var utils = scope.utils;
   var hold = {
     // wait at least HOLD_DELAY ms between hold and pulse events
     HOLD_DELAY: 200,
     // pointer can move WIGGLE_THRESHOLD pixels before not counting as a hold
-    WIGGLE_THRESHOLD: 4,
+    WIGGLE_THRESHOLD: 16,
     events: [
       'pointerdown',
       'pointermove',
@@ -60,8 +59,9 @@
     },
     pointermove: function(inEvent) {
       if (this.heldPointer && inEvent.isPrimary) {
-        var d = utils.distance(this.heldPointer, inEvent);
-        if (d > this.WIGGLE_THRESHOLD) {
+        var x = inEvent.clientX - this.heldPointer.clientX;
+        var y = inEvent.clientY - this.heldPointer.clientY;
+        if ((x * x + y * y) > this.WIGGLE_THRESHOLD) {
           this.cancel();
         }
       }

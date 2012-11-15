@@ -1,0 +1,3 @@
+[submodule "libs/PointerEvents"]
+	path = libs/PointerEvents
+	url = http://github.com/toolkitchen/PointerEvents.git

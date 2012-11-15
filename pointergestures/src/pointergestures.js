@@ -21,7 +21,6 @@
     'sidetable.js',
     'initialize.js',
     'dispatcher.js',
-    'utils.js',
     'hold.js',
     'flick.js',
     'track.js',

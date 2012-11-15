@@ -21,7 +21,6 @@
 
 (function(scope) {
   var dispatcher = scope.dispatcher;
-  var utils = scope.utils;
   var flick = {
     // TODO(dfreedman): value should be low enough for low speed flicks, but
     // high enough to remove accidental flicks
@@ -50,7 +49,7 @@
       var dx = e.clientX - s.clientX, dy = e.clientY - s.clientY;
       var x = dx / dt, y = dy / dt, v = Math.sqrt(x * x + y * y);
       var ma = Math.abs(x) > Math.abs(y) ? 'x' : 'y';
-      var a = this.calcAngle(s, e);
+      var a = this.calcAngle(x, y);
       if (Math.abs(v) >= this.MIN_VELOCITY) {
         var ev = dispatcher.makeEvent('tkflick', {
           xVelocity: x,
@@ -62,8 +61,8 @@
         dispatcher.dispatchEvent(ev, s.target);
       }
     },
-    calcAngle: function(inA, inB) {
-      return utils.angle(inA.clientX, inB.clientX, inA.clientY, inB.clientY);
+    calcAngle: function(inX, inY) {
+      return (Math.atan2(inY, inX) * 180 / Math.PI);
     }
   };
   dispatcher.registerRecognizer(flick);
