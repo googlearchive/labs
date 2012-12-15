@@ -4,15 +4,12 @@
   <title>Scrubbing: Slideable</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
+  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
   <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
   <script src="../../pointergestures/src/pointergestures.js"></script>
-  <script src="src/utils.js"></script>
-  <script src="src/lerp.js"></script>
-  <script src="src/Animator.js"></script>
-  <script src="src/Timeline.js"></script>
-  <script src="src/Animation.js"></script>
+  <script src="src/Scrub.js"></script>
   <style>
-    body {
+    html, body {
       height: 100%;
       margin: 0;
       overflow: hidden;
@@ -66,30 +63,28 @@
   <div class="hSlideable right">&laquo; I slide.</div>
 	<script>
     
-    rightKeyframes = [
-      {x: 90, opacity: 0.75},
-      {x: 0, opacity: 1}
-    ];
-
-    bottomKeyframes = [
-      {y: 90, opacity: 0.75},
-      {y: 0, opacity: 1}
-    ];
     
-    makeSlideable = function(inSelector, inKeyframes, inDirection, inScale) {
+    
+    rightKeyframes = {
+      '-webkit-transform': ['translate(225px,0)', 'translate(0px, 0)'],
+      opacity: ['0.75', '1']
+    };
+
+    bottomKeyframes = {
+       '-webkit-transform': ['translate(0, 225px)', 'translate(0px, 0)'],
+      opacity: ['0.75', '1']
+    };
+    
+    makeSlideable = function(inSelector, inKeyframes, inScrubType, inScale) {
       var n = document.querySelector(inSelector);
       if (n) {
-        var timeline = new scrubbing.Timeline({
-          trackingNode: n,
-          direction: inDirection,
-          dragScale: inScale || 1,
-          noWrap: true
+        n.scrub = new Scrub({
+          node: n,
+          animation: new Animation(n, inKeyframes, {duration: 0.5}),
+          scrubType: inScrubType,
+          scale: inScale
         });
-        new scrubbing.Animation(n, {
-          timeline: timeline,
-          keyframes: inKeyframes,
-          noWrap: true
-        });
+        
       }
     }
     

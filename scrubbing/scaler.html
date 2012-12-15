@@ -4,13 +4,10 @@
   <title>Scrubbing: Scaling Grid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
+  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
   <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
   <script src="../../pointergestures/src/pointergestures.js"></script>
-  <script src="src/utils.js"></script>
-  <script src="src/lerp.js"></script>
-  <script src="src/Animator.js"></script>
-  <script src="src/Timeline.js"></script>
-  <script src="src/Animation.js"></script>
+  <script src="src/Scrub.js"></script>
   <style>
     html, body {
       height: 100%;
@@ -91,12 +88,6 @@
     
     makeGridCells(4, 4);
     
-    // setup timeline/ and animation to scale scrub content.
-    var timeline = new scrubbing.Timeline({trackingNode: grid, noWrap: true,
-        duration: 500});
-    new scrubbing.Animation(grid, {timeline: timeline, unit: 'px', noWrap: true});
-    
-    
     function targetForEvent(inEvent) {
       var n = inEvent.target;
       while (n.parentNode != grid) {
@@ -107,9 +98,9 @@
     
     // when scrubbing begins (here just using trackstart
     // start update animation keyframes based on what's being tracked
-    grid.addEventListener('tktrackstart', function(e) {
-      if (timeline.position % 2 == 0) {
-        var t = targetForEvent(e);
+    var startScrub = function(inScrub) {
+      if (inScrub.currentTime < inScrub.duration / 2) {
+        var t = targetForEvent(inScrub.scrubEvent);
         var gridRect = grid.getBoundingClientRect();
         var cols = Math.floor(gridRect.width / t.offsetWidth);
         var rows = Math.ceil(grid.children.length / cols);
@@ -123,11 +114,24 @@
         x = (targetCol * w/cols);
         y = (targetRow * h/rows);
         // make keyframes for animation
-        grid.animation.keyframes = [
-          {x: 0, y: 0, scaleX: 1, scaleY: 1},
-          {x: -x, y: -y, scaleX: cols, scaleY: rows}
-        ];
+        var frame = inScrub.animation.animationFunction.frames.item(1);
+        frame.value = 'translate(' +
+          -x + 'px,' + -y + 'px) scale(' + cols + ',' + rows + ')';
+        // TODO(sorvell): doesn't seem like you're meant to rewrite keyframe values?
+        frame.rawValue = null;
       }
+    }
+    
+    // setup timeline/ and animation to scale scrub content.
+    var animation = new Animation(grid, {'-webkit-transform': [
+      'translate(0,0) scale(1, 1)',
+      'translate(0,0) scale(1, 1)'
+    ]}, {duration: 0.333});
+    var scrub = new Scrub({
+      node: grid, 
+      animation: animation,
+      scrubClick: true,
+      onStartScrub: startScrub
     });
   </script>
 </body>
