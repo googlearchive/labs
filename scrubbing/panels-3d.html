@@ -4,13 +4,10 @@
   <title>Scrubbing: Panels 3d</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
+  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
   <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
   <script src="../../pointergestures/src/pointergestures.js"></script>
-  <script src="src/utils.js"></script>
-  <script src="src/lerp.js"></script>
-  <script src="src/Animator.js"></script>
-  <script src="src/Animation.js"></script>
-  <script src="src/Timeline.js"></script>
+  <script src="src/Scrub.js"></script>
 	<style>
     body, html {
       height: 100%;
@@ -73,9 +70,7 @@
 <body>
   <div class="top">
     <div class="header">Scrubbing: Panels 3d</div>
-    <div class="sub-header">Drag panels right-left, or 
-      <label>auto-run<input type="checkbox" onchange="enableAutorun(this.checked)" />
-    </div>
+    <div class="sub-header">Drag panels right-left</div>
   </div>
   <div class="port">
     <div class="panels"></div>
@@ -109,7 +104,7 @@
       var keyframes = [];
       var z = calcZTranslate(inContainer, inCount)*2;
       for (var i=0, x, s; i< inCount; i++) {
-        keyframes.push({rotateY: -360 * (i / inCount), z: -z });
+        keyframes.push(' translateZ(' + -z + ') rotateY(' + (-360 * (i / inCount)) + 'deg)');
       }
       return keyframes;
     }
@@ -127,44 +122,22 @@
     var container = document.querySelector('.panels');
     makePanels(container, count);
     
+    
     // make timeline and animation
+    
+    var animation = new Animation(container,
+      {'-webkit-transform': makeKeyframes(count, container)},
+      {duration: 0.5 * count}
+    );
+    
     var snapPoints = makeSnapPoints(count);
-    var timeline = new scrubbing.Timeline({
-      trackingNode: container.parentNode,
+    
+    var scrub = new Scrub({
+      node: container.parentNode,
+      animation: animation,
       snapPoints: snapPoints,
-      noWrap: true,
-      duration: 500 * count,
-      dragScale: -1
-    });
-    
-    new scrubbing.Animation(container, {
-      timeline: timeline,
-      noWrap: true,
-      keyframes: makeKeyframes(count, container)
-    });
-    
-    // setup event handler to make animation continuous when auto-running
-    var transitionEnd = function(e) {
-      var timeline = e.detail.timeline;
-      if (timeline.position == 0) {
-        timeline.animateToPosition(1);
-      } else if (timeline.position == 1) {
-        timeline.animateToPosition(0);
-      }
-    }
-    
-    enableAutorun = function(inEnable) {
-      var l = inEnable ? 'addEventListener' : 'removeEventListener';
-      container.parentNode[l]('transitionEnd', transitionEnd);
-      var easing = inEnable ? 'quadInOut' : 'cubicOut';
-      timeline.animator.easingFunction = scrubbing.Animator.easing[easing];
-      if (inEnable) {
-        timeline.animateToPosition(1);
-      } else {
-        timeline.next();
-      }
-      
-    }
+      scale: -0.25
+    });    
 	</script>
 </body>
 </html>
