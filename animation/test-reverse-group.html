@@ -58,11 +58,9 @@
       {duration: 1, timingFunction: new TimingFunction('ease-out'), fillMode: 'both'}
     );
     anim = new SeqGroup([anim1], {duration: 1, fillMode: 'both'});
-    
     anim.reverse();
-    // required?
-    anim.currentTime = 0;
     anim.pause();
+    // bug if cannot play
 	</script>
   
 </body>
