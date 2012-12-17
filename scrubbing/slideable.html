@@ -80,7 +80,7 @@
       if (n) {
         n.scrub = new Scrub({
           node: n,
-          animation: new Animation(n, inKeyframes, {duration: 0.5}),
+          animation: new Animation(n, inKeyframes, {duration: 0.5, fillMode: 'both'}),
           scrubType: inScrubType,
           scale: inScale
         });
