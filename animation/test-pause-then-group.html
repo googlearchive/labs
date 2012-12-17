@@ -58,7 +58,8 @@
       {duration: 1, timingFunction: new TimingFunction('ease-out'), fillMode: 'both'}
     );
     anim1.pause();
-    anim = new SeqGroup([anim1]);
+    anim = new SeqGroup([anim1], {fillMode: 'both'});
+    // bug if anim.play does nothing.
 	</script>
   
 </body>

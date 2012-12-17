@@ -58,8 +58,9 @@
       {duration: 1, timingFunction: new TimingFunction('ease-out'), fillMode: 'both'}
     );
     
-    anim = new SeqGroup([anim1]);
+    anim = new SeqGroup([anim1], {fillMode: 'both'});
     anim.pause();
+    // bug if circle is not initially translated to x: 100px;
 	</script>
   
 </body>
