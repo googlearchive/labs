@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+    <title></title>
+    <script src="sdom.js"></script>
+</head>
+<body>
+    <div>
+        <span>Child</span>
+    </div>
+    <script>
+        window.onload = function() {
+            var n = document.querySelector('div');
+            console.log(n);
+            console.log(n.childNodes);
+        };
+    </script>
+</body>
+</html>
