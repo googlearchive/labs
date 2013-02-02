@@ -83,13 +83,13 @@ mixin(Fauxd.prototype, {
         return this.fauxilate(this.node.childNodes);
     },
     get parentNode() {
-        return DOM((this.node.changeling || this.node).parentNode);
+        return SDOM((this.node.changeling || this.node).parentNode);
     },
     appendChild:function (inChild) {
         this.node.appendChild(this.realize(inChild));
     },
     insertBefore:function (inChild, inBefore) {
-        this.node.appendChild(this.realize(inChild), this.realize(inBefore));
+        this.node.insertBefore(this.realize(inChild), this.realize(inBefore));
     },
     removeChild:function (inChild) {
         var n = inChild.node;
@@ -98,7 +98,7 @@ mixin(Fauxd.prototype, {
         console.log(this, this.node, inChild, n);
         console.groupEnd();
         this.node.removeChild(n);
-        this.validateDistribution();
+        //this.validateDistribution();
     }
 });
 
@@ -114,14 +114,14 @@ function SDOM(inNode) {
 
 (function () {
     dqs = document.querySelector.bind(document);
-    dsqa = document.querySelectorAll.bind(document);
+    dqsa = document.querySelectorAll.bind(document);
     document.querySelector = function (inSlctr) {
         return SDOM(dqs(inSlctr));
     };
     document.querySelectorAll = function (inSlctr) {
         var nodes = [];
         forEach(dqsa(inSlctr), function (n) {
-            nodes.push(n);
+            nodes.push(SDOM(n));
         });
         return nodes;
     };

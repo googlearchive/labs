@@ -6,19 +6,42 @@ license that can be found in the LICENSE file.
 -->
 <html>
 <head>
-    <title></title>
-    <script src="sdom.js"></script>
+  <title></title>
+  <script src="sdom.js"></script>
 </head>
 <body>
-    <div>
-        <span>Child</span>
-    </div>
-    <script>
-        window.onload = function() {
-            var n = document.querySelector('div');
-            console.log(n);
-            console.log(n.childNodes);
-        };
-    </script>
+  <ul>
+    <li>item 1</li>
+    <li>item 2</li>
+    <li>item 3</li>
+    <li>item 4</li>
+  </ul>
+  <script>
+    window.onload = function() {
+      // querySelector
+      var list = document.querySelector('ul');
+      console.log(list);
+      // childNodes
+      console.log(list.childNodes);
+      // querySelectorAll
+      var items = document.querySelectorAll('li');
+      console.log(items);
+      // appendChild
+      var item = document.createElement('li');
+      item.textContent = 'item 5';
+      list.appendChild(item);
+      // removeChild
+      list.removeChild(items[0]);
+      // insertBefore
+      item = document.createElement('li');
+      item.textContent = 'item 3.5';
+      list.insertBefore(item, items[3]);
+      // parentNode
+      items = document.querySelectorAll('li');
+      if (list == items[0].parentNode) {
+        console.log('list == items[0].parentNode');
+      }
+    };
+  </script>
 </body>
 </html>
