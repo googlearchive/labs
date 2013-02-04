@@ -63,27 +63,53 @@ function Fauxd(inNode) {
 var base = {};
 var archetype = document.createElement('div');
 for (var n in archetype) {
-  //console.log(n);
   publishProperty(archetype, n, base);
 }
 
 Fauxd.prototype = Object.create(base);
 mixin(Fauxd.prototype, {
-  fauxilate: function (inNodes) {
+  fauxilate: function(inNodes) {
     var nodes = [];
-    forEach(inNodes, function (n) {
+    forEach(inNodes, function(n) {
       nodes.push(SDOM(n));
     });
     return nodes;
   },
-  realize: function (inNode) {
+  realize: function(inNode) {
     return (inNode && inNode.node) || inNode;
   },
   get childNodes() {
     return this.fauxilate(this.node.childNodes);
   },
+  get children() {
+    return this.fauxilate(this.node.children);
+  },
   get parentNode() {
-    return SDOM((this.node.changeling || this.node).parentNode);
+    return SDOM(this.node.parentNode);
+  },
+  get previousSibling() {
+    return SDOM(this.node.previousSibling);
+  },
+  get previousElementSibling() {
+    return SDOM(this.node.previousElementSibling);
+  },
+  get nextSibling() {
+    return SDOM(this.node.nextSibling);
+  },
+  get nextElementSibling() {
+    return SDOM(this.node.nextElementSibling);
+  },
+  get firstChild() {
+    return SDOM(this.node.firstChild);
+  },
+  get lastChild() {
+    return SDOM(this.node.lastChild);
+  },
+  querySelector: function(inSlctr) {
+    return SDOM(this.node.querySelector(inSlctr));
+  },
+  querySelectorAll: function(inSlctr) {
+    return this.fauxilate(this.node.querySelectorAll(inSlctr));
   },
   appendChild: function (inChild) {
     this.node.appendChild(this.realize(inChild));
@@ -92,11 +118,7 @@ mixin(Fauxd.prototype, {
     this.node.insertBefore(this.realize(inChild), this.realize(inBefore));
   },
   removeChild: function (inChild) {
-    var n = inChild.node;
-    n = n.changeling || n;
-    console.group('removeChild');
-    console.log(this, this.node, inChild, n);
-    console.groupEnd();
+    var n = this.realize(inChild);
     this.node.removeChild(n);
   }
 });
@@ -114,17 +136,52 @@ function SDOM(inNode) {
 (function () {
   dqs = document.querySelector.bind(document);
   dqsa = document.querySelectorAll.bind(document);
-  document.querySelector = function (inSlctr) {
-    return SDOM(dqs(inSlctr));
-  };
-  document.querySelectorAll = function (inSlctr) {
+  dce = document.createElement.bind(document);
+  dgebid = document.getElementById.bind(document);
+  dgebcn = document.getElementsByClassName.bind(document);
+  dgebn = document.getElementsByName.bind(document);
+  dgebtn = document.getElementsByTagName.bind(document);
+  fauxilate = function(inNodes) {
     var nodes = [];
-    forEach(dqsa(inSlctr), function (n) {
+    forEach(inNodes, function(n) {
       nodes.push(SDOM(n));
     });
     return nodes;
   };
+  document.querySelector = function(inSlctr) {
+    return SDOM(dqs(inSlctr));
+  };
+  document.querySelectorAll = function(inSlctr) {
+    return fauxilate(dqsa(inSlctr));
+  };
+  document.createElement = function(inTag) {
+    return SDOM(dce(inTag));
+  };
+  document.getElementById = function(inId) {
+    return SDOM(dgebid(inId));
+  };
+  document.getElementsByClassName = function(inClassName) {
+    return fauxilate(dgebcn(inClassName));
+  };
+  document.getElementsByName = function(inName) {
+    return fauxilate(dgebn(inName));
+  };
+  document.getElementsByTagName = function(inTagName) {
+    return fauxilate(dgebtn(inTagName));
+  };
 })();
+
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    db = document.body;
+    Object.defineProperty(document, 'body', {
+      get: function() {
+        return SDOM(db);
+      }
+    });
+  });
+})();
+
 
 // possible 'entry-points' to a subtree
 /*
@@ -134,7 +191,7 @@ function SDOM(inNode) {
  getElementBy*
  childNodes
  children
- prevSibling
+ previousSibling
  nextSibling
  parentNode
  */

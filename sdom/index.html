@@ -10,37 +10,93 @@ license that can be found in the LICENSE file.
   <script src="sdom.js"></script>
 </head>
 <body>
-  <ul>
+  <ul id="mylist" name="ItemList" class="pretty-list">
     <li>item 1</li>
     <li>item 2</li>
     <li>item 3</li>
     <li>item 4</li>
   </ul>
   <script>
+    assert = function(test) {
+      var s = test ? 'Test passed' : 'Test failed';
+      console[test ? 'log' : 'warn'](s);
+    };
+    
     window.onload = function() {
-      // querySelector
+      // document.querySelector
       var list = document.querySelector('ul');
-      console.log(list);
+      assert(list instanceof Fauxd);
+      assert(list.id == 'mylist');
+      // querySelector
+      assert(list.querySelector('li') instanceof Fauxd);
       // childNodes
-      console.log(list.childNodes);
-      // querySelectorAll
+      assert(list.childNodes.length == 9);
+      list.childNodes.forEach(function(n) {
+        assert(n instanceof Fauxd);
+      });
+      // children
+      assert(list.children.length == 4);
+      list.children.forEach(function(n) {
+        assert(n instanceof Fauxd);
+      });
+      // document.querySelectorAll
       var items = document.querySelectorAll('li');
-      console.log(items);
-      // appendChild
+      assert(items.length == 4);
+      items.forEach(function(item) {
+        assert(item instanceof Fauxd);
+      });
+      // querySelectorAll
+      var results = list.querySelectorAll('*');
+      assert(results.length == 4);
+      results.forEach(function(n) {
+        assert(n instanceof Fauxd);
+      });
+      // createElement
       var item = document.createElement('li');
+      assert(item instanceof Fauxd);
+      // appendChild
       item.textContent = 'item 5';
       list.appendChild(item);
+      items = document.querySelectorAll('li');
+      assert(items[items.length-1].textContent == item.textContent);
       // removeChild
       list.removeChild(items[0]);
+      items = document.querySelectorAll('li');
+      assert(items.length == 4);
       // insertBefore
       item = document.createElement('li');
-      item.textContent = 'item 3.5';
+      item.textContent = 'item 4.5';
       list.insertBefore(item, items[3]);
+      items = document.querySelectorAll('li');
+      assert(items[3].textContent == item.textContent);
       // parentNode
       items = document.querySelectorAll('li');
-      if (list == items[0].parentNode) {
-        console.log('list == items[0].parentNode');
-      }
+      assert(items[0].parentNode == list);
+      // previousSibling
+      assert(items[1].previousSibling.previousSibling == items[0]);
+      // previousElementSibling
+      assert(items[1].previousElementSibling == items[0]);
+      // nextSibling
+      assert(items[1].nextSibling.nextSibling == items[2]);
+      // nextElementSibling
+      assert(items[1].nextElementSibling == items[2]);
+      // firstChild
+      assert(list.firstChild == list.childNodes[0]);
+      // lastChild
+      assert(list.lastChild == list.childNodes[list.childNodes.length-1]);
+      // document.getElementById
+      assert(document.getElementById('mylist') == list);
+      // document.getElementsByClassName
+      assert(document.getElementsByClassName('pretty-list')[0] == list);
+      // document.getElementsByName
+      assert(document.getElementsByName('ItemList')[0] == list);
+      // document.getElementsByTagName
+      assert(document.getElementsByTagName('ul')[0] == list);
+      // get/setAttribute
+      list.setAttribute('name', 'FavList');
+      assert(list.getAttribute('name') == 'FavList');
+      // document.body
+      assert(document.body instanceof Fauxd);
     };
   </script>
 </body>
