@@ -106,13 +106,19 @@ mixin(Fauxd.prototype, {
     return SDOM(this.node.lastChild);
   },
   get ownerDocument() {
-    return SDOM(this.node.ownerDocument);
+    return this.node.ownerDocument;
   },
   querySelector: function(inSlctr) {
     return SDOM(this.node.querySelector(inSlctr));
   },
   querySelectorAll: function(inSlctr) {
     return this.fauxilate(this.node.querySelectorAll(inSlctr));
+  },
+  getElementsByClassName: function(inClassName) {
+    return this.fauxilate(this.node.getElementsByClassName(inClassName));
+  },
+  getElementsByTagName: function(inTagName) {
+    return this.fauxilate(this.node.getElementsByTagName(inTagName));
   },
   appendChild: function (inChild) {
     return SDOM(this.node.appendChild(this.realize(inChild)));
@@ -140,6 +146,7 @@ function SDOM(inNode) {
   dqs = document.querySelector.bind(document);
   dqsa = document.querySelectorAll.bind(document);
   dce = document.createElement.bind(document);
+  dcdf = document.createDocumentFragment.bind(document);
   dgebid = document.getElementById.bind(document);
   dgebcn = document.getElementsByClassName.bind(document);
   dgebn = document.getElementsByName.bind(document);
@@ -159,6 +166,9 @@ function SDOM(inNode) {
   };
   document.createElement = function(inTag) {
     return SDOM(dce(inTag));
+  };
+  document.createDocumentFragment = function() {
+    return SDOM(dcdf());
   };
   document.getElementById = function(inId) {
     return SDOM(dgebid(inId));
@@ -184,6 +194,12 @@ function SDOM(inNode) {
         return SDOM(db);
       }
     });
+  });
+  dde = document.documentElement;
+  Object.defineProperty(document, 'documentElement', {
+    get: function() {
+      return SDOM(dde);
+    }
   });
 })();
 

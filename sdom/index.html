@@ -85,8 +85,7 @@ license that can be found in the LICENSE file.
       // lastChild
       assert(list.lastChild == list.childNodes[list.childNodes.length-1]);
       // ownerDocument
-      assert(list.ownerDocument instanceof Fauxd);
-      assert(list.ownerDocument.node == document);
+      assert(list.ownerDocument == document);
       // document.getElementById
       assert(document.getElementById('mylist') == list);
       // document.getElementsByClassName
@@ -95,6 +94,12 @@ license that can be found in the LICENSE file.
       assert(document.getElementsByName('ItemList')[0] == list);
       // document.getElementsByTagName
       assert(document.getElementsByTagName('ul')[0] == list);
+      // getElementsByTagName
+      items = list.getElementsByTagName('li');
+      assert(items.length == 5);
+      items.forEach(function(item) {
+        assert(item instanceof Fauxd);
+      });
       // get/setAttribute
       list.setAttribute('name', 'FavList');
       assert(list.getAttribute('name') == 'FavList');
