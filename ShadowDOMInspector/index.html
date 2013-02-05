@@ -19,7 +19,7 @@ license that can be found in the LICENSE file.
   <script src="inspector.js"></script>
   <script>
     window.onload = function() {
-      var root = new ShadowRoot(foo);
+      var root = new ShadowDOM.ShadowRoot(foo);
       var clone = zed.cloneNode(true);
       root.appendChild(clone);
       xinspect(document.body);

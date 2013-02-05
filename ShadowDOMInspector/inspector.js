@@ -1,17 +1,26 @@
 (function() {
   var inspector;
 
-  window.xinspect = function(inNode) {
+  window.xinspect = function(inNode, inProxy) {
     if (!inspector) {
       inspector = window.open('', 'ShadowDOM Inspector');
       inspector.document.write(extractHtml(containHtml.toString()));
       inspector.document.close();
+      inspector.api = {
+        shadowize: shadowize
+      };
     }
-    inspect(inNode);
+    inspect(inNode, inProxy);
   };
 
-  var inspect = function(inNode) {
-    inspector.document.body.innerHTML = '<pre>' + output(inNode, inNode.childNodes) + '</pre>';
+  var crumbs = [];
+
+  var inspect = function(inNode, inProxy) {
+    var proxy = inProxy || inNode;
+    crumbs.push(proxy);
+    inspector.document.body.querySelector('#crumbs').appendChild(inspector.document.createElement('li')).textContent = proxy.localName;
+    drillable = [];
+    inspector.document.body.querySelector('#tree').innerHTML = '<pre>' + output(inNode, inNode.childNodes) + '</pre>';
   };
 
   var containHtml = function() {
@@ -38,6 +47,9 @@
       </style>
     </head>
     <body>
+      <ul id="crumbs">
+      </ul>
+      <div id="tree"></div>
     </body>
   </html>
   */
@@ -83,18 +95,29 @@
     return info;
   };
 
+  var drillable = [];
+
   var describe = function(inNode) {
     var tag = '<tag>' + '&lt;' + inNode.localName;
     forEach(inNode.attributes, function(a) {
       tag += ' ' + a.name + (a.value ? '="' + a.value + '"' : '');
     });
-    if (Math.random() < 0.5) {
-      tag += ' <button>shadow</button>';
+    if (inNode.shadow) {
+      tag += ' <button idx="' + drillable.length + '" onclick="api.shadowize.call(this)">shadow</button>';
+      drillable.push(inNode);
     }
     tag += '&gt;'+ '</tag>';
     return tag;
   };
 
+  // remote api
+
+  shadowize = function() {
+    var idx = Number(this.attributes.idx.value);
+    //alert(idx);
+    var node = drillable[idx];
+    xinspect(node.shadow, node)
+  };
 })();
 
 
