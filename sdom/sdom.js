@@ -105,6 +105,9 @@ mixin(Fauxd.prototype, {
   get lastChild() {
     return SDOM(this.node.lastChild);
   },
+  get ownerDocument() {
+    return SDOM(this.node.ownerDocument);
+  },
   querySelector: function(inSlctr) {
     return SDOM(this.node.querySelector(inSlctr));
   },
@@ -112,14 +115,14 @@ mixin(Fauxd.prototype, {
     return this.fauxilate(this.node.querySelectorAll(inSlctr));
   },
   appendChild: function (inChild) {
-    this.node.appendChild(this.realize(inChild));
+    return SDOM(this.node.appendChild(this.realize(inChild)));
   },
   insertBefore: function (inChild, inBefore) {
-    this.node.insertBefore(this.realize(inChild), this.realize(inBefore));
+    return SDOM(this.node.insertBefore(this.realize(inChild), this.realize(inBefore)));
   },
   removeChild: function (inChild) {
     var n = this.realize(inChild);
-    this.node.removeChild(n);
+    return SDOM(this.node.removeChild(n));
   }
 });
 
@@ -174,6 +177,8 @@ function SDOM(inNode) {
 (function() {
   document.addEventListener('DOMContentLoaded', function() {
     db = document.body;
+    // This fails on Safari.
+    // TypeError: Attempting to change access mechanism for an unconfigurable property.
     Object.defineProperty(document, 'body', {
       get: function() {
         return SDOM(db);

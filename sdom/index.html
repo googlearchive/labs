@@ -19,7 +19,7 @@ license that can be found in the LICENSE file.
   <script>
     assert = function(test) {
       var s = test ? 'Test passed' : 'Test failed';
-      console[test ? 'log' : 'warn'](s);
+      console[test ? 'log' : 'error'](s);
     };
     
     window.onload = function() {
@@ -56,17 +56,17 @@ license that can be found in the LICENSE file.
       assert(item instanceof Fauxd);
       // appendChild
       item.textContent = 'item 5';
-      list.appendChild(item);
+      assert(list.appendChild(item) instanceof Fauxd);
       items = document.querySelectorAll('li');
       assert(items[items.length-1].textContent == item.textContent);
       // removeChild
-      list.removeChild(items[0]);
+      assert(list.removeChild(items[0]) instanceof Fauxd);
       items = document.querySelectorAll('li');
       assert(items.length == 4);
       // insertBefore
       item = document.createElement('li');
       item.textContent = 'item 4.5';
-      list.insertBefore(item, items[3]);
+      assert(list.insertBefore(item, items[3]) instanceof Fauxd);
       items = document.querySelectorAll('li');
       assert(items[3].textContent == item.textContent);
       // parentNode
@@ -84,6 +84,9 @@ license that can be found in the LICENSE file.
       assert(list.firstChild == list.childNodes[0]);
       // lastChild
       assert(list.lastChild == list.childNodes[list.childNodes.length-1]);
+      // ownerDocument
+      assert(list.ownerDocument instanceof Fauxd);
+      assert(list.ownerDocument.node == document);
       // document.getElementById
       assert(document.getElementById('mylist') == list);
       // document.getElementsByClassName
