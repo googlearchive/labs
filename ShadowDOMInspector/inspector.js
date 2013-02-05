@@ -18,9 +18,12 @@
   var inspect = function(inNode, inProxy) {
     var proxy = inProxy || inNode;
     crumbs.push(proxy);
-    inspector.document.body.querySelector('#crumbs').appendChild(inspector.document.createElement('li')).textContent = proxy.localName;
+    var d = inspector.document;
+    d.body.querySelector('#crumbs').
+        appendChild(d.createElement('li')).innerHTML =
+            '<a href="#">' + proxy.localName + '</a>';
     drillable = [];
-    inspector.document.body.querySelector('#tree').innerHTML = '<pre>' + output(inNode, inNode.childNodes) + '</pre>';
+    d.body.querySelector('#tree').innerHTML = '<pre>' + output(inNode, inNode.childNodes) + '</pre>';
   };
 
   var containHtml = function() {
@@ -43,6 +46,21 @@
         }
         tag {
           color: purple;
+        }
+        ul {
+           Xpadding: 8px 15px;
+           margin: 0;
+           padding: 0;
+           list-style: none;
+           Xbackground-color: #f5f5f5;
+           Xborder-radius: 4px;
+        }
+        li {
+           display: inline-block;
+           background-color: #f1f1f1;
+           padding: 4px 6px;
+           border-radius: 4px;
+           margin-right: 4px;
         }
       </style>
     </head>
