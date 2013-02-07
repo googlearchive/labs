@@ -13,47 +13,34 @@ var forEach = Array.prototype.forEach.call.bind(Array.prototype.forEach);
 
 function publishProperty(inSource, inName, inTarget) {
   // access property value (unless it is a getter itself)
-  var value = (!inSource.__lookupGetter__(inName)) && inSource[inName];
+  var value = inSource[inName];
   if (typeof value == 'function') {
     inTarget[inName] = function () {
       return value.apply(this.node, arguments);
     }
   } else {
     Object.defineProperty(inTarget, inName, {
-      get:function () {
+      get: function () {
         return this.node[inName];
       },
-      set:function (inValue) {
+      set: function (inValue) {
         this.node[inName] = inValue;
       }
     });
   }
 };
 
-// copy property 'name' from src to obj
-function copyProperty(name, src, obj) {
-  var g = src.__lookupGetter__(name);
-  if (g) {
-    obj.__defineGetter__(name, g);
-  } else {
-    obj[name] = src[name];
+function buildPropertyList(obj) {
+  var props = {};
+  for (var n in obj) {
+    props[n] = Object.getOwnPropertyDescriptor(obj, n);
   }
-  var s = src.__lookupSetter__(name);
-  if (s) {
-    obj.__defineSetter__(name, s);
-  }
+  return props;
 };
 
-//copy all properties from inProps (et al) to inObj
-function mixin(inObj/*, inProps, inMoreProps, ...*/) {
-  var obj = inObj || {};
-  var p$ = Array.prototype.slice.call(arguments, 1);
-  for (var i = 0, p; (p = p$[i]); i++) {
-    for (var n in p) {
-      copyProperty(n, p, obj);
-    }
-  }
-  return obj;
+function mixin(inTarget, inSource) {
+  var props = buildPropertyList(inSource);
+  Object.defineProperties(inTarget, props);
 };
 
 function Fauxd(inNode) {
@@ -188,7 +175,8 @@ function SDOM(inNode) {
   document.addEventListener('DOMContentLoaded', function() {
     db = document.body;
     // This fails on Safari.
-    // TypeError: Attempting to change access mechanism for an unconfigurable property.
+    // TypeError: Attempting to change access mechanism
+    // for an unconfigurable property.
     Object.defineProperty(document, 'body', {
       get: function() {
         return SDOM(db);
