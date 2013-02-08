@@ -1,0 +1,56 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="register.js"></script>
+</head>
+<body>
+<script>
+  window.onload = function() {
+    MyButton = function() {
+      MyButton.super();
+      this.textContent = "MyButton";
+    };
+    MyButton.prototype = {
+      orangate: function() {
+        this.style.backgroundColor = 'orange';
+      },
+      get boldness() {
+        return this.style.fontWeight;
+      },
+      set boldness(inValue) {
+        this.style.fontWeight = inValue;
+      }
+    };
+    MyButton = extendsTag(MyButton, 'button');
+    register('x-button', MyButton);
+
+    var node = document.body.appendChild(new MyButton());
+    node.orangate();
+    node.boldness = 'bold';
+    node.textContent += ' (' + node.boldness + ')';
+
+    MySpecialButton = function() {
+      MySpecialButton.super();
+      this.textContent += "*Special";
+    };
+    MySpecialButton.prototype = {
+      bluify: function() {
+        this.style.color = 'blue';
+      }
+    };
+    MySpecialButton = extendsTag(MySpecialButton, 'x-button');
+    register('x-special-button', MySpecialButton);
+
+    var node = document.body.appendChild(new MySpecialButton());
+    node.orangate();
+    node.bluify();
+  };
+</script>
+</body>
+</html>
