@@ -1,0 +1,87 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+   <script src="register.js"></script>
+</head>
+<body>
+<script>
+  window.onload = function() {
+    MyButton = function() {
+      MyButton.super();
+      this.textContent = "MyButton";
+    };
+    var p = Object.create(HTMLButtonElement.prototype);
+    p.orangate = function() {
+      this.style.backgroundColor = 'orange';
+    };
+    MyButton.prototype = p;
+    //
+    MySpecialButton = function() {
+      MySpecialButton.super();
+      this.textContent += "*Special";
+    };
+    var p = Object.create(MyButton.prototype);
+    p.bluify = function() {
+      this.style.color = 'blue';
+    };
+    MySpecialButton.prototype = p;
+    //
+    function msg(msg) {
+      document.body.appendChild(document.createElement('div')).innerHTML = msg;
+    };
+    //
+    msg(tagFromChain(MyButton.prototype));
+    msg(tagFromChain(MySpecialButton.prototype));
+    //
+    /*
+    $MyButton = MyButton;
+    MyButton = function() {
+      var tag = tagFromChain($MyButton.prototype);
+      var instance = document.createElement(tag);
+      // twiddle prototypes when we can
+      instance.__proto__ = $MyButton.prototype;
+      // otherwise forward to my alternate inheritance chain
+      $MyButton.call(instance);
+      return instance;
+    };
+    MyButton.super = function() {};
+    */
+    //
+    function DOMCtorFactory(inCtor) {
+      // infer tag name from prototype chain
+      var tag = tagFromChain(inCtor.prototype);
+      // create an instance, solely for extracting a prototype
+      var p = document.createElement(tag).__proto__;
+      // chain inCtor's prototype to the extendee
+      inCtor.prototype.__proto__ = p;
+      // generate a constructor that can create a DOM node
+      var domCtor = function() {
+        var instance = document.createElement(tag);
+        // twiddle prototypes when we can
+        instance.__proto__ = inCtor.prototype;
+        // otherwise forward to my alternate inheritance chain
+        inCtor.call(instance);
+        return instance;
+      }
+      // install a (static) super method to emulate ES6 super
+      // (for the constructor only)
+      // trivial super unless inCtor extends another custom DOM element
+      domCtor.super = function() {};
+      // user must use this constructor instead of inCtor
+      return domCtor;
+    };
+    //
+    MyButton = DOMCtorFactory(MyButton);
+    //
+    var mb = document.body.appendChild(new MyButton());
+    mb.orangate();
+  };
+</script>
+</body>
+</html>
