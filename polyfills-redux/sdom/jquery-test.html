@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>sdom jquery test</title>
+  <script src="sdom.js"></script>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <style>
+    #customers {
+      width: 400px;
+      cursor: pointer;
+    }
+
+    .even {
+      background-color: blue;
+      color: white;
+    }
+
+    .toggle {
+      background-color: green;
+      color: white;    
+    }
+  </style>
+</head>
+<body>
+  <table id="customers">
+    <tr>
+      <td>John Doe</td>
+      <td>San Francisco</td>
+    </tr>
+    <tr>
+      <td>Jane Doe</td>
+      <td>Phoenix</td>
+    </tr>
+    <tr>
+      <td>Johnny Doe</td>
+      <td>New York</td>
+    </tr>
+    <tr>
+      <td>Ted Doe</td>
+      <td>Las Vegas</td>
+    </tr>
+  </table>
+  <script>
+    var $table = $('#customers');
+    console.log($table);
+
+    $('tr:even', $table).addClass('even');
+
+    $table.find('tr').hover(function() {
+      $(this).toggleClass('toggle');
+    });
+  </script>
+</body>
+</html>
+
