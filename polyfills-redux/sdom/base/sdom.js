@@ -52,6 +52,27 @@ for (var n in archetype) {
   publishProperty(archetype, n, base);
 }
 
+var fixconsole = function(n) {
+  return n;
+};
+
+// IE only
+if (!Object.__proto__) {
+  fixconsole = function(n) {
+    n.toString = fixconsole.arrayToString;
+    return n;
+  };
+  fixconsole.arrayToString = function() {
+    var v = [];
+    forEach(this, function(n) {
+      if (n !== 'toString') {
+        v.push(n.node.localName || 'text');
+      }
+    });
+    return '[' + v.join(', ') + ']';
+  };
+};
+
 Nohd.prototype = Object.create(base);
 mixin(Nohd.prototype, {
   fauxilate: function(inNodes) {
@@ -59,16 +80,21 @@ mixin(Nohd.prototype, {
     forEach(inNodes, function(n) {
       nodes.push(SDOM(n));
     });
+    // for IE only
+    fixconsole(nodes);
     return nodes;
   },
   realize: function(inNode) {
     return (inNode && inNode.node) || inNode;
   },
-  get childNodes() {
+  getChildNodes: function() {
     return this.fauxilate(this.node.childNodes);
   },
+  get childNodes() {
+    return this.getChildNodes();
+  },
   get children() {
-    return this.fauxilate(this.node.children);
+    return this.fauxilate(this.node.children || []);
   },
   get parentNode() {
     return SDOM(this.node.parentNode);
@@ -137,13 +163,13 @@ function SDOM(inNode) {
   dgebcn = document.getElementsByClassName.bind(document);
   dgebn = document.getElementsByName.bind(document);
   dgebtn = document.getElementsByTagName.bind(document);
-  fauxilate = function(inNodes) {
-    var nodes = [];
-    forEach(inNodes, function(n) {
-      nodes.push(SDOM(n));
-    });
-    return nodes;
-  };
+  //
+//  document.dom = {
+//    createElement: dce
+//  };
+  //
+  fauxilate = Nohd.prototype.fauxilate;
+  //
   document.querySelector = function(inSlctr) {
     return SDOM(dqs(inSlctr));
   };
@@ -168,6 +194,7 @@ function SDOM(inNode) {
   document.getElementsByTagName = function(inTagName) {
     return fauxilate(dgebtn(inTagName));
   };
+  window.$ = document.querySelector.bind(document);
 })();
 
 (function() {
