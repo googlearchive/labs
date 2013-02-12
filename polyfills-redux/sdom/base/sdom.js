@@ -136,7 +136,12 @@ mixin(Nohd.prototype, {
     return SDOM(this.node.appendChild(this.realize(inChild)));
   },
   insertBefore: function (inChild, inBefore) {
-    return SDOM(this.node.insertBefore(this.realize(inChild), this.realize(inBefore)));
+    return SDOM(this.node.insertBefore(this.realize(inChild), 
+        this.realize(inBefore)));
+  },
+  replaceChild: function(inNewchild, inOldChild) {
+    return SDOM(this.node.replaceChild(this.realize(inNewchild), 
+        this.realize(inOldChild)));
   },
   removeChild: function (inChild) {
     var n = this.realize(inChild);
