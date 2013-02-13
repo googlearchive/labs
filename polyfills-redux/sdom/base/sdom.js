@@ -148,6 +148,9 @@ function SDOM(inNode) {
   if (!inNode) {
     return null;
   }
+  if (inNode instanceof Nohd) {
+    return inNode;
+  }
   if (inNode.$nohd) {
     return inNode.$nohd;
   }
