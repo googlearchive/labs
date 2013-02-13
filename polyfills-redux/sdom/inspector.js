@@ -125,10 +125,10 @@
       var info = indent + describe(inNode);
       // if only textNodes
       // TODO(sjmiles): make correct for ShadowDOM
-      if (!inNode.children.length) {
+      /*if (!inNode.children.length && inNode.localName !== 'content' && inNode.localName !== 'shadow') {
         info += catTextContent(inChildNodes);
-      } else {
-        if (inNode.localName == 'content') {
+      } else*/ {
+        if (inNode.localName == 'content' || inNode.localName == 'shadow') {
           inChildNodes = inNode.getDistributedNodes();
         }
         info += '<br/>';

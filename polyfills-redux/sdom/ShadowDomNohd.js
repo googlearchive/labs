@@ -11,48 +11,73 @@ var enjob = function(inObject, inName, inJob, inTimeout) {
   if (inObject._jobs[inName]) {
     clearTimeout(inObject._jobs[inName]);
   }
-  inObject._jobs[inName] = 
+  inObject._jobs[inName] =
       setTimeout(function(){inJob.call(inObject);}, timeout);
 };
 
 mixin(ShadowDOMNohd.prototype, {
   validate: function() {
-    enjob(this, 'validate', function() { 
+    enjob(this, 'validate', function() {
       console.log('executing jobbed distribution [' + this.localName + ']');
-      this.distribute(); 
+      this.distribute();
     }, 10);
   },
   appendChild: function(inChild) {
-    if (this.lightDOM) {
-      var node = this.lightDOM.appendChild(inChild);
-      this.validate();
-      return node;
-    } else {
-      if (this.host && this.localName == 'shadow-root') {
-        //console.log("validating shadow-root host");
+    if (this.localName == "shadow-root") {
+      this.nodes = (this.nodes || []);
+      if (inChild.nodeName == '#document-fragment') {
+        forEach(inChild.childNodes, function(n) {
+          this.nodes.push(n);
+        }, this);
+      } else {
+        this.nodes.push(inChild);
+      }
+      if (this.host) {
         this.host.validate();
       }
-      return Nohd.prototype.appendChild.call(this, inChild);
+      return inChild;
     }
+    if (this.lightDOM) {
+      this.validate();
+      return this.lightDOM.appendChild(inChild);
+    }
+    if (this.insertions) {
+      this.insertions.push(inChild);
+      return inChild;
+    }
+    /*
+    if (this.host && this.localName == 'shadow-root') {
+      //console.log("validating shadow-root host");
+      this.host.validate();
+    }
+    */
+    return Nohd.prototype.appendChild.call(this, inChild);
   },
   getChildNodes: function() {
-    if (this.tagName == 'CONTENT') {
-      return [];
+    if (this.localName == "shadow-root") {
+      return this.nodes;
     }
+    /*if (this.tagName == 'CONTENT') {
+      return [];
+    }*/
     if (this.lightDOM) {
       // this.lightDOM is a Nohd and will fauxilate
       return this.lightDOM.childNodes;
-    } 
+    }
+    if (this.insertions) {
+      return this.insertions;
+    }
     return Nohd.prototype.getChildNodes.call(this);
   },
   getDistributedNodes: function() {
-    return Nohd.prototype.getChildNodes.call(this);;
+    return this.distributedNodes;
+    //return Nohd.prototype.getChildNodes.call(this);
   },
   get webkitShadowRoot() {
     return this.shadow;
   },
   get content() {
-    return this.node.content || this.node;
+    return SDOM(this.node.content) || this;
   },
   querySelector: function(inSlctr) {
     return localQuery(this, inSlctr);

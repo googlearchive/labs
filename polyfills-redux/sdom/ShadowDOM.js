@@ -16,7 +16,7 @@ var ShadowRoot = function(inNode) {
   root.olderSubtree = inNode.shadow;
   // mutual references
   root.host = inNode;
-  // TODO(sjmiles): cannot set this on proper nodes if native ShadowDOM 
+  // TODO(sjmiles): cannot set this on proper nodes if native ShadowDOM
   // is supported
   inNode.webkitShadowRoot = root;
   // TODO(sjmiles): would be deprecated, but is necessary because of above
@@ -90,7 +90,13 @@ var poolify = function(inNodes) {
       base.splice(i--, 1);
       // recursively add contents of insertion point to pool
       //pool = pool.concat(poolify(n.insertions || n.childNodes));
-      pool = pool.concat(poolify(n.childNodes));
+      //if (n.tagName == 'CONTENT') {
+        console.log("poolify: used distributedNodes", n);
+        pool = pool.concat(poolify(n.distributedNodes));
+      //} else {
+      //  console.log("poolify: used shadow.childNodes", n);
+      //  pool = pool.concat(poolify(n.childNodes));
+     // }
     } else {
       // add this node directly to pool
       pool.push(n);
@@ -112,9 +118,9 @@ var distribute = function() {
   // distribute any lightDOM to our shadowDOM(s)
   distributePool(pool, root);
   // virtualize insertion points
-  //flatten(root);
+  flatten(root);
   // project composed tree
-  fauxProject(root.childNodes, this.node);
+  project(root.childNodes, this.node);
   //new Projection(this).addNodes(root.composedNodes || root.childNodes);
 };
 
@@ -136,7 +142,8 @@ var distributePool = function(inPool, inRoot) {
       //new Projection(shadow).addNodes(olderRoot.insertions
       //  || olderRoot.childNodes);
       distributePool(inPool, olderRoot);
-      fauxProject(olderRoot.childNodes, shadow);
+      shadow.distributedNodes = olderRoot.childNodes;
+      //fauxProject(olderRoot.childNodes, shadow);
     }
   }
   //
@@ -164,8 +171,7 @@ var extract = function(inPool, inSlctr) {
 };
 
 var distributeInsertions = function(inPool, inInsertionPoint) {
-  var slctr = inInsertionPoint.getAttribute("select");
-  var insertable = extract(inPool, slctr);
+  var insertable = extract(inPool, inInsertionPoint.getAttribute("select"));
   hostInsertions(insertable, inInsertionPoint);
 };
 
@@ -179,9 +185,11 @@ var hostInsertions = function(inNodes, inHost) {
   }
   // project nodes into insertion point
   //new Projection(inHost).addNodes(inNodes);
-  fauxProject(inNodes, inHost);
+  //fauxProject(inNodes, inHost);
+  inHost.distributedNodes = inNodes;
 };
 
+/*
 var fauxProject = function(inNodes, inHost) {
   //console.log('projecting into host: ', inHost.localName);
   inHost.textContent = '';
@@ -190,6 +198,75 @@ var fauxProject = function(inNodes, inHost) {
     inHost.appendChild(n);
     //console.log('   ' + n.localName);
   });
+};
+*/
+
+var project = function(inNodes, inHost) {
+  inHost.textContent = '';
+  forEach(inNodes, function(n) {
+    inHost.appendChild(Nohd.prototype.realize(n));
+    console.log('   ' + n.localName);
+  });
+};
+
+var flatten = function(inTree) {
+  var nodes = inTree.distributedNodes || inTree.childNodes;
+  if (nodes) {
+    var hasInsertion = false;
+    for (var i=0, n; (n=nodes[i]); i++) {
+      flatten(n);
+      if (isInsertionPoint(n)) {
+        n.shouldFlatten = true;
+        hasInsertion = true;
+      }
+    }
+    if (hasInsertion) {
+      //Projection.flatten(inTree);
+      console.log("no, really flatten", inTree);
+      reallyFlatten(inTree);
+    }
+  }
+};
+
+var reallyFlatten = function(inNode) {
+  // 1. create insertion list if needed
+  // 2. construct composed dom by walking insertion
+  //    list, exploding insertion points and
+  //    adding regular nodes
+  if (!inNode.insertions) {
+    createInsertions(inNode);
+  }
+  // compose into an empty subtree
+  //inNode.textContent = '';
+  // need REAL DOM tree
+  var node = inNode.node;
+  node.textContent = '';
+  // use insertion list to compile composed DOM
+  for (var i=0, n; (n=inNode.insertions[i]); i++) {
+    // if n is flattenable
+    if (n.shouldFlatten) {
+      //n.shouldFlatten = false;
+      // insert n's COMPOSED children
+      var nodes = n.distributedNodes;
+      for (var j=0, c; (c=nodes[j]); j++) {
+        // add the node to the flattened-composed dom
+        node.appendChild(Nohd.prototype.realize(c));
+      }
+    } else {
+      // otherwise, add n itself to the flattened-composed dom
+      node.appendChild(Nohd.prototype.realize(n));
+    }
+  }
+};
+
+var createInsertions = function(inNode) {
+  inNode.insertions = inNode.childNodes.slice(0);
+  /*
+  var i$ = inNode.insertions = [];
+  for (var i=0, n; (n=inNode.childNodes[i]); i++) {
+    i$.push(n);
+  }
+  */
 };
 
 // exports
