@@ -11,9 +11,12 @@ license that can be found in the LICENSE file.
     <style>
       div, g-A {
         display: block;
-        border: 1px dotted red;
+        border: 1px solid lightblue;
         margin: 8px;
         padding: 8px;
+      }
+      content * {
+        background-color: magenta;
       }
     </style>
     <script>
@@ -26,12 +29,13 @@ license that can be found in the LICENSE file.
       <g-A>
         <div>To DIV perchance</div><span>To SPAN or not</span>
       </g-A>
+  
       <template id="A">
         A's template<br/>
         div content:
         <content select="div"></content>
         span content:
-        <div><content select="span"></content></div>
+        <content select="span"></content>
       </template>
 
       <hr/>

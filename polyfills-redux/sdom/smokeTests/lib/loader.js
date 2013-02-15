@@ -5,8 +5,11 @@
     'ShadowDOM.js',
     'querySelector.js',
     'ShadowDOMNohd.js',
-    'inspector.js',
+    'inspector.js'
   ].forEach(function(p) {
     document.write('<script src="' + root + p + '"></script>');
+  });
+  window.addEventListener('load', function() {
+    setTimeout(sinspect, 250);
   });
 })();

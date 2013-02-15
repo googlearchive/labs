@@ -5,74 +5,64 @@ license that can be found in the LICENSE file.
 */
 ;(function() {
 
-var ShadowRoot = function(inNode) {
+// stent IE console
+if (!console.group) {
+  console.group = console.log;
+  console.groupEnd = console.log;
+}
+
+var ShadowRoot = function(inHost) {
   // ShadowDOM implies LightDOM
-  if (!inNode.lightDOM) {
-    new LightDOM(inNode);
+  if (!inHost.lightDOM) {
+    // install lightDOM
+    new LightDOM(inHost);
+    // attach distribution method
+    inHost.distribute = distribute;
   }
   // make a new root
-  var root = document.createElement("shadow-root");
+  var root = document.createElement('shadow-root');
   // chain shadows
-  root.olderSubtree = inNode.shadow;
+  root.olderSubtree = inHost.shadow;
   // mutual references
-  root.host = inNode;
-  // TODO(sjmiles): cannot set this on proper nodes if native ShadowDOM
-  // is supported
-  inNode.webkitShadowRoot = root;
-  // TODO(sjmiles): would be deprecated, but is necessary because of above
-  inNode.shadow = root;
-  // get shadows store
-  // TODO(sjmiles): non-spec
-  var shadows = inNode.shadows;
-  // if there is no store
-  if (!shadows) {
-    // create shadow store
-    shadows = inNode.shadows = document.createDocumentFragment();
-    // add API to inNode
-    inNode.distribute = distribute;
-  }
-  // install the root
-  shadows.appendChild(root);
+  root.host = inHost;
+  inHost.webkitShadowRoot = root;
   // return the reference
   return root;
 };
 
 var LightDOM = function(inNode) {
-  // store lightDOM as a document fragment
-  var lightDOM = document.createDocumentFragment();
+  // make node for lightDOM
+  var lightDOM = document.createElement('light-root');
   // back-reference host
   lightDOM.host = inNode;
-  // identify this fragment as lightDOM
-  lightDOM.isLightDOM = true;
-  // move our children into the fragment
+  // move our children into the node
   moveChildren(inNode, lightDOM);
-  // return the fragment
-  return inNode.lightDOM = lightDOM;
+  // install lightDOM
+  inNode.lightDOM = lightDOM;
+  // return the node
+  return lightDOM;
+};
+
+// utilities
+
+var isInsertionPoint = function(inNode) {
+  return {SHADOW:1, CONTENT:1}[inNode.tagName];
 };
 
 var forEach = Array.prototype.forEach.call.bind(Array.prototype.forEach);
 
 var moveChildren = function(inElement, inUpgrade) {
-  var n$ = inElement.insertions;
-  if (n$) {
-    // clean up insertions and content rendered from insertions
-    inElement.insertions = null;
-    inElement.textContent = '';
-  } else {
-    n$ = [];
-    forEach(inElement.childNodes, function(n) {
-      n$.push(n);
-    });
-  }
+  var n$ = inElement.childNodes;
+  inElement.clearChildNodes();
   forEach(n$, function(n) {
+    // flag insertion points in inElement's immediate lightDOM to support 
+    // distribution dependency resolution
+    // see: distributeInsertions
+    if (isInsertionPoint(n)) {
+      n.lightDOMHost = inElement;
+    }
     inUpgrade.appendChild(n);
   });
-};
-
-// utility
-
-var isInsertionPoint = function(inNode) {
-  return {SHADOW:1, CONTENT:1}[inNode.tagName];
 };
 
 // distribution
@@ -80,85 +70,67 @@ var isInsertionPoint = function(inNode) {
 var poolify = function(inNodes) {
   // construct a pool
   var pool = [];
-  // massage input: NodeList or null -> Array
-  //var base = inNodes ? Array.prototype.slice.call(inNodes, 0) : [];
+  // our base set
   var base = inNodes;
+  // for each node in our base set
   for (var i=0, n; (n=base[i]); i++) {
-    // only the content of insertion points go into pool
+    // the contents of insertion points go into pool, not the points themselves
     if (isInsertionPoint(n)) {
-      // remove insertion point itself from seletable nodes
-      base.splice(i--, 1);
       // recursively add contents of insertion point to pool
-      //pool = pool.concat(poolify(n.insertions || n.childNodes));
-      //if (n.tagName == 'CONTENT') {
-        console.log("poolify: used distributedNodes", n);
-        pool = pool.concat(poolify(n.distributedNodes));
-      //} else {
-      //  console.log("poolify: used shadow.childNodes", n);
-      //  pool = pool.concat(poolify(n.childNodes));
-     // }
+      pool = pool.concat(poolify(n.getDistributedNodes()));
     } else {
       // add this node directly to pool
       pool.push(n);
     }
   }
+  // for IE console
   fixconsole(pool);
   return pool;
 };
 
 var distribute = function() {
   // primary shadow root
-  var root = this.shadows.lastChild;
+  var root = this.webkitShadowRoot;
   // content pool from lightDOM
-  // under SDOM:
-  //  childNodes is always lightDOM.childNodes (which is fauxilated)
-  //console.log("distribute: childNodes: ", this.childNodes);
   var pool = poolify(this.childNodes);
-  //console.log("distribute: pool: ", pool);
   // distribute any lightDOM to our shadowDOM(s)
   distributePool(pool, root);
   // virtualize insertion points
-  flatten(root);
-  // project composed tree
-  project(root.childNodes, this.node);
-  //new Projection(this).addNodes(root.composedNodes || root.childNodes);
+  flattenInsertionHosts(root);
+  // project composed tree into the real DOM
+  this.project(root.composedNodes);
 };
 
 var distributePool = function(inPool, inRoot) {
   // locate content nodes
-  var insertions = localQueryAll(inRoot, "content");
-  //console.log('insertions: ', insertions);
+  var insertions = localQueryAll(inRoot, 'content');
   // distribute pool to <content> nodes
   insertions.forEach(function(insertion) {
     distributeInsertions(inPool, insertion);
   });
   // distribute older shadow to <shadow>
-  var shadow = localQuery(inRoot, "shadow");
-  //console.log('shadow: ', shadow);
+  var shadow = localQuery(inRoot, 'shadow');
   if (shadow) {
-    var olderRoot = inRoot.previousSibling;
+    var olderRoot = inRoot.olderSubtree; 
     if (olderRoot) {
-      // project the EXPLODED root-tree into <shadow>
-      //new Projection(shadow).addNodes(olderRoot.insertions
-      //  || olderRoot.childNodes);
+      // distribute pool into older <shadow>
       distributePool(inPool, olderRoot);
-      shadow.distributedNodes = olderRoot.childNodes;
-      //fauxProject(olderRoot.childNodes, shadow);
+      // project subtree onto shadow
+      shadow.setDistributedNodes(olderRoot.childNodes);
     }
   }
-  //
-  // distribute any contained objects
-//  var comps = localQueryAll(inRoot, "~");
-//  comps.forEach(function(c) {
-//    c.distribute();
-//  });
 };
 
+// extract a set of nodes from inPool matching inSlctr
 var extract = function(inPool, inSlctr) {
+  // generate a matcher function 
   var matcher = generateMatcher(inSlctr);
+  // catch-all
   if (!matcher) {
+    // remove all nodes form pool, and return the removed set
     return inPool.splice(0);
   } else {
+    // move matching nodes from pool into result
     var result = [];
     for (var i=0, n; (n=inPool[i]); i++) {
       if (matcher(n)) {
@@ -166,111 +138,108 @@ var extract = function(inPool, inSlctr) {
         inPool.splice(i--, 1);
       }
     }
+    // return the matched set
     return result;
   }
 };
 
 var distributeInsertions = function(inPool, inInsertionPoint) {
-  var insertable = extract(inPool, inInsertionPoint.getAttribute("select"));
-  hostInsertions(insertable, inInsertionPoint);
-};
-
-var hostInsertions = function(inNodes, inHost) {
+  var insertable = extract(inPool, inInsertionPoint.getAttribute('select'));
+  // TODO(sjmiles): remember where/why we depend on this
   // create back-pointers from inserted nodes to the insertion point
-  for (var i=0, n; (n=inNodes[i]); i++) {
+  for (var i=0, n; (n=insertable[i]); i++) {
     if (n.host && n.host.tagName !== 'CONTENT') {
-      console.warn('node already has host', n.host, inHost, n);
+      console.warn('node already has host', n.host, inInsertionPoint, n);
     }
-    n.host = inHost;
+    n.host = inInsertionPoint;
   }
   // project nodes into insertion point
-  //new Projection(inHost).addNodes(inNodes);
-  //fauxProject(inNodes, inHost);
-  inHost.distributedNodes = inNodes;
+  inInsertionPoint.setDistributedNodes(insertable);
+  // if the insertion point (inHost) is an IMMEDIATE child of
+  // a lightDOM host, the lightDOM host needs redistribution
+  // only immediate children are selectable (as content) so only immediate
+  // children can affect the actual distribution of any lightDOM host
+  if (inInsertionPoint.lightDOMHost) {
+    inInsertionPoint.lightDOMHost.invalidate();
+  }
 };
 
-/*
-var fauxProject = function(inNodes, inHost) {
-  //console.log('projecting into host: ', inHost.localName);
-  inHost.textContent = '';
-  forEach(inNodes, function(n) {
-    n = n.cloneNode(true);
-    inHost.appendChild(n);
-    //console.log('   ' + n.localName);
-  });
-};
-*/
-
-var project = function(inNodes, inHost) {
-  inHost.textContent = '';
-  forEach(inNodes, function(n) {
-    inHost.appendChild(Nohd.prototype.realize(n));
-    console.log('   ' + n.localName);
-  });
-};
-
-var flatten = function(inTree) {
-  var nodes = inTree.distributedNodes || inTree.childNodes;
-  if (nodes) {
-    var hasInsertion = false;
+var flattenInsertionHosts = function(inNode) {
+  // first we determine the effective root for the composed tree:
+  // 
+  // if inNode is a regular node, the regular node is the root
+  // if inNode is a shadow-host, it's the primary shadow-root
+  //
+  var root = inNode.webkitShadowRoot || inNode;
+  //
+  // next we locate the composed tree nodes
+  // root's distributed nodes are not part of the canonical composed tree,
+  // so we select them manually
+  var nodes = root.distributedNodes || root.childNodes;
+  if (nodes.length) {
+    // if there is an insertion point in our nodes, then we are
+    // an insertion host
+    var isInsertionHost = false;
+    // iterate over nodes
     for (var i=0, n; (n=nodes[i]); i++) {
-      flatten(n);
-      if (isInsertionPoint(n)) {
-        n.shouldFlatten = true;
-        hasInsertion = true;
-      }
+      // flatten this subtree first
+      flattenInsertionHosts(n);
+      // if n is an 'insertion point', inNode is an 'insertion host'
+      isInsertionHost = isInsertionHost || isInsertionPoint(n);
     }
-    if (hasInsertion) {
-      //Projection.flatten(inTree);
-      console.log("no, really flatten", inTree);
-      reallyFlatten(inTree);
+    // if we are an insertion host...
+    if (isInsertionHost) {
+      // put our composed tree into 'insertions' and our flattened tree into 
+      // 'childNodes'
+      flattenInsertionHost(root);
     }
   }
 };
 
-var reallyFlatten = function(inNode) {
-  // 1. create insertion list if needed
-  // 2. construct composed dom by walking insertion
-  //    list, exploding insertion points and
-  //    adding regular nodes
-  if (!inNode.insertions) {
-    createInsertions(inNode);
-  }
-  // compose into an empty subtree
-  //inNode.textContent = '';
-  // need REAL DOM tree
-  var node = inNode.node;
-  node.textContent = '';
+var flattenInsertionHost = function(inNode) {
+  // create insertion list if needed
+  requireInsertionList(inNode);
+  // notes
+  // 
+  // host will never have lightDOM (see root-finding above)
+  // host can never be <content> or <shadow> as these do not exist
+  //   in composed tree
+  // insertion-lists do not express composed tree, and can be ignored
+  // 
+  // clear the composed tree (working nodes are captured in insertions)
+  inNode.clearComposedNodes();
   // use insertion list to compile composed DOM
   for (var i=0, n; (n=inNode.insertions[i]); i++) {
-    // if n is flattenable
-    if (n.shouldFlatten) {
-      //n.shouldFlatten = false;
-      // insert n's COMPOSED children
-      var nodes = n.distributedNodes;
-      for (var j=0, c; (c=nodes[j]); j++) {
-        // add the node to the flattened-composed dom
-        node.appendChild(Nohd.prototype.realize(c));
-      }
+    // if n is not flattenable
+    if (!isInsertionPoint(n)) {
+      // add n itself to the flattened-composed DOM
+      inNode.appendComposedChild(n);
     } else {
-      // otherwise, add n itself to the flattened-composed dom
-      node.appendChild(Nohd.prototype.realize(n));
+      // add the pre-flattened nodes to the flattened composed DOM
+      var nodes = n.nodes || n.getDistributedNodes();
+      // add each node to the flattened-composed DOM
+      for (var j=0, c; (c=nodes[j]); j++) {
+        inNode.appendComposedChild(c);
+      }
     }
   }
 };
 
-var createInsertions = function(inNode) {
-  inNode.insertions = inNode.childNodes.slice(0);
-  /*
-  var i$ = inNode.insertions = [];
-  for (var i=0, n; (n=inNode.childNodes[i]); i++) {
-    i$.push(n);
+// ensure inNode has a populated insertion list
+var requireInsertionList = function(inNode) {
+  if (!inNode.insertions) {
+    // distributedNodes must be managed specially
+    var nodes = isInsertionPoint(inNode) ? inNode.getDistributedNodes() 
+      : inNode.childNodes;
+    inNode.insertions = nodes.slice(0);
   }
-  */
 };
 
 // exports
 
 window.ShadowRoot = ShadowRoot;
+window.ShadowDOM = {
+  isInsertionPoint: isInsertionPoint
+};
 
 })();
