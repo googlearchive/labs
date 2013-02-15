@@ -7,14 +7,8 @@ license that can be found in the LICENSE file.
 <html>
   <head>
     <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- -->
-    <script src="../shadowdom-polyfill.js" shadow="shim"></script>
-    <!-- -->
-    <script src="lib/util.js"></script>
-    <script src="lib/dump.js"></script>
+    <script src="lib/loader.js"></script>
     <script src="lib/Component.js"></script>
-    <!-- -->
     <style>
       div, g-A, g-B, g-C {
         display: block;
@@ -34,60 +28,55 @@ license that can be found in the LICENSE file.
         //
         Component.upgradeAll();
         //
-        B = c$[1];
-        B.shadows.firstChild.appendChild(document.createTextNode(" Appended to B's Base "));
+        B = c$[2];
+        B.shadow.olderSubtree.appendChild(document.createTextNode(" Appended to B's Base "));
         B.appendChild(document.createTextNode(" Appended to B "));
-        //
-        A = c$[0];
-        ShadowDOM.distribute(A);
-        // dumping these trees takes a long time
-        //dumper(A);
       }
     </script>
   </head>
   <body onload="change()">
       <g-A><span>Where am I?</span></g-A>
 
-      <template id="A">[A->]<g-C><g-B><content></content><content></content></g-B></g-C>
-        <g-B><content></content></g-B><g-C><g-B><shadow></shadow></g-B></g-C>[<-A]
+      <template id="A">[A-&gt;]<g-C><g-B><content></content><content></content></g-B></g-C>
+        <g-B><content></content></g-B><g-C><g-B><shadow></shadow></g-B></g-C>[&lt;-A]
       </template>
       
-      <template id="B">[B->][<content></content>]<shadow></shadow>[<-B]</template>
+      <template id="B">[B-&gt;][<content></content>]<shadow></shadow>[&lt;-B]</template>
       
-      <template id="Base">[Base->]<content></content>[<-Base]</template>
+      <template id="Base">[Base-&gt;]<content></content>[&lt;-Base]</template>
 
-      <template id="C">[C->]<shadow></shadow>[<-C]</template>
-      <template id="Cb"><span>[Cb->]<shadow></shadow>[<-Cb]</span></template>
-      <template id="Cbb">[Cbb->]<g-D><content></content></g-D>[<-Cbb]</template>
+      <template id="C">[C-&gt;]<shadow></shadow>[&lt;-C]</template>
+      <template id="Cb"><span>[Cb-&gt;]<shadow></shadow>[&lt;-Cb]</span></template>
+      <template id="Cbb">[Cbb-&gt;]<g-D><content></content></g-D>[&lt;-Cbb]</template>
 
 
-      <template id="D">[D->]<shadow></shadow>[<-D]</template>
-      <template id="Db">[Db->]<g-E><shadow></shadow></g-E>[<-Db]</template>
-      <template id="Dbb">[Dbb->]<g-E><shadow></shadow></g-E><shadow></shadow>[<-Dbb]</template>
-      <template id="Dbbb">[Dbbb->]<g-E><content></content></g-E>[<-Dbbb]</template>
+      <template id="D">[D-&gt;]<shadow></shadow>[&lt;-D]</template>
+      <template id="Db">[Db-&gt;]<g-E><shadow></shadow></g-E>[&lt;-Db]</template>
+      <template id="Dbb">[Dbb-&gt;]<g-E><shadow></shadow></g-E><shadow></shadow>[&lt;-Dbb]</template>
+      <template id="Dbbb">[Dbbb-&gt;]<g-E><content></content></g-E>[&lt;-Dbbb]</template>
 
-      <template id="E">[E->]<g-F><shadow></shadow></g-F>[<-E]</template>
-      <template id="Eb">[Eb->]<g-F><content></content></g-F>[<-Eb]</template>
+      <template id="E">[E-&gt;]<g-F><shadow></shadow></g-F>[&lt;-E]</template>
+      <template id="Eb">[Eb-&gt;]<g-F><content></content></g-F>[&lt;-Eb]</template>
       
-      <template id="F">[F->]<content></content>[<-F]</template>
+      <template id="F">[F-&gt;]<content></content>[&lt;-F]</template>
       
       <hr/>
       
       Expected output (also, see console):
 
-      <div>[A->]
-        <div>[C->][Cb->][Cbb->][D->][Db->][E->][F->][Eb->][F->][Dbb->][E->][F->][Eb->][F->]
-          [Dbbb->][E->][F->][Eb->][F->]
-          <div>[B->]<span>Where Am I?</span>[Base->][<-Base][<-B]</div>
-        [<-F][<-Eb][<-F][<-E][<-Dbbb][<-F][<-Eb][<-F][<-E][<-Dbb][<-F][<-Eb][<-F][<-E][<-Db][<-D]
-          [<-Cbb][<-Cb][<-C]</div>
-        <div>[B->][ Appended to B ][Base->][<-Base] Appended to B's Base [<-B]</div>
-        <div>[C->][Cb->][Cbb->][D->][Db->][E->][F->][Eb->][F->][Dbb->][E->][F->][Eb->][F->]
-          [Dbbb->][E->][F->][Eb->][F->]
-          <div>[B->][[Base->][<-Base]][Base->][<-Base][<-B]</div>
-          [<-F][<-Eb][<-F][<-E][<-Dbbb][<-F][<-Eb][<-F][<-E][<-Dbb][<-F][<-Eb][<-F][<-E][<-Db][<-D]
-        [<-Cbb][<-Cb][<-C]</div>
-      [<-A]</div>
+      <div>[A-&gt;]
+        <div>[C-&gt;][Cb-&gt;][Cbb-&gt;][D-&gt;][Db-&gt;][E-&gt;][F-&gt;][Eb-&gt;][F-&gt;][Dbb-&gt;][E-&gt;][F-&gt;][Eb-&gt;][F-&gt;]
+          [Dbbb-&gt;][E-&gt;][F-&gt;][Eb-&gt;][F-&gt;]
+          <div>[B-&gt;]<span>Where Am I?</span>[Base-&gt;][&lt;-Base][&lt;-B]</div>
+        [&lt;-F][&lt;-Eb][&lt;-F][&lt;-E][&lt;-Dbbb][&lt;-F][&lt;-Eb][&lt;-F][&lt;-E][&lt;-Dbb][&lt;-F][&lt;-Eb][&lt;-F][&lt;-E][&lt;-Db][&lt;-D]
+          [&lt;-Cbb][&lt;-Cb][&lt;-C]</div>
+        <div>[B-&gt;][ Appended to B ][Base-&gt;][&lt;-Base] Appended to B's Base [&lt;-B]</div>
+        <div>[C-&gt;][Cb-&gt;][Cbb-&gt;][D-&gt;][Db-&gt;][E-&gt;][F-&gt;][Eb-&gt;][F-&gt;][Dbb-&gt;][E-&gt;][F-&gt;][Eb-&gt;][F-&gt;]
+          [Dbbb-&gt;][E-&gt;][F-&gt;][Eb-&gt;][F-&gt;]
+          <div>[B-&gt;][[Base-&gt;][&lt;-Base]][Base-&gt;][&lt;-Base][&lt;-B]</div>
+          [&lt;-F][&lt;-Eb][&lt;-F][&lt;-E][&lt;-Dbbb][&lt;-F][&lt;-Eb][&lt;-F][&lt;-E][&lt;-Dbb][&lt;-F][&lt;-Eb][&lt;-F][&lt;-E][&lt;-Db][&lt;-D]
+        [&lt;-Cbb][&lt;-Cb][&lt;-C]</div>
+      [&lt;-A]</div>
 
 </body>
 </html>

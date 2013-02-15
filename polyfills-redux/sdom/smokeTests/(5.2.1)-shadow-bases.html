@@ -19,32 +19,19 @@ license that can be found in the LICENSE file.
     <script>
       change = function() {
         A = $("g-A");
+        new ShadowRoot(A).appendChild($("template#Ab").content);
         new ShadowRoot(A).appendChild($("template#A").content);
-      }
+      };
     </script>
   </head>
-  <body onload="change()">
-      <g-A>
-        <div class="a">To DIV.a perchance</div><span class="b">To SPAN.b or not</span>
-      </g-A>
-      <template id="A">
-        A's template<br/>
-        div content:
-        <content select=".a"></content>
-        span content:
-        <content select=".b"></content>
-      </template>
+  <body onload="change();">
+      <g-A><span>Where am I?</span></g-A>
+      <template id="Ab">A's base template, content: [<content></content>]</template>
+      <template id="A"><span>A's template, shadow: {<shadow></shadow>}</span></template>
 
       <hr/>
-
       Expected output (also, see console):
 
-      <div>
-        A's template<br/>
-        div content:
-        <div>To DIV.a perchance</div>
-        span content:
-        <span>To SPAN.b or not</span>
-      </div>
+      <div><span>A's template, shadow: {A's base template, content: [ Where am I? ]}</span></div>
   </body>
 </html>

@@ -10,7 +10,7 @@
         shadowize: shadowize
       };
     }
-    inspect(inNode || document.body, inProxy);
+    inspect(inNode || SDOM(document.body), inProxy);
   };
 
   var crumbs = [];
@@ -110,9 +110,9 @@
 
   var forEach = Array.prototype.forEach.call.bind(Array.prototype.forEach);
 
-  var blacklisted = {style:1, script:1, "!": 1};
+  var blacklisted = {STYLE:1, SCRIPT:1, "#comment": 1, TEMPLATE: 1};
   var blacklist = function(inNode) {
-    return blacklisted[inNode.localName];
+    return blacklisted[inNode.nodeName];
   };
 
   var output = function(inNode, inChildNodes, inIndent) {
@@ -138,7 +138,10 @@
         });
         info += indent;
       }
-      info += '<tag>&lt;/' + inNode.localName + '&gt;</tag>' + '<br/>';
+      if (!({br:1}[inNode.localName])) {
+        info += '<tag>&lt;/' + inNode.localName + '&gt;</tag>';
+        info += '<br/>';
+      }
     } else {
       var text = inNode.textContent.trim();
       info = text ? indent + '"' + text + '"' + '<br/>' : '';

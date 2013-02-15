@@ -4,6 +4,8 @@
  * license that can be found in the LICENSE file.
  */
 
+(function() {
+  
 var forEach = Array.prototype.forEach.call.bind(Array.prototype.forEach);
 
 //
@@ -62,15 +64,14 @@ if (!Object.__proto__) {
     n.toString = fixconsole.arrayToString;
     return n;
   };
-  fixconsole.arrayToString = function() {
-    var v = [];
-    forEach(this, function(n) {
-      if (n !== 'toString') {
-        v.push(n.node.localName || 'text');
-      }
-    });
-    return '[' + v.join(', ') + ']';
-  };
+};
+
+fixconsole.arrayToString = function() {
+  var v = [];
+  for (var i=0; i<this.length; i++) {
+    v.push(this[i].nodeName);
+  }
+  return '[' + v.join(', ') + ']';
 };
 
 Nohd.prototype = Object.create(base);
@@ -144,12 +145,11 @@ mixin(Nohd.prototype, {
         this.realize(inOldChild)));
   },
   removeChild: function (inChild) {
-    var n = this.realize(inChild);
-    return SDOM(this.node.removeChild(n));
+    return SDOM(this.node.removeChild(this.realize(inChild)));
   }
 });
 
-function SDOM(inNode) {
+function _SDOM(inNode) {
   if (!inNode) {
     return null;
   }
@@ -162,19 +162,19 @@ function SDOM(inNode) {
   return inNode.$nohd = new Nohd(inNode);
 };
 
-(function () {
   dqs = document.querySelector.bind(document);
   dqsa = document.querySelectorAll.bind(document);
   dce = document.createElement.bind(document);
   dcdf = document.createDocumentFragment.bind(document);
+  dctn = document.createTextNode.bind(document);
   dgebid = document.getElementById.bind(document);
   dgebcn = document.getElementsByClassName.bind(document);
   dgebn = document.getElementsByName.bind(document);
   dgebtn = document.getElementsByTagName.bind(document);
   //
-//  document.dom = {
-//    createElement: dce
-//  };
+  //document.dom = {
+  //  createElement: dce
+  //};
   //
   fauxilate = Nohd.prototype.fauxilate;
   //
@@ -190,6 +190,9 @@ function SDOM(inNode) {
   document.createDocumentFragment = function() {
     return SDOM(dcdf());
   };
+  document.createTextNode = function() {
+    return SDOM(dctn.apply(document, arguments));
+  };
   document.getElementById = function(inId) {
     return SDOM(dgebid(inId));
   };
@@ -203,19 +206,17 @@ function SDOM(inNode) {
     return fauxilate(dgebtn(inTagName));
   };
   window.$ = document.querySelector.bind(document);
-})();
 
-(function() {
   document.addEventListener('DOMContentLoaded', function() {
     db = document.body;
     // This fails on Safari.
     // TypeError: Attempting to change access mechanism
     // for an unconfigurable property.
-    Object.defineProperty(document, 'body', {
-      get: function() {
-        return SDOM(db);
-      }
-    });
+//    Object.defineProperty(document, 'body', {
+//      get: function() {
+//        return SDOM(db);
+//      }
+//    });
   });
   dde = document.documentElement;
   Object.defineProperty(document, 'documentElement', {
@@ -223,18 +224,13 @@ function SDOM(inNode) {
       return SDOM(dde);
     }
   });
+
+// exports
+
+window.SDOM = _SDOM;
+window.Nohd = Nohd;
+window.mixin = mixin;
+window.forEach = forEach;
+window.fixconsole = fixconsole;
+
 })();
-
-
-// possible 'entry-points' to a subtree
-/*
- document.body // top of standard tree
- window.<idOfNode> // magic globals
- querySelector*
- getElementBy*
- childNodes
- children
- previousSibling
- nextSibling
- parentNode
- */

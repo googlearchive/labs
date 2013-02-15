@@ -8,24 +8,26 @@ var Component = function(inElement, inDefinition) {
   c$.push(elt);
   // make ShadowDOM
   for (var i=0, b; (b=inDefinition.bases[i]); i++) {
-    var root = new ShadowRoot(elt, $("template#" + b).content);
+    var root = new ShadowRoot(elt);
+    root.appendChild(SDOM($("template#" + b).content.cloneNode(true)));
     Component.upgradeAll(root);
   }
   // mark it upgraded
   elt.is = inDefinition.name;
   elt.setAttribute("is", inDefinition.name);
   // splice in custom prototype
-  elt.__proto__ = inDefinition.proto;
-  // distribute nodes from light dom into shadow dom
-  ShadowDOM.distribute(elt);
+  //elt.node.__proto__ = inDefinition.proto;
+  //elt.__proto__.__proto__.__proto__.__proto__ = inDefinition.proto;
+  // force distribution
+  elt.distribute();
   // call initializer
-  elt.created();
+  //elt.created();
   // the element is the Component
   return elt;
 };
 
 Component.prototype = {
-  __proto__: HTMLUnknownElement.prototype,
+  //__proto__: HTMLElement.prototype,
   events: {
   },
   created: function() {
@@ -44,7 +46,7 @@ Component.register = function(inName, inBases, inProto) {
   var proto = Component.prototype;
   // optionally chained
   if (inProto) {
-    inProto.__proto__ = proto;
+    //inProto.__proto__ = proto;
     proto = inProto;
   }
   // store definition
@@ -56,7 +58,7 @@ Component.register = function(inName, inBases, inProto) {
 };
 
 Component.upgradeAll = function(inNode) {
-  var node = (inNode && inNode.baby) || inNode || document.body;
+  var node = inNode || SDOM(document.body);
   Component.registry.forEach(function(d) {
     Component.upgradeName(node, d);
   });
@@ -65,7 +67,6 @@ Component.upgradeAll = function(inNode) {
 Component.upgradeName = function(inNode, inDefinition) {
   var nodes = inNode.querySelectorAll(inDefinition.name);
   Array.prototype.forEach.call(nodes, function(n) {
-    n = n.baby || n;
     if (!n.is) {
       new Component(n, inDefinition);
     }
