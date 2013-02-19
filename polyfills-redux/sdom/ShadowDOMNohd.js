@@ -8,6 +8,9 @@ ShadowDOMNohd.prototype = Object.create(Nohd.prototype);
 // ShadowDOMNohd API
 
 mixin(ShadowDOMNohd.prototype, {
+  webkitCreateShadowRoot: function() {
+    new ShadowRoot(this);
+  },
   // use ShadowDOM-aware query engine
   querySelector: function(inSlctr) {
     return localQuery(this, inSlctr);
