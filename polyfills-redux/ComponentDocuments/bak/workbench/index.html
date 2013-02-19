@@ -1,0 +1,27 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script src="../loader.js"></script>
+    <link rel="components" href="test-component.html"></link>
+  </head>
+  <body>
+      <div>TODO write content</div>
+      <script>
+        webComponents.componentLoader.forEachLinkedDocument(document,
+          function (d) {
+            console.dir(d);
+          }
+        );
+//        webComponents.componentLoader.preload(document, function() {
+//          console.dir(webComponents.componentLoader.documents);
+//        });
+      </script>
+  </body>
+</html>
