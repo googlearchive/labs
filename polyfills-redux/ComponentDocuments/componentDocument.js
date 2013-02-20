@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2012 The Toolkitchen Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
@@ -8,15 +8,16 @@ var componentDocument = {
   selectors: [
     'link[rel=components]',
     'script[src]',
-    'element'
+    'element',
+    'link[rel=stylesheet]'
   ],
   parseMap: {
-    link: 'parseLink', 
-    script: 'parseScript', 
+    link: 'parseLink',
+    script: 'parseScript',
     element: 'parseElement'
   },
   parse: function(inDocument) {
-    console.log('parse:', inDocument.URL || inDocument._URL);
+    console.log('parse document:', inDocument.URL || inDocument._URL);
     var elts = inDocument.querySelectorAll(
         componentDocument.selectors.join(','));
     loader.preload(elts, function() {
@@ -26,12 +27,18 @@ var componentDocument = {
   parseElts: function(inDocument, inElts) {
     var map = componentDocument.parseMap;
     forEach(inElts, function(e) {
+      console.log(map[e.localName] + ":", path.nodeUrl(e));
       componentDocument[map[e.localName]](e);
     });
   },
   parseLink: function(inLinkElt) {
+    // handle stylesheets
+    if (inLinkElt.getAttribute('rel') == 'stylesheet') {
+      return;
+    }
+    // handle components
     // in custom documents, href attribute is not parsed into a property
-    console.log(inLinkElt.localName, inLinkElt.getAttribute('href'));
+    //console.log(inLinkElt.localName, inLinkElt.getAttribute('href'));
     loader.load(inLinkElt, function(err, response) {
       if (!err) {
         componentDocument.parse(
@@ -45,15 +52,15 @@ var componentDocument = {
       return;
     }
     // in custom documents, src attribute is not parsed into a property
-    console.log(inScriptElt.localName, inScriptElt.getAttribute('src'));
+    //console.log(inScriptElt.localName, inScriptElt.getAttribute('src'));
     loader.load(inScriptElt, function(err, response) {
       if (!err) {
-        console.log("script loaded");
+        //console.log("script loaded");
       }
     });
  },
   parseElement: function(inElementElt) {
-    console.log(inElementElt.localName, inElementElt.attributes.name.value);
+    new HTMLElementElement(inElementElt);
   }
 };
 
@@ -67,8 +74,8 @@ var makeDocument = function(inHTML, inUrl) {
 loader = {
   load: function(inNode, inCallback) {
     var url = path.nodeUrl(inNode);
-    console.log("load", inNode.localName, url);
-    xhr.load(url, inCallback);  
+    console.log("load:", inNode.localName, url);
+    xhr.load(url, inCallback);
   },
   preload: function(inElts, inCallback) {
     setTimeout(inCallback, 100);
