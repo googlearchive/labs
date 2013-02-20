@@ -16,6 +16,16 @@ license that can be found in the LICENSE file.
   <body>
       <script>
         componentDocument.parse(document);
+        window.onload = function() {
+          first = document.createElement('x-first');
+          document.body.appendChild(first).textContent = '[x-first]';
+          //
+          moar = document.createElement('x-moar');
+          document.body.appendChild(moar).textContent = '[x-moar]';
+          //
+          last = document.createElement('x-last');
+          document.body.appendChild(last).textContent = '[x-last]';
+        }
       </script>
   </body>
 </html>
