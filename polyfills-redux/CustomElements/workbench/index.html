@@ -1,0 +1,30 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script src="../customDOMElement.js"></script>
+  </head>
+  <body>
+    <script>
+      window.onload = function() {
+        XFoo = register('x-foo');
+        xfoo = new XFoo();
+        document.body.appendChild(xfoo).textContent = '[x-foo]';
+        //
+        XBarPrototype = Object.create(HTMLButtonElement.prototype);
+        XBar = register('x-bar', {
+          prototype: XBarPrototype,
+          tag: 'button'
+        });
+        xbar = new XBar();
+        document.body.appendChild(xbar).textContent = 'x-bar';
+      }
+    </script>
+  </body>
+</html>
