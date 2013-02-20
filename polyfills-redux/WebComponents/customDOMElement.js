@@ -45,8 +45,9 @@ function register(inName, inOptions) {
   // construct a defintion out of options
   // TODO(sjmiles): probably should clone inOptions instead of mutating it
   var definition = inOptions || {};
+  // must have a prototype, default to an extension of HTMLElement
   definition.prototype = definition.prototype 
-      || Object.create(HTMLUnknownElement.prototype);
+      || Object.create(HTMLElement.prototype);
   // extensions of native specializations of HTMLElement require localName
   // to remain native, and use secondary 'is' specifier for extension type
   // caller must specify a tag to declare a native localName
@@ -59,8 +60,8 @@ function register(inName, inOptions) {
   registerDefinition(inName, definition);
   // 7.1.7. Run custom element constructor generation algorithm with PROTOTYPE
   // 7.1.8. Return the output of the previous step.
-  var ctor = generateConstructor(definition);
-  return ctor;
+  definition.ctor = generateConstructor(definition);
+  return definition.ctor;
 }
 
 var registry = {};
@@ -73,6 +74,14 @@ function generateConstructor(inDefinition) {
   return function() {
     return instantiate( inDefinition.prototype);
   };
+}
+
+function createElement(inTag) {
+  var definition = registry[inTag];
+  if (definition) {
+    return new definition.ctor();
+  }
+  return domCreateElement(inTag);
 }
 
 // utilities
@@ -123,3 +132,4 @@ function getPropertyDescriptor(inObject, inName) {
 // exports
 
 document.register = register;
+document.createElement = createElement;
