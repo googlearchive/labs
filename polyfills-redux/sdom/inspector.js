@@ -120,7 +120,8 @@
       return '';
     }
     var indent = inIndent || '';
-    if (inNode.localName) {
+    if (inNode.localName || inNode.nodeType == 11) {
+      var name = inNode.localName || 'shadow-root';
       //inChildNodes = ShadowDOM.localNodes(inNode);
       var info = indent + describe(inNode);
       // if only textNodes
@@ -128,7 +129,7 @@
       /*if (!inNode.children.length && inNode.localName !== 'content' && inNode.localName !== 'shadow') {
         info += catTextContent(inChildNodes);
       } else*/ {
-        if (inNode.localName == 'content' || inNode.localName == 'shadow') {
+        if (name == 'content' || name == 'shadow') {
           inChildNodes = inNode.getDistributedNodes();
         }
         info += '<br/>';
@@ -138,8 +139,8 @@
         });
         info += indent;
       }
-      if (!({br:1}[inNode.localName])) {
-        info += '<tag>&lt;/' + inNode.localName + '&gt;</tag>';
+      if (!({br:1}[name])) {
+        info += '<tag>&lt;/' + name + '&gt;</tag>';
         info += '<br/>';
       }
     } else {
@@ -161,16 +162,19 @@
 
   var describe = function(inNode) {
     var tag = '<tag>' + '&lt;';
+    var name = inNode.localName || 'shadow-root';
     if (inNode.webkitShadowRoot) {
       tag += ' <button idx="' + drillable.length +
-        '" onclick="api.shadowize.call(this)">' + inNode.localName + '</button>';
+        '" onclick="api.shadowize.call(this)">' + name + '</button>';
       drillable.push(inNode);
     } else {
-      tag += inNode.localName;
+      tag += name || 'shadow-root';
     }
-    forEach(inNode.attributes, function(a) {
-      tag += ' ' + a.name + (a.value ? '="' + a.value + '"' : '');
-    });
+    if (inNode.attributes) {
+      forEach(inNode.attributes, function(a) {
+        tag += ' ' + a.name + (a.value ? '="' + a.value + '"' : '');
+      });
+    }
     tag += '&gt;'+ '</tag>';
     return tag;
   };

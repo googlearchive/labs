@@ -4,33 +4,66 @@
  * license that can be found in the LICENSE file.
  */
 
-// SECTION 4
+(function() {
 
 var domCreateElement = document.createElement.bind(document);
 
-function instantiate(inPrototype) {
+// SECTION 4
+
+function instantiate(inDefinition) {
   // 4.a.1. Create a new object that implements PROTOTYPE
   // 4.a.2. Let ELEMENT by this new object
   //
   // the custom element instantiation algorithm must also ensure that the
   // output is a valid DOM element with the proper wrapper in place.
   //
-  var element = domCreateElement(inPrototype.tag);
-  if (inPrototype.is) {
-    element.setAttribute('is', inPrototype.is);
+  var element = domCreateElement(inDefinition.tag);
+  if (inDefinition.is) {
+    element.setAttribute('is', inDefinition.is);
   }
-  implement(element, inPrototype);
-  //
+  element = implement(element, inDefinition.prototype);
+  var _elt = element;
+  if (window.Nohd) {
+    var _elt = SDOM(element);
+    // attempt to publish our public interface directly
+    // to our ShadowDOM polyfill wrapper object
+    Object.keys(inDefinition.prototype).forEach(function(k) {
+      //publishProperty(inDefinition.prototype, k, _elt);
+      copyProperty(k, inDefinition.prototype, _elt);
+    });
+  }
+  if (inDefinition.lifecycle) {
+    var created = inDefinition.lifecycle.created;
+    if (created) {
+      created.call(_elt);
+    }
+  }
   // OUTPUT
   return element;
 }
 
 function implement(inElement, inPrototype) {
+  //var element = window.SDOM ? SDOM(inElement) : inElement;
+  var element = inElement;
   if (Object.__proto__) {
-    inElement.__proto__ = inPrototype;
+    element.__proto__ = inPrototype;
   } else {
-    mixin(inElement, inPrototype);
+    // TODO(sjmiles):
+    // probably can use something like this to truncate the 
+    // prototype at the problem line for mixin
+    // but it's complicated by SDOM
+    /*
+    var p = inPrototype;
+    while (p && p.__proto__ !== inElement.__proto__) {
+      p = p.__proto__;
+    }
+    if (window.SDOM) {
+      p.__proto__ = element.__proto__;
+    }
+    */  
+    mixin(element, inPrototype);
   }
+  return element;
 }
 
 // FOO_CONSTRUCTOR = document.register(‘x-foo’, {
@@ -41,21 +74,23 @@ function implement(inElement, inPrototype) {
 // });
 
 function register(inName, inOptions) {
-  console.warn('document.register("' + inName + '", ' + inOptions + ')');
+  //console.warn('document.register("' + inName + '", ', inOptions, ')');
   // construct a defintion out of options
   // TODO(sjmiles): probably should clone inOptions instead of mutating it
   var definition = inOptions || {};
   // must have a prototype, default to an extension of HTMLElement
+  // TODO(sjmiles): probably should throw if no prototype, check spec
   definition.prototype = definition.prototype 
-      || Object.create(HTMLElement.prototype);
+      || Object.create(HTMLUnknownElement.prototype);
   // extensions of native specializations of HTMLElement require localName
   // to remain native, and use secondary 'is' specifier for extension type
   // caller must specify a tag to declare a native localName
-  definition.prototype.tag = definition.tag || inName;
+  definition.tag = definition.extends || inName;
   // if user declared a tag, use secondary 'is' specifier
-  if (definition.tag) {
-    definition.prototype.is = inName;
+  if (definition.extends) {
+    definition.is = inName;
   }
+  //definition.prototype.__definition__ = definition;
   // 7.1.5: Register the DEFINITION with DOCUMENT
   registerDefinition(inName, definition);
   // 7.1.7. Run custom element constructor generation algorithm with PROTOTYPE
@@ -72,7 +107,7 @@ function registerDefinition(inName, inDefinition) {
 
 function generateConstructor(inDefinition) {
   return function() {
-    return instantiate( inDefinition.prototype);
+    return instantiate(inDefinition);
   };
 }
 
@@ -102,13 +137,14 @@ function mixin(inObj/*, inProps, inMoreProps, ...*/) {
     // we don't actually want to copy those properties anyway, but I
     // can't find a way to determine if a prototype is a native
     // or custom inheritor of HTMLElement
-    // ad hoc solution is to simply stop if there is an exception
+    // ad hoc solution is to simply stop at the first exception
+    // see 'implement' above for possible better solution
     try {
       for (var n in p) {
         copyProperty(n, p, obj);
       }
     } catch(x) {
-      console.log(x);
+      //console.log(x);
     }
   }
   return obj;
@@ -133,3 +169,6 @@ function getPropertyDescriptor(inObject, inName) {
 
 document.register = register;
 document.createElement = createElement;
+window.mixin = mixin;
+
+})();
