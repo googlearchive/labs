@@ -20,11 +20,7 @@ license that can be found in the LICENSE file.
           if (inChild.nodeType == 1) {
             inChild.style.backgroundColor = 'lightblue';
           }
-          var $super = HTMLElement.prototype.appendChild;
-          if (this.node) {
-            $super = Object.getPrototypeOf(this).appendChild;
-          }
-          return $super.call(this, inChild);
+          return HTMLElement.prototype.appendChild.call(this, inChild);
         }
       },
       lifecycle: {
