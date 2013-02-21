@@ -17,7 +17,7 @@ license that can be found in the LICENSE file.
           this.style.color = 'black';
         },
         appendChild: function(inChild) {
-          if (inChild.nodeType == 1) {
+          if (inChild.nodeType === 1) {
             inChild.style.backgroundColor = 'lightblue';
           }
           return HTMLElement.prototype.appendChild.call(this, inChild);

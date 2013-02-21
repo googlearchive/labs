@@ -8,14 +8,10 @@ license that can be found in the LICENSE file.
   <head>
     <title></title>
     <meta charset="UTF-8">
-    <script src="../customDOMElement.js"></script>
-    <script src="../../sdom/inspector.js"></script>
+    <script src="../webcomponents.js"></script>
   </head>
   <body>
     <script>
-      window.SDOM = function(inNode) {
-        return inNode;
-      };
       window.onload = function() {
         body = SDOM(document.body);
         //
