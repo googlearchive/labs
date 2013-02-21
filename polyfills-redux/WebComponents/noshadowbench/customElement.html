@@ -20,7 +20,7 @@ license that can be found in the LICENSE file.
         XBarPrototype = Object.create(HTMLButtonElement.prototype);
         XBar = document.register('x-bar', {
           prototype: XBarPrototype,
-          tag: 'button'
+          extends: 'button'
         });
         xbar = new XBar();
         document.body.appendChild(xbar).textContent = 'x-bar';

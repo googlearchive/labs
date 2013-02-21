@@ -9,7 +9,7 @@ ShadowDOMNohd.prototype = Object.create(Nohd.prototype);
 
 mixin(ShadowDOMNohd.prototype, {
   webkitCreateShadowRoot: function() {
-    new ShadowRoot(this);
+    return new ShadowRoot(this);
   },
   // use ShadowDOM-aware query engine
   querySelector: function(inSlctr) {
@@ -192,6 +192,9 @@ var enjob = function(inObject, inName, inJob, inTimeout) {
 SDOM = function(inNode) {
   if (!inNode) {
     return null;
+  }
+  if (inNode.isNohd) {
+    return inNode;
   }
   if (inNode.$nohd) {
     return inNode.$nohd;
