@@ -29,7 +29,9 @@ function instantiate(inDefinition) {
     // to our ShadowDOM polyfill wrapper object
     Object.keys(inDefinition.prototype).forEach(function(k) {
       //publishProperty(inDefinition.prototype, k, _elt);
-      copyProperty(k, inDefinition.prototype, _elt);
+      if (!(k in _elt)) {
+        copyProperty(k, inDefinition.prototype, _elt);
+      }
     });
   }
   if (inDefinition.lifecycle) {
