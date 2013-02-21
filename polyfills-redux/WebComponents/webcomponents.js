@@ -86,9 +86,9 @@ console.log(flags);
 // write script tags for dependencies
 
 var modules = [
-  'customDOMElement.js',
-  'HTMLElementElement.js',
-  'componentDocument.js'
+  'CustomElements/CustomElements.js',
+  'CustomElements/HTMLElementElement.js',
+  'CustomElements/ComponentDocument.js'
 ];
 if (flags.shadow !== 'native') {
   modules.push(
