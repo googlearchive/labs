@@ -24,11 +24,7 @@ module.exports = function(grunt) {
         dest: 'min/ShadowDOM.js'
       },
       CustomElements: {
-        src: [
-          'CustomElements/CustomElements.js',
-          'CustomElements/HTMLElementElement.js',
-          'CustomElements/ComponentDocument.js'
-        ],
+        src: CustomElements,
         dest: 'min/CustomElements.js'
       }
     },
