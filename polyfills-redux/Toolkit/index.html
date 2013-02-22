@@ -13,10 +13,18 @@ license that can be found in the LICENSE file.
   <body>
     <script>
       HTMLElementElement.prototype.component = function(inPrototype) {
+        var element = this;
         this.register({
           prototype: inPrototype,
           lifecycle: {
-            created: inPrototype.created
+            created: function() {
+              var template = element.querySelector('template');
+              if (template) {
+                this.webkitCreateShadowRoot().appendChild(
+                    template.content.cloneNode(true));
+              }
+              inPrototype.created.call(this);
+            }
           }
         });
         console.log("initialized component " + this.options.name);
@@ -27,6 +35,9 @@ license that can be found in the LICENSE file.
       });
     </script>
     <element name="x-foo">
+      <template>
+        It LIVES <content></content>
+      </template>
       <script>
         this.component && this.component({
           created: function() {
