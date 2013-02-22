@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2012 The Toolkitchen Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 		'CustomElements/ComponentDocument.js'
 	];
 	WebComponents = CustomElements.concat(ShadowDOM);
-	
+
   grunt.initConfig({
     concat: {
       ShadowDOM: {
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 				files: {
 					'CustomElements/custom-elements.min.js': CustomElements
 				}
-      },			
+      },
       ShadowDOM: {
 			  options: {
 					sourceMap: 'ShadowDOM/shadowdom-source-map.js'
@@ -44,7 +44,7 @@ module.exports = function(grunt) {
 				files: {
 					'ShadowDOM/shadowdom.min.js': ShadowDOM
 				}
-      },			
+      },
       WebComponents: {
 			  options: {
 					sourceMap: 'webcomponents-source-map.js'
@@ -55,11 +55,10 @@ module.exports = function(grunt) {
 			}
 		}
   });
-  
+
   // plugins
-  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  
+
   // tasks
   grunt.registerTask('default', ['uglify']);
 };

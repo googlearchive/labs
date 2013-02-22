@@ -1,0 +1,43 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script src="../WebComponents/webcomponents.js"></script>
+  </head>
+  <body>
+    <script>
+      HTMLElementElement.prototype.component = function(inPrototype) {
+        this.register({
+          prototype: inPrototype,
+          lifecycle: {
+            created: inPrototype.created
+          }
+        });
+        console.log("initialized component " + this.options.name);
+      };
+      componentDocument.parse(document, function() {
+        SDOM(document.body).appendChild(document.createElement('x-foo'));
+        console.log("done");
+      });
+    </script>
+    <element name="x-foo">
+      <script>
+        this.component && this.component({
+          created: function() {
+            this.textContent = 'cordon bleu';
+            this.blueate();
+          },
+          blueate: function() {
+            this.style.backgroundColor = 'lightblue';
+          }
+        });
+      </script>
+    </element>
+  </body>
+</html>

@@ -1,17 +1,19 @@
-## About Grunt
+## Using Grunt To Minify WebComponents Source
 
 You need `grunt-cli` to run the grunt task from the command line.
 
 > `npm install -g grunt-cli`
 
-You need `grunt` itself, and some plugins (as shown,installs locally).
+You need `grunt` itself, and some plugins. Invoke
 
-> `WebComponents> npm install grunt`  
-> `WebComponents> npm install grunt-contrib-concat`  
-> `WebComponents> npm install grunt-contrib-uglify`  
+> `WebComponents> npm install`
 
-Now the build task should be available:
+And `npm` will install these for you locally.
+
+After those steps the build task should be available:
 
 > `WebComponents> grunt`
 
-TODO: make a `package.json` so this is easier.
+Note
+
+`node_modules` and the built files are listed in WebComponents\.gitignore

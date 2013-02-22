@@ -20,7 +20,7 @@ HTMLElementElement = function(inElement) {
   if (options.extends) {
     // get the prototype of an instance of options.extends
     // TODO(sjmiles): to get the actual DOM prototype we
-    // have to avoid any SDOM override, so here we use
+    // have to avoid any SDOM override, so we use
     // the prototypical createElement
     base = Object.getPrototypeOf(
         Object.getPrototypeOf(document).createElement.call(
@@ -28,15 +28,10 @@ HTMLElementElement = function(inElement) {
   }
   // extend base
   options.prototype = Object.create(base);
-  // install lifecycle function
-  inElement.register = function(inMore) {
-    if (inMore) {
-      options.lifecycle = inMore.lifecycle;
-      if (inMore.prototype) {
-        mixin(options.prototype, inMore.prototype);
-      }
-    }
-  };
+  // install API
+  mixin(inElement, HTMLElementElement.prototype);
+  // install options
+  inElement.options = options;
   // locate user script
   var script = inElement.querySelector("script");
   if (script) {
@@ -48,15 +43,26 @@ HTMLElementElement = function(inElement) {
   return inElement;
 };
 
+HTMLElementElement.prototype = {
+  register: function(inMore) {
+    if (inMore) {
+      this.options.lifecycle = inMore.lifecycle;
+      if (inMore.prototype) {
+        mixin(this.options.prototype, inMore.prototype);
+      }
+    }
+  }
+};
+
 // invoke inScript in inContext scope
 function executeComponentScript(inScript, inContext, inName) {
   // set (highlander) context
   context = inContext;
   // compose script
-  var code = "__componentScript('" 
-    + inName 
+  var code = "__componentScript('"
+    + inName
     + "', function(){"
-    + inScript 
+    + inScript
     + "});"
     + "\n//@ sourceURL=" + inContext.ownerDocument._URL + "\n"
   ;
