@@ -6,6 +6,7 @@
 
 // highlander object represents a primary document (the argument to 'parse')
 // at the root of a tree of documents
+
 var componentDocument = {
   preloadSelectors: [
     'link[rel=components]',
@@ -36,7 +37,7 @@ var componentDocument = {
   preload: function(inDocument, inNext) {
     // all preloadable nodes in inDocument
     var nodes = inDocument.querySelectorAll(cd.preloadSelectors);
-    // preload all nodes, call inNext when complete, call cd.eachPreload 
+    // preload all nodes, call inNext when complete, call cd.eachPreload
     // for each preloaded node
     loader.loadAll(nodes, inNext, cd.eachPreload);
   },
@@ -44,7 +45,7 @@ var componentDocument = {
     // for document links
     if (elt.localName === 'link' && elt.getAttribute('rel') === 'components') {
       // generate an HTMLDocument from data
-      var document = makeDocument(data, url); 
+      var document = makeDocument(data, url);
       // store document resource
       cd.resources[url] = makeDocument(data, url);
       // re-enters preloader here

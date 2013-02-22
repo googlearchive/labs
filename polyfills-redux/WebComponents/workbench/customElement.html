@@ -26,9 +26,17 @@ license that can be found in the LICENSE file.
         XBarPrototype.orangify = function() {
           this.style.color = 'orange';
         };
+        XBarPrototype.created = function() {
+          this.style.fontSize = '32pt';
+        };
         XBar = document.register('x-bar', {
           extends: 'button',
-          prototype: XBarPrototype
+          prototype: XBarPrototype,
+          lifecycle: {
+            created: function() {
+              this.created();
+            }
+          }
         });
         xbar = new XBar();
         body.appendChild(xbar).textContent = 'x-bar';

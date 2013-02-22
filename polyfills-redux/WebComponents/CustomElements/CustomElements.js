@@ -1,12 +1,59 @@
 /*
- * Copyright 2012 The Toolkitchen Authors. All rights reserved.
+ * Copyright 2013 The Toolkitchen Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
  */
 
 (function() {
 
-var domCreateElement = document.createElement.bind(document);
+function register(inName, inOptions) {
+  //console.warn('document.register("' + inName + '", ', inOptions, ')');
+  // construct a defintion out of options
+  // TODO(sjmiles): probably should clone inOptions instead of mutating it
+  var definition = inOptions || {};
+  // record name
+  definition.name = inName;
+  // must have a prototype, default to an extension of HTMLElement
+  // TODO(sjmiles): probably should throw if no prototype, check spec
+  definition.prototype = definition.prototype
+      || Object.create(HTMLUnknownElement.prototype);
+  // build a list of ancestral custom elements (for lifecycle management)
+  definition.ancestry = ancestry(definition.extends);
+  // extensions of native specializations of HTMLElement require localName
+  // to remain native, and use secondary 'is' specifier for extension type
+  resolveTagName(definition);
+  // 7.1.5: Register the DEFINITION with DOCUMENT
+  registerDefinition(inName, definition);
+  // 7.1.7. Run custom element constructor generation algorithm with PROTOTYPE
+  // 7.1.8. Return the output of the previous step.
+  definition.ctor = generateConstructor(definition);
+  return definition.ctor;
+}
+
+function ancestry(inExtends) {
+  var extendee = registry[inExtends];
+  if (extendee) {
+    return ancestry(extendee.extends).concat([extendee]);
+  }
+  return [];
+}
+
+function resolveTagName(inDefinition) {
+  // if we are explicitly extending something, that thing is our
+  // baseTag, unless it represents a custom compoenent
+  var baseTag = inDefinition.extends;
+  // if our ancestry includes custom components, we only have a
+  // baseTag if one of them does
+  for (var i=0, a; (a=inDefinition.ancestry[i]); i++) {
+    baseTag = a.is && a.tag;
+  }
+  // our tag is our baseTag, if it exists, and otherwise just our name
+  inDefinition.tag = baseTag || inDefinition.name;
+  // if there is a base tag, use secondary 'is' specifier
+  if (baseTag) {
+    inDefinition.is = inDefinition.name;
+  }
+}
 
 // SECTION 4
 
@@ -21,51 +68,50 @@ function instantiate(inDefinition) {
   if (inDefinition.is) {
     element.setAttribute('is', inDefinition.is);
   }
-  element = implement(element, inDefinition.prototype);
-  var _elt = element;
+  // under ShadowDOM polyfill `implementor` may be a node wrapper
+  // TODO(sjmiles): polyfill pollution
+  var implementor = implement(element, inDefinition.prototype);
+  // invoke lifecycle.created callbacks
+  created(implementor, inDefinition);
+  // OUTPUT
+  return implementor;
+}
+
+var domCreateElement = document.createElement.bind(document);
+
+function implement(inElement, inPrototype) {
+  if (Object.__proto__) {
+    inElement.__proto__ = inPrototype;
+  } else {
+    mixin(inElement, inPrototype);
+  }
+  var element = inElement;
+  // TODO(sjmiles): polyfill pollution
   if (window.Nohd) {
-    var _elt = SDOM(element);
+    element = SDOM(element);
     // attempt to publish our public interface directly
-    // to our ShadowDOM polyfill wrapper object
+    // to our ShadowDOM polyfill wrapper object (excluding overrides)
     Object.keys(inDefinition.prototype).forEach(function(k) {
-      //publishProperty(inDefinition.prototype, k, _elt);
-      if (!(k in _elt)) {
-        copyProperty(k, inDefinition.prototype, _elt);
+      if (!(k in element)) {
+        copyProperty(k, inDefinition.prototype, element);
       }
     });
   }
-  if (inDefinition.lifecycle) {
-    var created = inDefinition.lifecycle.created;
-    if (created) {
-      created.call(_elt);
-    }
-  }
-  // OUTPUT
   return element;
 }
 
-function implement(inElement, inPrototype) {
-  //var element = window.SDOM ? SDOM(inElement) : inElement;
-  var element = inElement;
-  if (Object.__proto__) {
-    element.__proto__ = inPrototype;
-  } else {
-    // TODO(sjmiles):
-    // probably can use something like this to truncate the 
-    // prototype at the problem line for mixin
-    // but it's complicated by SDOM
-    /*
-    var p = inPrototype;
-    while (p && p.__proto__ !== inElement.__proto__) {
-      p = p.__proto__;
-    }
-    if (window.SDOM) {
-      p.__proto__ = element.__proto__;
-    }
-    */  
-    mixin(element, inPrototype);
+function created(inElement, inDefinition) {
+  for (var i=0, a; (a=inDefinition.ancestry[i]); i++) {
+    _created(inElement, a.lifecycle);
   }
-  return element;
+  _created(inElement, inDefinition.lifecycle);
+}
+
+function _created(inElement, inLifecycle) {
+  var created = inLifecycle && inLifecycle.created;
+  if (created) {
+    created.call(inElement);
+  }
 }
 
 // FOO_CONSTRUCTOR = document.register(‘x-foo’, {
@@ -75,31 +121,6 @@ function implement(inElement, inPrototype) {
 //   }
 // });
 
-function register(inName, inOptions) {
-  //console.warn('document.register("' + inName + '", ', inOptions, ')');
-  // construct a defintion out of options
-  // TODO(sjmiles): probably should clone inOptions instead of mutating it
-  var definition = inOptions || {};
-  // must have a prototype, default to an extension of HTMLElement
-  // TODO(sjmiles): probably should throw if no prototype, check spec
-  definition.prototype = definition.prototype 
-      || Object.create(HTMLUnknownElement.prototype);
-  // extensions of native specializations of HTMLElement require localName
-  // to remain native, and use secondary 'is' specifier for extension type
-  // caller must specify a tag to declare a native localName
-  definition.tag = definition.extends || inName;
-  // if user declared a tag, use secondary 'is' specifier
-  if (definition.extends) {
-    definition.is = inName;
-  }
-  //definition.prototype.__definition__ = definition;
-  // 7.1.5: Register the DEFINITION with DOCUMENT
-  registerDefinition(inName, definition);
-  // 7.1.7. Run custom element constructor generation algorithm with PROTOTYPE
-  // 7.1.8. Return the output of the previous step.
-  definition.ctor = generateConstructor(definition);
-  return definition.ctor;
-}
 
 var registry = {};
 
@@ -140,7 +161,8 @@ function mixin(inObj/*, inProps, inMoreProps, ...*/) {
     // can't find a way to determine if a prototype is a native
     // or custom inheritor of HTMLElement
     // ad hoc solution is to simply stop at the first exception
-    // see 'implement' above for possible better solution
+    // an alternative exists if we have a tagName hint: then we can
+    // work out where the native objects are in the prototype chain
     try {
       for (var n in p) {
         copyProperty(n, p, obj);
@@ -154,7 +176,7 @@ function mixin(inObj/*, inProps, inMoreProps, ...*/) {
 
 // copy property inName from inSource object to inTarget object
 function copyProperty(inName, inSource, inTarget) {
-  Object.defineProperty(inTarget, inName, 
+  Object.defineProperty(inTarget, inName,
       getPropertyDescriptor(inSource, inName));
 }
 
