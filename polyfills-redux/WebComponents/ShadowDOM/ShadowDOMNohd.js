@@ -41,7 +41,7 @@ mixin(ShadowDOMNohd.prototype, {
   invalidate: function() {
     //console.log("invalidating a distribution");
     addPendingDistribution(this);
-    enjob(ShadowDOMNohd, 'validate', validateDistributions, 1);
+    enjob(ShadowDOMNohd, 'validate', validateDistributions, 0);
   },
   appendChild: function(inChild) {
     if (isLightRoot(this)) {
@@ -72,6 +72,16 @@ mixin(ShadowDOMNohd.prototype, {
   getDistributedNodes: function() {
     return this.distributedNodes || [];
   },
+  setDistributedNodes: function(inDistributedNodes) {
+    this.distributedNodes = inDistributedNodes;
+    // When flattening we sometimes create an insertion list (if we
+    // are an insertion host).
+    // When the distributed nodes are reassigned, the insertion 
+    // list is no longer valid.
+    if (this.insertions) {
+      this.insertions = null;
+    }
+  },
   get webkitShadowRoot() {
     return this.shadow;
   },
@@ -95,17 +105,7 @@ mixin(ShadowDOMNohd.prototype, {
     if (this.nodes) {
       this.nodes = [];
     } else {
-      this.textContent = '';
-    }
-  },
-  setDistributedNodes: function(inDistributedNodes) {
-    this.distributedNodes = inDistributedNodes;
-    // When flattening we sometimes create an insertion list (if we
-    // are an insertion host).
-    // When the distributed nodes are reassigned, the insertion 
-    // list is no longer valid.
-    if (this.insertions) {
-      this.insertions = null;
+      this.node.textContent = '';
     }
   },
   clearChildNodes: function() {
@@ -114,6 +114,9 @@ mixin(ShadowDOMNohd.prototype, {
     }
     if (this.nodes) {
       this.nodes = [];
+    }
+    if (this.lightDOM) {
+      this.lightDOM.clearChildNodes();
     }
     this.node.textContent = '';
   },
@@ -203,9 +206,17 @@ SDOM = function(inNode) {
   return inNode.$nohd = new ctor(inNode);
 };
 
+var sdocument = {
+  get body() {
+    return SDOM(document.body);
+  }
+};
+mixin(sdocument, document);
+
 // exports
 
 window.ShadowDOMNohd = ShadowDOMNohd;
 window.SDOM = SDOM;
+window.sdocument = sdocument;
 
 })();

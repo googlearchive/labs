@@ -59,7 +59,7 @@ var componentDocument = {
   },
   continueParse: function(inDocument, inNext) {
     // complete document tree is loaded at this point
-    // begin parsing document content
+    // parse document content
     cd.parseElts(inDocument);
     // parsing complete
     inNext();

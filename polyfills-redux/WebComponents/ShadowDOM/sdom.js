@@ -110,14 +110,20 @@ mixin(Nohd.prototype, {
   removeChild: function (inChild) {
     return SDOM(this.node.removeChild(this.realize(inChild)));
   },
+  clearChildNodes: function() {
+    this.node.textContent = '';
+  },
   get textContent() {
     return this.node.textContent;
   },
   set textContent(inText) {
-    this.node.textContent = '';
+    this.clearChildNodes();
     if (inText) {
       this.appendChild(document.createTextNode(inText));
     }
+  },
+  cloneNode: function(inDeep) {
+    return SDOM(this.node.cloneNode(inDeep));
   }
 });
 
@@ -135,6 +141,7 @@ function _SDOM(inNode) {
 };
 
 fauxilate = Nohd.prototype.fauxilate;
+Nohd.realize = Nohd.prototype.realize;
 
 dqs = document.querySelector.bind(document);
 dqsa = document.querySelectorAll.bind(document);
@@ -145,7 +152,6 @@ dgebid = document.getElementById.bind(document);
 dgebcn = document.getElementsByClassName.bind(document);
 dgebn = document.getElementsByName.bind(document);
 dgebtn = document.getElementsByTagName.bind(document);
-dde = document.documentElement;
 
 document.querySelector = function(inSlctr) {
   return SDOM(dqs(inSlctr));
@@ -281,7 +287,7 @@ function buildPropertyList(obj) {
 
 window.SDOM = _SDOM;
 window.Nohd = Nohd;
-window.mixin = mixin;
+//window.mixin = mixin;
 window.forEach = forEach;
 window.fixconsole = fixconsole;
 window.publishProperty = publishProperty;
