@@ -1,0 +1,79 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+      <div>TODO write content</div>
+      <script>
+        // object O has n sub-objects, S[0..n]
+        // O can 'bind' a public property in any of it's sub-objects
+        // to a data-path (dot notation) in itself
+        // all S are also O
+        O = {
+          Oa: 3,
+          Ob: 6,
+          Oc: {
+            zot: "foo"
+          },
+          S: []
+        };
+        //
+        var P = {
+          Pa: 8,
+          Pb: {
+            x: 0,
+            y: 1
+          },
+          S: []
+        };
+        O.S.push(P);
+        //
+        bind(P, "Pa", O, "Oc.zot");
+        console.log(P.Pa, O.Oc.zot);
+        P.Pa = "splat";
+        console.log(P.Pa, O.Oc.zot);
+        O.Oc.zot = "muun";
+        console.log(P.Pa, O.Oc.zot);
+        //
+        var Q = {
+          Qa: 8,
+          S: []
+        };
+        P.S.push(Q);
+        //
+        bind(Q, "Qa", P, "Pa");
+        console.log(Q.Qa, P.Pa, O.Oc.zot);
+        P.Pa = "splat";
+        console.log(Q.Qa, P.Pa, O.Oc.zot);
+        O.Oc.zot = "muun";
+        console.log(Q.Qa, P.Pa, O.Oc.zot);
+        Q.Qa = "squid";
+        console.log(Q.Qa, P.Pa, O.Oc.zot);
+        //
+        function bind(inA, inProperty, inB, inPath) {
+          var parts = inPath.split(".");
+          var property = parts.pop();
+          var path = parts.length ? '.' + parts.join('.') : '';
+          var getObject = 
+              new Function(['inObject'], 'return inObject' + path + ';');
+          console.log(getObject(inB), getObject(inB)[property]);
+          //
+          Object.defineProperty(inA, inProperty, {
+            get: function() {
+              return getObject(inB)[property];
+            },
+            set: function(inValue) {
+              getObject(inB)[property] = inValue;
+            }
+          });
+        }
+      </script>
+  </body>
+</html>
