@@ -64,18 +64,23 @@ function instantiate(inDefinition) {
   // the custom element instantiation algorithm must also ensure that the
   // output is a valid DOM element with the proper wrapper in place.
   //
-  var element = domCreateElement(inDefinition.tag);
+  return upgrade(domCreateElement(inDefinition.tag), inDefinition);
+}
+
+function upgrade(inElement, inDefinition) {
   if (inDefinition.is) {
-    element.setAttribute('is', inDefinition.is);
+    inElement.setAttribute('is', inDefinition.is);
   }
   // under ShadowDOM polyfill `implementor` may be a node wrapper
   // TODO(sjmiles): polyfill pollution
-  var implementor = implement(element, inDefinition.prototype);
+  var implementor = implement(inElement, inDefinition.prototype);
   // invoke lifecycle.created callbacks
   created(implementor, inDefinition);
+  // flag as upgraded
+  implementor.__upgraded__ = true;
   // OUTPUT
   return implementor;
-}
+};
 
 var domCreateElement = document.createElement.bind(document);
 
@@ -83,22 +88,36 @@ function implement(inElement, inPrototype) {
   if (Object.__proto__) {
     inElement.__proto__ = inPrototype;
   } else {
+    // where above we can reacquire inPrototype via
+    // getPrototypeOf(Element), we cannot do so when
+    // we use mixin, so we install a magic reference
+    inElement.__proto__ = inPrototype;
     mixin(inElement, inPrototype);
   }
-  var element = inElement;
+  // special handling for polyfill wrappers
   // TODO(sjmiles): polyfill pollution
+  return _publishToWrapper(inElement, inPrototype);
+}
+
+// TODO(sjmiles): polyfill pollution
+function _publishToWrapper(inElement, inPrototype) {
+  var element = inElement;
   if (window.Nohd) {
-    element = SDOM(element);
     // attempt to publish our public interface directly
     // to our ShadowDOM polyfill wrapper object (excluding overrides)
-    Object.keys(inDefinition.prototype).forEach(function(k) {
-      if (!(k in element)) {
-        copyProperty(k, inDefinition.prototype, element);
-      }
-    });
+    element = SDOM(inElement);
+    var p = inPrototype;
+    while (p && p !== HTMLElement.prototype) {
+      Object.keys(p).forEach(function(k) {
+        if (!(k in element)) {
+          copyProperty(k, inPrototype, element);
+        }
+      });
+      p = Object.getPrototypeOf(p);
+    }
   }
   return element;
-}
+};
 
 function created(inElement, inDefinition) {
   for (var i=0, a; (a=inDefinition.ancestry[i]); i++) {
@@ -121,11 +140,12 @@ function _created(inElement, inLifecycle) {
 //   }
 // });
 
-
 var registry = {};
+var registrySlctr = '';
 
 function registerDefinition(inName, inDefinition) {
   registry[inName] = inDefinition;
+  registrySlctr += (registrySlctr ? ',' : '') + inName;
 }
 
 function generateConstructor(inDefinition) {
@@ -140,6 +160,23 @@ function createElement(inTag) {
     return new definition.ctor();
   }
   return domCreateElement(inTag);
+}
+
+function upgradeElement(inElement) {
+  if (inElement.__upgraded__) {
+    return;
+  }
+  // TODO(sjmiles): polyfill pollution
+  var element = inElement.node || inElement;
+  var definition = 
+      registry[element.getAttribute('is') || element.localName];
+  return upgrade(element, definition);
+}
+
+function upgradeElements(inRoot) {
+  var nodes = inRoot.querySelectorAll(registrySlctr);
+  console.log(registrySlctr, nodes);
+  forEach(nodes, upgradeElement);
 }
 
 // utilities
@@ -176,8 +213,8 @@ function mixin(inObj/*, inProps, inMoreProps, ...*/) {
 
 // copy property inName from inSource object to inTarget object
 function copyProperty(inName, inSource, inTarget) {
-  Object.defineProperty(inTarget, inName,
-      getPropertyDescriptor(inSource, inName));
+  var pd = getPropertyDescriptor(inSource, inName);
+  Object.defineProperty(inTarget, inName, pd);
 }
 
 // get property descriptor for inName on inObject, even if
@@ -185,7 +222,7 @@ function copyProperty(inName, inSource, inTarget) {
 function getPropertyDescriptor(inObject, inName) {
   if (inObject) {
     var pd = Object.getOwnPropertyDescriptor(inObject, inName);
-    return pd || getPropertyDescriptor(Object.getPrototypeOf(inObject));
+    return pd || getPropertyDescriptor(Object.getPrototypeOf(inObject), inName);
   }
 }
 
@@ -193,8 +230,18 @@ function getPropertyDescriptor(inObject, inName) {
 
 document.register = register;
 document.createElement = createElement;
+document.upgradeElement = upgradeElement;
+document.upgradeElements = upgradeElements;
 
 // TODO(sjmiles): temporary: control scope better
 window.mixin = mixin;
+
+// bootstrap 
+
+window.addEventListener('load', function() {
+  componentDocument.parse(document, function() {
+     document.upgradeElements(document.body);
+   });
+});
 
 })();

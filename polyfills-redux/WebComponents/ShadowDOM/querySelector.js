@@ -45,9 +45,10 @@ var generateMatcher = function(inSlctr) {
       return inNode.hasAttribute && inNode.hasAttribute(m);
     };
   }
-  var m = inSlctr.toUpperCase();
+  var slctrs = inSlctr.split(',');
   return function(inNode) {
-    return (inNode.tagName === m);
+    return (slctrs.indexOf(inNode.localName) >= 0);
+    //return (inNode.localName === inSlctr);
   };
 };
 
@@ -59,17 +60,12 @@ var isInsertionPoint = function(inNode) {
 
 var search = function(inNodes, inMatcher) {
   var results = [];
-  for (var i=0, n, np; (n=inNodes[i]); i++) {
-    np = n.baby || n;
-    // TODO(sjmiles): returning baby (np) is problematic as we lose tree 
-    // context. So, we attach that context here. The context is only 
-    // valid until the next _search_.
-    np.tree = n;
-    if (inMatcher(np)) {
-      results.push(np);
+  for (var i=0, n; (n=inNodes[i]); i++) {
+    if (inMatcher(n)) {
+      results.push(n);
     }
-    if (!isInsertionPoint(np)) {
-      results = results.concat(_search(np, inMatcher));
+    if (!isInsertionPoint(n)) {
+      results = results.concat(_search(n, inMatcher));
     }
   }
   return results;
@@ -77,13 +73,10 @@ var search = function(inNodes, inMatcher) {
 
 var _search = function(inNode, inMatcher) {
   return search(inNode.childNodes, inMatcher);
-//  return search((inNode.lightDOM && inNode.lightDOM.childNodes) ||
-//    inNode.insertions || inNode.childNodes, inMatcher);
 };
 
 var localQueryAll = function(inNode, inSlctr) {
   var results = search(inNode.childNodes, generateMatcher(inSlctr));
-  //var results = search(inNode.insertions || inNode.childNodes, generateMatcher(inSlctr));
   fixconsole(results);
   return results;
 };

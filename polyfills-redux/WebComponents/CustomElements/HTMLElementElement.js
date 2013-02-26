@@ -7,6 +7,8 @@
 // TODO(sjmiles): implement HTMLElementElement via document.register
 
 HTMLElementElement = function(inElement) {
+  // poor man's custom element: install API
+  mixin(inElement, HTMLElementElement.prototype);
   // options to glean from inElement attributes
   var options = {
     name: '',
@@ -18,22 +20,20 @@ HTMLElementElement = function(inElement) {
   var base = HTMLUnknownElement.prototype;
   // optional specified base
   if (options.extends) {
-    // get the prototype of an instance of options.extends
-    // TODO(sjmiles): to get the actual DOM prototype we
-    // have to avoid any SDOM override, so we use
-    // the prototypical createElement
-    base = Object.getPrototypeOf(
-        Object.getPrototypeOf(document).createElement.call(
-            document, options.extends));
+    // build an instance of options.extends
+    var archetype = document.createElement(options.extends);
+    // 'realize' a Nohd 
+    // TODO(sjmiles): polyfill pollution
+    archetype = archetype.node || archetype;
+    // acquire the prototype
+    base = archetype.__proto__ || Object.getPrototypeOf(archetype);
   }
   // extend base
   options.prototype = Object.create(base);
-  // install API
-  mixin(inElement, HTMLElementElement.prototype);
   // install options
   inElement.options = options;
   // locate user script
-  var script = inElement.querySelector("script");
+  var script = inElement.querySelector('script');
   if (script) {
     // execute user script in 'inElement' context
     executeComponentScript(script.textContent, inElement, options.name);
