@@ -1,0 +1,276 @@
+<!--
+/*
+ * Copyright 2012 The Toolkitchen Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<element name="g-animation-panel-transition" extends="g-panel-transition">
+ <link rel="components" href="../g-animation.html">
+  <template>
+    <g-animation id="ascending" type="par">
+      <g-animation id="fromAscending"type="slideLeft"></g-animation>
+      <g-animation id="toAscending"type="slideFromRight"></g-animation>
+    </g-animation>
+    <g-animation id="descending" type="par">
+      <g-animation id="fromDescending" type="slideRight"></g-animation>
+      <g-animation id="toDescending" type="slideFromLeft"></g-animation>
+    </g-animation>
+  </template>
+  <script>
+    this.component({
+      publish: {
+        transitionClass: 'animate',
+        begin: function() {
+          this.from.style.display = 'block'
+          this.to.style.display = 'block';
+          if (this.player) {
+            this.player.cancel();
+          }
+          var fromAnim = this.forward ? this.$.fromAscending : this.$.fromDescending;
+          var toAnim = this.forward ? this.$.toAscending : this.$.toDescending;
+          fromAnim.target = this.from;
+          fromAnim.apply();
+          toAnim.target = this.to;
+          toAnim.apply();
+          //
+          var group = this.forward ? this.$.ascending : this.$.descending;
+          this.player = document.timeline.createPlayer(group.apply());
+          this.monitor();
+        },
+        monitor: function() {
+          // TODO(sorvell): brittle, need end event
+          if (this.player.timedItem._isPastEndOfActiveInterval()) {
+            this.finish();
+          } else {
+            webkitRequestAnimationFrame(this.monitor.bind(this));
+          }
+        },
+        complete: function() {
+          console.log('complete!');
+        }
+      }
+    });
+  </script>
+</element>
+
+
+
+<element name="g-animation-panel-transition" extends="g-panel-transition">
+  <script src="/web-animations-js/web-animation.js"></script>
+  <script>
+    this.component({
+      publish: {
+        duration: 0.3,
+        easing: 'ease-in-out',
+        fillMode: 'none',
+        fromAscending: {
+          'opacity': ['1', '0']
+        },
+        toAscending: {
+          'opacity': ['0', '1']
+        },
+        fromDescending: {
+          'opacity': ['1', '0']
+        },
+        toDescending: {
+          'opacity': ['0', '1']
+        },
+        jsonProps: ['fromAscending', 'toAscending', 'fromDescending', 'toDescending'],
+        transitionClass: 'animate',
+        ready: function() {
+          this.timeout = Number(this.duration) * 1000;
+          this.marshallJsonProps();
+        },
+        marshallJsonProps: function() {
+          this.jsonProps.forEach(function(p) {
+            if (typeof this[p] == 'string') {
+              this[p] = JSON.parse(this[p]);
+            }
+          }, this);
+        },
+        begin: function() {
+          this.from.style.display = 'block'
+          this.to.style.display = 'block';
+          var anims = [];
+          var fromProps = this.forward ? this.fromAscending : this.fromDescending;
+          var toProps = this.forward ? this.toAscending : this.toDescending;
+          if (fromProps) {
+            anims.push(new Animation(this.from, fromProps, { 
+              duration: this.duration,
+              timingFunction: this.easing,
+              fillMode: this.fillMode
+            }));
+          }
+          if (toProps) {
+            anims.push(new Animation(this.to, toProps, { 
+              duration: this.duration,
+              timingFunction: this.easing,
+              fillMode: this.fillMode
+            }));
+          }
+          this.player = document.timeline.createPlayer(new ParGroup(anims, {
+            fillMode: this.fillMode
+          }));
+          this.monitor();
+        },
+        monitor: function() {
+          // TODO(sorvell): brittle, need end event
+          if (this.player.timedItem._isPastEndOfActiveInterval()) {
+            this.finish();
+          } else {
+            webkitRequestAnimationFrame(this.monitor.bind(this));
+          }
+        },
+        complete: function() {
+        }
+      }
+    });
+  </script>
+</element>
+
+<element name="g-fade-animation-panel-transition" extends="g-animation-panel-transition"></element>
+
+<element name="g-hslide-animation-panel-transition" extends="g-animation-panel-transition">
+  <script>
+    this.component({
+      fromAscending: {
+        '-webkit-transform': ['translate3d(0, 0, 0)', 'translate3d(-100%, 0, 0)']
+      },
+      toAscending: {
+        '-webkit-transform': ['translate3d(100%, 0, 0)', 'translate3d(0, 0, 0)']
+      },
+      fromDescending: {
+        '-webkit-transform': ['translate3d(0, 0, 0)', 'translate3d(100%, 0, 0)']
+      },
+      toDescending: {
+        '-webkit-transform': ['translate3d(-100%, 0, 0)', 'translate3d(0, 0, 0)']
+      }
+    });
+  </script>
+</element>
+
+<element name="g-vslide-animation-panel-transition" extends="g-animation-panel-transition">
+  <script>
+    this.component({
+      fromAscending: {
+        '-webkit-transform': ['translate3d(0, 0, 0)', 'translate3d(0, -100%, 0)']
+      },
+      toAscending: {
+        '-webkit-transform': ['translate3d(0, 100%, 0)', 'translate3d(0, 0, 0)']
+      },
+      fromDescending: {
+        '-webkit-transform': ['translate3d(0, 0, 0)', 'translate3d(0, 100%, 0)']
+      },
+      toDescending: {
+        '-webkit-transform': ['translate3d(0, -100%, 0)', 'translate3d(0, 0, 0)']
+      }
+    });
+  </script>
+</element>
+
+<element name="g-hslideover-animation-panel-transition" extends="g-animation-panel-transition">
+  <script>
+    this.component({
+      fromAscending: null,
+      toAscending: {
+        '-webkit-transform': ['translate3d(100%, 0, 0)', 'translate3d(0, 0, 0)']
+      },
+      fromDescending: null,
+      toDescending: {
+        'z-index': ['1', '1'],
+        '-webkit-transform': ['translate3d(-100%, 0, 0)', 'translate3d(0, 0, 0)']
+      }
+    });
+  </script>
+</element>
+
+<element name="g-vslideover-animation-panel-transition" extends="g-animation-panel-transition">
+  <script>
+    this.component({
+      fromAscending: null,
+      toAscending: {
+        '-webkit-transform': ['translate3d(0, 100%, 0)', 'translate3d(0, 0, 0)']
+      },
+      fromDescending: null,
+      toDescending: {
+        'z-index': ['1', '1'],
+        '-webkit-transform': ['translate3d(0, -100%, 0)', 'translate3d(0, 0, 0)']
+      }
+    });
+  </script>
+</element>
+
+
+<element name="g-explode-animation-panel-transition" extends="g-animation-panel-transition">
+  <script>
+    this.component({
+      fromAscending: {
+        'opacity': ['1', '0'],
+        '-webkit-transform': ['scale(1)', 'scale(0)']
+      },
+      toAscending: {
+        'opacity': ['0', '1'],
+        '-webkit-transform': ['scale(0)', 'scale(1)']
+      },
+      fromDescending: {
+        'opacity': ['1', '0'],
+        '-webkit-transform': ['scale(1)', 'scale(0)']
+      },
+      toDescending: {
+        'opacity': ['0', '1'],
+        '-webkit-transform': ['scale(0)', 'scale(1)']
+      }
+    });
+  </script>
+</element>
+
+<element name="g-scale-slide-animation-panel-transition" extends="g-animation-panel-transition">
+  <script>
+    this.component({
+      fromAscending: {
+        'z-index': ['0', '0'],
+        'opacity': ['1', '0.5'],
+        '-webkit-transform': ['scale(1) translateZ(0)', {value: 'scale(0.9) translateZ(0)', 
+          offset: 0.2}, 'scale(0.9) translateZ(0)']
+      },
+      toAscending: {
+        'z-index': ['1', '1'],
+        '-webkit-transform': ['translate3d(100%, 0, 0)', 'translate3d(0, 0, 0)']
+       },
+      fromDescending: {
+        'z-index': ['1', '1'],
+        '-webkit-transform': ['translate3d(0, 0, 0)', 'translate3d(100%, 0, 0)']
+      },
+      toDescending: {
+        'z-index': ['0', '0'],
+        'opacity': ['0.5', '1'],
+        '-webkit-transform': ['scale(0.9) translateZ(0)', {value: 'scale(0.9) translateZ(0)', 
+          offset: 0.2}, 'scale(1) translateZ(0)']
+      }
+    });
+  </script>
+</element>
+
+<element name="g-flyup-right-animation-panel-transition" extends="g-animation-panel-transition">
+  <script>
+    this.component({
+      fromAscending: {
+        'z-index': ['1', '1'],
+        '-webkit-transform': ['translate3d(0,0,0) rotate(0)', 
+          'translate3d(10%, -110%, 0) rotate(5deg)']
+      },
+      toAscending: {
+        'opacity': ['0.25', '1']
+       },
+      fromDescending: {
+        'opacity': ['1', '0.25']
+      },
+      toDescending: {
+        'z-index': ['1', '1'],
+        '-webkit-transform': ['translate3d(10%, -110%, 0) rotate(5deg)', 
+          'translate3d(0,0,0) rotate(0deg)']
+      }
+    });
+  </script>
+</element>
