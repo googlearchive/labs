@@ -2,7 +2,7 @@
 <!-- <script src="../../Platform/platform.js"></script> -->
 <meta charset="utf-8">
 <script src="../../Platform/MDV/src/mdv.js"></script>
-<script src="jed.js"></script>
+<script src="third_party/jed/jed.js"></script>
 <style>
   #block {
     border: 1px solid orange;
@@ -73,14 +73,15 @@
       currency: 'jpy'
     }
   };
-  var trans = {
-    ar: fetch('ar'),
-    es: fetch('es'),
-    de: fetch('de'),
-    ja: fetch('ja'),
-    en: fetch('en')
-  };
-  var i18n = new Jed({locale_data: trans});
+  var i18n = new Jed({
+    locale_data: {
+      ar: fetch('ar'),
+      es: fetch('es'),
+      de: fetch('de'),
+      ja: fetch('ja'),
+      en: fetch('en')
+    }
+  });
   function set(option) {
     window.lang = langs[option];
     var ll = lang.locale;
