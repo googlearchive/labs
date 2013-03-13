@@ -66,9 +66,56 @@
       }
     });
   };
+  
+  
+  // designed to be called in some meaningful scope
+  
+  function getJobs() {
+    return this.__jobs__ = this.__jobs__ || {};
+  }
+  
+  var job = {
+    job: function(inMethodName, inArgs, inTimeout) {
+      this.cancelJob(inMethodName);
+      var args = (inArgs && inArgs.length) ? inArgs : [inArgs];
+      var jobId = window.setTimeout(this.completeJob.bind(this, inMethodName), inTimeout || 0);
+      var jobs = getJobs.call(this);
+      jobs[inMethodName] = {id: jobId, args: args};
+      return jobId;
+    },
+    cancelJob: function(inMethodName) {
+      var jobs = getJobs.call(this), job = jobs[inMethodName];
+      if (job) {
+        clearTimeout(job.id);
+        jobs[inMethodName] = null;
+      }
+    },
+    completeJob: function(inMethodName) {
+      var jobs = getJobs.call(this, inMethodName), job = jobs[inMethodName];
+      if (job) {
+        this.cancelJob(inMethodName);
+        if (this[inMethodName]) {
+          this[inMethodName].apply(this, job.args);
+        }
+      }
+    },
+    completeJobs: function() {
+      var jobs = getJob.call(this, inMethodName)
+      for (var i in jobs) {
+        this.completeJob(i);
+      }
+    },
+    bindTo: function(inProto) {
+      inProto.job = this.job;
+      inProto.cancelJob = this.cancelJob;
+      inProto.completeJob = this.completeJob;
+      inProto.completeJobs = this.completeJobs;
+    }
+  }
 
   // exports
   document.utils = document.utils || {};
+  document.utils.job = job;
   document.utils.setupProperties = setupProperties;
   document.utils.attributesToProperties = attributesToProperties;
 })();

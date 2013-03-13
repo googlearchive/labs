@@ -1,5 +1,14 @@
-(function() {
-  var ANIMATIONS = {
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="../../../platform/WebAnimations/web-animations.js"></script>
+<script src="utils.js"></script>
+<element name="g-animation">
+  
+  <script>
+    var ANIMATIONS = {
     fadeIn: {
       'opacity': ['0', '1']
     },
@@ -186,14 +195,14 @@
     complete: function() {
     }
   };
-  
   document.utils.setupProperties(gAnimationPrototype);
   document.utils.job.bindTo(gAnimationPrototype);
   
-  gAnimationPrototype.__proto__ = HTMLElement.prototype;
+  //gAnimationPrototype.__proto__ = HTMLElement.prototype;
   
 
-  document.register('g-animation', {
+  this.register({
     prototype: gAnimationPrototype
   });
-})();
+  </script>
+</element>

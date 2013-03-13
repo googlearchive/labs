@@ -7,6 +7,7 @@ license that can be found in the LICENSE file.
 <html>
 <head>
   <title>Raw Animation</title>
+  <meta charset="utf-8">
   <script src="../../../platform/WebAnimations/web-animations.js"></script>
   <style>
     div {
@@ -25,10 +26,10 @@ license that can be found in the LICENSE file.
   <div id="target1">Animatronic!</div>
   <script>
     var anim = new Animation(target1,
-      {'-webkit-transform': ['translate3d(0,0,0)', 'translate3d(0,300px,0)'],
+      {'transform': ['translate3d(0,0%,0)', 'translate3d(0,300%,0)'],
       'opacity': ['1', '0']},
       {duration: 1});
-    document.timeline.createPlayer(anim);  
+    document.timeline.play(anim);  
   </script>
 </body>
 </html>

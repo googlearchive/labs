@@ -4,9 +4,7 @@
   <title>Animation</title>
   <meta charset="utf-8">
   <script src="../../../platform/platform.js"></script>
-  <script src="../../../platform/WebAnimations/web-animations.js"></script>
-  <script src="../src/utils.js"></script>
-  <script src="../src/g-animation.js"></script>
+  <link rel="component" href="../src/g-animation.html">
   <style>
     div {
       margin: 20px;
@@ -42,7 +40,7 @@
   <div id="target2">Animatronic 2!</div>
 
   <script>
-    window.addEventListener('load', function() {
+    window.addEventListener('WebComponentsReady', function() {
       animation.addType('shake', {
         'transform': [
           'translate3d(0,0,0)',

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Virtual Content</title>
+  <script src="../../../platform/platform.js"></script>
+  <script src="../../../platform/MDV/src/mdv.js"></script>
+  <style>
+    html {
+      height: 100%;
+    }
+    
+    body {
+      height: 100%;
+      margin: 0;
+    }
+    
+    .flexbox {
+      display: -webkit-box;
+      display: -webkit-flex;
+    }
+    
+    .vertical {
+      -webkit-flex-flow: column;
+      -webkit-box-orient: vertical;
+    }
+    
+    .flex {
+      -webkit-flex: 1;
+      -webkit-box-flex: 1;
+    }
+    
+    .controls {
+      background: whitesmoke;
+      box-sizing: border-box;
+      min-height: 50px;
+    }
+    
+    .controls > * {
+      margin: 8px;
+    }
+    
+    .main {
+      font-size: 0px;
+      position: relative;
+    }
+    
+    .main-container {
+      position: absolute;
+      height: 100%;
+    }
+    
+    .main-item {
+      font-size: 1rem;
+      padding: 10px;
+      box-sizing: border-box;
+      width: 33.333%;
+      height: 25%;
+      display: inline-block;
+      position: relative;
+    }
+    
+   
+    .main-item-container {
+      height: 100%;
+      width: 100%;
+    }
+    
+    .main-header {
+      background: whitesmoke;
+      box-sizing: border-box;
+      border: 1px solid silver;
+      border-bottom: 0;
+      -webkit-align-items: center;
+      -webkit-box-align: center;
+      padding: 10px;
+    }
+    
+    .main-content {
+      background: #ddd;
+      padding: 10px;
+      border: 1px solid silver;
+      border-top: 0;
+      -webkit-align-items: center;
+      -webkit-box-align: center;
+      -webkit-justify-content: center;
+      -webkit-box-pack: center;
+    }
+    
+    
+  </style>
+</head>
+<body class="flexbox flex vertical">
+  <div class="controls flexbox">
+    <button id="prev"><<</button>
+    <button id="next">>></button>
+  </div>
+  <div class="main flex">
+    <div class="main-container">
+      <template iterate="items">
+        <div class="main-item">
+          <div class="main-item-container flexbox vertical">
+            <div class="main-header">{{title}}</div>
+            <div class="main-content flex flexbox vertical">
+              <img src="{{src}}">
+              {{content}}
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('load', function() {
+      document.body.model = {};
+      
+      vItems = [];
+      for (var i=0, src; i < 10000; i++) {
+        src = '../images/' + (Math.floor(Math.random() * i) % 4) + '.png';
+        vItems.push({title: 'Title ' + i, content: 'Content ' + i,
+          src: src});
+      }
+      
+      var pageSize = 12, page;
+      setPage = function(inPage) {
+        page = inPage;
+        var s = inPage * pageSize, e = s + pageSize;
+        document.body.model.items = vItems.slice(s, e);
+        Model.notifyChanges();
+      }
+      setPage(0);
+      
+      function goPrevious() {
+        setPage(page == 0 ? 0 : --page);
+      }
+      
+      function goNext() {
+        var m = vItems.length-1;
+        setPage(page == m ? m : ++page);
+      }
+      
+      Model.notifyChanges();
+      
+      prev.addEventListener('click', goPrevious);
+      next.addEventListener('click', goNext);
+      
+      //setInterval(goNext, 100);
+      
+    });
+  </script>
+
+</body>
+</html>
