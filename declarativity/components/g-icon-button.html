@@ -1,0 +1,38 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<template element="g-icon-button">
+  <style>
+    g-icon-button {
+      display: inline-block;
+      box-sizing: border-box;
+      width: 40px;
+      height: 40px;
+      border: 1px solid transparent;
+      padding: 7px;
+      cursor: pointer;
+    }
+
+    g-icon-button:hover, g-icon-button.selected {
+      border: 1px solid rgba(0,0,0,0.16);
+      border-radius: 3px;
+      opacity: 0.8;
+    }
+
+    g-icon-button:active {
+      opacity: 0.6;
+    }
+  </style>
+  <g-icon></g-icon>
+  <prototype>
+    ready: function() {
+      this.icon = this.querySelector("g-icon");
+      this.src = this.getAttribute('src');
+    },
+    set src(inValue) {
+      this.icon.src = inValue;
+    }
+  </prototype>
+</template>

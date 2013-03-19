@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../WebComponents/web-components.js"></script>
+  <script src="../../CustomElements/custom-elements.js"></script>
+  <link rel="component" href="Template.html">
+  <link rel="component" href="ShadowRoot.html">
+  <style>
+    section {
+      border: 1px solid lightblue;
+      padding: 8px;
+      margin: 8px;
+    }
+  </style>
+</head>
+<body>
+  <template element="x-foo">
+    <style>
+      x-foo {
+        display: block;
+      }
+    </style>
+    I Expand Into Simply Good Stuff.
+  </template>
+
+  <x-foo></x-foo>
+  <x-foo></x-foo>
+  <x-foo></x-foo>
+  
+  <!-- -->
+  <br/>
+  <br/>
+  <br/>
+  <!-- -->
+  
+  <template element="x-shadfoo">
+    <style>
+      x-shadfoo {
+        display: block;
+      }
+    </style>
+    <shadow-root>
+      I Expand into Incredibly Complicated Land. But I can do [
+        <content></content>
+      ] stuff.
+    </shadow-root>
+    <shadow-root>
+      <span style="border:1px solid lightblue;">
+        <shadow></shadow>
+      </span>
+      and inherit too.
+    </shadow-root>
+  </template>
+  
+  <!-- -->
+  
+  <x-shadfoo>One</x-shadfoo>
+  <x-shadfoo>Two</x-shadfoo>
+  <x-shadfoo>Three</x-shadfoo>
+</body>
+</html>

@@ -1,0 +1,23 @@
+the<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script>
+  ShadowRootElement = document.register('shadow-root', {
+    prototype: Object.create(HTMLElement.prototype, {
+      readyCallback: {
+        value: function() {
+          var p = this.parentNode;
+          if (p) {
+            //console.log("ShadowRoot: replace")
+            var s = p.webkitCreateShadowRoot();
+            s.innerHTML = this.innerHTML;
+            this.remove();
+          } 
+        },
+        enumerable: true
+      }
+    })
+  });
+</script>
