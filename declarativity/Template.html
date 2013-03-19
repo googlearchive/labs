@@ -1,0 +1,98 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<style>
+  template {
+    display: none;
+  }
+</style>
+<script>
+  TemplateElement = {};
+  TemplateElement.prototype = {
+    readyCallback: function() {
+      if (!this.content) {
+        this.content = document.createElement('div');
+        this.content.innerHTML = this.innerHTML;
+        this.innerHTML = '';
+      }
+      this.parse();
+      document.upgradeElements();
+    },
+    parse: function() {
+      var base = HTMLElement.prototype;
+      var xtends = this.getAttribute('extends');
+      if (xtends) {
+        base = Object.getPrototypeOf(document.createElement(xtends));
+      }
+      var tag = this.getAttribute('element');
+      var template = this;
+      var prototype = Object.create(base, {
+        readyCallback: {
+          value: function() {
+            this.stamp();
+            this.ready && this.ready();
+          }
+        },
+        stamp: {
+          value: function() {
+            var p = Object.getPrototypeOf(this);
+            while (p) {
+              if (p._stamp) {
+                p._stamp.call(this, p);
+              }
+              p = Object.getPrototypeOf(p);
+            }
+          }
+        },
+        _stamp: {
+          value: function(inHere) {
+            template.migrateContent(this);
+          }
+        }
+      });
+      var userPrototype = this.content.querySelector('prototype');
+      if (userPrototype) {
+        var code = "({" + userPrototype.textContent + "})";
+        this.content.removeChild(userPrototype);
+        userPrototype = eval(code);
+        //console.dir(userPrototype);
+      }
+      // install user prototype
+      if (userPrototype) {
+        mixin(prototype, userPrototype);
+      }
+      document.register(tag, {
+        prototype: prototype
+      });
+      console.log('HTMLTemplateElement: registered:', tag);
+    },
+    migrateContent: function(inTarget) {
+      var cn = (this.content && this.content.childNodes) || this.childNodes;
+      for (var i=0, n; n=cn[i]; i++) {
+        if (n.localName == 'script') {
+          // skip it
+        } else {
+          inTarget.appendChild(n.cloneNode(true));
+        }
+      }         
+      document.upgradeElements(inTarget);
+    }
+  };
+  //
+  TemplateElement = document.register('template', {
+    prototype: Object.create(HTMLElement.prototype, {
+      readyCallback: {
+        value: TemplateElement.prototype.readyCallback
+      },
+      parse: {
+        value: TemplateElement.prototype.parse
+      },
+      migrateContent: {
+        value: TemplateElement.prototype.migrateContent
+      }
+    })
+  });
+</script>
+

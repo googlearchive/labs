@@ -1,0 +1,35 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<template element="g-icon">
+    <style>
+      g-icon {
+        display: inline-block;
+      }
+
+      g-icon /*#icon*/ {
+        /* TODO(ffu): maybe we can use css variable for specifying the size */
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100% 100%;
+      }
+
+      g-icon/*#icon*/[size=large] {
+        width: 32px;
+        height: 32px;
+      }
+    </style>
+    <prototype>
+      ready: function() {
+        this.src = this.getAttribute('src');
+      },
+      set src(inValue) {
+        this.style.backgroundImage = 'url(' + inValue + ')';
+      }
+    </prototype>
+</template>
