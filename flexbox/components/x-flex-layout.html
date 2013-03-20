@@ -2,52 +2,99 @@
   <template>
     <style>
       @host {
-        display: none;
+        * {
+          display: none;
+        }
       }
     </style>
   </template>
   <script>
+    function setStyle(inAttr, inValue) {
+      var node = this;
+      ['-ms-', '-webkit-', ''].forEach(function(prefix) {
+        if (inAttr === 'display') {
+          node.style[inAttr] = prefix + inValue;
+        } else {
+          node.style[prefix + inAttr] = inValue;
+        }
+      });
+    };
+
     Toolkit.register(this, {
+      inline: false,
       type: 'row',
       wrap: false,
+      justify: null,
+      align: null,
       ready: function() {
-        this.parentNode.style['display'] = '-webkit-flex';
+        this.node = this.parentNode;
+        this.inlineChanged();
         this.typeChanged();
         this.wrapChanged();
-        var mo = new MutationObserver(this.mutationHandler.bind(this));
-        mo.observe(this.parentNode, {childList: true});
-        var mo2 = new MutationObserver(this.mutationHandler.bind(this));
-        mo2.observe(this.parentNode, {attributes: true, subtree: true, attributeFilter: ['flex']});
-        for (var i = 0, n; n = this.parentNode.childNodes[i]; i++) {
-          this.flexChild(n);
+        this.justifyChanged();
+        this.alignChanged();
+        this.installObservers();
+        // handle initial children
+        for (var i = 0, n; n = this.node.childNodes[i]; i++) {
+          this.handleChild(n);
         }
       },
+      installObservers: function() {
+        // observe new children
+        var mo = new MutationObserver(this.mutationHandler.bind(this));
+        mo.observe(this.node, {childList: true});
+        // observe children attributes
+        var mo2 = new MutationObserver(this.mutationHandler.bind(this));
+        mo2.observe(this.node, {attributes: true, subtree: true, attributeFilter: ['flex', 'align']});
+      },
+      inlineChanged: function() {
+        setStyle.call(this.node, 'display', (this.inline === null || this.inline === 'false') ? '-webkit-inline-flex' : '-webkit-flex');
+      },
       typeChanged: function() {
-        this.parentNode.style['-webkit-flex-direction'] = this.type;
+        setStyle.call(this.node, 'flex-direction', this.type);
       },
       wrapChanged: function() {
         var wrap = this.wrap;
         if (typeof wrap !== 'string') {
           wrap = wrap ? 'wrap' : 'nowrap';
         }
-        this.parentNode.style['-webkit-flex-wrap'] = wrap;
+        setStyle.call(this.node, 'flex-wrap', wrap);
+      },
+      justifyChanged: function() {
+        setStyle.call(this.node, 'justify-content', this.justify || null);
+      },
+      alignChanged: function() {
+        setStyle.call(this.node, 'align-items', this.align || null);
       },
       mutationHandler: function(inRecords) {
         for (var i = 0, r; r = inRecords[i]; i++) {
-          if (r.target === this) {
+          if (r.addedNodes) {
             for (var i = 0, n; n = r.addedNodes[i]; i++) {
-              this.flexChild(n);
+              this.handleChild(n);
             }
-          } else if (r.target.parentNode === this && r.attributeName === 'flex') {
-            this.flexChild(r.target);
+          } else if (r.attributeName) {
+            this.handleChildAttribute(r.target, r.attributeName);
           }
         }
       },
-      flexChild: function(inChild) {
-        var flex = inChild.nodeName !== '#text' && inChild.getAttribute('flex');
-        if (flex) {
-          inChild.style['-webkit-flex'] = flex;
+      handleChild: function(inChild) {
+        if (inChild.nodeName === '#text' || inChild === this) {
+          return;
         }
+        this.handleChildFlex(inChild);
+        this.handleChildAlign(inChild);
+      },
+      handleChildFlex: function(inChild) {
+        var flex = inChild.getAttribute('flex');
+        if (flex === null) {
+          flex = '0';
+        } else if (flex === '') {
+          flex = '1';
+        }
+        setStyle.call(inChild, 'flex', flex);
+      },
+      handleChildAlign: function(inChild) {
+        setStyle.call(inChild, 'align-self', inChild.getAttribute('align'));
       }
     });
   </script>

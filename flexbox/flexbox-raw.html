@@ -9,9 +9,14 @@
         display: -webkit-flex;
         border: 1px solid black;
         width: 800px;
-        height: 100px;
         margin: 10px;
         min-height: auto;
+      }
+      .flexbox.narrow {
+        width: 300px;
+      }
+      .flexbox.tall {
+        height: 100px;
       }
       .flexbox.row {
         -webkit-flex-direction: row;
@@ -35,6 +40,41 @@
     </style>
   </head>
   <body>
+    <p>justification</p>
+    <div class="flexbox row" style="-webkit-justify-content: flex-start">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+    <div class="flexbox row" style="-webkit-justify-content: flex-end">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+    <div class="flexbox row" style="-webkit-justify-content: center">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+    <div class="flexbox row" style="-webkit-justify-content: space-between">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+    <div class="flexbox row" style="-webkit-justify-content: space-around">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+    <p>alignment</p>
+    <div class="flexbox tall row">
+      <div>align: auto (stretch)</div>
+      <div style="-webkit-align-self: flex-start">align: flex-start</div>
+      <div style="-webkit-align-self: flex-end">align: flex-end</div>
+      <div style="-webkit-align-self: center">align: center</div>
+      <div style="-webkit-align-self: baseline">align: baseline</div>
+    </div>
+    <p>flexed</p>
     <div class="flexbox flexed row">
       <div>1</div>
       <div>2</div>
@@ -42,12 +82,19 @@
       <div>4</div>
       <div>5</div>
     </div>
-    <div class="flexbox row wrap">
+    <p>wrap</p>
+    <div class="flexbox narrow row wrap">
       <div>1</div>
       <div>2</div>
       <div>3</div>
       <div>4</div>
       <div>5</div>
+      <div>6</div>
+      <div>7</div>
+      <div>8</div>
+      <div>9</div>
+      <div>10</div>
+      <div>11</div>
     </div>
     <div class="flexbox row">
       <div>1</div>
