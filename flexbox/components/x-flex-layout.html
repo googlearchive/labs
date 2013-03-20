@@ -1,0 +1,54 @@
+<element name="x-flex-layout">
+  <template>
+    <style>
+      @host {
+        display: none;
+      }
+    </style>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      type: 'row',
+      wrap: false,
+      ready: function() {
+        this.parentNode.style['display'] = '-webkit-flex';
+        this.typeChanged();
+        this.wrapChanged();
+        var mo = new MutationObserver(this.mutationHandler.bind(this));
+        mo.observe(this.parentNode, {childList: true});
+        var mo2 = new MutationObserver(this.mutationHandler.bind(this));
+        mo2.observe(this.parentNode, {attributes: true, subtree: true, attributeFilter: ['flex']});
+        for (var i = 0, n; n = this.parentNode.childNodes[i]; i++) {
+          this.flexChild(n);
+        }
+      },
+      typeChanged: function() {
+        this.parentNode.style['-webkit-flex-direction'] = this.type;
+      },
+      wrapChanged: function() {
+        var wrap = this.wrap;
+        if (typeof wrap !== 'string') {
+          wrap = wrap ? 'wrap' : 'nowrap';
+        }
+        this.parentNode.style['-webkit-flex-wrap'] = wrap;
+      },
+      mutationHandler: function(inRecords) {
+        for (var i = 0, r; r = inRecords[i]; i++) {
+          if (r.target === this) {
+            for (var i = 0, n; n = r.addedNodes[i]; i++) {
+              this.flexChild(n);
+            }
+          } else if (r.target.parentNode === this && r.attributeName === 'flex') {
+            this.flexChild(r.target);
+          }
+        }
+      },
+      flexChild: function(inChild) {
+        var flex = inChild.nodeName !== '#text' && inChild.getAttribute('flex');
+        if (flex) {
+          inChild.style['-webkit-flex'] = flex;
+        }
+      }
+    });
+  </script>
+</element>
