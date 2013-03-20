@@ -20,6 +20,13 @@
     </style>
   </head>
   <body>
+    <div id="align-justify">
+      <x-flex-layout align="center" justify="flex-end"></x-flex-layout>
+      <div>1</div>
+      <div align="flex-end">a: flex-end</div>
+      <div align="flex-start">a: flex-start</div>
+      <div style="height: 300px">tall</div>
+    </div>
     <div id="nested">
       <x-flex-layout></x-flex-layout>
       <div flex="1">
@@ -37,8 +44,9 @@
     </div>
     <div id="flexbox">
       <x-flex-layout></x-flex-layout>
-      <div flex="1">1</div>
-      <div>2</div>
+      <div flex="1">flex</div>
+      <div flex="2">flex 2</div>
+      <div flex>flex</div>
       <div>3</div>
     </div>
   </body>
