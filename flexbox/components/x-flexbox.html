@@ -1,0 +1,75 @@
+<element name="x-flexbox">
+  <template>
+    <style>
+      @host {
+        * {
+          display: -webkit-flex;
+          min-height: auto;
+          min-width: auto;
+          -webkit-flex-flow: row nowrap;
+        }
+        .column {
+          -webkit-flex-direction: column;
+        }
+        .wrap {
+          -webkit-flex-wrap: wrap;
+        }
+      }
+      content::-webkit-distributed(*) {
+        border: 1px solid black;
+        padding: 5px;
+        margin: 5px;
+        -webkit-transition: all 1s;
+      }
+    </style>
+    <content id="content"></content>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      type: 'row',
+      wrap: false,
+      ready: function() {
+        this.typeChanged();
+        this.wrapChanged();
+        var mo = new MutationObserver(this.mutationHandler.bind(this));
+        mo.observe(this, {childList: true});
+        var mo2 = new MutationObserver(this.mutationHandler.bind(this));
+        mo2.observe(this, {attributes: true, subtree: true, attributeFilter: ['flex']});
+        for (var i = 0, n; n = this.childNodes[i]; i++) {
+          this.flexChild(n);
+        }
+      },
+      typeChanged: function() {
+        if (this.type == 'column') {
+          this.classList.add('column');
+        } else {
+          this.classList.remove('column');
+        }
+      },
+      wrapChanged: function() {
+        if (this.wrap) {
+          this.classList.add('wrap');
+        } else {
+          this.classList.remove('wrap');
+        }
+      },
+      mutationHandler: function(inRecords) {
+        for (var i = 0, r; r = inRecords[i]; i++) {
+          if (r.target === this) {
+            for (var i = 0, n; n = r.addedNodes[i]; i++) {
+              this.flexChild(n);
+            }
+          } else if (r.target.parentNode === this && r.attributeName === 'flex') {
+            this.flexChild(r.target);
+          }
+        }
+      },
+      flexChild: function(inChild) {
+        var flex = inChild.nodeName !== '#text' && inChild.getAttribute('flex');
+        if (flex) {
+          inChild.style['-webkit-flex'] = flex;
+        }
+      }
+    });
+  </script>
+</element>
