@@ -27,7 +27,10 @@
       justify: null,
       align: null,
       ready: function() {
-        this.node = this.parentNode;
+        // TODO: can't make a this.node due to workaround for
+        // https://github.com/toolkitchen/shadowdom/issues/27
+        // bug: https://github.com/toolkitchen/toolkit/issues/78
+        this.flexNode = this.parentNode && (this.parentNode.host || this.parentNode);
         this.inlineChanged();
         this.typeChanged();
         this.wrapChanged();
@@ -35,36 +38,45 @@
         this.alignChanged();
         this.installObservers();
         // handle initial children
-        for (var i = 0, n; n = this.node.childNodes[i]; i++) {
+        for (var i = 0, n; n = this.flexNode.childNodes[i]; i++) {
           this.handleChild(n);
+        }
+        if (this.flexNode !== this.parentNode) {
+          for (var i = 0, n; n = this.parentNode.childNodes[i]; i++) {
+            this.handleChild(n);
+          }
         }
       },
       installObservers: function() {
         // observe new children
         var mo = new MutationObserver(this.mutationHandler.bind(this));
-        mo.observe(this.node, {childList: true});
+        mo.observe(this.flexNode, {childList: true});
         // observe children attributes
         var mo2 = new MutationObserver(this.mutationHandler.bind(this));
-        mo2.observe(this.node, {attributes: true, subtree: true, attributeFilter: ['flex', 'align']});
+        mo2.observe(this.flexNode, {attributes: true, subtree: true, attributeFilter: ['flex', 'align']});
+        if (this.flexNode !== this.parentNode) {
+          var mo3 = new MutationObserver(this.mutationHandler.bind(this));
+          mo3.observe(this.parentNode, {attributes: true, subtree: true, attributeFilter: ['flex', 'align']});
+        }
       },
       inlineChanged: function() {
-        setStyle.call(this.node, 'display', (this.inline === null || this.inline === 'false') ? '-webkit-inline-flex' : '-webkit-flex');
+        setStyle.call(this.flexNode, 'display', (this.inline === null || this.inline === 'false') ? '-webkit-inline-flex' : '-webkit-flex');
       },
       typeChanged: function() {
-        setStyle.call(this.node, 'flex-direction', this.type);
+        setStyle.call(this.flexNode, 'flex-direction', this.type);
       },
       wrapChanged: function() {
         var wrap = this.wrap;
         if (typeof wrap !== 'string') {
           wrap = wrap ? 'wrap' : 'nowrap';
         }
-        setStyle.call(this.node, 'flex-wrap', wrap);
+        setStyle.call(this.flexNode, 'flex-wrap', wrap);
       },
       justifyChanged: function() {
-        setStyle.call(this.node, 'justify-content', this.justify || null);
+        setStyle.call(this.flexNode, 'justify-content', this.justify || null);
       },
       alignChanged: function() {
-        setStyle.call(this.node, 'align-items', this.align || null);
+        setStyle.call(this.flexNode, 'align-items', this.align || null);
       },
       mutationHandler: function(inRecords) {
         for (var i = 0, r; r = inRecords[i]; i++) {

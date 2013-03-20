@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Flex Layout Test</title>
+    <link rel="component" href="components/x-flex-layout.html">
+    <script src="../../Platform/platform.js"></script>
+    <script src="../../toolkit/toolkit.js"></script>
+    <style>
+      flex-layout, div {
+        border: 1px solid black;
+        margin: 5px;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <flex-layout>
+      <div>1</div>
+      <div flex>flex</div>
+    </flex-layout>
+    <element name="flex-layout">
+      <template>
+        <x-flex-layout></x-flex-layout>
+        <content></content>
+        <div flex>moar flex</div>
+      </template>
+      <script>
+        Toolkit.register(this, {
+          ready: function() {
+          }
+        });
+      </script>
+    </element>
+  </body>
+</html>
