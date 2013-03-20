@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<title>Toolkit Form Controls></title>
+<script src="../../Platform/platform.js"></script>
+<script src="../../toolkit/toolkit.js"></script>
+<link rel="component" href="../../flexbox/components/x-flex-layout.html">
+<link rel="component" href="components/g-form.html">
+<link rel="component" href="components/g-input.html">
+<style>
+  body, input {
+    font-family: 'Helvetica Neue', 'Roboto', 'Arial', sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    background-color: white;
+    color: rgba(0, 0, 0, .8);
+  }
+  body, html {
+    height: 100%;
+  }
+  .flex {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+  }
+  .flex-container {
+    /* old webkit */
+    display: -webkit-flexbox;
+    /* new webkit */
+    display: -webkit-flex;
+    /* ie */
+    display: -ms-flexbox;
+    /* standard */
+    display: flex;
+  }
+  .flex-column {
+    /* old webkit */
+    -webkit-box-orient: vertical;
+    /* new webkit */
+    -webkit-flex-direction: column;
+    /* ie */
+    -ms-flex-direction: column;
+    /* standard */
+    flex-direction: column;
+  }
+  .invalid {
+    box-shadow: 0 0 10px 5px #d84437;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: auto;
+    height: 40px;
+    background: black;
+  }
+  ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border-radius: 60px;
+    height: 60px;
+    width: 60px;
+    background: blue;
+  }
+  ::-moz-range-track {
+    height: 40px;
+    background: black;
+  }
+  ::-moz-range-thumb {
+    -moz-appearance: none;
+    border-radius: 60px;
+    height: 60px;
+    width: 60px;
+    background: blue;
+  }
+</style>
+<form is="g-form">
+  <g-input flex="1">
+    <input>
+  </g-input>
+</form>
