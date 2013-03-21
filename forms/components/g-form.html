@@ -5,12 +5,15 @@
         form[is="g-form"] {
           padding: 10px;
           background-color: #f0f0ed;
+          display: -webkit-flex;
+          -webkit-flex-flow: column;
         }
       }
+      content::-webkit-distributed(*) {
+        -webkit-flex: 1;
+      }
     </style>
-    <x-flex-layout class="column">
-      <content></content>
-    </x-flex-layout>
+    <content></content>
   </template>
   <script>
     Toolkit.register(this);

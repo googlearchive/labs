@@ -1,23 +1,52 @@
-<element name="g-input">
+<element name="g-input-decorator">
   <template>
     <style>
-      ::-webkit-input-placeholder, ::-moz-placeholder, ::-ms-input-placeholder {
-        color: rgba(0, 0, 0, 0.5);
+      @host {
+        g-input-decorator {
+          border: 1px solid #b2b2b2;
+          background: white;
+        }
       }
-      content::-webkit-distributed(input) {
-        -webkit-flex: 1;
-        -ms-flex: 1;
-        flex: 1;
-        border: 1px solid #b2b2b2;
+      #shadow {
+        display: -webkit-flex;
+        -webkit-flex-flow: row nowrap;
+        -webkit-align-items: center;
       }
-      content::-webkit-distributed(input:focus) {
-        outline: 0;
+      .focused {
         box-shadow: inset 0 0 5px #448afd, 0 0 5px #448afd;
       }
+      #input::-webkit-distributed(input) {
+        border: none;
+        outline: 0;
+        -webkit-flex: 1;
+      }
+      #input::-webkit-distributed(input::-webkit-input-placeholder) {
+        color: rgba(0, 0, 0, 0.5);
+      }
+      #left::-webkit-distributed(*), #right::-webkit-distributed(*) {
+        -webkit-flex: 0;
+        -webkit-user-select: none;
+      }
     </style>
-    <content></content>
+    <div id="shadow">
+      <content id="left" select="[left]"></content>
+      <content id="input" select="input"></content>
+      <content id="right" select=""></content>
+    </div>
   </template>
   <script>
-    Toolkit.register(this);
+    Toolkit.register(this, {
+      toggleFocus: function(inFocused) {
+        this.$.shadow.classList.toggle('focused', inFocused);
+      },
+      ready: function() {
+        this.addEventListener('focus', function(e){
+          this.toggleFocus(true);
+        }.bind(this), true);
+        this.addEventListener('blur', function(e){
+          this.toggleFocus();
+        }.bind(this), true);
+      }
+    });
   </script>
 </element>
