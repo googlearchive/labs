@@ -2,8 +2,6 @@
 <title>Toolkit Form Controls></title>
 <script src="../../toolkit/platform/platform.js"></script>
 <script src="../../toolkit/toolkit.js"></script>
-<!-- <script src="../declarativeShadow/ShadowRoot.js"></script> -->
-<link rel="component" href="../flexbox/components/x-flex-layout.html">
 <link rel="component" href="components/g-form.html">
 <link rel="component" href="components/g-input.html">
 <style>
@@ -16,9 +14,14 @@
   }
 </style>
 <form is="g-form" id="form">
+  <input placeholder="regular input">
   <g-input-decorator>
-    <div right>Bar</div>
-    <input placeholder="placeholder">
-    <div left>Foo</div>
+    <input placeholder="Decorated Input">
+  </g-input-decorator>
+  <g-input-decorator>
+    <span right>Some Other Thing</span>
+    <input placeholder="Crazy Input">
+    <span left>Title?</span>
+    <img src="http://images.google.com/images/loading.gif" right>
   </g-input-decorator>
 </form>
