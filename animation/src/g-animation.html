@@ -78,14 +78,17 @@ license that can be found in the LICENSE file.
     play: function() {
       this.completeJob('apply');
       if (this.animation) {
-        if (this.player) {
-          this.player.source = null;
-        }
+        this.cancel();
         this.player = document.timeline.play(this.animation);
         //console.log('play', this.player);
         this.player.paused = false;
         this.player.currentTime = 0;
         this.monitor();
+      }
+    },
+    cancel: function() {
+      if (this.player) {
+        this.player.source = null;
       }
     },
     apply: function() {

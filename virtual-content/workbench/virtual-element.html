@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Virtual Content</title>
+  <script src="../../../platform/platform.js"></script>
+  <link rel="component" src="../src/g-panels.html">
+  <link rel="component" src="../src/g-virtualizer.html">
+  <style>
+    g-panels {
+      display: block;
+      height: 300px;
+      width: 300px;
+      position: relative;
+    }
+    
+    g-panels > * {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+    }
+    
+    
+    .item {
+      display: -webkit-box;
+      display: -webkit-flex;
+      -webkit-box-orient: vertical;
+      -webkit-flex-flow: column;
+      -webkit-justify-content: center;
+      -webkit-box-pack: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+    }
+    
+    
+    .beige {
+      background: beige;
+    }
+    
+    .tomato {
+      background: tomato;
+    }
+    
+    .orange {
+      background: orange;
+    }
+    
+    .purple {
+      background: purple;
+    }    
+  </style>
+</head>
+<body>
+  <div class="controls flexbox">
+    <button id="prev"><<</button>
+    <button id="next">>></button>
+    <label><input id="intervalCb" type="checkbox">auto</label>
+  </div>
+  
+  <g-virtualizer id="virtual">
+    
+    <g-panels id="panels">
+  
+      <template iterate>
+        <div class="{{className}}">
+          <img src="{{src}}">
+          <input value="{{value}}">
+            {{content}}
+        </div>
+      </template>
+    
+    </g-panels>
+  
+  </g-virtualizer>
+  
+  <script>
+    window.addEventListener('WebComponentsReady', function() {
+      var items = [];
+      var classes = ['beige', 'tomato', 'orange', 'purple'];
+      for (var i=0, src; i < 10000; i++) {
+        src = '../images/' + (Math.floor(Math.random() * i) % 4) + '.png';
+        items.push({title: 'Title ' + i, content: 'Content ' + i,
+          src: src, className: 'item ' + classes[i % classes.length], index: i, value: 'value' + i});
+      }
+      virtual.pageSize = 3;
+      virtual.virtualModel = items;
+      
+      function goPrevious() {
+        if (panels.selected == 0) {
+          if (virtual.page > 0) {
+            virtual.previous();
+            panels.selected = panels.panelsCount-2;
+            panels.completeSelection();
+            panels.previous();
+          }
+        } else {
+          panels.previous();
+        }
+      }
+      
+      function goNext() {
+        if (panels.selected == panels.panelsCount-1) {
+          if (virtual.page < virtual.pageCount()-1) {
+            virtual.next();
+            panels.selected = 1;
+            panels.completeSelection();
+            panels.next();
+          }
+        } else {
+          panels.next();
+        }
+      }
+      
+      
+      var autoNext;
+      function toggleAutoNext(e) {
+        autoNext = e.target.checked;
+        if (autoNext) {
+          goNext();
+        }
+      }
+      
+      
+      function gotoPanel(inValue) {
+        var info = virtual.getCurrentPageInfo();
+        if (inValue < info.start || inValue > info.end) {
+          
+        }
+      }
+      
+      panels.addEventListener('panelAnimationComplete', function(e) {
+        if (autoNext) {
+          goNext();
+        }
+      });
+      
+      
+      prev.addEventListener('click', goPrevious);
+      next.addEventListener('click', goNext);
+      intervalCb.addEventListener('change', toggleAutoNext);
+      
+    });
+  </script>
+
+</body>
+</html>

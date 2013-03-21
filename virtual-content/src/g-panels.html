@@ -17,13 +17,13 @@ license that can be found in the LICENSE file.
       this.job('applySelected');
     },
     observeDom: function() {
-      var observer = new WebKitMutationObserver(this.childrenChanged.bind(this));
-      observer.observe(this, {
+      this.observer = new WebKitMutationObserver(this.childrenChanged.bind(this));
+      this.observer.observe(this, {
         childList: true
       });
     },
     childrenChanged: function() {
-      this.renderSelected();
+      this.completeSelection();
     },
     selectedChanged: function(inOldValue) {
       this.lastSelected = inOldValue;
@@ -46,41 +46,84 @@ license that can be found in the LICENSE file.
         //console.log('applySelected', group);
         this.animation.play();
       } else {
-        this.renderSelected();
+        this.completeSelection();
       }
     },
-    renderSelected: function() {
+    completeSelection: function() {
+      this.cancelJob('applySelected');
+      this.animation.cancel();
+      this.observer.takeRecords();
       var selectedPanel = this.panelAtSelectedValue(this.selected);
       Array.prototype.forEach.call(this.panels, function(p, i) {
         p.style.display = (p == selectedPanel) ? null : 'none';
       });
+      this.dispatchEvent(new CustomEvent('panelChange', {detail: {
+          selected: this.selected, selectedPanel: this.selectedPanel}}));
     },
     panelAtSelectedValue: function(inSelected) {
       var panel;
       Array.prototype.some.call(this.panels, function(p, i) {
         if ((i == inSelected) || (p.getAttribute('name') == inSelected) 
-          || (p.getAttribute('name') == inSelected)) {
+          || (p.getAttribute('id') == inSelected)) {
           panel = p;
           return true;
         }
       }, this);
       return panel;
     },
+    selectedValueForPanel: function(inPanel) {
+      if (inPanel) {
+        return inPanel.getAttribute('name') || inPanel.getAttribute('id') ||
+          this.panels.indexOf(inPanel);
+      }
+    },
+    indexOfSelectedValue: function(inSelected) {
+      var selected = this.panelAtSelectedValue(inSelected);
+      return this.panels.indexOf(selected);
+    },
+    get selectedPanel() {
+      return this.panelAtSelectedValue(this.selected);
+    },
     get panels() {
-      return this.children;
+      var excluded = ['style', 'template'];
+      return Array.prototype.filter.call(this.children, function(c) {
+        return (excluded.indexOf(c.localName) < 0);
+      }.bind(this));
+    },
+    get panelsCount() {
+      return this.panels.length;
     },
     get animation() {
       if (!this._animation) {
         this._animation = document.createElement('g-animation');
         this._animation.type = this.type;
         this._animation.complete = function() {
-          this.renderSelected();
+          this.completeSelection();
+          this.job('fireAnimationComplete');
         }.bind(this);
       }
       return this._animation;
     },
+    fireAnimationComplete: function() {
+      this.dispatchEvent(new CustomEvent('panelAnimationComplete', {detail: {
+          selected: this.selected, selectedPanel: this.selectedPanel}}));
+    },
     typeChanged: function() {
       this._animation = null;
+    },
+    next: function() {
+      var i = this.indexOfSelectedValue(this.selected);
+      var p = this.panels[i+1];
+      if (p) {
+        this.selected = this.selectedValueForPanel(p);
+      }
+    },
+    previous: function() {
+      var i = this.indexOfSelectedValue(this.selected);
+      var p = this.panels[i-1];
+      if (p) {
+        this.selected = this.selectedValueForPanel(p);
+      }
     }
   };
   
