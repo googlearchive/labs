@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Animation</title>
+  <meta charset="utf-8">
+  <script src="../../../platform/platform.js"></script>
+  <link rel="component" href="../src/g-animation.html">
+  <style>
+    div {
+      margin: 20px;
+      background: orange;
+      border: 1px solid purple;
+      padding: 10px;
+    }
+    
+    div:nth-of-type(2) {
+      background: yellow;
+    }
+  </style>
+</head>
+<body>
+    <g-animation id="animation" type="seq" autoplay>
+      <g-animation type="slideRight" fillmode="forwards"></g-animation>
+      <g-animation type="slideDown" fillmode="forwards"></g-animation>
+      <g-animation type="slideLeft" fillmode="forwards"></g-animation>
+      <g-animation type="slideUp" fillmode="forwards"></g-animation>
+    </g-animation>
+    
+
+    <g-animation id="animation2" type="par" easing="ease-in-out" autoplay>
+      <g-animation type="shake" duration="2" ></g-animation>
+      <g-animation type="seq">
+        <g-animation type="fadeOut" duration="1"></g-animation>
+        <g-animation type="fadeIn" duration="1"></g-animation>
+      </g-animation>
+    </g-animation>
+
+  <div id="target1">Animatronic!</div>
+  
+  <div id="target2">Animatronic 2!</div>
+
+  <script>
+    window.addEventListener('WebComponentsReady', function() {
+      animation.addType('shake', {
+        'transform': [
+          'translate3d(0,0,0)',
+          'translate3d(-25px,0,0)',
+          'translate3d(25px,0,0)',
+          'translate3d(15px,0,0)',
+          'translate3d(-15px,0,0)',
+          'translate3d(5px,0,0)',
+          'translate3d(-5px,0,0)',
+          'translate3d(0,0,0)'
+        ]
+      });
+      animation.target = target1;
+      animation2.target = target2;
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<element name="g-virtualizer">
+  <script>
+    var proto = {
+      page: 0,
+      validPage: null,
+      pageMargin: 1,
+      pageSize: 10,
+      virtualModel: null,
+      immediateChanges: true,
+      readyCallback: function() {
+        this.virtualModel = [];
+      },
+      previous: function() {
+        this.page--;
+      },
+      next: function() {
+        this.page++;
+      },
+      pageCount: function() {
+        this.virtualModel = this.virtualModel || [];
+        return Math.ceil(this.virtualModel.length / (this.pageSize || 1));
+      },
+      pageChanged: function() {
+        this.validPage = Math.max(Math.min(this.page, this.pageCount()), 0);
+      },
+      validPageChanged: function(inOldPage) {
+        var info = this.calcPageInfo(this.validPage);
+        this.model = this.model || [];
+        while (this.model.length) {
+          this.model.pop();
+        }
+        for (var i= info.start; i < info.end; i++) {
+          this.model.push(this.virtualModel[i]);
+        }
+        if (this.immediateChanges) {
+          this.notify();
+        } else {
+          this.job('notify');
+        }
+      },
+      calcPageInfo: function(inPageNumber) {
+        var i = inPageNumber > 0 ? 2 : 1;
+        var start = Math.max(0, inPageNumber * this.pageSize - this.pageMargin),
+          end = start + this.pageSize + this.pageMargin*i;
+        return {start: start, end: end};
+      },
+      getCurrentPageInfo: function() {
+        return this.calcPageInfo(this.validPage);
+      },
+      virtualModelChanged: function() {
+        this.pageChanged();
+      },
+      notify: function() {
+        Model.notifyChanges();
+      }
+    };
+    
+    document.utils.setupProperties(proto);
+    document.utils.job.bindTo(proto);
+      
+    this.register({
+      prototype: proto
+    });
+  </script>
+</element>
