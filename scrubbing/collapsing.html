@@ -4,16 +4,15 @@
   <title>Scrubbing: Collapsing Panels</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
+  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
   <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
   <script src="../../pointergestures/src/pointergestures.js"></script>
-  <script src="src/utils.js"></script>
-  <script src="src/lerp.js"></script>
-  <script src="src/Animator.js"></script>
-  <script src="src/Timeline.js"></script>
-  <script src="src/Animation.js"></script>
+  <script src="src/Scrub.js"></script>
 	<style>
-    body {
+    body, html {
       font-family: sans-serif;
+      height: 100%;
+      margin: 0;
     }
     
     .header {
@@ -77,44 +76,75 @@
       return p;
     }
     
+    getAnimWidth = function(inContainer) {
+      var w = inContainer.scrollWidth;
+      var c$ = inContainer.children;
+      var lw = c$[c$.length-1].offsetWidth;
+      return w - lw;
+    }
+    
     // keyframes for n panels
     makeKeyframes = function(inContainer, inIndex) {
       var keyframes = [], x=0;
+      var w = getAnimWidth(inContainer);
       var p = inContainer.children[inIndex];
       Array.prototype.forEach.call(inContainer.children, function(c, i) {
-        keyframes.push({x: Math.max(-x, -p.offsetLeft)});
+        keyframes.push({value: 'translate(' + 
+          Math.max(-x, -p.offsetLeft) + 'px,0)', offset: x / w});
         x += c.offsetWidth;
       });
-      return keyframes;
+      return {'-webkit-transform': keyframes};
     }
     
     // make an Animation for each panel
-    makeAnimations = function(inContainer, inTimeline) {
+    makeAnimations = function(inContainer, inDuration) {
       var p$ = inContainer.children, count = p$.length;
+      var animations = [];
       for (var i=0, x, p; (p=p$[i]); i++) {
-        x = i / (count-1);
-        //x = i / count;
-        inTimeline.snapPoints.push(x);
-        new scrubbing.Animation(p, {
-          timeline: inTimeline,
-          keyframes: makeKeyframes(inContainer, i),
-          noWrap: true,
-          unit: 'px'/*,
-          offset: x*/
-        });
+        animations.push(new Animation(p, makeKeyframes(inContainer, i),
+          {duration: inDuration}));
       }
+      return animations;
+    }
+    
+    findKeyframes = function(inAnim) {
+      if (inAnim.animationFunction && inAnim.animationFunction.frames) {
+        return inAnim.animationFunction.frames;
+      } else if (inAnim.children) {
+        for (var i=0, c, k; c=inAnim.children[i]; i++) {
+          k = findKeyframes(c);
+          if (k) {
+            return k;
+          }
+        }
+      }
+    }
+    
+    makeSnaps = function(inAnim) {
+      var keyframes = findKeyframes(inAnim);
+      var snaps = [];
+      keyframes.frames.forEach(function(f) {
+        snaps.push(f.offset);
+      });
+      return snaps;
     }
 
     // there will be count panels in container
     var count = 9;
+    var duration = 0.5 * (count - 1);
     var container = document.querySelector('.panels');
     makePanels(container, count);
-    // make timeline and animations
-    var timeline = new scrubbing.Timeline({trackingNode: container, 
-          snapPoints: [], dragScale: -1, duration: 500 * count, noWrap: true});
-    // need only 1 set of keyframes and use an offset for each panel
-    //var keyframes = makeKeyframes(container);
-    makeAnimations(container, timeline);
+    
+    // make scrub and animations
+    var animations = makeAnimations(container, duration);
+    var animation = new ParGroup(animations);
+    
+    var scrub = new Scrub({
+      node: container, 
+      animation: animation,
+      snapPoints: makeSnaps(animation),
+      scale: -container.offsetWidth / getAnimWidth(container)
+    });
 	</script>
 </body>
 </html>
