@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Flex Layout</title>
+    <link rel="stylesheet" type="text/css" href="flexbox.css">
+    <link rel="component" href="components/x-flex-layout-2.html">
+    <script src="../../Platform/platform.js"></script>
+    <script src="../../toolkit/toolkit.js"></script>
+    <style>
+      div {
+        border: 1px solid black;
+        margin: 5px;
+        padding: 5px;
+      }
+      #vflexbox {
+        height: 500px;
+      }
+      #shrink {
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+    <div>
+      <x-flex-layout></x-flex-layout>
+      <div style="width: 20%">20%</div>
+      <div flex>flex</div>
+      <div style="width: 200px">200px</div>
+    </div>
+    <div id="align-justify">
+      <x-flex-layout align="center" justify="flex-end"></x-flex-layout>
+      <div>1</div>
+      <div align="flex-end">a: flex-end</div>
+      <div align="flex-start">a: flex-start</div>
+      <div style="height: 300px">tall</div>
+    </div>
+    <div id="nested">
+      <x-flex-layout></x-flex-layout>
+      <div flex="1">
+        <x-flex-layout type="column"></x-flex-layout>
+        <div>inner 1</div>
+        <div>inner 2</div>
+      </div>
+      <div flex="1">outer</div>
+    </div>
+    <div id="vflexbox">
+      <x-flex-layout type="column"></x-flex-layout>
+      <div flex="1">1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+    //-->
+    <div id="flexbox">
+      <x-flex-layout-2></x-flex-layout-2>
+      <div>1</div>
+      <div flex>flex</div>
+      <div>2</div>
+    </div>
+  </body>
+</html>

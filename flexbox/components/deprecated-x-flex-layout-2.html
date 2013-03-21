@@ -1,0 +1,23 @@
+<link rel="stylesheet" type="text/css" href="../flexbox.css">
+<element name="x-flex-layout-2">
+  <template>
+    <style>
+      @host {
+        * {
+          display: none;
+        }
+      }
+    </style>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      type: 'row',
+      ready: function() {
+        this.flexNode = this.parentNode && (this.parentNode.host || this.parentNode);
+        console.log('flex', this.flexNode);
+        this.flexNode.classList.add('flexbox');
+        this.flexNode.classList.add(this.type);
+      }
+    });
+  </script>
+</element>
