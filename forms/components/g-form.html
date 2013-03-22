@@ -3,14 +3,20 @@
     <style>
       @host {
         form[is="g-form"] {
-          padding: 10px;
+          padding: 20px;
           background-color: #f0f0ed;
           display: -webkit-flex;
-          -webkit-flex-flow: column;
+          -webkit-flex-direction: column;
         }
       }
       content::-webkit-distributed(*) {
         -webkit-flex: 1;
+      }
+      content::-webkit-distributed(g-input-decorator:first-of-type) {
+        border-top-width: 1px !important;
+      }
+      content::-webkit-distributed(g-input-decorator) {
+        border-top-width: 0px !important;
       }
     </style>
     <content></content>

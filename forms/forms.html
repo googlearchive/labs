@@ -1,27 +1,41 @@
 <!DOCTYPE html>
-<title>Toolkit Form Controls></title>
+<title>Toolkit Form Controls</title>
 <script src="../../toolkit/platform/platform.js"></script>
 <script src="../../toolkit/toolkit.js"></script>
 <link rel="component" href="components/g-form.html">
 <link rel="component" href="components/g-input-decorator.html">
+<link rel="component" href="components/g-signin-header.html">
 <style>
-  body, input {
+  body, input, button {
     font-family: 'Helvetica Neue', 'Roboto', 'Arial', sans-serif;
-    font-size: 13px;
-    line-height: 18px;
+    font-size: 21pt;
+    line-height: 42pt;
+  }
+  body {
     background-color: white;
     color: rgba(0, 0, 0, .8);
+    margin: 0;
+  }
+  button[type=submit] {
+    background-color: #448afd;
+    color: white;
+  }
+  button {
+    -webkit-appearance: none;
+    border-radius: 5px;
+    text-align: center;
+    vertical-align: middle;
+    border-width: 0;
   }
 </style>
+<g-signin-header></g-signin-header>
 <form is="g-form" id="form">
-  <input placeholder="regular input">
   <g-input-decorator>
-    <input placeholder="Decorated Input">
+    <input placeholder="email">
   </g-input-decorator>
   <g-input-decorator>
-    <span right>Some Other Thing</span>
-    <input placeholder="Crazy Input">
-    <span left>Title?</span>
-    <img src="http://images.google.com/images/loading.gif" right>
+    <input type="password" placeholder="password">
   </g-input-decorator>
+  <br>
+  <button type="submit">Sign In</div>
 </form>

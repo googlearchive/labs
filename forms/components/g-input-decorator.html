@@ -13,7 +13,7 @@
         -webkit-align-items: center;
       }
       .focused {
-        box-shadow: inset 0 0 5px #448afd, 0 0 5px #448afd;
+        box-shadow: inset 0 0 8px #448afd, 0 0 8px #448afd;
       }
       #input::-webkit-distributed(input) {
         border: none;
@@ -21,17 +21,16 @@
         -webkit-flex: 1;
       }
       #input::-webkit-distributed(input::-webkit-input-placeholder) {
-        color: rgba(0, 0, 0, 0.5);
+        color: rgba(0, 0, 0, 0.25);
       }
       #left::-webkit-distributed(*), #right::-webkit-distributed(*) {
         -webkit-flex: 0;
-        -webkit-user-select: none;
       }
     </style>
     <div id="shadow">
       <content id="left" select="[left]"></content>
       <content id="input" select="input"></content>
-      <content id="right" select=""></content>
+      <content id="right" select="[right]"></content>
     </div>
   </template>
   <script>
