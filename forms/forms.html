@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<title>Toolkit Form Controls</title>
+<title>Toolkit Form Components</title>
 <script src="../../toolkit/platform/platform.js"></script>
 <script src="../../toolkit/toolkit.js"></script>
-<link rel="component" href="components/g-form.html">
+<link rel="component" href="components/g-groupbox.html">
 <link rel="component" href="components/g-input-decorator.html">
 <link rel="component" href="components/g-signin-header.html">
+
 <style>
   body, input, button {
     font-family: 'Helvetica Neue', 'Roboto', 'Arial', sans-serif;
@@ -13,11 +14,11 @@
   }
   body {
     background-color: white;
-    color: rgba(0, 0, 0, .8);
+    color: #333;
     margin: 0;
   }
   button[type=submit] {
-    background-color: #448afd;
+    background-image: linear-gradient(to bottom, #4387fd, #4683ea);
     color: white;
   }
   button {
@@ -28,8 +29,9 @@
     border-width: 0;
   }
 </style>
+
 <g-signin-header></g-signin-header>
-<form is="g-form" id="form">
+<g-groupbox>
   <g-input-decorator>
     <input placeholder="email">
   </g-input-decorator>
@@ -37,5 +39,5 @@
     <input type="password" placeholder="password">
   </g-input-decorator>
   <br>
-  <button type="submit">Sign In</div>
-</form>
+  <button type="submit">Sign In</button>
+</g-groupbox>

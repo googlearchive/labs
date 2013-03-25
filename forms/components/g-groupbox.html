@@ -1,12 +1,12 @@
-<element name="g-form" extends="form">
+<element name="g-groupbox">
   <template>
     <style>
       @host {
-        form[is="g-form"] {
+        g-groupbox {
           padding: 20px;
           background-color: #f0f0ed;
           display: -webkit-flex;
-          -webkit-flex-direction: column;
+          -webkit-flex-flow: column nowrap;
         }
       }
       content::-webkit-distributed(*) {
