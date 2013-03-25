@@ -13,7 +13,7 @@
 .flexbox.justify-start {
   -webkit-justify-content: flex-start;
 }
-.flexbox.justify-erd {
+.flexbox.justify-end {
   -webkit-justify-content: flex-end;
 }
 .flexbox.justify-center {
