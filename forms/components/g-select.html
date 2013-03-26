@@ -1,0 +1,39 @@
+<element name="g-select">
+  <template>
+    <style>
+      @host {
+        g-select {
+          border: 1px solid #b2b2b2;
+          border-top-width: 0px;
+          background: white;
+        }
+        g-select:first-child {
+          border-top-width: 1px;
+        }
+      }
+      #container {
+        display: -webkit-flex;
+        -webkit-flex-flow: column nowrap;
+        box-shadow: 0px 10px 10px -5px #999;
+      }
+      .item {
+        padding: 0 20px;
+        border-width: 0 0 1px 0;
+        border-style: solid;
+        border-color: #b2b2b2;
+        font-size: 14pt;
+      }
+      .item:last-child {
+        border-bottom-width: 0;
+      }
+    </style>
+    <div id="container">
+      <div class="item">Item 1</div>
+      <div class="item">Item 2</div>
+      <div class="item">Item 3</div>
+    </div>
+  </template>
+  <script>
+    Toolkit.register(this);
+  </script>
+</element>

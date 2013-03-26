@@ -5,6 +5,7 @@
 <link rel="component" href="components/g-groupbox.html">
 <link rel="component" href="components/g-input-decorator.html">
 <link rel="component" href="components/g-signin-header.html">
+<link rel="component" href="components/g-select.html" />
 
 <style>
   body, input, button {
@@ -38,6 +39,13 @@
   <g-input-decorator>
     <input type="password" placeholder="password">
   </g-input-decorator>
+  <br>
+  <!-- @host does not have enough selector power (adjacent siblings), use style
+  attribute -->
+  <g-input-decorator style="border-top-width: 1px;">
+    <input type="text" placeholder="select, needs dynamic options">
+  </g-input-decorator>
+  <g-select></g-select>
   <br>
   <button type="submit">Sign In</button>
 </g-groupbox>
