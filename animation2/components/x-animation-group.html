@@ -20,6 +20,7 @@
       ready: function() {
         // TODO: need to do this for now.
         this.super();
+        console.log('initialized');
       },
       makeAnimation: function() {
         return new ANIMATION_GROUPS[this.type](this.childAnimations, this.timingProps);

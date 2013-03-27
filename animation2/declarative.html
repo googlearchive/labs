@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Animations</title>
+    <link rel="stylesheet" type="text/css" href="../../toolkit/components/css/g-flex-layout.css">
+    <link rel="component" href="components/x-animation.html">
+    <script src="../../toolkit/Platform/platform.js"></script>
+    <script src="../../toolkit/toolkit.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        background: deeppink
+      }
+    </style>
+  </head>
+  <body class="flexbox col">
+    <div flex id="d" style="background: darkgreen"></div>
+    <x-animation id="anim" duration="2" fillMode="forwards" composite="add">
+      <x-property name="opacity">
+        <x-keyframe offset="0.5" value="0.5"></x-keyframe>
+        <x-keyframe value="1"></x-keyframe>
+      </x-property>
+      <x-property name="transform">
+        <x-keyframe offset="0" value="translate3d(0,0,0)"></x-keyframe>
+        <x-keyframe offset="0.5" value="translate3d(0,100px,0)"></x-keyframe>
+        <x-keyframe offset="1" value="translate3d(0,100%,0)" easing="ease-in"></x-keyframe>
+      </x-property>
+    </x-animation>
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+        anim.target = d;
+        anim.play();
+      });
+    </script>
+  </body>
+</html>

@@ -5,7 +5,10 @@
     var animationPrototype = {
       animation: null,
       target: null,
+      // animation
       properties: null,
+      accumulate: 'none',
+      composite: 'replace',
       // timing
       duration: 0,
       fillMode: 'none',
@@ -43,7 +46,7 @@
         return this.animation;
       },
       makeAnimation: function() {
-        return this.target ? new Animation(this.target, this.properties, this.timingProps) : null;
+        return this.target ? new Animation(this.target, this.animationProps, this.timingProps) : null;
       },
       asyncApply: function() {
         this.job('apply');
@@ -82,6 +85,9 @@
           p.asyncApply();
         }
       },
+      doOnChildren: function(inFn) {
+        Array.prototype.forEach.call(this.children, inFn, this);
+      },
       get timingProps() {
         var props = {
           fillMode: this.fillMode,
@@ -91,6 +97,22 @@
           duration: this.duration
         }
         return props;
+      },
+      get animationProps() {
+        var props = {};
+        if (!this.properties) {
+          this.doOnChildren(function(c) {
+            if (c.tagName.toLowerCase() === 'x-property') {
+              var property = c.name;
+              var values = [];
+              this.doOnChildren.call(c, function(f) {
+                values.push(f.properties);
+              });
+              props[property] = values;
+            }
+          });
+        }
+        return this.properties || props;
       },
       monitor: function() {
         /*
@@ -109,5 +131,31 @@
     }
     document.utils.job.bindTo(animationPrototype);
     Toolkit.register(this, animationPrototype);
+  </script>
+</element>
+<element name="x-property">
+  <script>
+    Toolkit.register(this, {
+      name: null
+    });
+  </script>
+</element>
+<element name="x-keyframe">
+  <script>
+    Toolkit.register(this, {
+      offset: null,
+      value: null,
+      easing: null,
+      get properties() {
+        var props = {
+          value: String(this.value) || "",
+          offset: this.offset !== null ? this.offset : 1
+        };
+        if (this.easing) {
+          props.timingFunction = this.easing;
+        }
+        return props;
+      }
+    });
   </script>
 </element>
