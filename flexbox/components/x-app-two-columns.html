@@ -1,5 +1,7 @@
-<link rel="stylesheet" type="text/css" href="../flexbox.css">
-<element name="x-app-two-columns">
+<link rel="component" href="../../../toolkit/components/g-app.html">
+<element name="x-app-two-columns" extends="g-app">
+  <link rel="stylesheet" toolkit-scope="controller" type="text/css" href="../flexbox.css">
+  <link rel="stylesheet" type="text/css" href="../flexbox.css">
   <template>
     <style>
       content::-webkit-distributed(header) {
@@ -32,14 +34,9 @@
     </div>
   </template>
   <script>
-    // External stylesheet loading workaround
-    var css = this.ownerDocument.querySelector('link');
-    var style = this.ownerDocument.createElement('style');
-    style.textContent = css.__resource;
-    var template = this.ownerDocument.querySelector('template');
-    template.content.appendChild(style);
     Toolkit.register(this, {
       ready: function() {
+        this.super();
       }
     });
   </script>
