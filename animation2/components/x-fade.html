@@ -1,0 +1,15 @@
+<link rel="component" href="x-animation.html">
+<element name="x-fade" extends="x-animation">
+  <script>
+    Toolkit.register(this, {
+      duration: 0.3,
+      fillMode: 'forwards',
+      properties: {
+        'opacity': ['1', '0']
+      },
+      ready: function() {
+        this.super();
+      }
+    });
+  </script>
+</element>

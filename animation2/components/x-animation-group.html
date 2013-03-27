@@ -1,0 +1,64 @@
+<script src="../../../toolkit/platform/WebAnimations/web-animations.js"></script>
+<script src="../../animation/src/utils.js"></script>
+<link rel="component" href="x-animation.html">
+<element name="x-animation-group" extends="x-animation" on-animationchange="onAnimationChange">
+  <script>
+    var ANIMATION_GROUPS = {
+      'par': ParGroup,
+      'seq': SeqGroup
+    };
+    var animationPrototype = {
+      // TODO: dup attrs until "attributes" is implemented.
+      target: null,
+      type: null,
+      // timing
+      duration: 0,
+      fillMode: 'none',
+      easing: 'linear',
+      iterationCount: 1,
+      startDelay: 0,
+      ready: function() {
+        // TODO: need to do this for now.
+        this.super();
+      },
+      makeAnimation: function() {
+        return new ANIMATION_GROUPS[this.type](this.childAnimations, this.timingProps);
+      },
+      onAnimationChange: function(inEvent, inDetail, inSender) {
+        if (inSender !== this) {
+          this.asyncApply();
+        }
+      },
+      typeChanged: function() {
+        this.asyncApply();
+      },
+      targetChanged: function() {
+        this.doOnChildren(function(c) {
+          c.target = this.target;
+        });
+      },
+      syncJobs: function() {
+        window.dirtyCheck();
+        this.doOnChildren(function(c) {
+          c.completeJob('apply');
+        });
+        this.completeJob('apply');
+      },
+      doOnChildren: function(inFn) {
+        Array.prototype.forEach.call(this.children, inFn, this);
+      },
+      get childAnimations() {
+        var list = [];
+        Array.prototype.forEach.call(this.children, function(c) {
+          c.completeJob('apply');
+          if (c.animation) {
+            list.push(c.animation);
+          }
+        });
+        return list;
+      }
+    };
+    document.utils.job.bindTo(animationPrototype);
+    Toolkit.register(this, animationPrototype);
+  </script>
+</element>

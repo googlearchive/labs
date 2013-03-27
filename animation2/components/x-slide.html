@@ -1,0 +1,17 @@
+<link rel="component" href="x-animation.html">
+<element name="x-slide" extends="x-animation">
+  <script>
+    Toolkit.register(this, {
+      duration: 0.3,
+      fillMode: 'forwards',
+      easing: 'ease-in',
+      properties: {
+        'transform': ['translate3d(0,0%,0)','translate3d(0,100%,0)'],
+        operation: 'add'
+      },
+      ready: function() {
+        this.super();
+      }
+    });
+  </script>
+</element>

@@ -1,0 +1,113 @@
+<script src="../../../toolkit/platform/WebAnimations/web-animations.js"></script>
+<script src="../../animation/src/utils.js"></script>
+<element name="x-animation">
+  <script>
+    var animationPrototype = {
+      animation: null,
+      target: null,
+      properties: null,
+      // timing
+      duration: 0,
+      fillMode: 'none',
+      easing: 'linear',
+      iterationCount: 1,
+      startDelay: 0,
+      ready: function() {
+        this.job('apply');
+      },
+      play: function() {
+        this.syncJobs();
+        if (this.animation) {
+          this.cancel();
+          this.player = document.timeline.play(this.animation);
+          this.player.paused = false;
+          this.player.currentTime = 0;
+          this.monitor();
+        }
+      },
+      cancel: function() {
+        if (this.player) {
+          this.player.source = null;
+        }
+      },
+      apply: function() {
+        this.cancelJob('apply');
+        this.animation = null;
+        this.animation = this.makeAnimation();
+        if (this.autoplay && this.animation) {
+          this.play();
+        }
+        if (this.animation) {
+          this.asyncApplyParent();
+        }
+        return this.animation;
+      },
+      makeAnimation: function() {
+        return this.target ? new Animation(this.target, this.properties, this.timingProps) : null;
+      },
+      asyncApply: function() {
+        this.job('apply');
+      },
+      syncJobs: function() {
+        // TODO: need to dirty check to make sure all side effects are
+        // applied before playing the animation.
+        window.dirtyCheck();
+        this.completeJob('apply');
+      },
+      animationChanged: function() {
+        // TODO: attributes are not case sensitive.
+        this.send('animationchange');
+      },
+      targetChanged: function() {
+        this.asyncApply();
+      },
+      durationChanged: function() {
+        this.asyncApply();
+      },
+      fillModeChanged: function() {
+        this.asyncApply();
+      },
+      easingChanged: function() {
+        this.asyncApply();
+      },
+      iterationCountChanged: function() {
+        this.asyncApply();
+      },
+      startDelayChanged: function() {
+        this.asyncApply();
+      },
+      asyncApplyParent: function() {
+        var p = this.parentNode;
+        if (p && p.asyncApply) {
+          p.asyncApply();
+        }
+      },
+      get timingProps() {
+        var props = {
+          fillMode: this.fillMode,
+          timingFunction: this.easing,
+          iterationCount: this.iterationCount,
+          startDelay: this.startDelay,
+          duration: this.duration
+        }
+        return props;
+      },
+      monitor: function() {
+        /*
+        // TODO(sorvell): adding brittle support for an end event
+        if (this.player && this.player.source &&
+            this.player_isPastEndOfActiveInterval()) {
+          this.complete();
+        } else {
+          webkitRequestAnimationFrame(this.monitor.bind(this));
+        }
+        */
+      },
+      // intended for user implementation
+      complete: function() {
+      }
+    }
+    document.utils.job.bindTo(animationPrototype);
+    Toolkit.register(this, animationPrototype);
+  </script>
+</element>
