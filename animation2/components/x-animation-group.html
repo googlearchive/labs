@@ -51,9 +51,12 @@
       get childAnimations() {
         var list = [];
         Array.prototype.forEach.call(this.children, function(c) {
-          c.completeJob('apply');
-          if (c.animation) {
-            list.push(c.animation);
+          // TODO how to get only animations?
+          if (c.completeJob) {
+            c.completeJob('apply');
+            if (c.animation) {
+              list.push(c.animation);
+            }
           }
         });
         return list;

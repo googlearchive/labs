@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Animations</title>
+    <title>Declarative</title>
     <link rel="stylesheet" type="text/css" href="../../toolkit/components/css/g-flex-layout.css">
     <link rel="component" href="components/x-animation.html">
     <script src="../../toolkit/Platform/platform.js"></script>
@@ -18,9 +18,9 @@
   </head>
   <body class="flexbox col">
     <div flex id="d" style="background: darkgreen"></div>
-    <x-animation id="anim" duration="2" fillMode="forwards" composite="add">
+    <x-animation id="anim" duration="2" fillMode="forwards">
       <x-property name="opacity">
-        <x-keyframe offset="0.5" value="0.5"></x-keyframe>
+        <x-keyframe value="0.5"></x-keyframe>
         <x-keyframe value="1"></x-keyframe>
       </x-property>
       <x-property name="transform">

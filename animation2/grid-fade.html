@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Grid Fade</title>
+    <link rel="stylesheet" type="text/css" href="../../toolkit/components/css/g-flex-layout.css">
+    <link rel="component" href="components/x-grid.html">
+    <script src="../../toolkit/Platform/platform.js"></script>
+    <script src="../../toolkit/toolkit.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+      }
+      body {
+        background-color: #f3f2f1;
+      }
+    </style>
+  </head>
+  <body class="flexbox col">
+    <x-grid id="grid" count="10"></x-grid>
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+      });
+    </script>
+  </body>
+</html>

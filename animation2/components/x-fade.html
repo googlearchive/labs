@@ -2,13 +2,27 @@
 <element name="x-fade" extends="x-animation">
   <script>
     Toolkit.register(this, {
-      duration: 0.3,
+      type: 'fadeOut',
+      // animation
+      properties: {opacity: '0'},
+      accumulate: 'none',
+      composite: 'replace',
+      // timing
+      duration: 0,
       fillMode: 'forwards',
-      properties: {
-        'opacity': ['1', '0']
-      },
+      easing: 'linear',
+      iterationCount: 1,
+      startDelay: 0,
       ready: function() {
         this.super();
+        this.typeChanged();
+      },
+      typeChanged: function() {
+        if (this.type === 'fadeOut') {
+          this.properties = {opacity: "0"};
+        } else if (this.type === 'fadeIn') {
+          this.properties = {opacity: "1"};
+        }
       }
     });
   </script>

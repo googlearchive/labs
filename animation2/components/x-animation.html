@@ -11,7 +11,7 @@
       composite: 'replace',
       // timing
       duration: 0,
-      fillMode: 'none',
+      fillMode: 'forwards',
       easing: 'linear',
       iterationCount: 1,
       startDelay: 0,
@@ -46,6 +46,7 @@
         return this.animation;
       },
       makeAnimation: function() {
+        console.log('animation', this.animationProps, 'timing', this.timingProps);
         return this.target ? new Animation(this.target, this.animationProps, this.timingProps) : null;
       },
       asyncApply: function() {
@@ -62,6 +63,9 @@
         this.send('animationchange');
       },
       targetChanged: function() {
+        this.asyncApply();
+      },
+      propertiesChanged: function() {
         this.asyncApply();
       },
       durationChanged: function() {
@@ -115,15 +119,13 @@
         return this.properties || props;
       },
       monitor: function() {
-        /*
         // TODO(sorvell): adding brittle support for an end event
         if (this.player && this.player.source &&
-            this.player_isPastEndOfActiveInterval()) {
+            this.player.source._isPastEndOfActiveInterval()) {
           this.complete();
         } else {
           webkitRequestAnimationFrame(this.monitor.bind(this));
         }
-        */
       },
       // intended for user implementation
       complete: function() {
@@ -148,9 +150,12 @@
       easing: null,
       get properties() {
         var props = {
+          // TODO bug in webanimations polyfill
           value: String(this.value) || "",
-          offset: this.offset !== null ? this.offset : 1
         };
+        if (this.offset !== null) {
+          props.offset = this.offset;
+        }
         if (this.easing) {
           props.timingFunction = this.easing;
         }

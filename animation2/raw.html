@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Raw</title>
+    <link rel="stylesheet" type="text/css" href="../../toolkit/components/css/g-flex-layout.css">
+    <script src="../../toolkit/platform/WebAnimations/web-animations.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        background: deeppink
+      }
+    </style>
+  </head>
+  <body class="flexbox col">
+    <div flex id="d" style="background: darkgreen;"></div>
+    <script>
+      var opacity = new Animation(d, {
+        opacity: '0'
+      }, 0.3);
+      var transform = new Animation(d, {
+        transform: 'translate3d(0,100%,0)'
+      }, 1);
+      document.timeline.play(opacity);
+    </script>
+  </body>
+</html>

@@ -23,6 +23,7 @@
       }
       #fadeOut {
         background-color: #4285f4;
+        opacity: 0.5;
       }
       #slideDown {
         background-color: #db4437;
@@ -48,15 +49,15 @@
     <x-animated id="slideDownThenFade" animation="#slideDownThenFadeAnim">
       seqgroup
     </x-animated>
-    <x-fade id="fadeAnim"></x-fade>
+    <x-fade id="fadeAnim" duration="0.5" type="fadeOut"></x-fade>
     <x-slide id="slideAnim"></x-slide>
     <x-animation-group id="fadeAndSlideDownAnim" type="par" duration="0.3" fillMode="forwards">
-      <x-fade></x-fade>
+      <x-fade duration="0.5"></x-fade>
       <x-slide></x-slide>
     </x-animation-group>
     <x-animation-group id="slideDownThenFadeAnim" type="seq" duration="0.6" fillMode="forwards">
       <x-slide></x-slide>
-      <x-fade></x-fade>
+      <x-fade duration="0.5"></x-fade>
     </x-animation-group>
     <element name="x-animated" on-click="play">
       <script>

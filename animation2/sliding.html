@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Sliding</title>
+    <link rel="stylesheet" type="text/css" href="../../toolkit/components/css/g-flex-layout.css">
+    <link rel="component" href="components/x-sliding.html">
+    <script src="../../toolkit/Platform/platform.js"></script>
+    <script src="../../toolkit/toolkit.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+      }
+      x-sliding {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: goldenrod;
+      }
+    </style>
+  </head>
+  <body class="flexbox col">
+    <x-sliding direction="right" offset="200px"></x-sliding>
+  </body>
+</html>
