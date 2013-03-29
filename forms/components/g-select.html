@@ -1,4 +1,6 @@
-<element name="g-select">
+<link rel="component" href="../../../toolkit/components/g-overlay.html">
+<link rel="component" href="g-input-decorator.html">
+<element name="g-select" attributes="placeholder">
   <template>
     <style>
       @host {
@@ -7,13 +9,14 @@
           border-top-width: 0px;
           background: white;
         }
-        g-select:first-child {
+        g-select:first-of-type {
           border-top-width: 1px;
         }
       }
       #container {
         display: -webkit-flex;
         -webkit-flex-flow: column nowrap;
+        -webkit-align-items: center;
         box-shadow: 0px 10px 10px -5px #999;
       }
       .item {
@@ -27,13 +30,27 @@
         border-bottom-width: 0;
       }
     </style>
-    <div id="container">
+    <input id="input" placeholder="{{placeholder}}" on-focus="open"
+    on-blur="close">
+    <g-overlay id="container">
       <div class="item">Item 1</div>
       <div class="item">Item 2</div>
       <div class="item">Item 3</div>
-    </div>
+    </g-overlay>
   </template>
   <script>
-    Toolkit.register(this);
+    Toolkit.register(
+      this,
+      {
+        open: function() {
+          var w = this.getBoundingClientRect().width + 'px';
+          this.$.container.style.width = w;
+          this.$.container.opened = true;
+        },
+        close: function() {
+          this.$.container.opened = false;
+        }
+      }
+    );
   </script>
 </element>
