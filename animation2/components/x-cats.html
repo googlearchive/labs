@@ -1,0 +1,104 @@
+<link rel="component" href="x-staggered-group.html">
+<link rel="component" href="x-animation.html">
+<element name="x-cats">
+  <template>
+    <style>
+      x-item {
+        display: inline-block;
+        margin: 5px;
+        padding: 10px;
+        background-color: white;
+        border: 1px solid #ccc;
+        opacity: 0;
+      }
+    </style>
+    <template repeat="{{contents}}">
+      <x-item url="{{url}}" on-load="onLoad" on-click="onClick"></x-item>
+    </template>
+    <x-staggered-group id="anim" duration="0.2" easing="ease-in-out" offset="0.01" on-complete="onComplete">
+      <template repeat="{{contents}}">
+        <x-animation id="anim" duration="0.1">
+          <x-property name="opacity">
+            <x-keyframe value="1"></x-keyframe>
+          </x-property>
+        </x-animation>
+      </template>
+    </x-staggered-group>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      count: 10,
+      loadedCount: 0,
+      contents: null,
+      visible: false,
+      ready: function() {
+        this.countChanged();
+      },
+      countChanged: function() {
+        var contents = [];
+        for (var i = 0; i < this.count; i++) {
+          var row2 = i > 5;
+          contents.push({
+            url: 'http://placekitten.com/g/150/' + (150 + i * 2)
+          });
+        }
+        this.contents = contents;
+        this.loadedCount = 0;
+      },
+      loadedCountChanged: function() {
+        if (this.loadedCount === this.count) {
+          var items = this.webkitShadowRoot.querySelectorAll('x-item');
+          var anims = this.$.anim.querySelectorAll('x-animation');
+          var n = items.length / 2;
+          for (var i = 0; i < n; i++) {
+            anims[i * 2].target = items[i];
+            if (i * 2 < items.length) {
+              anims[i * 2 + 1].target = items[i + n];
+            }
+          }
+          // If we don't dirty check here, the animation target side
+          // effects will fire after visibleChanged which is no good.
+          window.dirtyCheck();
+          this.visible = true;
+        }
+      },
+      visibleChanged: function(inOld) {
+        if (this.visible) {
+          this.$.anim.direction = 'normal';
+        } else {
+          this.$.anim.direction = 'reverse';
+        }
+        this.$.anim.play();
+      },
+      onLoad: function() {
+        this.loadedCount += 1;
+      },
+      onClick: function() {
+        this.visible = !this.visible;
+      }
+    });
+  </script>
+</element>
+
+<element name="x-item">
+  <template>
+    <style>
+      img {
+        width: 150px;
+        height: 150px;
+      }
+    </style>
+    <img id="image" src="{{url}}">
+  </template>
+  <script>
+    Toolkit.register(this, {
+      url: null,
+      ready: function() {
+        this.$.image.onload = this.onLoad.bind(this);
+      },
+      onLoad: function() {
+        this.send('load');
+      }
+    });
+  </script>
+</element>

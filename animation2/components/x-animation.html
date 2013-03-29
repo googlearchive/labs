@@ -15,6 +15,7 @@
       easing: 'linear',
       iterationCount: 1,
       startDelay: 0,
+      direction: 'normal',
       ready: function() {
         this.job('apply');
       },
@@ -46,7 +47,7 @@
         return this.animation;
       },
       makeAnimation: function() {
-        console.log('animation', this.animationProps, 'timing', this.timingProps);
+        this.target && console.log('target', this.target, 'animation', this.animationProps, 'timing', this.timingProps);
         return this.target ? new Animation(this.target, this.animationProps, this.timingProps) : null;
       },
       asyncApply: function() {
@@ -83,6 +84,9 @@
       startDelayChanged: function() {
         this.asyncApply();
       },
+      directionChanged: function() {
+        this.asyncApply();
+      },
       asyncApplyParent: function() {
         var p = this.parentNode;
         if (p && p.asyncApply) {
@@ -98,6 +102,7 @@
           timingFunction: this.easing,
           iterationCount: this.iterationCount,
           startDelay: this.startDelay,
+          direction: this.direction,
           duration: this.duration
         }
         return props;
@@ -129,6 +134,7 @@
       },
       // intended for user implementation
       complete: function() {
+        this.send('complete');
       }
     }
     document.utils.job.bindTo(animationPrototype);

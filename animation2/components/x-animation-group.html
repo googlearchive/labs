@@ -10,17 +10,17 @@
     var animationPrototype = {
       // TODO: dup attrs until "attributes" is implemented.
       target: null,
-      type: null,
+      type: 'par',
       // timing
       duration: 0,
-      fillMode: 'none',
+      fillMode: 'forwards',
       easing: 'linear',
       iterationCount: 1,
       startDelay: 0,
+      direction: 'normal',
       ready: function() {
         // TODO: need to do this for now.
         this.super();
-        console.log('initialized');
       },
       makeAnimation: function() {
         return new ANIMATION_GROUPS[this.type](this.childAnimations, this.timingProps);
@@ -46,17 +46,17 @@
         this.completeJob('apply');
       },
       doOnChildren: function(inFn) {
-        Array.prototype.forEach.call(this.children, inFn, this);
+        Array.prototype.forEach.call(this.children, function(c) {
+          // TODO <template> in the way
+          c.apply && inFn(c);
+        }, this);
       },
       get childAnimations() {
         var list = [];
-        Array.prototype.forEach.call(this.children, function(c) {
-          // TODO how to get only animations?
-          if (c.completeJob) {
-            c.completeJob('apply');
-            if (c.animation) {
-              list.push(c.animation);
-            }
+        this.doOnChildren(function(c) {
+          c.completeJob('apply');
+          if (c.animation) {
+            list.push(c.animation);
           }
         });
         return list;
