@@ -8,20 +8,29 @@
       'seq': SeqGroup
     };
     var animationPrototype = {
-      // TODO: dup attrs until "attributes" is implemented.
       target: null,
       type: 'par',
       // timing
-      duration: 0,
-      fillMode: 'forwards',
-      easing: 'linear',
-      iterationCount: 1,
-      startDelay: 0,
-      direction: 'normal',
+      duration: null,
+      fillMode: null,
+      easing: null,
+      iterationCount: null,
+      startDelay: null,
+      direction: null,
       ready: function() {
         // TODO: need to do this for now.
         this.super();
       },
+      /*
+      apply: function() {
+        // ensure that the children's side effects are applied.
+        window.dirtyCheck();
+        this.doOnChildren(function(c) {
+          c.completeJob('apply');
+        });
+        this.super();
+      },
+      */
       makeAnimation: function() {
         return new ANIMATION_GROUPS[this.type](this.childAnimations, this.timingProps);
       },
@@ -38,13 +47,6 @@
           c.target = this.target;
         });
       },
-      syncJobs: function() {
-        window.dirtyCheck();
-        this.doOnChildren(function(c) {
-          c.completeJob('apply');
-        });
-        this.completeJob('apply');
-      },
       doOnChildren: function(inFn) {
         Array.prototype.forEach.call(this.children, function(c) {
           // TODO <template> in the way
@@ -60,9 +62,14 @@
           }
         });
         return list;
+      },
+      completeJob: function(inMethodName) {
+        this.doOnChildren(function(c) {
+          c.completeJob('apply');
+        });
+        this.super(arguments);
       }
     };
-    document.utils.job.bindTo(animationPrototype);
     Toolkit.register(this, animationPrototype);
   </script>
 </element>

@@ -7,20 +7,26 @@
       target: null,
       // animation
       properties: null,
-      accumulate: 'none',
-      composite: 'replace',
+      accumulate: null,
+      composite: null,
       // timing
-      duration: 0,
-      fillMode: 'forwards',
-      easing: 'linear',
-      iterationCount: 1,
-      startDelay: 0,
-      direction: 'normal',
+      duration: null,
+      fillMode: null,
+      easing: null,
+      iterationCount: null,
+      startDelay: null,
+      direction: null,
       ready: function() {
         this.job('apply');
       },
       play: function() {
-        this.syncJobs();
+        console.log('play start');
+        // TODO: need to dirty check to make sure all side effects are
+        // applied before playing the animation.
+        window.dirtyCheck();
+        console.log('after dirty check');
+        this.completeJob('apply');
+        console.log('play', this.animation);
         if (this.animation) {
           this.cancel();
           this.player = document.timeline.play(this.animation);
@@ -35,6 +41,7 @@
         }
       },
       apply: function() {
+        console.log('apply', this, this.id);
         this.cancelJob('apply');
         this.animation = null;
         this.animation = this.makeAnimation();
@@ -47,17 +54,11 @@
         return this.animation;
       },
       makeAnimation: function() {
-        this.target && console.log('target', this.target, 'animation', this.animationProps, 'timing', this.timingProps);
+        this.target && console.log('makeAnimation target', this.target, 'animation', this.animationProps, 'timing', this.timingProps);
         return this.target ? new Animation(this.target, this.animationProps, this.timingProps) : null;
       },
       asyncApply: function() {
         this.job('apply');
-      },
-      syncJobs: function() {
-        // TODO: need to dirty check to make sure all side effects are
-        // applied before playing the animation.
-        window.dirtyCheck();
-        this.completeJob('apply');
       },
       animationChanged: function() {
         // TODO: attributes are not case sensitive.
@@ -97,13 +98,16 @@
         Array.prototype.forEach.call(this.children, inFn, this);
       },
       get timingProps() {
-        var props = {
-          fillMode: this.fillMode,
-          timingFunction: this.easing,
-          iterationCount: this.iterationCount,
-          startDelay: this.startDelay,
-          direction: this.direction,
-          duration: this.duration
+        var props = {};
+        var timing = {
+          fillMode: 'fillMode',
+          easing: 'timingFunction',
+          startDelay: 'startDelay',
+          direction: 'direction',
+          duration: 'duration'
+        };
+        for (t in timing) {
+          this[t] !== null && (props[timing[t]] = this[t]);
         }
         return props;
       },

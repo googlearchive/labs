@@ -4,28 +4,77 @@
     <title>Animations</title>
     <link rel="stylesheet" type="text/css" href="../../toolkit/components/css/g-flex-layout.css">
     <link rel="component" href="components/x-animation-group.html">
-    <link rel="component" href="components/x-fade.html">
-    <link rel="component" href="components/x-slide.html">
+    <link rel="component" href="components/x-animation.html">
     <script src="../../toolkit/Platform/platform.js"></script>
     <script src="../../toolkit/toolkit.js"></script>
-    <style>
-      html, body {
-        margin: 0;
-        height: 100%;
-      }
-    </style>
   </head>
-  <body class="flexbox col">
-    <div flex id="d" style="background: navy"></div>
-    <x-animation-group id="anim" type="seq" duration="1" fillMode="forwards" iterationCount="Infinity">
-      <x-slide duration="0.5"></x-slide>
-      <x-fade duration="0.5"></x-fade>
-    </x-animation-group>
-    <script>
-      document.addEventListener('WebComponentsReady', function() {
-        anim.target = d;
-        anim.play();
-      });
-    </script>
+  <body>
+    <x-test></x-test>
+    <element name="x-header">
+      <template>
+        <select id="select">
+          <template repeat="{{ids}}">
+            <option value="{{}}">{{}}</option>
+          </template>
+        </select>
+        <button on-click="onClick">play!</button>
+      </template>
+      <script>
+        Toolkit.register(this, {
+          ids: null,
+          onClick: function() {
+            this.send('play', this.ids[this.$.select.selectedIndex]);
+          }
+        });
+      </script>
+    </element>
+    <element name="x-test">
+      <template>
+        <style>
+          div#d {
+            background-color: navy;
+            height: 200px;
+            width: 200px;
+          }
+        </style>
+        <x-header ids="{{ids}}" on-play="onPlay"></x-header>
+        <div id="d"></div>
+        <x-animation-group id="pargroup" type="par">
+          <x-animation-group id="seqgroup" type="seq">
+            <x-animation id="moveright" fillMode="forwards" duration="1">
+              <x-property name="transform">
+                <x-keyframe offset="0" value="translateX(0)"></x-keyframe>
+                <x-keyframe offset="1" value="translateX(200px)"></x-keyframe>
+              </x-property>
+            </x-animation>
+            <x-animation id="grow" fillMode="forwards" duration="2">
+              <x-property name="width">
+                <x-keyframe offset="0" value="200px"></x-keyframe>
+                <x-keyframe offset="1" value="400px"></x-keyframe>
+              </x-property>
+            </x-animation>
+          </x-animation-group>
+          <x-animation id="fadeout" fillMode="forwards" duration="3">
+            <x-property name="opacity">
+              <x-keyframe offset="0" value="1"></x-keyframe>
+              <x-keyframe offset="1" value="0"></x-keyframe>
+            </x-property>
+          </x-animation>
+        </x-animation-group>
+      </template>
+      <script>
+        Toolkit.register(this, {
+          ids: ['seqgroup','pargroup','fadeout','moveright','grow'],
+          ready: function() {
+            this.$.fadeout.target = this.$.d;
+            this.$.moveright.target = this.$.d;
+            this.$.grow.target = this.$.d;
+          },
+          onPlay: function(inEvent, inId) {
+            this.$[inId].play();
+          }
+        });
+      </script>
+    </element>
   </body>
 </html>

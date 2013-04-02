@@ -3,34 +3,72 @@
 <element name="x-cats">
   <template>
     <style>
+      @host {
+        * {
+          visibility: hidden;
+        }
+      }
       x-item {
         display: inline-block;
         margin: 5px;
         padding: 10px;
         background-color: white;
         border: 1px solid #ccc;
-        opacity: 0;
+      }
+      #fixed {
+        position: fixed;
+        background-color: white;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        padding: 10px;
+        font-size: 24px;
+        display: none;
       }
     </style>
     <template repeat="{{contents}}">
-      <x-item url="{{url}}" on-load="onLoad" on-click="onClick"></x-item>
+      <x-item url="{{url}}" on-load="onLoad" on-click="onClickItem"></x-item>
     </template>
-    <x-staggered-group id="anim" duration="0.2" easing="ease-in-out" offset="0.01" on-complete="onComplete">
+    <div id="fixed" on-click="onClickFixed">
+      Hi!
+    </div>
+    <x-staggered-group id="cascade" easing="ease-in-out" offset="0.02">
       <template repeat="{{contents}}">
-        <x-animation id="anim" duration="0.1">
+        <x-animation duration="0.2" fillMode="backwards">
           <x-property name="opacity">
             <x-keyframe value="1"></x-keyframe>
           </x-property>
         </x-animation>
       </template>
     </x-staggered-group>
+    <x-animation-group id="drillin">
+      <x-staggered-group id="radial" offset="0.02" easing="ease-in-out">
+        <template repeat="{{contents}}">
+          <x-animation duration="0.2" fillMode="forwards">
+            <x-property name="opacity">
+              <x-keyframe offset="0" value="1"></x-keyframe>
+              <x-keyframe offset="1" value="0"></x-keyframe>
+            </x-property>
+          </x-animation>
+        </template>
+      </x-staggered-group>
+      <x-animation-group>
+        <x-animation id="fadeout" duration="0.03">
+          <x-property name="opacity">
+            <x-keyframe offset="0" value="1"></x-keyframe>
+            <x-keyframe offset="1" value="0"></x-keyframe>
+          </x-property>
+        </x-animation>
+        <x-animation id="grow" startOffset="0.01" duration="0.2" easing="ease-in-out">
+        </x-animation>
+      </x-animation-group>
+    </x-animation-group>
   </template>
   <script>
     Toolkit.register(this, {
       count: 10,
       loadedCount: 0,
       contents: null,
-      visible: false,
+      single: false,
       ready: function() {
         this.countChanged();
       },
@@ -47,34 +85,76 @@
       },
       loadedCountChanged: function() {
         if (this.loadedCount === this.count) {
-          var items = this.webkitShadowRoot.querySelectorAll('x-item');
-          var anims = this.$.anim.querySelectorAll('x-animation');
-          var n = items.length / 2;
-          for (var i = 0; i < n; i++) {
-            anims[i * 2].target = items[i];
-            if (i * 2 < items.length) {
-              anims[i * 2 + 1].target = items[i + n];
-            }
-          }
-          // If we don't dirty check here, the animation target side
-          // effects will fire after visibleChanged which is no good.
-          window.dirtyCheck();
-          this.visible = true;
+          this.setupCascade();
+          this.style['visibility'] = 'visible';
+          this.$.cascade.play();
         }
-      },
-      visibleChanged: function(inOld) {
-        if (this.visible) {
-          this.$.anim.direction = 'normal';
-        } else {
-          this.$.anim.direction = 'reverse';
-        }
-        this.$.anim.play();
       },
       onLoad: function() {
         this.loadedCount += 1;
       },
-      onClick: function() {
-        this.visible = !this.visible;
+      onClickItem: function(inEvent, inArg, inEl) {
+        if (this.single) {
+          return;
+        }
+        this.single = true;
+        this.el = inEl;
+        this.transition(this.el);
+      },
+      onClickFixed: function() {
+        if (!this.single) {
+          return;
+        }
+        this.single = false;
+        this.transition(this.el);
+      },
+      transition: function(inEl) {
+        this.setupRadial(inEl);
+        var rect = inEl.getBoundingClientRect();
+        this.$.fadeout.target = inEl;
+        this.$.grow.properties = {
+          top: [rect.top + 'px', '0px'],
+          left: [rect.left + 'px', '200px'],
+          bottom: [window.innerHeight - rect.bottom + 'px', '0px'],
+          right: [window.innerWidth - rect.right + 'px', '200px'],
+          display: ['none', 'block']
+        };
+        this.$.grow.target = this.$.fixed;
+        this.$.drillin.direction = this.single ? 'normal' : 'reverse';
+        this.$.drillin.play();
+      },
+      setupCascade: function() {
+        console.log('setupCascade');
+        var items = this.webkitShadowRoot.querySelectorAll('x-item');
+        var anims = this.$.cascade.querySelectorAll('x-animation');
+        var n = items.length / 2;
+        for (var i = 0; i < n; i++) {
+          anims[i * 2].target = items[i];
+          if (i * 2 < items.length) {
+            anims[i * 2 + 1].target = items[i + n];
+          }
+        }
+      },
+      setupRadial: function(inEl) {
+        console.log('setupRadial');
+        var items = this.webkitShadowRoot.querySelectorAll('x-item');
+        var arr = [];
+        for (var i = 0, n; n = items[i]; i++) {
+          if (n !== inEl) {
+            arr.push(n);
+          }
+        }
+        var origin = inEl.getBoundingClientRect().left;
+        arr.sort(function(inEl1, inEl2) {
+          var dist1 = Math.abs(inEl1.getBoundingClientRect().left - origin);
+          var dist2 = Math.abs(inEl2.getBoundingClientRect().left - origin);
+          return dist1 - dist2;
+        }.bind(this));
+        var anims = this.$.radial.querySelectorAll('x-animation');
+        for (var i = 0, n; n = arr[i]; i++) {
+          anims[i].target = n;
+        }
+        anims[arr.length].target = null;
       }
     });
   </script>
