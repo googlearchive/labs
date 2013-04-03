@@ -1,11 +1,12 @@
 <link rel="component" href="x-staggered-group.html">
 <link rel="component" href="x-animation.html">
+<link rel="component" href="x-left-right.html">
 <element name="x-cats">
   <template>
     <style>
       @host {
         * {
-          visibility: hidden;
+          display: -webkit-flex;
         }
       }
       x-item {
@@ -14,6 +15,12 @@
         padding: 10px;
         background-color: white;
         border: 1px solid #ccc;
+      }
+      #grid {
+        visibility: hidden;
+        position: absolute;
+        height: 100%;
+        width: 100%;
       }
       #fixed {
         position: fixed;
@@ -24,13 +31,24 @@
         font-size: 24px;
         display: none;
       }
+      #leftright {
+        visibility: hidden;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
     </style>
-    <template repeat="{{contents}}">
-      <x-item url="{{url}}" on-load="onLoad" on-click="onClickItem"></x-item>
-    </template>
+    <div id="grid">
+      <template repeat="{{contents}}">
+        <x-item url="{{url}}" on-load="onLoad" on-click="onClickItem"></x-item>
+      </template>
+    </div>
     <div id="fixed" on-click="onClickFixed">
       Hi!
     </div>
+    <x-left-right id="leftright" class="flexbox">
+    </x-left-right>
+    <!-- animations //-->
     <x-staggered-group id="cascade" easing="ease-in-out" offset="0.02">
       <template repeat="{{contents}}">
         <x-animation duration="0.2" fillMode="backwards">
@@ -40,7 +58,7 @@
         </x-animation>
       </template>
     </x-staggered-group>
-    <x-animation-group id="drillin">
+    <x-animation-group id="gridtofixed">
       <x-staggered-group id="radial" offset="0.02" easing="ease-in-out">
         <template repeat="{{contents}}">
           <x-animation duration="0.2" fillMode="forwards">
@@ -62,15 +80,19 @@
         </x-animation>
       </x-animation-group>
     </x-animation-group>
+    <x-animation-group>
+    </x-animation-group>
   </template>
   <script>
     Toolkit.register(this, {
       count: 10,
       loadedCount: 0,
       contents: null,
-      single: false,
+      layout: 'none',
       ready: function() {
         this.countChanged();
+        console.log(this.$.leftright.getBoundingClientRect());
+        this.$.leftright.measure();
       },
       countChanged: function() {
         var contents = [];
@@ -85,30 +107,74 @@
       },
       loadedCountChanged: function() {
         if (this.loadedCount === this.count) {
-          this.setupCascade();
-          this.style['visibility'] = 'visible';
-          this.$.cascade.play();
+          this.$.grid.style['visibility'] = 'visible';
+          this.transition('grid');
         }
       },
       onLoad: function() {
         this.loadedCount += 1;
       },
       onClickItem: function(inEvent, inArg, inEl) {
-        if (this.single) {
-          return;
-        }
-        this.single = true;
         this.el = inEl;
-        this.transition(this.el);
+        this.transition('fixed', this.el);
+        //this.transition('leftright', this.el);
       },
       onClickFixed: function() {
-        if (!this.single) {
-          return;
-        }
-        this.single = false;
-        this.transition(this.el);
+        this.transition('grid', this.el);
       },
-      transition: function(inEl) {
+      transition: function(inLayout, inArgs) {
+        console.log('transition', this.layout, inLayout);
+        var transitions = {
+          none: {
+            grid: {
+              type: 'cascade',
+              direction: 'normal',
+              setup: 'setupCascade'
+            }
+          },
+          grid: {
+            fixed: {
+              type: 'gridtofixed',
+              direction: 'normal',
+              setup: 'setupGridToFixed'
+            },
+            leftright: {
+              grid: 'gridtolr',
+              direction: 'normal',
+              setup: 'setupGridToLeftRight'
+            }
+          },
+          fixed: {
+            grid: {
+              type: 'gridtofixed',
+              direction: 'reverse',
+              setup: 'setupGridToFixed'
+            }
+          },
+          leftright: {
+            grid: 'gridtolr',
+            direction: 'reverse',
+            setup: 'setupGridToLeftRight'
+          }
+        };
+        var transition = transitions[this.layout][inLayout];
+        this.layout = inLayout;
+        this[transition.setup](inArgs);
+        this.$[transition.type].direction = transition.direction;
+        this.$[transition.type].play();
+      },
+      setupCascade: function() {
+        var items = this.webkitShadowRoot.querySelectorAll('x-item');
+        var anims = this.$.cascade.querySelectorAll('x-animation');
+        var n = items.length / 2;
+        for (var i = 0; i < n; i++) {
+          anims[i * 2].target = items[i];
+          if (i * 2 < items.length) {
+            anims[i * 2 + 1].target = items[i + n];
+          }
+        }
+      },
+      setupGridToFixed: function(inEl) {
         this.setupRadial(inEl);
         var rect = inEl.getBoundingClientRect();
         this.$.fadeout.target = inEl;
@@ -120,23 +186,10 @@
           display: ['none', 'block']
         };
         this.$.grow.target = this.$.fixed;
-        this.$.drillin.direction = this.single ? 'normal' : 'reverse';
-        this.$.drillin.play();
       },
-      setupCascade: function() {
-        console.log('setupCascade');
-        var items = this.webkitShadowRoot.querySelectorAll('x-item');
-        var anims = this.$.cascade.querySelectorAll('x-animation');
-        var n = items.length / 2;
-        for (var i = 0; i < n; i++) {
-          anims[i * 2].target = items[i];
-          if (i * 2 < items.length) {
-            anims[i * 2 + 1].target = items[i + n];
-          }
-        }
+      setupGridToLeftRight: function(inEl) {
       },
       setupRadial: function(inEl) {
-        console.log('setupRadial');
         var items = this.webkitShadowRoot.querySelectorAll('x-item');
         var arr = [];
         for (var i = 0, n; n = items[i]; i++) {

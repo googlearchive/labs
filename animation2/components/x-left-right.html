@@ -1,0 +1,35 @@
+<element name="x-left-right">
+  <link rel="stylesheet" type="text/css" href="../../../toolkit/components/css/g-flex-layout.css">
+  <template>
+    <style>
+      div {
+        display: inline-block;
+        background-color: white;
+        border: 1px solid #ccc;
+        margin: 5px;
+        padding: 10px;
+        height: 340px;
+      }
+      #left {
+        width: 522px;
+      }
+      #small {
+        width: 336px;
+      }
+    </style>
+    <div id="left">
+      <content select="*:first-child"></content>
+    </div>
+    <div id="right">
+      <content select="*:last-child"></content>
+    </div>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      measure: function() {
+        console.log('left', this.$.left.getBoundingClientRect());
+        console.log('right', this.$.right.getBoundingClientRect());
+      }
+    });
+  </script>
+</element>

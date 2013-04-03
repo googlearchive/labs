@@ -21,16 +21,6 @@
         // TODO: need to do this for now.
         this.super();
       },
-      /*
-      apply: function() {
-        // ensure that the children's side effects are applied.
-        window.dirtyCheck();
-        this.doOnChildren(function(c) {
-          c.completeJob('apply');
-        });
-        this.super();
-      },
-      */
       makeAnimation: function() {
         return new ANIMATION_GROUPS[this.type](this.childAnimations, this.timingProps);
       },
@@ -56,7 +46,6 @@
       get childAnimations() {
         var list = [];
         this.doOnChildren(function(c) {
-          c.completeJob('apply');
           if (c.animation) {
             list.push(c.animation);
           }
