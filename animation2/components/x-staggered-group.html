@@ -21,7 +21,7 @@
       watchChildren: function() {
         var mo = window.MutationObserver || window.WebKitMutationObserver;
         var observer = new mo(function(mutations) {
-          this.job('applyChildren');
+          this.job(null, this.applyChildren);
         }.bind(this));
         observer.observe(this, {childList: true});
       },

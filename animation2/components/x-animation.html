@@ -1,8 +1,7 @@
 <script src="../../../toolkit/platform/WebAnimations/web-animations.js"></script>
-<script src="../../animation/src/utils.js"></script>
 <element name="x-animation">
   <script>
-    var animationPrototype = {
+    Toolkit.register(this, {
       animation: null,
       target: null,
       // animation
@@ -17,16 +16,13 @@
       startDelay: null,
       direction: null,
       ready: function() {
-        this.job('apply');
+        this.asyncApply();
       },
       play: function() {
-        console.log('play start');
         // TODO: need to dirty check to make sure all side effects are
         // applied before playing the animation.
         window.dirtyCheck();
-        console.log('after dirty check');
-        this.completeJob('apply');
-        console.log('play', this.animation);
+        this.completeApply();
         if (this.animation) {
           this.cancel();
           this.player = document.timeline.play(this.animation);
@@ -41,8 +37,8 @@
         }
       },
       apply: function() {
-        console.log('apply', this, this.id);
-        this.cancelJob('apply');
+        this.applyJob && this.applyJob.stop();
+        this.applyJob = null;
         this.animation = null;
         this.animation = this.makeAnimation();
         if (this.autoplay && this.animation) {
@@ -54,11 +50,14 @@
         return this.animation;
       },
       makeAnimation: function() {
-        this.target && console.log('makeAnimation target', this.target, 'animation', this.animationProps, 'timing', this.timingProps);
+        //this.target && console.log('makeAnimation target', this.target, 'animation', this.animationProps, 'timing', this.timingProps);
         return this.target ? new Animation(this.target, this.animationProps, this.timingProps) : null;
       },
       asyncApply: function() {
-        this.job('apply');
+        this.applyJob = this.job(this.applyJob, this.apply);
+      },
+      completeApply: function() {
+        this.applyJob && this.applyJob.complete();
       },
       animationChanged: function() {
         // TODO: attributes are not case sensitive.
@@ -140,9 +139,7 @@
       complete: function() {
         this.send('complete');
       }
-    }
-    document.utils.job.bindTo(animationPrototype);
-    Toolkit.register(this, animationPrototype);
+    });
   </script>
 </element>
 <element name="x-property">

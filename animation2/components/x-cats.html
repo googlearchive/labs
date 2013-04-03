@@ -59,8 +59,8 @@
       </template>
     </x-staggered-group>
     <x-animation-group id="gridtofixed">
-      <x-staggered-group id="radial" offset="0.02" easing="ease-in-out">
-        <template repeat="{{contents}}">
+      <x-staggered-group id="gridfade" offset="0.02" easing="ease-in-out">
+        <template repeat="{{transitionProperties.gridtofixed.gridfade}}">
           <x-animation duration="0.2" fillMode="forwards">
             <x-property name="opacity">
               <x-keyframe offset="0" value="1"></x-keyframe>
@@ -80,19 +80,43 @@
         </x-animation>
       </x-animation-group>
     </x-animation-group>
-    <x-animation-group>
+    <x-animation-group id="gridtoleftright">
+      <x-staggered-group id="gridfade2" offset="0.02" easing="ease-in-out">
+        <template repeat="{{transitionProperties.gridtoleftright.gridfade}}">
+          <x-animation duration="0.2" fillMode="forwards">
+            <x-property name="opacity">
+              <x-keyframe offset="0" value="1"></x-keyframe>
+              <x-keyframe offset="1" value="0"></x-keyframe>
+            </x-property>
+          </x-animation>
+        </template>
+      </x-staggered-group>
     </x-animation-group>
   </template>
   <script>
+    function seq(inCount) {
+      var arr = new Array(inCount);
+      for (var i = 0; i < inCount; i++) {
+        arr[i] = i;
+      }
+      return arr;
+    }
+
     Toolkit.register(this, {
       count: 10,
       loadedCount: 0,
       contents: null,
       layout: 'none',
+      transitionProperties: {
+        gridtofixed: {
+          gridfade: seq(9)
+        },
+        gridtoleftright: {
+          gridfade: seq(5)
+        }
+      },
       ready: function() {
         this.countChanged();
-        console.log(this.$.leftright.getBoundingClientRect());
-        this.$.leftright.measure();
       },
       countChanged: function() {
         var contents = [];
@@ -139,7 +163,7 @@
               setup: 'setupGridToFixed'
             },
             leftright: {
-              grid: 'gridtolr',
+              type: 'gridtoleftright',
               direction: 'normal',
               setup: 'setupGridToLeftRight'
             }
@@ -152,9 +176,11 @@
             }
           },
           leftright: {
-            grid: 'gridtolr',
-            direction: 'reverse',
-            setup: 'setupGridToLeftRight'
+            grid: {
+              type: 'gridtoleftright',
+              direction: 'reverse',
+              setup: 'setupGridToLeftRight'
+            }
           }
         };
         var transition = transitions[this.layout][inLayout];
@@ -175,7 +201,7 @@
         }
       },
       setupGridToFixed: function(inEl) {
-        this.setupRadial(inEl);
+        this.setupGridFade(this.$.gridfade, inEl);
         var rect = inEl.getBoundingClientRect();
         this.$.fadeout.target = inEl;
         this.$.grow.properties = {
@@ -188,8 +214,9 @@
         this.$.grow.target = this.$.fixed;
       },
       setupGridToLeftRight: function(inEl) {
+        this.setupGridFade(this.$.gridfade2, inEl);
       },
-      setupRadial: function(inEl) {
+      setupGridFade: function(inAnim, inEl) {
         var items = this.webkitShadowRoot.querySelectorAll('x-item');
         var arr = [];
         for (var i = 0, n; n = items[i]; i++) {
@@ -203,11 +230,10 @@
           var dist2 = Math.abs(inEl2.getBoundingClientRect().left - origin);
           return dist1 - dist2;
         }.bind(this));
-        var anims = this.$.radial.querySelectorAll('x-animation');
-        for (var i = 0, n; n = arr[i]; i++) {
-          anims[i].target = n;
+        var anims = inAnim.querySelectorAll('x-animation');
+        for (var i = 0, a; a = anims[i]; i++) {
+          a.target = arr[i];
         }
-        anims[arr.length].target = null;
       }
     });
   </script>

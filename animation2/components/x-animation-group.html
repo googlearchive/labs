@@ -1,5 +1,4 @@
 <script src="../../../toolkit/platform/WebAnimations/web-animations.js"></script>
-<script src="../../animation/src/utils.js"></script>
 <link rel="component" href="x-animation.html">
 <element name="x-animation-group" extends="x-animation" on-animationchange="onAnimationChange">
   <script>
@@ -7,7 +6,7 @@
       'par': ParGroup,
       'seq': SeqGroup
     };
-    var animationPrototype = {
+    Toolkit.register(this, {
       target: null,
       type: 'par',
       // timing
@@ -23,6 +22,12 @@
       },
       makeAnimation: function() {
         return new ANIMATION_GROUPS[this.type](this.childAnimations, this.timingProps);
+      },
+      completeApply: function() {
+        this.doOnChildren(function(c) {
+          c.completeApply();
+        });
+        this.super(arguments);
       },
       onAnimationChange: function(inEvent, inDetail, inSender) {
         if (inSender !== this) {
@@ -51,14 +56,7 @@
           }
         });
         return list;
-      },
-      completeJob: function(inMethodName) {
-        this.doOnChildren(function(c) {
-          c.completeJob('apply');
-        });
-        this.super(arguments);
       }
-    };
-    Toolkit.register(this, animationPrototype);
+    });
   </script>
 </element>
