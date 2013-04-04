@@ -91,6 +91,8 @@
           </x-animation>
         </template>
       </x-staggered-group>
+      <x-animation id="growmain" startOffset="0.01" duration="0.2" easing="ease-in-out"></x-animation>
+      <x-animation id="growother" startOffset="0.01" duration="0.2" easing="ease-in-out"></x-animation>
     </x-animation-group>
   </template>
   <script>
@@ -140,8 +142,8 @@
       },
       onClickItem: function(inEvent, inArg, inEl) {
         this.el = inEl;
-        this.transition('fixed', this.el);
-        //this.transition('leftright', this.el);
+        //this.transition('fixed', this.el);
+        this.transition('leftright', this.el);
       },
       onClickFixed: function() {
         this.transition('grid', this.el);
@@ -214,6 +216,13 @@
         this.$.grow.target = this.$.fixed;
       },
       setupGridToLeftRight: function(inEl) {
+        var fromRect = inEl.getBoundingClientRect();
+        var toRects = this.$.leftright.setup(fromRect);
+        /*
+        this.$.growmain.properties = {
+          top: [fromRect.top + 'px', 
+        };
+        */
         this.setupGridFade(this.$.gridfade2, inEl);
       },
       setupGridFade: function(inAnim, inEl) {

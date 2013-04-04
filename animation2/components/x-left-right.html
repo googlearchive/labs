@@ -10,25 +10,41 @@
         padding: 10px;
         height: 340px;
       }
-      #left {
+      div.big {
         width: 522px;
       }
-      #small {
+      div.small {
         width: 336px;
       }
     </style>
-    <div id="left">
+    <div id="left" class="big">
       <content select="*:first-child"></content>
     </div>
-    <div id="right">
+    <div id="right" class="small">
       <content select="*:last-child"></content>
     </div>
   </template>
   <script>
     Toolkit.register(this, {
-      measure: function() {
-        console.log('left', this.$.left.getBoundingClientRect());
-        console.log('right', this.$.right.getBoundingClientRect());
+      setup: function(inTargetRect) {
+        var larger = this.webkitShadowRoot.querySelector('.big');
+        var small = this.webkitShadowRoot.querySelector('.small');
+        var largerRect = larger.getBoundingClientRect();
+        if (!(inTargetRect.top >= largerRect.top &&
+            inTargetRect.top <= largerRect.bottom &&
+            inTargetRect.left >= largerRect.left &&
+            inTargetRect.left <= largerRect.right)) {
+              console.log('swap');
+          small.className = 'big';
+          larger.className = 'small';
+          var t = small;
+          small = larger;
+          larger = t;
+        }
+        return {
+          target: larger.getBoundingClientRect(),
+          other: small.getBoundingClientRect()
+        };
       }
     });
   </script>
