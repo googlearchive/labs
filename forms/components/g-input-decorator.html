@@ -23,7 +23,7 @@
       #input::-webkit-distributed(input) {
         border: none;
         outline: 0;
-        -webkit-flex: 1;
+        -webkit-flex: 1 auto;
       }
       #input::-webkit-distributed(input::-webkit-input-placeholder) {
         color: #bfbfbf;
@@ -40,15 +40,15 @@
   </template>
   <script>
     Toolkit.register(this, {
-      toggleFocus: function(inFocused) {
+      setFocus: function(inFocused) {
         this.$.shadow.classList.toggle('focused', inFocused);
       },
       ready: function() {
         this.addEventListener('focus', function(e){
-          this.toggleFocus(true);
+          this.setFocus(true);
         }.bind(this), true);
         this.addEventListener('blur', function(e){
-          this.toggleFocus();
+          this.setFocus();
         }.bind(this), true);
       }
     });
