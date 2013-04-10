@@ -3,8 +3,8 @@
   <head>
     <title>Animations</title>
     <link rel="stylesheet" type="text/css" href="../../toolkit/components/css/g-flex-layout.css">
-    <link rel="component" href="components/x-animation-group.html">
-    <link rel="component" href="components/x-animation.html">
+    <link rel="import" href="../../toolkit/components/g-animation.html">
+    <link rel="import" href="../../toolkit/components/g-animation-group.html">
     <script src="../../toolkit/Platform/platform.js"></script>
     <script src="../../toolkit/toolkit.js"></script>
   </head>
@@ -39,28 +39,28 @@
         </style>
         <x-header ids="{{ids}}" on-play="onPlay"></x-header>
         <div id="d"></div>
-        <x-animation-group id="pargroup" type="par">
-          <x-animation-group id="seqgroup" type="seq">
-            <x-animation id="moveright" fillMode="forwards" duration="1">
-              <x-property name="transform">
-                <x-keyframe offset="0" value="translateX(0)"></x-keyframe>
-                <x-keyframe offset="1" value="translateX(200px)"></x-keyframe>
-              </x-property>
-            </x-animation>
-            <x-animation id="grow" fillMode="forwards" duration="2">
-              <x-property name="width">
-                <x-keyframe offset="0" value="200px"></x-keyframe>
-                <x-keyframe offset="1" value="400px"></x-keyframe>
-              </x-property>
-            </x-animation>
-          </x-animation-group>
-          <x-animation id="fadeout" fillMode="forwards" duration="3">
-            <x-property name="opacity">
-              <x-keyframe offset="0" value="1"></x-keyframe>
-              <x-keyframe offset="1" value="0"></x-keyframe>
-            </x-property>
-          </x-animation>
-        </x-animation-group>
+        <g-animation-group id="pargroup" type="par">
+          <g-animation-group id="seqgroup" type="seq">
+            <g-animation id="moveright" fillMode="forwards" duration="1">
+              <g-property name="transform">
+                <g-keyframe offset="0" value="translateX(0)"></g-keyframe>
+                <g-keyframe offset="1" value="translateX(200px)"></g-keyframe>
+              </g-property>
+            </g-animation>
+            <g-animation id="grow" fillMode="forwards" duration="2">
+              <g-property name="width">
+                <g-keyframe offset="0" value="200px"></g-keyframe>
+                <g-keyframe offset="1" value="400px"></g-keyframe>
+              </g-property>
+            </g-animation>
+          </g-animation-group>
+          <g-animation id="fadeout" fillMode="forwards" duration="3">
+            <g-property name="opacity">
+              <g-keyframe offset="0" value="1"></g-keyframe>
+              <g-keyframe offset="1" value="0"></g-keyframe>
+            </g-property>
+          </g-animation>
+        </g-animation-group>
       </template>
       <script>
         Toolkit.register(this, {

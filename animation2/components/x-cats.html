@@ -1,6 +1,6 @@
-<link rel="component" href="x-staggered-group.html">
-<link rel="component" href="x-animation.html">
-<link rel="component" href="x-left-right.html">
+<link rel="import" href="../../../toolkit/components/g-animation.html">
+<link rel="import" href="x-staggered-group.html">
+<link rel="import" href="x-left-right.html">
 <element name="x-cats">
   <template>
     <style>
@@ -51,49 +51,49 @@
     <!-- animations //-->
     <x-staggered-group id="cascade" easing="ease-in-out" offset="0.02">
       <template repeat="{{contents}}">
-        <x-animation duration="0.2" fillMode="backwards">
-          <x-property name="opacity">
-            <x-keyframe value="1"></x-keyframe>
-          </x-property>
-        </x-animation>
+        <g-animation duration="0.2" fillMode="backwards">
+          <g-property name="opacity">
+            <g-keyframe value="1"></g-keyframe>
+          </g-property>
+        </g-animation>
       </template>
     </x-staggered-group>
-    <x-animation-group id="gridtofixed">
+    <g-animation-group id="gridtofixed">
       <x-staggered-group id="gridfade" offset="0.02" easing="ease-in-out">
         <template repeat="{{transitionProperties.gridtofixed.gridfade}}">
-          <x-animation duration="0.2" fillMode="forwards">
-            <x-property name="opacity">
-              <x-keyframe offset="0" value="1"></x-keyframe>
-              <x-keyframe offset="1" value="0"></x-keyframe>
-            </x-property>
-          </x-animation>
+          <g-animation duration="0.2" fillMode="forwards">
+            <g-property name="opacity">
+              <g-keyframe offset="0" value="1"></g-keyframe>
+              <g-keyframe offset="1" value="0"></g-keyframe>
+            </g-property>
+          </g-animation>
         </template>
       </x-staggered-group>
-      <x-animation-group>
-        <x-animation id="fadeout" duration="0.03">
-          <x-property name="opacity">
-            <x-keyframe offset="0" value="1"></x-keyframe>
-            <x-keyframe offset="1" value="0"></x-keyframe>
-          </x-property>
-        </x-animation>
-        <x-animation id="grow" startOffset="0.01" duration="0.2" easing="ease-in-out">
-        </x-animation>
-      </x-animation-group>
-    </x-animation-group>
-    <x-animation-group id="gridtoleftright">
+      <g-animation-group>
+        <g-animation id="fadeout" duration="0.03">
+          <g-property name="opacity">
+            <g-keyframe offset="0" value="1"></g-keyframe>
+            <g-keyframe offset="1" value="0"></g-keyframe>
+          </g-property>
+        </g-animation>
+        <g-animation id="grow" startOffset="0.01" duration="0.2" easing="ease-in-out">
+        </g-animation>
+      </g-animation-group>
+    </g-animation-group>
+    <g-animation-group id="gridtoleftright">
       <x-staggered-group id="gridfade2" offset="0.02" easing="ease-in-out">
         <template repeat="{{transitionProperties.gridtoleftright.gridfade}}">
-          <x-animation duration="0.2" fillMode="forwards">
-            <x-property name="opacity">
-              <x-keyframe offset="0" value="1"></x-keyframe>
-              <x-keyframe offset="1" value="0"></x-keyframe>
-            </x-property>
-          </x-animation>
+          <g-animation duration="0.2" fillMode="forwards">
+            <g-property name="opacity">
+              <g-keyframe offset="0" value="1"></g-keyframe>
+              <g-keyframe offset="1" value="0"></g-keyframe>
+            </g-property>
+          </g-animation>
         </template>
       </x-staggered-group>
-      <x-animation id="growmain" startOffset="0.01" duration="0.2" easing="ease-in-out"></x-animation>
-      <x-animation id="growother" startOffset="0.01" duration="0.2" easing="ease-in-out"></x-animation>
-    </x-animation-group>
+      <g-animation id="growmain" startOffset="0.01" duration="0.2" easing="ease-in-out"></g-animation>
+      <g-animation id="growother" startOffset="0.01" duration="0.2" easing="ease-in-out"></g-animation>
+    </g-animation-group>
   </template>
   <script>
     function seq(inCount) {
@@ -142,8 +142,8 @@
       },
       onClickItem: function(inEvent, inArg, inEl) {
         this.el = inEl;
-        //this.transition('fixed', this.el);
-        this.transition('leftright', this.el);
+        this.transition('fixed', this.el);
+        //this.transition('leftright', this.el);
       },
       onClickFixed: function() {
         this.transition('grid', this.el);
@@ -193,7 +193,7 @@
       },
       setupCascade: function() {
         var items = this.webkitShadowRoot.querySelectorAll('x-item');
-        var anims = this.$.cascade.querySelectorAll('x-animation');
+        var anims = this.$.cascade.querySelectorAll('g-animation');
         var n = items.length / 2;
         for (var i = 0; i < n; i++) {
           anims[i * 2].target = items[i];
@@ -239,7 +239,7 @@
           var dist2 = Math.abs(inEl2.getBoundingClientRect().left - origin);
           return dist1 - dist2;
         }.bind(this));
-        var anims = inAnim.querySelectorAll('x-animation');
+        var anims = inAnim.querySelectorAll('g-animation');
         for (var i = 0, a; a = anims[i]; i++) {
           a.target = arr[i];
         }
