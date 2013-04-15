@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+<!--    <script src="http://toolkitchen.github.io/toolkit/toolkit.min.js"></script>-->
+    <script src="../../toolkit/toolkit.min.js"></script>
+    <link rel="import" href="tk-inspector.html">
+    <link rel="import" href="../../toolkit/components/g-tabs.html">
+    <link rel="import" href="../../toolkit/components/g-ratings.html">
+    <link rel="import" href="../../toolkit/components/g-ribbon.html">
+    <link rel="import" href="../../toolkit/components/g-togglebutton.html">
+    <link rel="import" href="../../toolkit/components/g-toolbar.html">
+    <style>
+      body {
+        font-family: Arial;
+      }
+      g-ribbon {
+        position: absolute;
+        left: 0;
+        width: 30%;
+        top: 0;
+        bottom: 0;
+        background-color: white;
+      }
+      #canvas {
+        position: absolute;
+        left: 30%;
+        right: 30%;
+        top: 0;
+        bottom: 0;
+      }
+      tk-inspector {
+        position: absolute;
+        right: 0;
+        width: 30%;
+        top: 0;
+        bottom: 0;
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <g-ribbon id="palette" label="Palette">
+      <g-menu-item tag="g-ratings">Ratings</g-menu-item>
+      <g-menu-item tag="g-togglebutton">Toggle Button</g-menu-item>
+      <g-menu-item tag="g-toolbar">Toolbar</g-menu-item>
+    </g-ribbon>
+    <div id="canvas">
+      <g-tabs selected="0">
+        <span>One</span>
+        <span>Two</span>
+        <span>Three</span>
+        <span>Four</span>
+      </g-tabs>
+      <g-ratings></g-ratings><br/>
+      <x-test id="xtest" style="padding: 4px;" fill>Hello World</x-test>
+    </div>
+    <element name="x-test">
+      <script>
+        Toolkit.register(this, {
+          fill: false,
+          color: 'orange',
+          fillChanged: function() {
+            this.update();
+          },
+          colorChanged: function() {
+            this.update();
+          },
+          update: function() {
+            this.style.backgroundColor = this.fill ? this.color : '';
+          }
+        });
+      </script>
+    </element>
+
+    <tk-inspector id="inspector"></tk-inspector>
+
+    <script>
+      // magic global nodes don't work in ShadowDomPolyfill
+      var inspector, palette, canvas;
+      addEventListener("WebComponentsReady", function() {
+        inspector = document.querySelector('#inspector');
+        palette = document.querySelector('#palette');
+        canvas = document.querySelector('#canvas');
+        //
+        inspector.element = document.querySelector('g-tabs');
+        palette.addEventListener("activate", function(event) {
+          var tag = event.detail.item.getAttribute('tag');
+          if (tag) {
+            canvas.appendChild(document.createElement('br'));
+            inspector.element = canvas.appendChild(document.createElement(tag));
+          }
+        });
+      });
+      addEventListener("click", function(event) {
+        var t = event.target;
+        while (t && !t.isToolkitElement) {
+          t = t.parentNode;
+        }
+        if (t && t !== inspector) {
+          inspector.element = t;
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,136 @@
+<element name="tk-inspector" on-prop-value-changed="propValueChanged">
+
+  <template>
+    <style>
+      @host {
+        * {
+          border: 1px dotted gray;
+          padding: 8px;
+        }
+      }
+    </style>
+    <b>{{element.localName}}</b>
+    <hr/>
+    <template repeat={{properties}}>
+      <tk-property-editor property={{}}></tk-property-editor>
+    </template>
+  </template>
+  
+  <script>
+    var blacklist = {isToolkitElement: 1};
+    Toolkit.register(this, {
+      element: null,
+      properties: null,
+      elementChanged: function() {
+        this.properties = this.reflectProperties(this.element);
+      },
+      propValueChanged: function(inEvent, inEditor) {
+        inEditor.property.value = this.element[inEditor.property.name] 
+          = inEditor.liveValue;
+        //console.log(inEditor.liveValue);
+      },
+      reflectProperties: function(element) {
+        var props = [];
+        if (element) {
+          var p = element.__proto__;
+          var k = Object.keys(p);
+          k.forEach(function(k) {
+            var v = this.element[k];
+            if (typeof v !== 'function' && typeof v !== 'object' 
+                  /*&& element.propertyIsEnumerable(k)*/ && !blacklist[k]) {
+              props.push({
+                name: k,
+                value: v,
+                obj: element
+              });
+            }
+          }, this);
+        }
+        return props;
+      }
+    });
+  </script>
+  
+</element>
+
+
+<element name="tk-property-editor">
+  
+  <template>
+    <style>
+      @host {
+        *{
+          white-space: nowrap;
+        }
+      }
+      span {
+        display: inline-block;
+        width: 50%;
+        padding: 4px;
+        text-align: right;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    </style>
+    <span>{{property.name}}: </span><content></content>
+  </template>
+  
+  <script>
+    Toolkit.register(this, {
+      property: null,
+      editor: null,
+      editorTypes: {
+        'boolean': 'tk-boolean-property-editor',
+        'string': 'tk-string-property-editor',
+        any: 'tk-string-property-editor'
+      },
+      propertyChanged: function() {
+        var type = this.editorTypes[typeof this.property.value];
+        this.editor = document.createElement(type || this.editorTypes.any);
+        this.editor.property = this.property;
+      },
+      editorChanged: function(inOld) {
+        if (inOld) {
+          inOld.parentNode.removeChild(inOld);
+        }
+        this.appendChild(this.editor);
+      }
+    });
+  </script>
+
+</element>
+
+
+<element name="tk-string-property-editor">
+
+  <template>
+    <input style="width: 40%;" value="{{liveValue}}"><br/>
+  </template>
+
+  <script>
+    Toolkit.register(this, {
+      property: null,
+      liveValue: null,
+      propertyChanged: function() {
+        this.liveValue = this.property.value;
+      },
+      liveValueChanged: function() {
+        this.send('prop-value-changed', this);
+      }
+    });
+  </script>
+
+</element>
+
+
+<element name="tk-boolean-property-editor" extends="tk-string-property-editor">
+
+  <template>
+    <input type="checkbox" checked="{{liveValue}}"><br/>
+  </template>
+
+  <script>
+    Toolkit.register(this);
+  </script>
+
+</element>
