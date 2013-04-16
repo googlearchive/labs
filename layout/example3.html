@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>layout (nested)</title>
+  <script src="../../toolkit/platform/platform.js"></script>
+  <script src="../../toolkit/toolkit.js"></script>
+  <link rel="import" href="g-layout.html" />
+  <style>
+    html, body {
+      height: 100%;
+    }
+    
+    body {
+      margin: 0;
+    }
+    
+    #g0 {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 4px;
+    }
+    
+    .box {
+      border: 1px solid #ccc;
+      padding: 30px;
+      margin: 4px;
+    }    
+  </style>
+</head>
+<body>
+  <g-layout id="g0">
+    <div class="box">1</div>
+    <div class="box">2</div>
+    <g-layout id="g3">
+      <div class="box">3.1</div>
+      <div class="box">3.2</div>
+      <div class="box">3.3</div>
+      <g-layout id="g34">
+        <div class="box">3.4.1</div>
+        <div class="box">3.4.2</div>
+        <div class="box">3.4.3</div>
+        <div class="box">3.4.4</div>
+        <div class="box">3.4.5</div>
+      </g-layout>
+      <div class="box">3.5</div>
+    </g-layout>
+    <g-layout id="g4">
+      <div class="box">4.1</div>
+      <div class="box">4.2</div>
+      <div class="box">4.3</div>
+      <div class="box">4.4</div>
+      <div class="box">4.5</div>
+    </g-layout>
+    <div class="box">5</div>
+  </g-layout>
+  
+  <script>
+    layout1 = 
+      {flex: 1, flow: 'column', items: [
+        {index: 1}, {index: 2}, {index: 3, flex: 1}, {index: 4}, {index: 5}
+      ]};
+
+    layout2 =
+      {flex: 1, flow: 'column', items: [
+        {index: 1},
+        {flex: 1, items: [
+          {index: 2}, {index: 3, flex: 1}, {index: 4}
+        ]},
+        {index: 5}
+      ]};
+    
+    layout3 =
+      {flex: 1, flow: 'column', items: [
+        {flex: 1, items: [
+          {flex: 1, flow: 'column', items: [
+            {index: 1}, {index: 2, flex: 2}, {index: 3, flex: 1}
+          ]},
+          {index: 4, flex: 3}
+        ]},
+        {index: 5}
+      ]};
+    
+    g0 = document.querySelector('#g0');
+    g3 = document.querySelector('#g3');
+    g34 = document.querySelector('#g34');
+    g4 = document.querySelector('#g4');
+    g0.layout = layout2;
+    g3.layout = layout3;
+    g34.layout = layout2;
+    g4.layout = layout1;
+  </script>
+</body>
+</html>

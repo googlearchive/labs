@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>layout (samples)</title>
+  <script src="../../toolkit/platform/platform.js"></script>
+  <script src="../../toolkit/toolkit.js"></script>
+  <link rel="import" href="g-layout.html" />
+  <style>
+    html, body {
+      height: 100%;
+    }
+    
+    body {
+      margin: 0;
+    }
+    
+    .toolbar {
+      height: 40px;
+      background: #333;
+    }
+    
+    select {
+      margin: 10px;
+    }
+    
+    g-layout {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 4px;
+    }
+    
+    .box {
+      border: 1px solid #ccc;
+      padding: 30px;
+      margin: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <select onchange="layoutChange(event)">
+      <option>layout0</option>
+      <option>layout1</option>
+      <option>layout2</option>
+      <option>layout3</option>
+      <option>layout4</option>
+      <option>layout5</option>
+    </select>
+  </div>
+  <g-layout>
+    <div class="box">1</div>
+    <div class="box">2</div>
+    <div class="box">3</div>
+    <div class="box">4</div>
+    <div class="box">5</div>
+  </g-layout>
+  
+  <script>
+    layout0 = 
+      {flex: 1, flow: 'column', items: [
+        {index: 1}, {index: 2}, {index: 3}, {index: 4}, {index: 5}
+      ]};
+
+    layout1 = 
+      {flex: 1, flow: 'column', items: [
+        {index: 1}, {index: 2}, {index: 3, flex: 1}, {index: 4}, {index: 5}
+      ]};
+
+    layout2 =
+      {flex: 1, flow: 'column', items: [
+        {index: 1},
+        {flex: 1, items: [
+          {index: 2}, {index: 3, flex: 1}, {index: 4}
+        ]},
+        {index: 5}
+      ]};
+    
+    layout3 =
+      {flex: 1, flow: 'column', items: [
+        {flex: 1, items: [
+          {flex: 1, flow: 'column', items: [
+            {index: 1}, {index: 2, flex: 2}, {index: 3, flex: 1}
+          ]},
+          {index: 4, flex: 3}
+        ]},
+        {index: 5}
+      ]};
+    
+    layout4 =
+      {flex: 1, items: [
+        {flex: 1, flow: 'column', items: [
+          {index: 1, flex: 1},
+          {flex: 1, items: [
+            {index: 2, flex: 1},
+            {index: 3}
+          ]}
+        ]},
+        {flex: 3, flow: 'column', items: [
+          {index: 4, flex: 1},
+          {index: 5}
+        ]}
+      ]};
+    
+    layout5 =
+      {flex: 1, flow: 'column', items: [
+        {items: [
+          {index: 3, flex: 2},
+          {index: 1, flex: 1}
+        ]},
+        {flex: 1, items: [
+          {flow: 'column', flex: 1, items: [
+            {index: 5},
+            {index: 2, flex: 1}
+          ]},
+          {index: 4, flex: 4}
+        ]}
+      ]};
+    
+    function layoutChange(e) {
+      myLayout.layout = window[e.target.value];
+    }
+    
+    myLayout = document.querySelector('g-layout');
+    myLayout.layout = layout0;
+  </script>
+</body>
+</html>
