@@ -3,24 +3,31 @@ Copyright 2013 The Toolkitchen Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="tk-canvas" on-pointermove="move" on-pointerup="up">
+<element name="tk-canvas" on-mousemove="move" on-mouseup="up">
 
   <template>
+    <div id="box" style="position: absolute; width: 18px; height: 18px; left: -1000px; border: 1px solid lightblue;"></div>
     <content></content>
   </template>
 
   <script>
     Toolkit.register(this, {
-      grid: 4,
-      move: function() {
-        //console.dir(arguments);
+      grid: 16,
+      snap: function(inX, inY) {
+        return {
+          x: Math.round(inX / this.grid) * this.grid,
+          y: Math.round(inY / this.grid) * this.grid
+        };
+      },
+      move: function(event) {
+        if (event.target === this) {
+          var p = this.snap(event.offsetX, event.offsetY);
+          this.$.box.style.left = p.x + 20 + 'px';
+          this.$.box.style.top = p.y + + 20 + 'px';
+        }
       },
       up: function(event) {
-        var drop = {
-          x: Math.floor(event.offsetX / this.grid) * this.grid,
-          y: Math.floor(event.offsetY / this.grid) * this.grid
-        };
-        this.send('canvas-drop', drop)
+        this.send('canvas-drop', this.snap(event.offsetX, event.offsetY));
       }
     });
   </script>

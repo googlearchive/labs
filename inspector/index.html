@@ -65,9 +65,10 @@ license that can be found in the LICENSE file.
   </head>
   <body>
     <tk-app></tk-app>
+    
     <element name="tk-app" extends="g-app">
       <template>
-        <tk-palette id="palette"></tk-palette>
+        <tk-palette id="palette" on-palette-drag="paletteDrag"></tk-palette>
         <tk-canvas id="canvas" on-canvas-drop="canvasDrop" on-click="canvasClick">
           <g-tabs selected="0">
             <span>One</span>
@@ -75,8 +76,10 @@ license that can be found in the LICENSE file.
             <span>Three</span>
             <span>Four</span>
           </g-tabs>
+          <!-- 
           <g-ratings></g-ratings><br/>
           <x-test id="xtest" style="padding: 4px;" fill>Hello World</x-test>
+          -->
         </tk-canvas>
       <tk-inspector id="inspector"></tk-inspector>
       </template>
@@ -85,10 +88,29 @@ license that can be found in the LICENSE file.
           ready: function() {
             this.$.inspector.element = this.$.canvas.querySelector('g-tabs');
           },
-          canvasDrop: function() {
-            console.log('drop:', event.detail);
+          paletteDrag: function(event, detail) {
+            console.log('paletteDrag:', detail);
+            this.dragType = detail;
+          },
+          canvasDrop: function(event, detail) {
+            if (this.dragType) {
+              console.log('canvasDrop:', detail);
+              var neo = document.createElement(this.dragType);
+              neo.style.position = 'absolute';
+              neo.style.left = detail.x + 'px';
+              neo.style.top = detail.y + 'px';
+              this.$.canvas.appendChild(neo);
+              this.$.inspector.element = neo;
+            } else {
+              console.log('canvasDrop: inspect', event);
+              this.inspectTarget(event);
+            }
+            this.dragType = null;
           },
           canvasClick: function(event) {
+            this.inspectTarget(event);
+          },
+          inspectTarget: function(event) {
             var t = event.target;
             while (t && !t.isToolkitElement) {
               t = t.parentNode;
