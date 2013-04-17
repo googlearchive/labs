@@ -1,3 +1,8 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
 <element name="tk-inspector" on-prop-value-changed="propValueChanged">
 
   <template>
@@ -11,11 +16,11 @@
     </style>
     <b>{{element.localName}}</b>
     <hr/>
-    <template repeat={{properties}}>
-      <tk-property-editor property={{}}></tk-property-editor>
+    <template repeat="{{properties}}">
+      <tk-property-editor property="{{}}"></tk-property-editor>
     </template>
   </template>
-  
+
   <script>
     var blacklist = {isToolkitElement: 1};
     Toolkit.register(this, {
@@ -25,7 +30,7 @@
         this.properties = this.reflectProperties(this.element);
       },
       propValueChanged: function(inEvent, inEditor) {
-        inEditor.property.value = this.element[inEditor.property.name] 
+        inEditor.property.value = this.element[inEditor.property.name]
           = inEditor.liveValue;
         //console.log(inEditor.liveValue);
       },
@@ -36,7 +41,7 @@
           var k = Object.keys(p);
           k.forEach(function(k) {
             var v = this.element[k];
-            if (typeof v !== 'function' && typeof v !== 'object' 
+            if (typeof v !== 'function' && typeof v !== 'object'
                   /*&& element.propertyIsEnumerable(k)*/ && !blacklist[k]) {
               props.push({
                 name: k,
@@ -50,12 +55,12 @@
       }
     });
   </script>
-  
+
 </element>
 
 
-<element name="tk-property-editor">
-  
+<element name="tk-property-editor" attributes="property">
+
   <template>
     <style>
       @host {
@@ -74,7 +79,7 @@
     </style>
     <span>{{property.name}}: </span><content></content>
   </template>
-  
+
   <script>
     Toolkit.register(this, {
       property: null,

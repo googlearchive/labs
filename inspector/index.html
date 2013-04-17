@@ -9,13 +9,15 @@ license that can be found in the LICENSE file.
     <title></title>
     <meta charset="UTF-8">
 <!--    <script src="http://toolkitchen.github.io/toolkit/toolkit.min.js"></script>-->
-    <script src="../../toolkit/toolkit.min.js"></script>
-    <link rel="import" href="tk-inspector.html">
+    <!--<script src="../../toolkit/toolkit.min.js"></script>-->
+    <script src="../../toolkit/toolkit.js"></script>
     <link rel="import" href="../../toolkit/components/g-tabs.html">
     <link rel="import" href="../../toolkit/components/g-ratings.html">
     <link rel="import" href="../../toolkit/components/g-ribbon.html">
     <link rel="import" href="../../toolkit/components/g-togglebutton.html">
     <link rel="import" href="../../toolkit/components/g-toolbar.html">
+    <link rel="import" href="tk-palette.html">
+    <link rel="import" href="tk-inspector.html">
     <style>
       body {
         font-family: Arial;
@@ -46,11 +48,7 @@ license that can be found in the LICENSE file.
     </style>
   </head>
   <body>
-    <g-ribbon id="palette" label="Palette">
-      <g-menu-item tag="g-ratings">Ratings</g-menu-item>
-      <g-menu-item tag="g-togglebutton">Toggle Button</g-menu-item>
-      <g-menu-item tag="g-toolbar">Toolbar</g-menu-item>
-    </g-ribbon>
+    <tk-palette></tk-palette>
     <div id="canvas">
       <g-tabs selected="0">
         <span>One</span>
@@ -90,6 +88,8 @@ license that can be found in the LICENSE file.
         canvas = document.querySelector('#canvas');
         //
         inspector.element = document.querySelector('g-tabs');
+        //
+        /*
         palette.addEventListener("activate", function(event) {
           var tag = event.detail.item.getAttribute('tag');
           if (tag) {
@@ -97,15 +97,16 @@ license that can be found in the LICENSE file.
             inspector.element = canvas.appendChild(document.createElement(tag));
           }
         });
-      });
-      addEventListener("click", function(event) {
-        var t = event.target;
-        while (t && !t.isToolkitElement) {
-          t = t.parentNode;
-        }
-        if (t && t !== inspector) {
-          inspector.element = t;
-        }
+        */
+        canvas.addEventListener("click", function(event) {
+          var t = event.target;
+          while (t && !t.isToolkitElement) {
+            t = t.parentNode;
+          }
+          if (t && t !== inspector) {
+            inspector.element = t;
+          }
+        });
       });
     </script>
   </body>
