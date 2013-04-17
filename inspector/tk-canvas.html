@@ -1,0 +1,28 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<element name="tk-canvas" on-pointermove="move" on-pointerup="up">
+
+  <template>
+    <content></content>
+  </template>
+
+  <script>
+    Toolkit.register(this, {
+      grid: 4,
+      move: function() {
+        //console.dir(arguments);
+      },
+      up: function(event) {
+        var drop = {
+          x: Math.floor(event.offsetX / this.grid) * this.grid,
+          y: Math.floor(event.offsetY / this.grid) * this.grid
+        };
+        this.send('canvas-drop', drop)
+      }
+    });
+  </script>
+
+</element>

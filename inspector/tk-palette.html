@@ -3,7 +3,7 @@ Copyright 2013 The Toolkitchen Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="tk-palette" on-trackstart="trackStart">
+<element name="tk-palette" on-trackstart="trackStart" on-trackend="trackEnd">
 
   <template>
     <g-ribbon label="Palette">
@@ -17,6 +17,10 @@ license that can be found in the LICENSE file.
     Toolkit.register(this, {
       trackStart: function() {
         console.dir(arguments);
+      },
+      trackEnd: function(event) {
+        console.log('trackEnd', arguments);
+        //console.log(event.lastMoveEvent.target);
       }
     });
   </script>

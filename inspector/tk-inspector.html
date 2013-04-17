@@ -10,15 +10,23 @@ license that can be found in the LICENSE file.
       @host {
         * {
           border: 1px dotted gray;
-          padding: 8px;
         }
       }
+      #interior {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        bottom: 8px;
+        right: 8px;
+      }
     </style>
-    <b>{{element.localName}}</b>
-    <hr/>
-    <template repeat="{{properties}}">
-      <tk-property-editor property="{{}}"></tk-property-editor>
-    </template>
+    <div id="interior">
+      <b>{{element.localName}}</b>
+      <hr/>
+      <template repeat="{{properties}}">
+        <tk-property-editor property="{{}}"></tk-property-editor>
+      </template>
+    </div>
   </template>
 
   <script>

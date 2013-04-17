@@ -16,11 +16,26 @@ license that can be found in the LICENSE file.
     <link rel="import" href="../../toolkit/components/g-ribbon.html">
     <link rel="import" href="../../toolkit/components/g-togglebutton.html">
     <link rel="import" href="../../toolkit/components/g-toolbar.html">
+    <link rel="import" href="tk-canvas.html">
     <link rel="import" href="tk-palette.html">
     <link rel="import" href="tk-inspector.html">
     <style>
+      body, html {
+        position: relative;
+        height: 100%;
+        margin: 0;
+      }
       body {
         font-family: Arial;
+        -webkit-user-select: none;
+        background-color: whitesmoke;
+      }
+      tk-app {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
       }
       g-ribbon {
         position: absolute;
@@ -36,6 +51,7 @@ license that can be found in the LICENSE file.
         right: 30%;
         top: 0;
         bottom: 0;
+        background-color: white;
       }
       tk-inspector {
         position: absolute;
@@ -43,22 +59,48 @@ license that can be found in the LICENSE file.
         width: 30%;
         top: 0;
         bottom: 0;
-        background-color: white;
+        Xbackground-color: white;
       }
     </style>
   </head>
   <body>
-    <tk-palette></tk-palette>
-    <div id="canvas">
-      <g-tabs selected="0">
-        <span>One</span>
-        <span>Two</span>
-        <span>Three</span>
-        <span>Four</span>
-      </g-tabs>
-      <g-ratings></g-ratings><br/>
-      <x-test id="xtest" style="padding: 4px;" fill>Hello World</x-test>
-    </div>
+    <tk-app></tk-app>
+    <element name="tk-app" extends="g-app">
+      <template>
+        <tk-palette id="palette"></tk-palette>
+        <tk-canvas id="canvas" on-canvas-drop="canvasDrop" on-click="canvasClick">
+          <g-tabs selected="0">
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+            <span>Four</span>
+          </g-tabs>
+          <g-ratings></g-ratings><br/>
+          <x-test id="xtest" style="padding: 4px;" fill>Hello World</x-test>
+        </tk-canvas>
+      <tk-inspector id="inspector"></tk-inspector>
+      </template>
+      <script>
+        Toolkit.register(this, {
+          ready: function() {
+            this.$.inspector.element = this.$.canvas.querySelector('g-tabs');
+          },
+          canvasDrop: function() {
+            console.log('drop:', event.detail);
+          },
+          canvasClick: function(event) {
+            var t = event.target;
+            while (t && !t.isToolkitElement) {
+              t = t.parentNode;
+            }
+            if (t && t !== inspector) {
+              inspector.element = t;
+            }
+          }
+        });
+      </script>
+    </element>
+
     <element name="x-test">
       <script>
         Toolkit.register(this, {
@@ -76,38 +118,5 @@ license that can be found in the LICENSE file.
         });
       </script>
     </element>
-
-    <tk-inspector id="inspector"></tk-inspector>
-
-    <script>
-      // magic global nodes don't work in ShadowDomPolyfill
-      var inspector, palette, canvas;
-      addEventListener("WebComponentsReady", function() {
-        inspector = document.querySelector('#inspector');
-        palette = document.querySelector('#palette');
-        canvas = document.querySelector('#canvas');
-        //
-        inspector.element = document.querySelector('g-tabs');
-        //
-        /*
-        palette.addEventListener("activate", function(event) {
-          var tag = event.detail.item.getAttribute('tag');
-          if (tag) {
-            canvas.appendChild(document.createElement('br'));
-            inspector.element = canvas.appendChild(document.createElement(tag));
-          }
-        });
-        */
-        canvas.addEventListener("click", function(event) {
-          var t = event.target;
-          while (t && !t.isToolkitElement) {
-            t = t.parentNode;
-          }
-          if (t && t !== inspector) {
-            inspector.element = t;
-          }
-        });
-      });
-    </script>
   </body>
 </html>
