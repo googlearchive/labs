@@ -1,38 +1,18 @@
 <!DOCTYPE html>
 <title>Toolkit Form Components</title>
 <script src="../../toolkit/toolkit.js"></script>
-<link rel="import" href="components/g-groupbox.html">
-<link rel="import" href="components/g-input-decorator.html">
-<link rel="import" href="components/g-signin-header.html">
-<link rel="import" href="components/g-progress.html">
-<link rel="import" href="components/g-checkbox.html">
-<link rel="import" href="components/g-radio.html">
+<link rel="import" href="components/g-field">
 
 <style>
   body, input, button {
     font-family: 'Helvetica Neue', 'Roboto', 'Arial', sans-serif;
     font-size: 21pt;
-    line-height: 42pt;
+    /* line-height: 42pt; */
   }
   body {
-    background-color: #f2f2f2;
+    /* background-color: #f2f2f2; */
     height: 100%;
     margin: 0;
-  }
-  button[type=submit] {
-    background-image: linear-gradient(to bottom, #4387fd, #4683ea);
-    color: white;
-  }
-  button {
-    -webkit-appearance: none;
-    border-radius: 5px;
-    text-align: center;
-    vertical-align: middle;
-    border-width: 0;
-  }
-  g-groupbox {
-    height: 600px;
-    border: 5px solid black;
   }
   /* TODO(dfreedman): remove when crbug.com/227260 is fixed */
   ::-webkit-progress-bar {
@@ -51,17 +31,21 @@
   }
 </style>
 
-<g-signin-header></g-signin-header>
-<g-groupbox>
-  <g-input-decorator>
-    <input placeholder="email">
-  </g-input-decorator>
-  <g-input-decorator>
-    <input type="password" placeholder="password">
-  </g-input-decorator>
-  <g-checkbox></g-checkbox>
-  <g-radio></g-radio>
+<g-field>
+  <input placeholder="input"></input>
+</g-field>
+<g-field>
   <input type="checkbox"></input>
-  <br>
-  <g-progress value="0.9"></g-progress>
-</g-groupbox>
+</g-field>
+<g-field>
+  <select>
+    <option>Foo</option>
+  </select>
+</g-field>
+<g-field label="Different Label:">
+  <button>Some Button</button>
+</g-field>
+<g-field label="Radio Button:" description="it's a damn radio button"
+  invalid="WHY?!?">
+  <input type="radio"></input>
+</g-field>

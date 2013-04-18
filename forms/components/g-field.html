@@ -1,0 +1,63 @@
+<element name="g-field" attributes="label description invalid">
+  <template>
+    <style>
+      @host {
+        /* @polyfill g-field */
+        :scope {
+          border: 2px solid black;
+          display: block;
+          background-color: #f0f0ed;
+        }
+        /* @polyfill g-field + g-field */
+        * + * {
+          border-top-width: 0px;
+        }
+      }
+      #label {
+        color: #999;
+        display: inline-block;
+      }
+      #description {
+        color: #7f7f7f;
+        font-size: 12pt;
+        vertical-align: middle;
+      }
+      #block {
+        display: inline-flex;
+        display: -webkit-inline-flex;
+        flex-direction: column;
+        -webkit-flex-flow: column nowrap;
+      }
+      #warning {
+        -webkit-mask: url(../assets/invalid.png);
+        -webkit-mask-size: contain;
+        background-color: #d84437;
+        display: inline-block;
+        height: 21pt;
+        width: 21pt;
+        line-height: 21pt;
+        vertical-align: middle;
+      }
+      #validate {
+        color: #d84437;
+        display: inline-block;
+      }
+    </style>
+    <span id="label">{{label}}</span>
+    <span id="block">
+      <content select="*"></content>
+      <span id="description">{{description}}</span>
+    </span>
+    <span id="validate">
+      <span id="warning"></span>
+      <span>{{invalid}}</span>
+    </span>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      label: 'Label:',
+      description: '> Description',
+      invalid: 'Invalid!'
+    });
+  </script>
+</element>
