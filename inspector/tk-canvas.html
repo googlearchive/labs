@@ -3,10 +3,16 @@ Copyright 2013 The Toolkitchen Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="tk-canvas" on-mousemove="move" on-mouseup="up">
-
+<element name="tk-canvas" Xon-mousemove="move" on-mouseup="up">
   <template>
-    <div id="box" style="position: absolute; width: 18px; height: 18px; left: -1000px; border: 1px solid lightblue;"></div>
+    <style>
+      @host {
+        * {
+          background-image: url(assets/dot.png)
+        }
+      }
+    </style>
+    <div id="box" style="position: absolute; width: 16px; height: 16px; left: -1000px; border: 1px solid lightblue; pointer-events: none;"></div>
     <content></content>
   </template>
 
@@ -22,8 +28,8 @@ license that can be found in the LICENSE file.
       move: function(event) {
         if (event.target === this) {
           var p = this.snap(event.offsetX, event.offsetY);
-          this.$.box.style.left = p.x + 20 + 'px';
-          this.$.box.style.top = p.y + + 20 + 'px';
+          this.$.box.style.left = p.x + 'px';
+          this.$.box.style.top = p.y + 'px';
         }
       },
       up: function(event) {

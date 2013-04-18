@@ -21,7 +21,8 @@ license that can be found in the LICENSE file.
       }
     </style>
     <div id="interior">
-      <b>{{element.localName}}</b>
+      <g-icon-button src="assets/ic_cancel_darkalt.png" on-click="deleteElement" style="vertical-align: middle;"></g-icon-button>
+      <b>{{name}}</b>
       <hr/>
       <template repeat="{{properties}}">
         <tk-property-editor property="{{}}"></tk-property-editor>
@@ -36,6 +37,7 @@ license that can be found in the LICENSE file.
       properties: null,
       elementChanged: function() {
         this.properties = this.reflectProperties(this.element);
+        this.name = this.element && this.element.localName || '';
       },
       propValueChanged: function(inEvent, inEditor) {
         inEditor.property.value = this.element[inEditor.property.name]
@@ -46,20 +48,29 @@ license that can be found in the LICENSE file.
         var props = [];
         if (element) {
           var p = element.__proto__;
-          var k = Object.keys(p);
-          k.forEach(function(k) {
-            var v = this.element[k];
-            if (typeof v !== 'function' && typeof v !== 'object'
-                  /*&& element.propertyIsEnumerable(k)*/ && !blacklist[k]) {
-              props.push({
-                name: k,
-                value: v,
-                obj: element
-              });
-            }
-          }, this);
+          while (p && p.isToolkitElement) {
+            var k = Object.keys(p);
+            k.forEach(function(k) {
+              var v = this.element[k];
+              if (typeof v !== 'function' && typeof v !== 'object'
+                    /*&& element.propertyIsEnumerable(k)*/ && !blacklist[k]) {
+                props.push({
+                  name: k,
+                  value: v,
+                  obj: element
+                });
+              }
+            }, this);
+            p = p.__proto__;
+          }
         }
         return props;
+      },
+      deleteElement: function() {
+        if (this.element) {
+          this.element.parentNode.removeChild(this.element);
+          this.element = null;
+        }
       }
     });
   </script>

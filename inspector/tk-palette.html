@@ -3,28 +3,89 @@ Copyright 2013 The Toolkitchen Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="tk-palette" on-trackstart="trackStart" on-trackend="trackEnd">
-
+<element name="tk-palette">
   <template>
-    <g-ribbon label="Palette">
-      <g-menu-item tag="g-ratings">Ratings</g-menu-item>
-      <g-menu-item tag="g-togglebutton">Toggle Button</g-menu-item>
-      <g-menu-item tag="g-toolbar">Toolbar</g-menu-item>
-    </g-ribbon>
+      <style>
+        g-menu-item {
+          display: block;
+          padding: 14px;
+          cursor: pointer;
+        }
+        g-menu-item.selected {
+          background-color: gray;
+        }
+      </style>
+      <g-selector on-trackstart="trackStart" on-mousemove="move" on-track="track" on-trackend="trackEnd">
+        <g-menu-item src="images/add.png" tag="g-toolbar">Toolbar</g-menu-item>
+        <g-menu-item src="images/add.png" tag="g-tabs">Tabs</g-menu-item>
+        <g-menu-item src="images/add.png" tag="g-ratings">Ratings</g-menu-item>
+        <g-menu-item src="images/add.png" tag="g-togglebutton">Toggle Button</g-menu-item>
+        <g-menu-item src="images/add.png" tag="g-menu">Menu</g-menu-item>
+     </g-selector>
   </template>
 
   <script>
     Toolkit.register(this, {
+      archetypes: {
+        'g-toolbar': 0
+      },
+      move: function(event) {
+        this.mouse = {x: event.pageX, y: event.pageY};
+      },
       trackStart: function(event) {
-        var target = event.impl.target;
-        console.log('trackStart', event, target, target.getAttribute('tag'));
-        this.send('palette-drag', target.getAttribute('tag'));
+        this.startPoint = this.mouse;
+        //console.log(this.startPoint);
+        //var target = event.target; //event.impl.target;
+        //console.log('trackStart', event, target, target.getAttribute('tag'));
+        this.send('palette-drag-start', event.target.getAttribute('tag'));
+      },
+      track: function(event) {
+        var pt = {
+          x: this.startPoint.x + event.dx, // - this.offsetLeft,
+          y: this.startPoint.y + event.dy //- this.offsetTop
+        };
+        this.send('palette-drag', pt);
+        //console.log('track', pt, event);
       },
       trackEnd: function(event) {
-        console.log('trackEnd', arguments);
-        //console.log(event.lastMoveEvent.target);
+        //console.log('trackEnd', arguments);
+        this.send('palette-dragend');
+      },
+      getArchetype: function(inTag) {
+        var a = this.elementElement.querySelector('#' + inTag);
+        return a && a.innerHTML || '';
       }
     });
   </script>
 
+  <archetype id="g-toolbar">
+    <g-toolbar style="right: 0px; left: 0px;"> 
+      <g-icon-button src="images/star_full.svg" active="true"></g-icon-button>
+      <div class="flex">Toolbar</div>
+      <g-toolbar responsive="true">
+        <g-icon-button src="images/add.png"></g-icon-button>
+        <g-icon-button src="images/favorite.png"></g-icon-button>
+      </g-toolbar>
+      <g-icon-button src="images/hangout.png"></g-icon-button>   
+    </g-toolbar>
+  </archetype>
+
+  <archetype id="g-tabs">
+    <g-tabs selected="0">
+      <span>One</span>
+      <span>Two</span>
+      <span>Three</span>
+      <span>Four</span>
+    </g-tabs>
+  </archetype>
+
+  <archetype id="g-menu">
+    <g-menu selected="0">
+      <g-menu-item src="images/comment.png">Post a Comment</g-menu-item>
+      <g-menu-item src="images/hangout.png">Share Link</g-menu-item>
+      <g-menu-item src="images/mail.png">Email Link</g-menu-item>
+      <g-menu-item src="images/favorite.png">Add to Favorites</g-menu-item>
+    </g-menu>
+  </archetype>
+  
 </element>

@@ -6,29 +6,34 @@ license that can be found in the LICENSE file.
 -->
 <html>
   <head>
-    <title></title>
+    <title>UI Toolkit Sandbox</title>
     <meta charset="UTF-8">
-<!--    <script src="http://toolkitchen.github.io/toolkit/toolkit.min.js"></script>-->
-    <!--<script src="../../toolkit/toolkit.min.js"></script>-->
+    <!-- -->
     <script src="../../toolkit/toolkit.js"></script>
+    <!-- -->
     <link rel="import" href="../../toolkit/components/g-tabs.html">
     <link rel="import" href="../../toolkit/components/g-ratings.html">
-    <link rel="import" href="../../toolkit/components/g-ribbon.html">
+    <link rel="import" href="../../toolkit/components/g-sidebar.html">
     <link rel="import" href="../../toolkit/components/g-togglebutton.html">
     <link rel="import" href="../../toolkit/components/g-toolbar.html">
+    <link rel="import" href="../../toolkit/components/g-icon-button.html">
+    <link rel="import" href="../../toolkit/components/g-menu.html">
+    <!-- -->
     <link rel="import" href="tk-canvas.html">
     <link rel="import" href="tk-palette.html">
     <link rel="import" href="tk-inspector.html">
+    <!-- -->
     <style>
       body, html {
         position: relative;
         height: 100%;
-        margin: 0;
       }
       body {
         font-family: Arial;
         -webkit-user-select: none;
         background-color: whitesmoke;
+        margin: 0;
+        overflow: hidden;
       }
       tk-app {
         position: absolute;
@@ -37,77 +42,101 @@ license that can be found in the LICENSE file.
         right: 0;
         bottom: 0;
       }
-      g-ribbon {
+      g-sidebar {
         position: absolute;
         left: 0;
-        width: 30%;
+        width: 200px;
         top: 0;
         bottom: 0;
         background-color: white;
       }
       #canvas {
         position: absolute;
-        left: 30%;
-        right: 30%;
+        left: 200px;
+        right: 35%;
         top: 0;
         bottom: 0;
         background-color: white;
+        overflow: hidden;
       }
       tk-inspector {
         position: absolute;
         right: 0;
-        width: 30%;
+        width: 35%;
         top: 0;
         bottom: 0;
-        Xbackground-color: white;
+      }
+      tk-palette {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
       }
     </style>
   </head>
   <body>
+    
     <tk-app></tk-app>
     
-    <element name="tk-app" extends="g-app">
+    <element name="tk-app">
       <template>
-        <tk-palette id="palette" on-palette-drag="paletteDrag"></tk-palette>
-        <tk-canvas id="canvas" on-canvas-drop="canvasDrop" on-click="canvasClick">
-          <g-tabs selected="0">
-            <span>One</span>
-            <span>Two</span>
-            <span>Three</span>
-            <span>Four</span>
-          </g-tabs>
-          <!-- 
-          <g-ratings></g-ratings><br/>
-          <x-test id="xtest" style="padding: 4px;" fill>Hello World</x-test>
-          -->
-        </tk-canvas>
-      <tk-inspector id="inspector"></tk-inspector>
+        <g-sidebar label="Palette">
+          <tk-palette id="palette" 
+              on-palette-drag-start="paletteDragStart" 
+              on-palette-drag="paletteDrag"></tk-palette>
+        </g-sidebar>
+        <tk-canvas id="canvas" 
+              on-canvas-drop="canvasDrop" 
+              on-click="canvasClick"></tk-canvas>
+        <tk-inspector id="inspector"></tk-inspector>
       </template>
       <script>
         Toolkit.register(this, {
           ready: function() {
             this.$.inspector.element = this.$.canvas.querySelector('g-tabs');
           },
-          paletteDrag: function(event, detail) {
-            console.log('paletteDrag:', detail);
+          paletteDragStart: function(event, detail) {
+            //console.log('paletteDrag:', detail);
             this.dragType = detail;
+            this.createNew(detail);
+          },
+          createNew: function(inTag) {
+            var html = this.$.palette.getArchetype(inTag);
+            if (html) {
+              var div = document.createElement('div');
+              div.innerHTML = html;
+              //document.upgradeElements(div);
+              neo = div.firstElementChild;
+              //neo.innerHTML = html;
+            } else {
+              neo = document.createElement(inTag);
+            }
+            neo.style.position = 'absolute';
+            neo.style.pointerEvents = 'none';
+            this.$.canvas.appendChild(neo);
+            this.$.inspector.element = neo;
+            this.neo = neo;
+          },
+          paletteDrag: function(event, detail) {
+            if (this.neo) {
+              var x = detail.x - this.$.canvas.offsetLeft;
+              var y = detail.y - this.$.canvas.offsetTop;
+              var p = this.$.canvas.snap(x, y);
+              this.neo.style.left = p.x + 'px';
+              this.neo.style.top = p.y + 'px';             
+            }
           },
           canvasDrop: function(event, detail) {
-            if (this.dragType) {
-              console.log('canvasDrop:', detail);
-              var neo = document.createElement(this.dragType);
-              neo.style.position = 'absolute';
-              neo.style.left = detail.x + 'px';
-              neo.style.top = detail.y + 'px';
-              this.$.canvas.appendChild(neo);
-              this.$.inspector.element = neo;
-            } else {
-              console.log('canvasDrop: inspect', event);
-              this.inspectTarget(event);
-            }
+            if (this.neo) {
+              //console.log('canvasDrop:', detail);
+              this.neo.style.pointerEvents = null;
+            } 
+            this.neo = null;
             this.dragType = null;
           },
           canvasClick: function(event) {
+            //console.log("canvasClick", event);
             this.inspectTarget(event);
           },
           inspectTarget: function(event) {
@@ -115,27 +144,9 @@ license that can be found in the LICENSE file.
             while (t && !t.isToolkitElement) {
               t = t.parentNode;
             }
-            if (t && t !== inspector) {
-              inspector.element = t;
+            if (t && t !== this.$.canvas) {
+              this.$.inspector.element = t;
             }
-          }
-        });
-      </script>
-    </element>
-
-    <element name="x-test">
-      <script>
-        Toolkit.register(this, {
-          fill: false,
-          color: 'orange',
-          fillChanged: function() {
-            this.update();
-          },
-          colorChanged: function() {
-            this.update();
-          },
-          update: function() {
-            this.style.backgroundColor = this.fill ? this.color : '';
           }
         });
       </script>
