@@ -36,6 +36,7 @@ license that can be found in the LICENSE file.
     Toolkit.register(this, {
       element: null,
       properties: null,
+      name: '',
       elementChanged: function() {
         this.properties = this.reflectProperties(this.element);
         this.name = this.element && this.element.localName || '';
