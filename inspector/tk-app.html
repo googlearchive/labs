@@ -1,0 +1,118 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<element name="tk-app" on-keyup="keyup">
+  <template>
+    <style>      
+      .left {
+        position: absolute !important;
+        left: 0;
+        width: 264px;
+        top: 0;
+        bottom: 0;
+        background-color: white !important;
+      }
+      .middle {
+        position: absolute;
+        left: 264px;
+        right: 350px;
+        top: 0;
+        bottom: 0;
+        background-color: white;
+        overflow: hidden;
+      }
+      .right {
+        position: absolute;
+        right: 0;
+        width: 350px;
+        top: 0;
+        bottom: 0;
+        overflow: auto;
+      }
+      .fit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+    </style>
+    <g-sidebar class="left" label="Palette">
+      <tk-palette id="palette" class="fit" on-palette-drag-start="paletteDragStart" on-palette-drag="paletteDrag" on-palette-drag-end="paletteDragEnd"></tk-palette>
+    </g-sidebar>
+    <tk-canvas id="canvas" class="middle" on-tap="canvasTap" on-pointerup="canvasDrop"></tk-canvas>
+    <tk-inspector id="inspector" class="right" on-parent-element="selectParentAction"></tk-inspector>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      ready: function() {
+      },
+      paletteDragStart: function(event, detail) {
+        this.dragType = detail;
+        this.createNew(detail);
+      },
+      createNew: function(inTag) {
+        var html = this.$.palette.getArchetype(inTag);
+        if (html) {
+          var div = document.createElement('div');
+          div.innerHTML = html;
+          neo = div.firstElementChild;
+        } else {
+          neo = document.createElement(inTag);
+        }
+        neo.style.position = 'absolute';
+        this.$.canvas.appendChild(neo);
+        this.$.inspector.element = neo;
+        this.neo = neo;
+      },
+      paletteDrag: function(event, detail) {
+        if (this.neo) {
+          var x = detail.x - this.$.canvas.offsetLeft - 24;
+          var y = detail.y - this.$.canvas.offsetTop - 24;
+          var p = this.$.canvas.snap(x, y);
+          this.neo.style.left = p.x + 'px';
+          this.neo.style.top = p.y + 'px';             
+        }
+      },
+      paletteDragEnd: function() {
+        console.log('paletteDragEnd');
+        // if the drag ends before neo has dropped on canvas, remove him
+        if (this.neo) {
+          this.neo.parentNode.removeChild(this.neo);
+          this.neo = null;
+        }
+      },
+      canvasDrop: function() {
+        console.log('canvasDrop');
+        // if dropped on canvas, let neo stay
+        this.neo = null;
+      },
+      canvasTap: function(event) {
+        this.inspectTarget(event);
+      },
+      inspectTarget: function(event) {
+        var t = event.target;
+        if (t && t !== this.$.canvas) {
+          this.$.inspector.element = t;
+        }
+      },
+      selectParentAction: function() {
+        var e = this.$.inspector.element;
+        if (e && e.parentNode) {
+          e = e.parentNode;
+          if (e === this.$.canvas) {
+            e = null;
+          }
+          this.$.inspector.element = e;
+        }
+      },
+      keyup: function(event) {
+        if (event.keyCode === 27) {
+          this.selectParentAction();
+        }
+      }
+    });
+  </script>
+</element>

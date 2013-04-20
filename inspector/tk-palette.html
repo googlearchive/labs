@@ -14,14 +14,17 @@ license that can be found in the LICENSE file.
         g-menu-item.selected {
           background-color: gray;
         }
+        g-selector {
+          display: block;
+        }
       </style>
       <g-selector on-trackstart="trackStart" on-mousemove="move" on-track="track" on-trackend="trackEnd">
-        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-toolbar">Toolbar</g-menu-item>
-        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-tabs">Tabs</g-menu-item>
-        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-ratings">Ratings</g-menu-item>
-        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-togglebutton">Toggle Button</g-menu-item>
-        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-menu">Menu</g-menu-item>
-        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="span">Caption</g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-toolbar" label="Toolbar"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-tabs" label="Tabs"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-ratings" label="Ratings"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-togglebutton" label="Toggle Button"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-menu" label="Menu"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="div" label="Caption"></g-menu-item>
      </g-selector>
   </template>
 
@@ -31,6 +34,7 @@ license that can be found in the LICENSE file.
         'g-toolbar': 0
       },
       move: function(event) {
+        //console.log(event);
         this.mouse = {x: event.pageX, y: event.pageY};
       },
       trackStart: function(event) {
@@ -45,7 +49,7 @@ license that can be found in the LICENSE file.
         this.send('palette-drag', pt);
       },
       trackEnd: function(event) {
-        this.send('palette-dragend');
+        this.send('palette-drag-end');
       },
       getArchetype: function(inTag) {
         var a = this.elementElement.querySelector('#' + inTag);
@@ -54,8 +58,8 @@ license that can be found in the LICENSE file.
     });
   </script>
 
-  <archetype id="span">
-    <span style="border: 1px dotted silver; padding: 6px;">A Caption</span>
+  <archetype id="div">
+    <div style="border: 1px dotted silver; padding: 6px;">A Caption</div>
   </archetype>
 
   <archetype id="g-toolbar">

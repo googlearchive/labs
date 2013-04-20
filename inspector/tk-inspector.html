@@ -3,7 +3,7 @@ Copyright 2013 The Toolkitchen Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="tk-inspector" on-prop-value-changed="propValueChanged">
+<element name="tk-inspector">
 
   <template>
     <style>
@@ -21,9 +21,11 @@ license that can be found in the LICENSE file.
       }
     </style>
     <div id="interior">
-      <g-icon-button src="assets/ic_cancel_darkalt.png" on-click="deleteElement" style="vertical-align: middle;"></g-icon-button>
+      <g-icon-button src="assets/ic_cancel_darkalt.png" on-click="deleteElement" 
+          style="vertical-align: middle;"></g-icon-button>
       <b>{{name}}</b>
-      <g-icon-button src="assets/ic_home_darkreg.png" on-click="parentElement" style="vertical-align: middle; float: right"></g-icon-button>
+      <g-icon-button src="assets/ic_home_darkreg.png" on-click="parentElement" 
+          style="vertical-align: middle; float: right"></g-icon-button>
       <hr/>
       <template repeat="{{properties}}">
         <tk-property-editor property="{{}}"></tk-property-editor>
@@ -40,11 +42,6 @@ license that can be found in the LICENSE file.
       elementChanged: function() {
         this.properties = this.reflectProperties(this.element);
         this.name = this.element && this.element.localName || '';
-      },
-      propValueChanged: function(inEvent, inEditor) {
-        inEditor.property.value = this.element[inEditor.property.name]
-          = inEditor.liveValue;
-        //console.log(inEditor.liveValue);
       },
       reflectProperties: function(element) {
         var props = [];
@@ -107,16 +104,17 @@ license that can be found in the LICENSE file.
           white-space: nowrap;
         }
       }
-      span {
+      .property-name {
         display: inline-block;
         width: 50%;
         padding: 4px;
         text-align: right;
         text-overflow: ellipsis;
+        vertical-align: middle;
         overflow: hidden;
       }
     </style>
-    <span>{{property.name}}: </span><content></content>
+    <span class="property-name">{{property.name}}: </span><content></content>
   </template>
 
   <script>
@@ -148,7 +146,7 @@ license that can be found in the LICENSE file.
 <element name="tk-string-property-editor">
 
   <template>
-    <input style="width: 40%;" value="{{liveValue}}"><br/>
+    <input style="width: 40%; -webkit-user-select: all; -moz-user-select: all;" value="{{liveValue}}"><br/>
   </template>
 
   <script>
@@ -159,7 +157,9 @@ license that can be found in the LICENSE file.
         this.liveValue = this.property.value;
       },
       liveValueChanged: function() {
-        this.send('prop-value-changed', this);
+        this.property.value 
+            = this.property.obj[this.property.name] 
+            = this.liveValue;
       }
     });
   </script>
@@ -168,7 +168,7 @@ license that can be found in the LICENSE file.
 
 
 <element name="tk-boolean-property-editor" extends="tk-string-property-editor">
-
+  
   <template>
     <input type="checkbox" checked="{{liveValue}}"><br/>
   </template>
