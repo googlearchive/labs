@@ -146,17 +146,21 @@ license that can be found in the LICENSE file.
 <element name="tk-string-property-editor">
 
   <template>
-    <input style="width: 40%; -webkit-user-select: all; -moz-user-select: all;" value="{{liveValue}}"><br/>
+    <input type="{{type}}" value="{{liveValue}}" on-change="inputChange" style="width: 40%; -webkit-user-select: all; -moz-user-select: all;"><br/>
   </template>
 
   <script>
     Toolkit.register(this, {
+      type: "text",
       property: null,
       liveValue: null,
       propertyChanged: function() {
+        if (this.property.value.slice(0, 1) == '#') {
+          this.type = "color"
+        }
         this.liveValue = this.property.value;
       },
-      liveValueChanged: function() {
+      inputChange: function() {
         this.property.value 
             = this.property.obj[this.property.name] 
             = this.liveValue;

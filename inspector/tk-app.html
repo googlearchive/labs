@@ -77,7 +77,6 @@ license that can be found in the LICENSE file.
         }
       },
       paletteDragEnd: function() {
-        console.log('paletteDragEnd');
         // if the drag ends before neo has dropped on canvas, remove him
         if (this.neo) {
           this.neo.parentNode.removeChild(this.neo);
@@ -85,7 +84,6 @@ license that can be found in the LICENSE file.
         }
       },
       canvasDrop: function() {
-        console.log('canvasDrop');
         // if dropped on canvas, let neo stay
         this.neo = null;
       },
