@@ -28,6 +28,9 @@ license that can be found in the LICENSE file.
         <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="chart-js" label="Chart.js"></g-menu-item>
         <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="ajaxorg-ace" label="Ace Editor"></g-menu-item>
         <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="x-coolclock" label="CoolClock"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-ajax" label="Ajax"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="x-stock" label="Stock"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="wu-weather" label="Weather"></g-menu-item>
      </g-selector>
   </template>
 
@@ -61,15 +64,15 @@ license that can be found in the LICENSE file.
     });
   </script>
 
-  <archetype id="ajaxorg-ace">
+  <template id="ajaxorg-ace">
     <ajaxorg-ace style="border: 1px dotted silver; width: 300px; height: 200px;"></ajaxorg-ace>
-  </archetype> 
+  </template> 
   
-  <archetype id="div">
+  <template id="div">
     <div style="border: 1px dotted silver; padding: 6px;">A Caption</div>
-  </archetype>
+  </template>
 
-  <archetype id="g-toolbar">
+  <template id="g-toolbar">
     <g-toolbar style="right: 0px; left: 0px;"> 
       <g-icon-button src="images/star_full.svg" active="true"></g-icon-button>
       <div class="flex">Toolbar</div>
@@ -79,24 +82,32 @@ license that can be found in the LICENSE file.
       </g-toolbar>
       <g-icon-button src="images/hangout.png"></g-icon-button>   
     </g-toolbar>
-  </archetype>
+  </template>
 
-  <archetype id="g-tabs">
+  <template id="g-tabs">
     <g-tabs selected="0">
       <span>One</span>
       <span>Two</span>
       <span>Three</span>
       <span>Four</span>
     </g-tabs>
-  </archetype>
+  </template>
 
-  <archetype id="g-menu">
+  <template id="g-menu">
     <g-menu selected="0">
       <g-menu-item src="images/comment.png">Post a Comment</g-menu-item>
       <g-menu-item src="images/hangout.png">Share Link</g-menu-item>
       <g-menu-item src="images/mail.png">Email Link</g-menu-item>
       <g-menu-item src="images/favorite.png">Add to Favorites</g-menu-item>
     </g-menu>
-  </archetype>
+  </template>
+  
+  <template id="g-ajax">
+    <g-ajax style="border: 1px dotted silver; padding: 8px;">Ajax</g-ajax>
+  </template>
+  
+  <template id="x-stock">
+    <x-stock symbol="GOOG"></x-stock>
+  </template>
   
 </element>

@@ -67,6 +67,7 @@ license that can be found in the LICENSE file.
           if (!this.element.firstElementChild) {
             more.push('textContent');
           }
+          more.push('id');
           more.forEach(function(k) {
             var v = this.element[k];
             if (typeof v !== 'function' && typeof v !== 'object') {
@@ -81,10 +82,7 @@ license that can be found in the LICENSE file.
        return props;
       },
       deleteElement: function() {
-        if (this.element) {
-          this.element.parentNode.removeChild(this.element);
-          this.element = null;
-        }
+        this.send('delete-element');
       },
       parentElement: function() {
         this.send('parent-element');
@@ -143,21 +141,13 @@ license that can be found in the LICENSE file.
 </element>
 
 
-<element name="tk-string-property-editor">
-
-  <template>
-    <input type="{{type}}" value="{{liveValue}}" on-change="inputChange" style="width: 40%; -webkit-user-select: all; -moz-user-select: all;"><br/>
-  </template>
+<element name="tk-abstract-property-editor">
 
   <script>
     Toolkit.register(this, {
-      type: "text",
       property: null,
       liveValue: null,
       propertyChanged: function() {
-        if (this.property.value.slice(0, 1) == '#') {
-          this.type = "color"
-        }
         this.liveValue = this.property.value;
       },
       inputChange: function() {
@@ -171,14 +161,58 @@ license that can be found in the LICENSE file.
 </element>
 
 
-<element name="tk-boolean-property-editor" extends="tk-string-property-editor">
+<element name="tk-string-property-editor" extends="tk-abstract-property-editor">
+
+  <template>
+    <input type="{{type}}" value="{{liveValue}}" on-change="inputChange" style="width: 40%; -webkit-user-select: all; -moz-user-select: all;"><br/>
+  </template>
+
+  <script>
+    Toolkit.register(this, {
+      type: "text",
+      propertyChanged: function() {
+        if (String(this.property.value).slice(0, 1) == '#') {
+          this.type = "color"
+        }
+        this.super();
+      }
+    });
+  </script>
+
+</element>
+
+
+<element name="tk-boolean-property-editor" extends="tk-abstract-property-editor">
   
   <template>
-    <input type="checkbox" checked="{{liveValue}}"><br/>
+    <input type="checkbox" checked="{{liveValue}}" on-click="inputChange"><br/>
   </template>
 
   <script>
     Toolkit.register(this);
+  </script>
+
+</element>
+
+
+<element name="tk-select-property-editor" extends="tk-abstract-property-editor">
+  
+  <template>
+    <select>
+        <template repeat="{{options}}">
+          <option>{{}}</option>
+        </template>
+    </select><br/>
+  </template>
+
+  <script>
+    Toolkit.register(this, {
+      options: [
+        "Alpha",
+        "Beta",
+        "Gamma"
+      ]
+    });
   </script>
 
 </element>

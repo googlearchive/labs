@@ -6,29 +6,45 @@ license that can be found in the LICENSE file.
 <element name="tk-app" on-keyup="keyup">
   <template>
     <style>      
+      .top {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 260px;
+        left: 0;
+        overflow: auto;
+      }
+      .bottom {
+        position: absolute;
+        height: 244px;
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+        overflow: auto;
+      }
       .left {
         position: absolute !important;
-        left: 0;
-        width: 264px;
         top: 0;
+        width: 264px;
         bottom: 0;
+        left: 0;
         background-color: white !important;
       }
       .middle {
         position: absolute;
-        left: 264px;
-        right: 350px;
         top: 0;
+        right: 350px;
         bottom: 0;
+        left: 264px;
         background-color: white;
         overflow: hidden;
       }
       .right {
         position: absolute;
-        right: 0;
-        width: 350px;
         top: 0;
+        right: 0;
         bottom: 0;
+        width: 350px;
         overflow: auto;
       }
       .fit {
@@ -39,29 +55,36 @@ license that can be found in the LICENSE file.
         left: 0;
       }
     </style>
-    <g-sidebar class="left" label="Palette">
-      <tk-palette id="palette" class="fit" on-palette-drag-start="paletteDragStart" on-palette-drag="paletteDrag" on-palette-drag-end="paletteDragEnd"></tk-palette>
-    </g-sidebar>
-    <tk-canvas id="canvas" class="middle" on-tap="canvasTap" on-pointerup="canvasDrop"></tk-canvas>
-    <tk-inspector id="inspector" class="right" on-parent-element="selectParentAction"></tk-inspector>
+    <div class="top">
+      <g-sidebar class="left" label="Palette">
+        <tk-palette id="palette" class="fit" on-palette-drag-start="paletteDragStart" on-palette-drag="paletteDrag" on-palette-drag-end="paletteDragEnd"></tk-palette>
+      </g-sidebar>
+      <tk-canvas id="canvas" class="middle" on-tap="canvasTap" on-pointerup="canvasDrop"></tk-canvas>
+      <tk-inspector id="inspector" class="right" on-parent-element="selectParentAction" on-delete-element="deleteElement"></tk-inspector>
+    </div>
+    <div class="bottom">
+      <ajaxorg-ace id="source" mode="html" theme="merbivore"></ajaxorg-ace>
+    </div>
   </template>
   <script>
     Toolkit.register(this, {
       ready: function() {
+        this.$.source.editor.getSession().setUseWrapMode(true);
       },
       paletteDragStart: function(event, detail) {
         this.dragType = detail;
         this.createNew(detail);
       },
-      createNew: function(inTag) {
-        var html = this.$.palette.getArchetype(inTag);
+      createNew: function(tag) {
+        var html = this.$.palette.getArchetype(tag);
         if (html) {
           var div = document.createElement('div');
           div.innerHTML = html;
           neo = div.firstElementChild;
         } else {
-          neo = document.createElement(inTag);
+          neo = document.createElement(tag);
         }
+        neo.id = tag.split('-').pop().toLowerCase();
         neo.style.position = 'absolute';
         this.$.canvas.appendChild(neo);
         this.$.inspector.element = neo;
@@ -86,6 +109,15 @@ license that can be found in the LICENSE file.
       canvasDrop: function() {
         // if dropped on canvas, let neo stay
         this.neo = null;
+        this.canvasChange();
+      },
+      deleteElement: function() {
+        var e = this.$.inspector.element;
+        if (e) {
+          e.parentNode.removeChild(e);
+          this.$.inspector.element = null;
+          this.canvasChange();
+        }
       },
       canvasTap: function(event) {
         this.inspectTarget(event);
@@ -110,6 +142,11 @@ license that can be found in the LICENSE file.
         if (event.keyCode === 27) {
           this.selectParentAction();
         }
+      },
+      canvasChange: function() {
+        var html = this.$.canvas.innerHTML;
+        html = html.replace(/ style="[^"]*"/g, '');
+        this.$.source.value = html_beautify(html);        
       }
     });
   </script>
