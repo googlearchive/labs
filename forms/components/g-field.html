@@ -4,29 +4,31 @@
       @host {
         /* @polyfill g-field */
         :scope {
-          border: 2px solid black;
           display: block;
+          margin: 10px;
           background-color: #f0f0ed;
-        }
-        /* @polyfill g-field + g-field */
-        * + * {
-          border-top-width: 0px;
         }
       }
       #label {
         color: #999;
         display: inline-block;
+        margin-right: 15px;
+      }
+      #shadow {
+        display: -webkit-flex;
+        -webkit-align-items: center;
       }
       #description {
         color: #7f7f7f;
         font-size: 12pt;
-        vertical-align: middle;
       }
       #block {
-        display: inline-flex;
         display: -webkit-inline-flex;
-        flex-direction: column;
-        -webkit-flex-flow: column nowrap;
+        -webkit-flex-direction: column;
+        -webkit-flex: 1 auto;
+      }
+      #item::-webkit-distributed(*) {
+        -webkit-flex: 1 auto;
       }
       #warning {
         -webkit-mask: url(../assets/invalid.png);
@@ -40,24 +42,26 @@
       }
       #validate {
         color: #d84437;
-        display: inline-block;
       }
     </style>
-    <span id="label">{{label}}</span>
-    <span id="block">
-      <content select="*"></content>
-      <span id="description">{{description}}</span>
-    </span>
-    <span id="validate">
-      <span id="warning"></span>
-      <span>{{invalid}}</span>
-    </span>
+    <div id="shadow">
+      <span id="label">{{label}}</span>
+      <span id="block">
+        <content id="item" select="*"></content>
+        <span id="description">{{description}}</span>
+      </span>
+      <span id="validate" hidden?="{{valid}}">
+        <span id="warning"></span>
+        <span>{{invalid}}</span>
+      </span>
+    </div>
   </template>
   <script>
     Toolkit.register(this, {
-      label: 'Label:',
-      description: '> Description',
-      invalid: 'Invalid!'
+      label: '',
+      description: '',
+      invalid: '',
+      valid: true
     });
   </script>
 </element>

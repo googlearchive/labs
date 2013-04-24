@@ -1,16 +1,13 @@
-<element name="g-form" extends="form">
+<element name="g-form">
   <template>
     <style>
       @host {
-        form[is="g-form"] {
+        :scope {
           padding: 20px;
           background-color: #f0f0ed;
           display: -webkit-flex;
           -webkit-flex-direction: column;
         }
-      }
-      content::-webkit-distributed(*) {
-        -webkit-flex: 1;
       }
     </style>
     <content></content>

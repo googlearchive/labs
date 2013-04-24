@@ -2,14 +2,19 @@
   <template>
     <style>
       @host {
-        g-input-decorator {
-          border-width: 0 1px 1px 1px;
+        /* @polyfill g-input-decorator */
+        :scope {
+          border-width: 1px;
           border-color: #b2b2b2;
           border-style: solid;
           background: white;
         }
-        g-input-decorator:first-of-type {
-          border-top-width: 1px;
+        /* @polyfill g-input-decorator + g-input-decorator */
+        :scope + :scope{
+          border-top-width: 0px;
+        }
+        :scope:last-of-type {
+          border-top-width: 0px;
         }
       }
       #shadow {
@@ -20,14 +25,17 @@
       .focused {
         box-shadow: inset 0 0 8px #448afd, 0 0 8px #448afd;
       }
+      /* @polyfill #shadow > input */
       #input::-webkit-distributed(input) {
         border: none;
         outline: 0;
         -webkit-flex: 1 auto;
       }
+      /* @polyfill #shadow > input::-webkit-input-placeholder */
       #input::-webkit-distributed(input::-webkit-input-placeholder) {
         color: #bfbfbf;
       }
+      /* @polyfill #shadow > [left], #shadow > [right] */
       #left::-webkit-distributed(*), #right::-webkit-distributed(*) {
         -webkit-flex: 0;
       }
