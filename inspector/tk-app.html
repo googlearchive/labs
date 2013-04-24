@@ -85,7 +85,7 @@ license that can be found in the LICENSE file.
         neo.style.position = 'absolute';
         this.$.canvas.appendChild(neo);
         this.$.inspector.element = neo;
-        this.$.inspector.propOptions = this.$.palette.getPropOptions(tag);
+        neo.propOptions = this.$.palette.getPropOptions(tag);
         this.neo = neo;
       },
       paletteDrag: function(event, detail) {

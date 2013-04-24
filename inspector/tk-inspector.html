@@ -38,7 +38,6 @@ license that can be found in the LICENSE file.
     Toolkit.register(this, {
       element: null,
       properties: null,
-      propOptions: null,
       name: '',
       elementChanged: function() {
         this.properties = this.reflectProperties(this.element);
@@ -49,6 +48,7 @@ license that can be found in the LICENSE file.
         if (element) {
           var p = element.__proto__;
           while (p && p !== HTMLElement.prototype/*&& p.isToolkitElement*/) {
+            var propOptions = element.propOptions;
             var k = Object.keys(p);
             k.forEach(function(k) {
               var v = this.element[k];
@@ -58,7 +58,7 @@ license that can be found in the LICENSE file.
                 props.push({
                   name: k,
                   value: v,
-                  options: this.propOptions && this.propOptions[k],
+                  options: propOptions && propOptions[k],
                   obj: element
                 });
               }
@@ -201,7 +201,7 @@ license that can be found in the LICENSE file.
 </element>
 
 
-<element name="tk-select-property-editor" extends="tk-abstract-property-editor" attributes="options">
+<element name="tk-select-property-editor" extends="tk-abstract-property-editor">
   
   <template>
     <select id="select" on-change="inputChange">
@@ -215,6 +215,10 @@ license that can be found in the LICENSE file.
     Toolkit.register(this, {
       propertyChanged: function() {
         this.options = this.property.options;
+        // force template to generate options before setting value
+        dirtyCheck();
+        this.super();
+        this.$.select.value = this.liveValue;
       },
       inputChange: function() {
         this.liveValue = this.$.select.value;
