@@ -63,14 +63,11 @@ license that can be found in the LICENSE file.
       <tk-inspector id="inspector" class="right" on-parent-element="selectParentAction" on-delete-element="deleteElement"></tk-inspector>
     </div>
     <div class="bottom">
-      <ajaxorg-ace id="source" mode="html" theme="merbivore"></ajaxorg-ace>
+      <ajaxorg-ace id="source" mode="html" theme="merbivore" readonly wrap></ajaxorg-ace>
     </div>
   </template>
   <script>
     Toolkit.register(this, {
-      ready: function() {
-        this.$.source.editor.getSession().setUseWrapMode(true);
-      },
       paletteDragStart: function(event, detail) {
         this.dragType = detail;
         this.createNew(detail);
