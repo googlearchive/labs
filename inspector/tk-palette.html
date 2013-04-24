@@ -60,8 +60,16 @@ license that can be found in the LICENSE file.
       getArchetype: function(inTag) {
         var a = this.elementElement.querySelector('#' + inTag);
         return a && a.innerHTML || '';
+      },
+      getPropOptions: function(inTag) {
+        return PROP_OPTIONS[inTag];
       }
     });
+    
+    var PROP_OPTIONS = {
+      'g-ajax': {handleAs: ['json', 'text', 'xml']},
+      'chart-js': {kind: ['Bar', 'Line', 'Radar', 'Pie', 'PolarArea']}
+    }
   </script>
 
   <template id="ajaxorg-ace">

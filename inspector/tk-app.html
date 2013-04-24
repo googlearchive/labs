@@ -59,7 +59,7 @@ license that can be found in the LICENSE file.
       <g-sidebar class="left" label="Palette">
         <tk-palette id="palette" class="fit" on-palette-drag-start="paletteDragStart" on-palette-drag="paletteDrag" on-palette-drag-end="paletteDragEnd"></tk-palette>
       </g-sidebar>
-      <tk-canvas id="canvas" class="middle" on-tap="canvasTap" on-pointerup="canvasDrop"></tk-canvas>
+      <tk-canvas id="canvas" tabIndex="-1" class="middle" on-tap="canvasTap" on-pointerup="canvasDrop"></tk-canvas>
       <tk-inspector id="inspector" class="right" on-parent-element="selectParentAction" on-delete-element="deleteElement"></tk-inspector>
     </div>
     <div class="bottom">
@@ -85,6 +85,7 @@ license that can be found in the LICENSE file.
         neo.style.position = 'absolute';
         this.$.canvas.appendChild(neo);
         this.$.inspector.element = neo;
+        this.$.inspector.propOptions = this.$.palette.getPropOptions(tag);
         this.neo = neo;
       },
       paletteDrag: function(event, detail) {
