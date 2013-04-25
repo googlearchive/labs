@@ -104,6 +104,13 @@ license that can be found in the LICENSE file.
       },
       selectedChanged: function(inOld) {
         classFollows(this.selected, inOld, 'app-selected');
+        this.canvasChange();
+      },
+      inspectorPropertyChanged: function() {
+        this.canvasChange();
+      },
+      canvasChange: function() {
+        this.$.source.update();
       },
       createNew: function(tag) {
         var meta = metadata.querySelector('#' + tag);
@@ -143,7 +150,6 @@ license that can be found in the LICENSE file.
       canvasDrop: function() {
         // if dropped on canvas, let neo stay
         this.neo = null;
-        this.canvasChange();
       },
       deleteElement: function() {
         var e = this.selected;
@@ -176,12 +182,6 @@ license that can be found in the LICENSE file.
         if (event.keyCode === 27) {
           this.selectParentAction();
         }
-      },
-      inspectorPropertyChanged: function() {
-        this.canvasChange();
-      },
-      canvasChange: function() {
-        this.$.source.update();
       }
     });
     function classFollows(anew, old, className) {
