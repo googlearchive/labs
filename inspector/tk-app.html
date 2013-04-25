@@ -88,12 +88,12 @@ license that can be found in the LICENSE file.
           x: rect.left + this.$.canvas.offsetLeft,
           y: rect.top + this.$.canvas.offsetTop
         };
-        console.log(this.origin);
         this.dragType = detail;
         this.createNew(detail);
       },
       createNew: function(tag) {
-        var html = this.$.palette.getArchetype(tag);
+        var meta = this.$.palette.getElementMeta(tag);
+        var html = meta.archetype;
         if (html) {
           var div = document.createElement('div');
           div.innerHTML = html;
@@ -105,7 +105,7 @@ license that can be found in the LICENSE file.
         neo.style.position = 'absolute';
         this.$.canvas.appendChild(neo);
         this.selected = neo;
-        neo.propOptions = this.$.palette.getPropOptions(tag);
+        neo.meta = meta.properties;
         this.neo = neo;
       },
       paletteDrag: function(event, detail) {
@@ -186,7 +186,7 @@ license that can be found in the LICENSE file.
         //
         var html = this.$.canvas.innerHTML;
         html = html.replace(/ style="[^"]*"/g, '');
-        this.$.source.value = html; //html_beautify(html);        
+        this.$.source.value = html_beautify(html);        
       }
     });
   </script>

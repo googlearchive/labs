@@ -4,7 +4,6 @@ Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <element name="tk-inspector" attributes="element">
-
   <template>
     <style>
       @host {
@@ -32,7 +31,6 @@ license that can be found in the LICENSE file.
       </template>
     </div>
   </template>
-
   <script>
     var blacklist = {isToolkitElement: 1};
     Toolkit.register(this, {
@@ -47,8 +45,8 @@ license that can be found in the LICENSE file.
         var props = [];
         if (element) {
           var p = element.__proto__;
+          var m = element.meta;
           while (p && p !== HTMLElement.prototype/*&& p.isToolkitElement*/) {
-            var propOptions = element.propOptions;
             var k = Object.keys(p);
             k.forEach(function(k) {
               var v = this.element[k];
@@ -58,7 +56,7 @@ license that can be found in the LICENSE file.
                 props.push({
                   name: k,
                   value: v,
-                  options: propOptions && propOptions[k],
+                  meta: m && m[k],
                   obj: element
                 });
               }
@@ -91,12 +89,9 @@ license that can be found in the LICENSE file.
       }
     });
   </script>
-
 </element>
 
-
 <element name="tk-property-editor" attributes="property">
-
   <template>
     <style>
       @host {
@@ -116,7 +111,6 @@ license that can be found in the LICENSE file.
     </style>
     <span class="property-name">{{property.name}}: </span><content></content>
   </template>
-
   <script>
     Toolkit.register(this, {
       property: null,
@@ -124,13 +118,13 @@ license that can be found in the LICENSE file.
       editorTypes: {
         'boolean': 'tk-boolean-property-editor',
         'string': 'tk-string-property-editor',
+        'select': 'tk-select-property-editor',
+        'color': 'tk-color-property-editor',
         any: 'tk-string-property-editor'
       },
       propertyChanged: function() {
-        var type = this.editorTypes[typeof this.property.value];
-        if (this.property.options) {
-          type = 'tk-select-property-editor';
-        }
+        var m = this.property.meta;
+        var type = this.editorTypes[m && m.kind || typeof this.property.value];
         this.editor = document.createElement(type || this.editorTypes.any);
         this.editor.property = this.property;
         //Toolkit.bindProperties(this.editor, 'liveValue', this.property.obj, this.property.name);
@@ -143,12 +137,9 @@ license that can be found in the LICENSE file.
       }
     });
   </script>
-
 </element>
 
-
 <element name="tk-abstract-property-editor">
-
   <script>
     Toolkit.register(this, {
       property: null,
@@ -164,46 +155,40 @@ license that can be found in the LICENSE file.
       }
     });
   </script>
-
 </element>
 
-
 <element name="tk-string-property-editor" extends="tk-abstract-property-editor">
-
   <template>
     <input type="{{type}}" value="{{liveValue}}" on-change="inputChange" style="width: 40%; -webkit-user-select: all; -moz-user-select: all;"><br/>
   </template>
-
   <script>
     Toolkit.register(this, {
-      type: "text",
-      propertyChanged: function() {
-        if (String(this.property.value).slice(0, 1) == '#') {
-          this.type = "color"
-        }
-        this.super();
-      }
+      type: "text"
     });
   </script>
-
 </element>
 
+<element name="tk-color-property-editor" extends="tk-string-property-editor">
+  <template>
+    <shadow></shadow>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      type: 'color'
+    });
+  </script>
+</element>
 
 <element name="tk-boolean-property-editor" extends="tk-abstract-property-editor">
-  
   <template>
     <input type="checkbox" checked="{{liveValue}}" on-click="inputChange"><br/>
   </template>
-
   <script>
     Toolkit.register(this);
   </script>
-
 </element>
 
-
-<element name="tk-select-property-editor" extends="tk-abstract-property-editor">
-  
+<element name="tk-select-property-editor" extends="tk-abstract-property-editor">  
   <template>
     <select id="select" on-change="inputChange">
       <template repeat="{{options}}">
@@ -211,14 +196,12 @@ license that can be found in the LICENSE file.
       </template>
     </select><br/>
   </template>
-
   <script>
     Toolkit.register(this, {
       propertyChanged: function() {
-        this.options = this.property.options;
+        this.options = this.property.meta.options;
         this.super();
-        // force template to generate options before setting value
-        //dirtyCheck();
+        // allow template to generate options before setting value
         this.asyncMethod(function() {
           this.$.select.value = this.liveValue;
         });
@@ -229,5 +212,4 @@ license that can be found in the LICENSE file.
       }
     });
   </script>
-
 </element>
