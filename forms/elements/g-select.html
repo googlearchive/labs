@@ -5,11 +5,13 @@
     <style>
       @host {
         * {
-          border: 1px solid #b2b2b2;
+          border: 1px solid #bfbfbf;
+          background: white;
         }
       }
       #label {
-        padding: 8px;
+        padding: 1rem;
+        color: #bfbfbf;
       }
       #container {
         display: -webkit-flex;
@@ -18,23 +20,23 @@
       }
       #selector {
         display: block;
-        min-width: 200px;
+        min-width: 500px;
+        border: 1px solid #b2b2b2;
       }
       /* @polyfill #selector > * */
       ::-webkit-distributed(*) {
-        padding: 8px;
-        border: 1px solid #b2b2b2;
-        border-top-width: 0;
+        padding: 21pt;
         font-size: 14pt;
+        background: white;
       }
       /* @polyfill #selector > :nth-child(2) */
       ::-webkit-distributed(:first-child) {
         border-top-width: 1px;
       }
     </style>
-    <div id="label" on-tap="open">{{$.selector.selection.textContent}}</div>
-    <g-overlay id="container">
-      <g-selector id="selector" on-activate="close" selected="{{selected}}">
+    <div id="label" on-tap="toggle">{{$.selector.selection.textContent}}</div>
+    <g-overlay id="container" opened="{{opened}}">
+      <g-selector id="selector" selected="{{selected}}" on-activate="toggle" opened="{{opened}}">
         <content select="*"></content>
       </g-selector>
     </g-overlay>
@@ -45,14 +47,9 @@
         this.setAttribute('touch-action', 'none');
       },
       selected: 0,
-      selectedChanged: function() {
-        this.$.selector.selected = this.selected;
-      },
-      open: function() {
-        this.$.container.opened = true;
-      },
-      close: function() {
-        this.$.container.opened = false;
+      opened: false,
+      toggle: function() {
+        this.opened = !this.opened;
       }
     });
   </script>

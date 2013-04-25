@@ -5,28 +5,23 @@
         * {
           display: block;
           background-color: #f0f0ed;
-          padding: 8px;
+          margin: 20px 0px;
         }
       }
       #label {
-        color: #999;
+        color: #7f7f7f;
         display: inline-block;
       }
       #label[filled] {
-        margin-right: 15px;
+        margin-bottom: 15px;
       }
       #shadow {
         display: -webkit-flex;
-        -webkit-align-items: center;
+        -webkit-flex-direction: column;
       }
       #description {
         color: #7f7f7f;
         font-size: 12pt;
-      }
-      #block {
-        display: -webkit-inline-flex;
-        -webkit-flex-direction: column;
-        -webkit-flex: 1 auto;
       }
       /* validation warning */
       #warning {
@@ -48,7 +43,7 @@
       /* input decoration */
       #item::-webkit-distributed(input) {
         border: 1px solid #bfbfbf;
-        padding: 0;
+        padding: 1rem;
         margin: 0;
         background: white;
       }
@@ -64,10 +59,8 @@
     </style>
     <div id="shadow">
       <span id="label" filled?="{{label}}">{{label}}</span>
-      <span id="block">
-        <content id="item" select="*"></content>
-        <span id="description">{{description}}</span>
-      </span>
+      <content id="item" select="*"></content>
+      <span id="description">{{description}}</span>
       <span id="validate" hidden?="{{valid}}">
         <span id="warning"></span>
         <span>{{invalid}}</span>
