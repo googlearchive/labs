@@ -64,9 +64,37 @@
   <property name="handleAs" kind="select" options="json,text,xml"></property>
 </tk-meta>
 
+<tk-meta id="g-blink" label="Blink">
+  <template>
+    <g-blink style="border: 1px dotted silver; padding: 8px;">Blink</g-blink>
+  </template>
+</tk-meta>
+
+<tk-meta id="g-bounce" label="Bounce">
+  <template>
+    <g-bounce style="border: 1px dotted silver; padding: 8px;">Bounce</g-bounce>
+  </template>
+</tk-meta>
+
+<tk-meta id="g-flip" label="Flip">
+  <template>
+    <g-flip style="border: 1px dotted silver; padding: 8px;">Flip</g-flip>
+  </template>
+</tk-meta>
+
 <tk-meta id="g-shake" label="Shake">
   <template>
     <g-shake style="border: 1px dotted silver; padding: 8px;">Shake</g-shake>
+  </template>
+</tk-meta>
+
+<tk-meta id="g-blink-shake" label="Blink & Shake">
+  <template>
+    <g-animation-group style="border: 1px dotted silver; padding: 8px">
+      <g-blink style="border: 1px dotted silver; padding: 8px;">Blink</g-blink>
+      <g-shake duration="Infinity" style="border: 1px dotted silver; padding: 8px;">Shake</g-shake>
+      Group
+    </g-animation-group>
   </template>
 </tk-meta>
 
