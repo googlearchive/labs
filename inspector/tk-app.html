@@ -79,7 +79,8 @@ license that can be found in the LICENSE file.
         this.createNew(detail);
       },
       createNew: function(tag) {
-        var html = this.$.palette.getArchetype(tag);
+        var meta = this.$.palette.getElementMeta(tag);
+        var html = meta.archetype;
         if (html) {
           var div = document.createElement('div');
           div.innerHTML = html;
@@ -91,7 +92,7 @@ license that can be found in the LICENSE file.
         neo.style.position = 'absolute';
         this.$.canvas.appendChild(neo);
         this.$.inspector.element = neo;
-        neo.propOptions = this.$.palette.getPropOptions(tag);
+        neo.meta = meta.properties;
         this.neo = neo;
       },
       paletteDrag: function(event, detail) {
