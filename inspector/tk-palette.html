@@ -18,7 +18,7 @@ license that can be found in the LICENSE file.
           display: block;
         }
       </style>
-      <g-selector on-trackstart="trackStart" on-mousemove="move" on-track="track" on-trackend="trackEnd">
+      <g-selector on-trackstart="trackStart" on-track="track" on-trackend="trackEnd">
         <template repeat="{{metadata}}">
           <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="{{id}}" label="{{label}}"></g-menu-item>
         </template>
@@ -31,18 +31,14 @@ license that can be found in the LICENSE file.
       ready: function() {
         this.metadata = this.$.meta.metadata;
       },
-      move: function(event) {
-        this.mouse = {x: event.pageX, y: event.pageY};
-      },
       trackStart: function(event) {
-        this.startPoint = this.mouse;
         this.send('palette-drag-start', event.target.getAttribute('tag'));
         event.stopPropagation();
       },
       track: function(event) {
         var pt = {
-          x: this.startPoint.x + event.dx, 
-          y: this.startPoint.y + event.dy
+          x: event.pageX,
+          y: event.pageY
         };
         this.send('palette-drag', pt);
         event.stopPropagation();

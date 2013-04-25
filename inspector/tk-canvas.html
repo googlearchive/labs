@@ -44,22 +44,25 @@ license that can be found in the LICENSE file.
         }
         this.tracking = elt;
         if (elt) {
-          this.startPoint = {x:elt.offsetLeft, y: elt.offsetTop};
+          this.startPoint = {x: elt.offsetLeft, y: elt.offsetTop};
         }
+        event.stopPropagation();
       },
       track: function(event) {
         if (this.tracking) {
           var p = {
-            x: this.startPoint.x + event.dx, 
+            x: this.startPoint.x + event.dx,
             y: this.startPoint.y + event.dy
           };
           p = this.snap(p.x, p.y);
           this.tracking.style.left = p.x + 'px';
-          this.tracking.style.top = p.y + 'px'; 
+          this.tracking.style.top = p.y + 'px';
+          event.stopPropagation();
         }
       },
       trackEnd: function(event) {
         this.tracking = null;
+        event.stopPropagation();
       }
     });
   </script>
