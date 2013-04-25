@@ -58,7 +58,7 @@ license that can be found in the LICENSE file.
                 props.push({
                   name: k,
                   value: v,
-                  meta: m[k],
+                  meta: m && m[k],
                   obj: element
                 });
               }
