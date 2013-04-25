@@ -8,7 +8,7 @@ license that can be found in the LICENSE file.
       <style>
         g-menu-item {
           display: block;
-          padding: 14px 14px 14px 30px;
+          padding: 10px 14px 10px 30px;
           cursor: pointer;
         }
         g-menu-item.selected {
@@ -18,11 +18,11 @@ license that can be found in the LICENSE file.
           display: block;
         }
       </style>
-      <g-selector on-trackstart="trackStart" on-track="track" on-trackend="trackEnd">
+      <div touch-action="user" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd">
         <template repeat="{{elements}}">
           <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="{{id}}" label="{{label}}"></g-menu-item>
         </template>
-     </g-selector>
+     </div>
   </template>
   <script>
     Toolkit.register(this, {
