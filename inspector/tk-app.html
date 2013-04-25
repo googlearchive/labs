@@ -5,7 +5,7 @@ license that can be found in the LICENSE file.
 -->
 <element name="tk-app" on-keyup="keyup">
   <template>
-    <style>      
+    <style>
       .top {
         position: absolute;
         top: 0;
@@ -61,45 +61,52 @@ license that can be found in the LICENSE file.
     </style>
     <div class="top">
       <g-sidebar class="left" label="Palette">
-        <tk-palette id="palette" class="fit" elements="{{elements}}" on-palette-drag-start="paletteDragStart" on-palette-drag="paletteDrag" on-palette-drag-end="paletteDragEnd"></tk-palette>
+        <tk-palette
+            id="palette"
+            class="fit"
+            elements="{{elements}}"
+            on-palette-drag-start="paletteDragStart"
+            on-palette-drag="paletteDrag"
+            on-palette-drag-end="paletteDragEnd">
+        </tk-palette>
       </g-sidebar>
-      <tk-canvas id="canvas" tabIndex="-1" class="middle" on-tap="canvasTap" on-pointerup="canvasDrop"></tk-canvas>
-      <tk-inspector id="inspector" class="right" element="{{selected}}" on-parent-element="selectParentAction" on-delete-element="deleteElement" on-property-changed="inspectorPropertyChanged"></tk-inspector>
+      <tk-canvas
+          id="canvas"
+          tabIndex="-1"
+          class="middle"
+          on-tap="canvasTap"
+          on-pointerup="canvasDrop">
+      </tk-canvas>
+      <tk-inspector
+          id="inspector"
+          class="right"
+          element="{{selected}}"
+          on-parent-element="selectParentAction"
+          on-delete-element="deleteElement"
+          on-property-changed="inspectorPropertyChanged">
+      </tk-inspector>
     </div>
-    <div class="bottom">
-      <ajaxorg-ace id="source" mode="html" theme="merbivore" readonly wrap></ajaxorg-ace>
-    </div>
+    <tk-source
+        id="source"
+        class="bottom"
+        element="{{$.canvas}}"></tk-source>
   </template>
   <script>
-    var metadata = document.querySelector('#components').content.querySelector('#metadata').content;
-  
+    var metadata = document
+      .querySelector('#components').content
+      .querySelector('#metadata').content;
+
     Toolkit.register(this, {
       selected: null,
-      metadata: metadata,
       ready: function() {
         this.elements = Array.prototype.slice.call(
-            this.metadata.querySelectorAll('tk-meta'));
+            metadata.querySelectorAll('tk-meta'));
       },
       selectedChanged: function(inOld) {
-        var classn = 'app-selected';
-        if (inOld) {
-          inOld.classList.remove(classn);
-        }
-        if (this.selected) {
-          this.selected.classList.add(classn);
-        }
-      },
-      paletteDragStart: function(event, detail) {
-        var rect = this.getBoundingClientRect();
-        this.origin = {
-          x: rect.left + this.$.canvas.offsetLeft,
-          y: rect.top + this.$.canvas.offsetTop
-        };
-        this.dragType = detail;
-        this.createNew(detail);
+        classFollows(this.selected, inOld, 'app-selected');
       },
       createNew: function(tag) {
-        var meta = this.metadata.querySelector('#' + tag);
+        var meta = metadata.querySelector('#' + tag);
         var html = meta.archetype;
         if (html) {
           var div = document.createElement('div');
@@ -110,10 +117,19 @@ license that can be found in the LICENSE file.
         }
         neo.id = tag.split('-').pop().toLowerCase();
         neo.style.position = 'absolute';
+        neo.meta = meta.properties;
         this.$.canvas.appendChild(neo);
         this.selected = neo;
-        neo.meta = meta.properties;
         this.neo = neo;
+      },
+      paletteDragStart: function(event, detail) {
+        var rect = this.getBoundingClientRect();
+        this.origin = {
+          x: rect.left + this.$.canvas.offsetLeft,
+          y: rect.top + this.$.canvas.offsetTop
+        };
+        this.dragType = detail;
+        this.createNew(detail);
       },
       paletteDrag: function(event, detail) {
         if (this.neo) {
@@ -121,7 +137,7 @@ license that can be found in the LICENSE file.
           var y = detail.y - this.origin.y - 24;
           var p = this.$.canvas.snap(x, y);
           this.neo.style.left = p.x + 'px';
-          this.neo.style.top = p.y + 'px';             
+          this.neo.style.top = p.y + 'px';
         }
       },
       paletteDragEnd: function() {
@@ -172,29 +188,16 @@ license that can be found in the LICENSE file.
         this.canvasChange();
       },
       canvasChange: function() {
-        var elt = this.$.canvas.firstElementChild;
-        while (elt) {
-          var p$ = elt.__published;
-          if (p$) {
-            Object.keys(p$).forEach(function(n) {
-              var v = elt[n];
-              if (v && (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean')) {
-                /*if (typeof v === 'boolean') {
-                  v = n;
-                }*/
-                elt.setAttribute(n, v);
-              } else {
-                elt.removeAttribute(n);
-              }
-            });
-          }
-          elt = elt.nextElementSibling;
-        }
-        //
-        var html = this.$.canvas.innerHTML;
-        html = html.replace(/ style="[^"]*"/g, '');
-        this.$.source.value = html_beautify(html);        
+        this.$.source.update();
       }
     });
+    function classFollows(anew, old, className) {
+      if (old) {
+        old.classList.remove(className);
+      }
+      if (anew) {
+        anew.classList.add(className);
+      }
+    }
   </script>
 </element>

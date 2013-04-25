@@ -24,7 +24,6 @@ license that can be found in the LICENSE file.
       <content></content>
     </div>
   </template>
-
   <script>
     Toolkit.register(this, {
       grid: 16,
@@ -37,22 +36,22 @@ license that can be found in the LICENSE file.
       trackStart: function(event) {
         var elt = event.target;
         while (elt && elt.parentNode && elt.parentNode !== this) {
-          elt = elt.parentNode; 
+          elt = elt.parentNode;
         }
         if (elt === this) {
           elt = null;
         }
         this.tracking = elt;
         if (elt) {
-          this.startPoint = {x: elt.offsetLeft, y: elt.offsetTop};
+          event.trackInfo.start = {x: elt.offsetLeft, y: elt.offsetTop};
         }
         event.stopPropagation();
       },
       track: function(event) {
         if (this.tracking) {
           var p = {
-            x: this.startPoint.x + event.dx,
-            y: this.startPoint.y + event.dy
+            x: event.trackInfo.start.x + event.dx,
+            y: event.trackInfo.start.y + event.dy
           };
           p = this.snap(p.x, p.y);
           this.tracking.style.left = p.x + 'px';

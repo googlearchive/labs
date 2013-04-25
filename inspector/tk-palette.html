@@ -24,7 +24,6 @@ license that can be found in the LICENSE file.
         </template>
      </g-selector>
   </template>
-
   <script>
     Toolkit.register(this, {
       trackStart: function(event) {
@@ -32,11 +31,7 @@ license that can be found in the LICENSE file.
         event.stopPropagation();
       },
       track: function(event) {
-        var pt = {
-          x: event.pageX,
-          y: event.pageY
-        };
-        this.send('palette-drag', pt);
+        this.send('palette-drag', {x: event.pageX, y: event.pageY});
         event.stopPropagation();
       },
       trackEnd: function(event) {
