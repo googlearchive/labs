@@ -30,6 +30,8 @@ license that can be found in the LICENSE file.
         }
       },
       update: function() {
+        // force components to update before dumping source
+        dirtyCheck();
         this.publishPropertiesToAttributes();
         var html = this.element.innerHTML;
         html = html
@@ -40,5 +42,4 @@ license that can be found in the LICENSE file.
       }
     });
   </script>
-
 </element>

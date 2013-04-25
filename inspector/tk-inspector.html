@@ -4,6 +4,7 @@ Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <script src="reflection.js"></script>
+
 <element name="tk-inspector" attributes="element">
   <template>
     <style>
@@ -27,9 +28,11 @@ license that can be found in the LICENSE file.
       <g-icon-button src="assets/ic_home_darkreg.png" on-click="selectParentElement"
           style="vertical-align: middle; float: right"></g-icon-button>
       <hr/>
-      <template repeat="{{properties}}">
-        <tk-property-editor property="{{}}"></tk-property-editor>
-      </template>
+      <div style="padding-right: 16px;">
+        <template repeat="{{properties}}">
+          <tk-property-editor property="{{}}"></tk-property-editor>
+        </template>
+      </div>
     </div>
   </template>
   <script>
@@ -80,6 +83,7 @@ license that can be found in the LICENSE file.
         'string': 'tk-string-property-editor',
         'select': 'tk-select-property-editor',
         'color': 'tk-color-property-editor',
+        'text': 'tk-text-property-editor',
         any: 'tk-string-property-editor'
       },
       propertyChanged: function() {
@@ -165,6 +169,23 @@ license that can be found in the LICENSE file.
         this.asyncMethod(function() {
           this.$.select.value = this.liveValue;
         });
+      }
+    });
+  </script>
+</element>
+
+<element name="tk-text-property-editor" extends="tk-abstract-property-editor">
+  <template>
+    <textarea id="textarea" on-change="inputChange" rows="10" style="overflow: auto; margin: 0; vertical-align: top;"></textarea><br/>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      propertyChanged: function() {
+        this.$.textarea.textContent = this.property.value;
+      },
+      inputChange: function() {
+        this.liveValue = this.$.textarea.value;
+        this.super();
       }
     });
   </script>
