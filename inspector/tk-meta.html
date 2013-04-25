@@ -1,0 +1,24 @@
+<element name="tk-meta" attributes="label">
+  <script>
+    Toolkit.register(this, {
+      get archetype() {
+        var a = this.querySelector('archetype');
+        return a && a.innerHTML || '';
+      },
+      get properties() {
+        var ps = this.querySelectorAll('property');
+        var props = {};
+        ps && Array.prototype.forEach.call(ps, function(p) {
+          var n = p.getAttribute('name');
+          var k = p.getAttribute('kind');
+          var o = p.getAttribute('options');
+          props[n] = {
+            kind: k,
+            options: o && o.split(',')
+          };
+        });
+        return props;
+      }
+    });
+  </script>
+</element>

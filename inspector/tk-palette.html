@@ -3,7 +3,7 @@ Copyright 2013 The Toolkitchen Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="tk-palette">
+<element name="tk-palette" attributes="elements">
   <template>
       <style>
         g-menu-item {
@@ -19,18 +19,14 @@ license that can be found in the LICENSE file.
         }
       </style>
       <g-selector on-trackstart="trackStart" on-track="track" on-trackend="trackEnd">
-        <template repeat="{{metadata}}">
+        <template repeat="{{elements}}">
           <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="{{id}}" label="{{label}}"></g-menu-item>
         </template>
      </g-selector>
-     <tk-elements-meta id="meta"></tk-elements-meta>
   </template>
 
   <script>
     Toolkit.register(this, {
-      ready: function() {
-        this.metadata = this.$.meta.metadata;
-      },
       trackStart: function(event) {
         this.send('palette-drag-start', event.target.getAttribute('tag'));
         event.stopPropagation();
@@ -46,9 +42,6 @@ license that can be found in the LICENSE file.
       trackEnd: function(event) {
         this.send('palette-drag-end');
         event.stopPropagation();
-      },
-      getElementMeta: function(tag) {
-        return this.$.meta.getElementMeta(tag);
       }
     });
   </script>

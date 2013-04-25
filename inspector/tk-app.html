@@ -61,7 +61,7 @@ license that can be found in the LICENSE file.
     </style>
     <div class="top">
       <g-sidebar class="left" label="Palette">
-        <tk-palette id="palette" class="fit" on-palette-drag-start="paletteDragStart" on-palette-drag="paletteDrag" on-palette-drag-end="paletteDragEnd"></tk-palette>
+        <tk-palette id="palette" class="fit" elements="{{elements}}" on-palette-drag-start="paletteDragStart" on-palette-drag="paletteDrag" on-palette-drag-end="paletteDragEnd"></tk-palette>
       </g-sidebar>
       <tk-canvas id="canvas" tabIndex="-1" class="middle" on-tap="canvasTap" on-pointerup="canvasDrop"></tk-canvas>
       <tk-inspector id="inspector" class="right" element="{{selected}}" on-parent-element="selectParentAction" on-delete-element="deleteElement" on-property-changed="inspectorPropertyChanged"></tk-inspector>
@@ -71,8 +71,15 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
+    var metadata = document.querySelector('#components').content.querySelector('#metadata').content;
+  
     Toolkit.register(this, {
       selected: null,
+      metadata: metadata,
+      ready: function() {
+        this.elements = Array.prototype.slice.call(
+            this.metadata.querySelectorAll('tk-meta'));
+      },
       selectedChanged: function(inOld) {
         var classn = 'app-selected';
         if (inOld) {
@@ -92,7 +99,7 @@ license that can be found in the LICENSE file.
         this.createNew(detail);
       },
       createNew: function(tag) {
-        var meta = this.$.palette.getElementMeta(tag);
+        var meta = this.metadata.querySelector('#' + tag);
         var html = meta.archetype;
         if (html) {
           var div = document.createElement('div');
@@ -130,7 +137,7 @@ license that can be found in the LICENSE file.
         this.canvasChange();
       },
       deleteElement: function() {
-        var e = this.$.inspector.element;
+        var e = this.selected;
         if (e) {
           e.parentNode.removeChild(e);
           this.selected = null;
@@ -147,7 +154,7 @@ license that can be found in the LICENSE file.
         }
       },
       selectParentAction: function() {
-        var e = this.$.inspector.element;
+        var e = this.selected;
         if (e && e.parentNode) {
           e = e.parentNode;
           if (e === this.$.canvas) {
