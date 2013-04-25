@@ -32,7 +32,10 @@ license that can be found in the LICENSE file.
       update: function() {
         this.publishPropertiesToAttributes();
         var html = this.element.innerHTML;
-        html = html.replace(/ style="[^"]*"/g, '');
+        html = html
+          .replace(/ style="[^"]*"/g, '')
+          .replace(/( )?app-selected/g, '')
+          ;
         this.$.editor.value = html_beautify(html);
       }
     });
