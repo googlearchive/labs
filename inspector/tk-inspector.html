@@ -87,7 +87,7 @@ license that can be found in the LICENSE file.
         var type = this.editorTypes[m && m.kind || typeof this.property.value];
         this.editor = document.createElement(type || this.editorTypes.any);
         this.editor.property = this.property;
-        //Toolkit.bindProperties(this.editor, 'liveValue', this.property.obj, this.property.name);
+        this.property.obj.bind(this.property.name, this.editor, 'liveValue');
       },
       editorChanged: function(inOld) {
         if (inOld) {
@@ -107,10 +107,10 @@ license that can be found in the LICENSE file.
       propertyChanged: function() {
         this.liveValue = this.property.value;
       },
-      inputChange: function() {
+      inputChange: function(e) {
         this.property.value
             = this.property.obj[this.property.name]
-            = this.liveValue;
+            = e.target.value;
         this.send('property-changed');
       }
     });
@@ -119,19 +119,19 @@ license that can be found in the LICENSE file.
 
 <element name="tk-string-property-editor" extends="tk-abstract-property-editor">
   <template>
-    <input type="{{type}}" value="{{liveValue}}" on-change="inputChange" style="width: 40%; -webkit-user-select: all; -moz-user-select: all;"><br/>
+    <input type="{{type}}" value="{{inputValue}}" on-change="inputChange" style="width: 40%; -webkit-user-select: all; -moz-user-select: all;"><br/>
   </template>
   <script>
     Toolkit.register(this, {
-      type: "text"
+      type: "text",
+      liveValueChanged: function() {
+        this.inputValue = this.liveValue;
+      }
     });
   </script>
 </element>
 
 <element name="tk-color-property-editor" extends="tk-string-property-editor">
-  <template>
-    <shadow></shadow>
-  </template>
   <script>
     Toolkit.register(this, {
       type: 'color'
@@ -141,7 +141,7 @@ license that can be found in the LICENSE file.
 
 <element name="tk-boolean-property-editor" extends="tk-abstract-property-editor">
   <template>
-    <input type="checkbox" checked="{{liveValue}}" on-click="inputChange"><br/>
+    <input type="checkbox" checked="{{liveValue}}"><br/>
   </template>
   <script>
     Toolkit.register(this);
@@ -165,10 +165,6 @@ license that can be found in the LICENSE file.
         this.asyncMethod(function() {
           this.$.select.value = this.liveValue;
         });
-      },
-      inputChange: function() {
-        this.liveValue = this.$.select.value;
-        this.super();
       }
     });
   </script>
