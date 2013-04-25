@@ -6,14 +6,6 @@ license that can be found in the LICENSE file.
 <element name="tk-app" on-keyup="keyup">
   <template>
     <style>
-      .top {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 260px;
-        left: 0;
-        overflow: auto;
-      }
       .bottom {
         position: absolute;
         height: 244px;
@@ -32,10 +24,20 @@ license that can be found in the LICENSE file.
       }
       .middle {
         position: absolute;
-        top: 0;
+        top: 34px;
         right: 350px;
         bottom: 0;
         left: 264px;
+        background-color: white;
+        overflow: hidden;
+      }
+      .top {
+        position: absolute;
+        top: 0px;
+        padding: 4px;
+        right: 350px;
+        left: 264px;
+        height: 34px;
         background-color: white;
         overflow: hidden;
       }
@@ -58,38 +60,44 @@ license that can be found in the LICENSE file.
         outline: solid thin rgba(255, 98, 0, 0.4);
         outline-offset: 1px;
       }
+      .tab-selected {
+        z-index: 100;
+      }
     </style>
-    <div class="top">
-      <g-sidebar class="left" label="Palette">
-        <tk-palette
-            id="palette"
-            class="fit"
-            elements="{{elements}}"
-            on-palette-drag-start="paletteDragStart"
-            on-palette-drag="paletteDrag"
-            on-palette-drag-end="paletteDragEnd">
-        </tk-palette>
-      </g-sidebar>
-      <tk-canvas
-          id="canvas"
-          tabIndex="-1"
-          class="middle"
-          on-tap="canvasTap"
-          on-pointerup="canvasDrop">
-      </tk-canvas>
-      <tk-inspector
+    <g-sidebar class="left" label="Palette">
+      <tk-palette
+          id="palette"
+          class="fit"
+          elements="{{elements}}"
+          on-palette-drag-start="paletteDragStart"
+          on-palette-drag="paletteDrag"
+          on-palette-drag-end="paletteDragEnd">
+      </tk-palette>
+    </g-sidebar>
+    <g-tabs id="tabs" class="top" selected="{{selectedTab}}">
+      <div name="canvas">Canvas</div>
+      <div name="source">Source</div>
+    </g-tabs>
+    <tk-canvas
+      id="canvas"
+      tabIndex="-1"
+      on-tap="canvasTap"
+      on-pointerup="canvasDrop"
+      class="middle">
+    </tk-canvas>
+    <tk-source
+      id="source"
+      class="middle"
+      element="{{$.canvas}}">
+    </tk-source>
+    <tk-inspector
           id="inspector"
           class="right"
           element="{{selected}}"
           on-parent-element="selectParentAction"
           on-delete-element="deleteElement"
           on-property-changed="inspectorPropertyChanged">
-      </tk-inspector>
-    </div>
-    <tk-source
-        id="source"
-        class="bottom"
-        element="{{$.canvas}}"></tk-source>
+    </tk-inspector>
   </template>
   <script>
     var metadata = document
@@ -98,9 +106,11 @@ license that can be found in the LICENSE file.
 
     Toolkit.register(this, {
       selected: null,
+      selectedTab: 'canvas',
       ready: function() {
         this.elements = Array.prototype.slice.call(
             metadata.querySelectorAll('tk-meta'));
+        this.selectedTabChanged();
       },
       selectedChanged: function(inOld) {
         classFollows(this.selected, inOld, 'app-selected');
@@ -177,6 +187,10 @@ license that can be found in the LICENSE file.
           }
           this.selected = e;
         }
+      },
+      selectedTabChanged: function(inOldValue) {
+        classFollows(this.$[this.selectedTab], this.$[inOldValue], 
+          'tab-selected');
       },
       keyup: function(event) {
         if (event.keyCode === 27) {
