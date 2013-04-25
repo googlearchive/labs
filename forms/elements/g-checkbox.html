@@ -2,36 +2,34 @@
   <template>
     <style>
       @host {
-        * {
+        :scope {
           display: inline-block;
-          height: 48px;
-          width: 48px;
-          background-image: url(../assets/checkbox/ic_checkbox_blank-@2x.png);
-        }
-        [checked] {
-          background-image: url(../assets/checkbox/ic_checkbox-@2x.png);
+          height: 32px;
+          width: 32px;
+          background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+          background-color: rgba(0, 0, 0, 0.175);
+          border-radius: 4px;
         }
       }
+      #check {
+        height: 32px;
+        width: 32px;
+      }
+      #check[checked] {
+        background-image: url(../assets/check.png);
+        background-size: contain;
+      }
     </style>
+    <div id="check" checked?="{{checked}}"></div>
   </template>
   <script>
     Toolkit.register(this, {
+      checked: false,
       ready: function() {
         this.setAttribute('touch-action', 'none');
       },
-      checked: false,
-      checkedChanged: function() {
-        this.toggleAttribute('checked', this.checked);
-      },
       toggleCheck: function() {
         this.checked = !this.checked;
-      },
-      toggleAttribute: function(inAttr, inSetRemove) {
-        var fn = (inSetRemove ? 'set' : 'remove') + 'Attribute';
-        this[fn](inAttr, '');
-      },
-      get value() {
-        return this.checked;
       }
     });
   </script>

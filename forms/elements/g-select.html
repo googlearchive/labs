@@ -1,56 +1,59 @@
+<link rel="import" href="../../../toolkit/components/g-selector.html">
 <link rel="import" href="../../../toolkit/components/g-overlay.html">
-<link rel="import" href="g-input-decorator.html">
-<element name="g-select" attributes="placeholder">
+<element name="g-select" attributes="selected">
   <template>
     <style>
       @host {
-        g-select {
+        * {
           border: 1px solid #b2b2b2;
-          border-top-width: 0px;
-          background: white;
         }
-        g-select:first-of-type {
-          border-top-width: 1px;
-        }
+      }
+      #label {
+        padding: 8px;
       }
       #container {
         display: -webkit-flex;
         -webkit-flex-flow: column nowrap;
         -webkit-align-items: center;
-        box-shadow: 0px 10px 10px -5px #999;
       }
-      .item {
-        padding: 0 20px;
-        border-width: 0 0 1px 0;
-        border-style: solid;
-        border-color: #b2b2b2;
+      #selector {
+        display: block;
+        min-width: 200px;
+      }
+      /* @polyfill #selector > * */
+      ::-webkit-distributed(*) {
+        padding: 8px;
+        border: 1px solid #b2b2b2;
+        border-top-width: 0;
         font-size: 14pt;
       }
-      .item:last-child {
-        border-bottom-width: 0;
+      /* @polyfill #selector > :nth-child(2) */
+      ::-webkit-distributed(:first-child) {
+        border-top-width: 1px;
       }
     </style>
-    <input id="input" placeholder="{{placeholder}}" on-focus="open"
-    on-blur="close">
+    <div id="label" on-tap="open">{{$.selector.selection.textContent}}</div>
     <g-overlay id="container">
-      <div class="item">Item 1</div>
-      <div class="item">Item 2</div>
-      <div class="item">Item 3</div>
+      <g-selector id="selector" on-activate="close" selected="{{selected}}">
+        <content select="*"></content>
+      </g-selector>
     </g-overlay>
   </template>
   <script>
-    Toolkit.register(
-      this,
-      {
-        open: function() {
-          var w = this.getBoundingClientRect().width + 'px';
-          this.$.container.style.width = w;
-          this.$.container.opened = true;
-        },
-        close: function() {
-          this.$.container.opened = false;
-        }
+    Toolkit.register(this, {
+      ready: function() {
+        this.setAttribute('touch-action', 'none');
+      },
+      selected: 0,
+      selectedChanged: function() {
+        this.$.selector.selected = this.selected;
+      },
+      open: function() {
+        this.$.container.opened = true;
+      },
+      close: function() {
+        this.$.container.opened = false;
       }
-    );
+    });
   </script>
 </element>

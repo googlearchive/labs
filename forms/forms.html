@@ -17,16 +17,20 @@
 
 <g-signin-header></g-signin-header>
 <g-form>
-  <g-input-decorator>
-    <input placeholder="email">
-  </g-input-decorator>
-  <g-input-decorator>
-    <input placeholder="password">
-  </g-input-decorator>
+  <g-field label="Login">
+    <input placeholder="email" />
+    <input placeholder="password" />
+  </g-field>
   <g-field label="Remember me">
     <g-checkbox></g-checkbox>
   </g-field>
   <g-field label="Progress">
     <g-progress value="0.3"></g-progress>
+  </g-field>
+  <g-field label="Pick">
+    <g-select>
+      <div>foo</div>
+      <div>bar</div>
+    </g-select>
   </g-field>
 </g-form>

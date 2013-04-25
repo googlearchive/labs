@@ -2,16 +2,17 @@
   <template>
     <style>
       @host {
-        /* @polyfill g-field */
-        :scope {
+        * {
           display: block;
-          margin: 10px;
           background-color: #f0f0ed;
+          padding: 8px;
         }
       }
       #label {
         color: #999;
         display: inline-block;
+      }
+      #label[filled] {
         margin-right: 15px;
       }
       #shadow {
@@ -27,9 +28,7 @@
         -webkit-flex-direction: column;
         -webkit-flex: 1 auto;
       }
-      #item::-webkit-distributed(*) {
-        -webkit-flex: 1 auto;
-      }
+      /* validation warning */
       #warning {
         -webkit-mask: url(../assets/invalid.png);
         -webkit-mask-size: contain;
@@ -43,9 +42,28 @@
       #validate {
         color: #d84437;
       }
+      #item::-webkit-distributed(*) {
+        -webkit-flex: 1 auto;
+      }
+      /* input decoration */
+      #item::-webkit-distributed(input) {
+        border: 1px solid #bfbfbf;
+        padding: 0;
+        margin: 0;
+        background: white;
+      }
+      #item::-webkit-distributed(input:focus) {
+        outline: 5px auto #448afd;
+      }
+      #item::-webkit-distributed(input:invalid) {
+        outline: 5px auto #d84437;
+      }
+      #item::-webkit-distributed(input::-webkit-input-placeholder) {
+        color: #bfbfbf;
+      }
     </style>
     <div id="shadow">
-      <span id="label">{{label}}</span>
+      <span id="label" filled?="{{label}}">{{label}}</span>
       <span id="block">
         <content id="item" select="*"></content>
         <span id="description">{{description}}</span>
