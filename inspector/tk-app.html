@@ -69,6 +69,12 @@ license that can be found in the LICENSE file.
   <script>
     Toolkit.register(this, {
       paletteDragStart: function(event, detail) {
+        var rect = this.getBoundingClientRect();
+        this.origin = {
+          x: rect.left + this.$.canvas.offsetLeft,
+          y: rect.top + this.$.canvas.offsetTop
+        };
+        console.log(this.origin);
         this.dragType = detail;
         this.createNew(detail);
       },
@@ -90,8 +96,8 @@ license that can be found in the LICENSE file.
       },
       paletteDrag: function(event, detail) {
         if (this.neo) {
-          var x = detail.x - this.$.canvas.offsetLeft - 24;
-          var y = detail.y - this.$.canvas.offsetTop - 24;
+          var x = detail.x - this.origin.x - 24;
+          var y = detail.y - this.origin.y - 24;
           var p = this.$.canvas.snap(x, y);
           this.neo.style.left = p.x + 'px';
           this.neo.style.top = p.y + 'px';             

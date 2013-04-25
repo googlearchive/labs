@@ -31,6 +31,7 @@ license that can be found in the LICENSE file.
         <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="g-ajax" label="Ajax"></g-menu-item>
         <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="x-stock" label="Stock"></g-menu-item>
         <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="wu-weather" label="Weather"></g-menu-item>
+        <g-menu-item src="assets/ic_ribbon_labels_lightreg.png" tag="tk-app" label="Sandbox App"></g-menu-item>
      </g-selector>
   </template>
 
@@ -46,6 +47,7 @@ license that can be found in the LICENSE file.
       trackStart: function(event) {
         this.startPoint = this.mouse;
         this.send('palette-drag-start', event.target.getAttribute('tag'));
+        event.stopPropagation();
       },
       track: function(event) {
         var pt = {
@@ -53,9 +55,11 @@ license that can be found in the LICENSE file.
           y: this.startPoint.y + event.dy
         };
         this.send('palette-drag', pt);
+        event.stopPropagation();
       },
       trackEnd: function(event) {
         this.send('palette-drag-end');
+        event.stopPropagation();
       },
       getArchetype: function(inTag) {
         var a = this.elementElement.querySelector('#' + inTag);
@@ -118,4 +122,7 @@ license that can be found in the LICENSE file.
     <x-stock symbol="GOOG"></x-stock>
   </template>
   
+  <template id="tk-app">
+    <tk-app style="width: 900px; height: 600px;"></tk-app>
+  </template> 
 </element>
