@@ -39,6 +39,9 @@ license that can be found in the LICENSE file.
         while (elt && elt.parentNode && elt.parentNode !== this) {
           elt = elt.parentNode; 
         }
+        if (elt === this) {
+          elt = null;
+        }
         this.tracking = elt;
         if (elt) {
           this.startPoint = {x:elt.offsetLeft, y: elt.offsetTop};

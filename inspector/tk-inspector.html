@@ -3,7 +3,7 @@ Copyright 2013 The Toolkitchen Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="tk-inspector">
+<element name="tk-inspector" attributes="element">
 
   <template>
     <style>
@@ -160,6 +160,7 @@ license that can be found in the LICENSE file.
         this.property.value 
             = this.property.obj[this.property.name] 
             = this.liveValue;
+        this.send('property-changed');
       }
     });
   </script>
@@ -215,10 +216,12 @@ license that can be found in the LICENSE file.
     Toolkit.register(this, {
       propertyChanged: function() {
         this.options = this.property.options;
-        // force template to generate options before setting value
-        dirtyCheck();
         this.super();
-        this.$.select.value = this.liveValue;
+        // force template to generate options before setting value
+        //dirtyCheck();
+        this.asyncMethod(function() {
+          this.$.select.value = this.liveValue;
+        });
       },
       inputChange: function() {
         this.liveValue = this.$.select.value;
