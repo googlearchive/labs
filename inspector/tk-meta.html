@@ -2,8 +2,7 @@
   <script>
     Toolkit.register(this, {
       get archetype() {
-        var a = this.querySelector('archetype');
-        return a && a.innerHTML || '';
+        return this.querySelector('template');
       },
       get properties() {
         var ps = this.querySelectorAll('property');
@@ -18,6 +17,13 @@
           };
         });
         return props;
+      },
+      createElement: function() {
+        if (this.archetype) {
+          return this.archetype.createInstance().querySelector('*');
+        } else {
+          return document.createElement(this.id);
+        }
       }
     });
   </script>

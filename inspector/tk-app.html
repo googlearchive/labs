@@ -107,14 +107,7 @@ license that can be found in the LICENSE file.
       },
       createNew: function(tag) {
         var meta = metadata.querySelector('#' + tag);
-        var html = meta.archetype;
-        if (html) {
-          var div = document.createElement('div');
-          div.innerHTML = html;
-          neo = div.firstElementChild;
-        } else {
-          neo = document.createElement(tag);
-        }
+        var neo = meta.createElement();
         neo.id = tag.split('-').pop().toLowerCase();
         neo.style.position = 'absolute';
         neo.meta = meta.properties;
