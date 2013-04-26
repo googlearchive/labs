@@ -8,17 +8,18 @@ license that can be found in the LICENSE file.
 <element name="tk-inspector" attributes="element">
   <template>
     <style>
-      @host {
-        * {
-          border: 1px dotted gray;
-        }
-      }
       #interior {
+        border: 1px dotted gray;
         position: absolute;
-        top: 8px;
+/*        top: 8px;
         left: 8px;
         bottom: 8px;
-        right: 8px;
+        right: 8px;*/
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 8px;
       }
     </style>
     <div id="interior">
@@ -185,7 +186,7 @@ license that can be found in the LICENSE file.
       },
       inputChange: function() {
         this.liveValue = this.$.textarea.value;
-        this.super();
+        this.super(arguments);
       }
     });
   </script>
