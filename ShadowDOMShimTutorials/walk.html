@@ -1,0 +1,144 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <script src="../../toolkit/platform/platform.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- -->
+    <style>
+      .name {
+        display: inline-block;
+        background-color: whitesmoke;
+        padding: 4px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- our node that will use shadow DOM -->
+    <div id="one">
+      <!-- some light DOM -->
+      <span>Squidward</span> <span>Tentacles</span>
+    </div>
+
+    <!-- template for our shadow DOM -->
+    <template id="one_t">
+      <span>Hello my name is:</span>
+      <span class="name">
+        <!-- an insertion point (lightDOM is composed here) -->
+        <content></content>
+      </span>
+    </template>
+  
+    <script>
+      window.onload = function() {
+        // create a shadow DOM
+        var root = new ShadowDOM.ShadowRoot(one);
+        // build shadow DOM from our template 
+        root.appendChild(one_t.content);
+        // we must trigger distribution manually
+        one.distribute();
+
+        // walk one's local tree
+        console.log([
+          '',
+          'This is the natural subtree of _one_, but without platform',
+          'support, we have to use special navigation methods to walk it.',
+          'For example, we must use ShadowDOM.localNodes(div) instead of',
+          'div.childNodes.',
+          ''
+        ].join('\n'));
+        console.group("LOCAL");
+        walkLocal(one);
+        console.groupEnd();
+
+        // walk one's shadow's local tree
+        console.log([
+          '',
+          'This is the natural subtree of _one.shadowRoot_. Again, without',
+          'platform support, we have to use special navigation methods to',
+          'walk it.',
+          ''
+        ].join('\n'));
+        console.group("LOCAL");
+        walkLocal(one.webkitShadowRoot);
+        console.groupEnd();
+
+        // walk one's composed tree
+        console.log([
+          '',
+          'This is the composed (or rendered) tree for _one_. This tree is not',
+          'normally accessible from DOM, but because of the specific nature',
+          'of the shim, it can be walked directly here. This is shown for',
+          'educational value only: do not do this in a real application.',
+          ''
+        ].join('\n'));
+        console.group("COMPOSED");
+        walkComposed(one);
+        console.groupEnd();
+      };
+    </script>
+    <script>
+      // walk LOCAL tree of inNode (use ShadowDOM.localNodes strategy)
+      var walkLocal = function(inNode) {
+        walk(inNode, ShadowDOM.localNodes);
+      };
+      
+      // walk COMPOSED tree for inNode (use [default] childNodes strategy)
+      var walkComposed = function(inNode) {
+        walk(inNode);
+      };
+      
+      // walk the subtree rooted at inNode, use inGetChildren strategy
+      // to acquire child nodes at each branch
+      var walk = function(inNode, inGetChildren) {
+        // use the supplied function, or .childNodes, to acquire the child list
+        var childNodes = inGetChildren || function(p) {return p.childNodes;};
+        // build a tree walker around the selected child-list getter
+        var walker = function(inNode) {
+          var name = displayName(inNode);
+          // skip white-space and black-listed nodes
+          if (name && !blackListed(inNode)) {
+            console.group(name);
+            // hook to log additional info
+            info(inNode);
+            ShadowDOM.forEach(childNodes(inNode), walker);
+            console.groupEnd();
+          }
+        };
+        // walk the selected tree
+        walker(inNode);
+      };
+      
+      // generate a display name for a node in our tree dump
+      // (returns empty-string for white-space nodes)
+      var displayName = function(inNode) {
+        var name = inNode.localName || inNode.textContent.trim();
+        return name ? (inNode.id ? '[#' + inNode.id + '] ' : '') + name : '';
+      };
+      
+      // blacklist some tags from tree walking
+      var blackListed = function(inNode) {
+        return ({TEMPLATE:1, SCRIPT:1, '#comment': 1}[inNode.nodeName]);
+      };
+      
+      // log addition information about inNode, where applicable
+      var info = function(inNode) {
+        if (inNode.tagName == 'CONTENT') {
+          var info = [];
+          ShadowDOM.forEach(inNode.getDistributedNodes(), function(n) {
+            var d = !blackListed(n) && displayName(n);
+            if (d) {
+              info.push(d);
+            }
+          });
+          console.log('getDistributedNodes: [' + info.join(', ') + ']')
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<!-- base component -->
+<element name="x-color">
+  <template>
+    <span><content></content></span>
+  </template>
+  <script>
+    this.lifecycle({
+      shadowRootCreated: function(inRoot) {
+        // shim-friendly version of
+        //   this.span = inRoot.querySelector("span");
+        this.span = ShadowDOM.localQuery(inRoot, "span");
+        this.colorize();
+      }
+    });
+    this.generatedConstructor.prototype = {
+      color: "lightblue",
+      colorize: function() {
+        this.span.style.backgroundColor = this.color;
+      }
+    };
+  </script>
+</element>
+    
+<!-- support for extending components -->
+<element name="x-fourth" extends="x-color">
+  <template>
+    <shadow></shadow>
+  </template>
+  <script>
+    this.generatedConstructor.prototype = {
+      // called from x-color's shadowRootCreated
+      colorize: function() {
+        if (this.hasAttribute("color")) {
+          this.color = this.attributes.color.value;
+          this.span.style.backgroundColor = this.color;
+        }
+      }
+    };
+  </script>
+</element>
+
+<element name="x-fifth" extends="x-color">
+  <template>
+      <!-- bring in inherited shadow -->
+      [Be blue via shadow: ]<shadow></shadow>[!]
+  </template>
+</element>
+
+<element name="x-sixth">
+  <!-- load (scoped) external stylesheets too -->
+  <link rel="stylesheet" href="x-sixth.css">
+  <template>
+    <input></input>
+  </template>
+</element>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8">
+    <script src="../../../toolkit/platform/platform.js"></script>
+  </head>
+  <body>
+    
+    <!-- our node that will use shadow DOM -->
+    <div id="one">
+      <!-- some light DOM -->
+      <span>Squidward</span> <span>Tentacles</span>
+    </div>
+
+    <!-- template for our shadow DOM -->
+    <template id="one_t">
+      <span>Hello my name is:</span>
+      <span class="name">
+        <!-- an insertion point (lightDOM is composed here) -->
+        <content></content>
+      </span>
+    </template>
+  
+    <script>
+      // wait until platform support has loaded
+      window.addEventListener('load', function() {
+        // create a shadow DOM
+        var root = new ShadowDOM.ShadowRoot(one);
+        // build shadow DOM from our template 
+        root.appendChild(one_t.content);
+        // we must trigger distribution manually
+        one.distribute();
+      });
+    </script>
+    
+    <!-- end basic Shadow DOM setup -->
+    
+    <script src="api.js"></script>
+    
+    <script>
+      window.addEventListener('load', function() {
+        /*
+        var d = DOM(one);
+        d.appendChild(document.createTextNode("Foo!"));
+        d.textContent = "F!o!o!";
+        console.log(d.textContent);
+        d.innerHTML = "<b>Foo</b>";
+        console.log(d.innerHTML);
+        //
+        var shadow = DOM(one.shadow);
+        console.dir(shadow.childNodes);
+        var n = shadow.childNodes[3];
+        console.dir(n.childNodes);
+        console.log(n.textContent);
+        console.dir(n.parentNode);
+        n.parentNode.removeChild(n);
+        */
+       var span = function() {
+         return document.createElement('span');
+       };
+       //
+       var o = DOM(one);
+       o.textContent = '';
+       o.appendChild(span()).textContent = 'Eugene V. Crabs';
+       //
+       var s = DOM(one.shadow);
+       console.dir(s.childNodes);
+       console.dir(s.childNodes[1].node);
+       s.removeChild(s.childNodes[1]);
+      });
+    </script>
+  </body>
+</html>

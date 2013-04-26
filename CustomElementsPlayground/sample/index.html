@@ -1,0 +1,68 @@
+<!--
+Copyright 2012 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <script src="../../../toolkit/platform/platform.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <input>
+
+    <p>
+      <x-first>First Content</x-first>
+    </p>
+
+    <p>
+      <x-second>Second Content</x-second>
+    </p>
+
+    <p>
+      <x-fourth color="magenta">Fourth Content</x-fourth>
+    </p>
+
+    <p>
+      <x-fifth>Fifth Content</x-fifth>
+    </p>
+
+    <p>
+      <x-sixth>Sixth Content</x-sixth>
+    </p>
+
+    <!-- element tags work in index.html if you are careful about script tag -->
+    <element name="x-first">
+      <!-- template is optional -->
+      <script>
+        // this is "being careful" in index.html: only execute if 'lifecycle'
+        // is on 'this' (aka called from component lifecycle)
+        if (this.lifecycle) {
+          this.lifecycle({
+            // all methods have 'x-first' instance scope
+            created: function() {
+              this.orangify();
+            }
+          });
+          this.generatedConstructor.prototype = {
+            orangify: function() {
+              this.style.backgroundColor = "orange";
+            }
+          }
+        }
+      </script>
+    </element>
+
+    <!-- you can use multiple 'element' tags in a supporting document -->
+    <element name="x-second">
+      <template>
+          [Be orange: ]<x-first><content></content></x-first>[!]
+      </template>
+      <!-- script is optional -->
+    </element>
+
+    <!-- link rel="components" is supported -->
+    <link rel="components" href="third.html">
+  </body>
+</html>

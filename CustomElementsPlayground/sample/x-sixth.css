@@ -1,0 +1,19 @@
+/*
+ * Copyright 2012 The Toolkitchen Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+ @host {
+   display: inline-block;
+   border: 1px solid silver;
+   padding: 8px 12px;
+ }
+
+ /* Note: on platforms w/o scoping support, affects all input tags */
+
+ input {
+   border: 0;
+   outline: none;
+   margin: 0;
+ }
