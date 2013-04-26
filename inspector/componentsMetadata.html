@@ -88,12 +88,28 @@
   </template>
 </tk-meta>
 
-<tk-meta id="g-blink-shake" label="Blink & Shake">
+<tk-meta id="g-flip-bounce" label="Flip & Bounce">
   <template>
-    <g-animation-group style="border: 1px dotted silver; padding: 8px">
-      <g-blink style="border: 1px dotted silver; padding: 8px;">Blink</g-blink>
-      <g-shake duration="Infinity" style="border: 1px dotted silver; padding: 8px;">Shake</g-shake>
-      Group
+    <g-animation-group type="seq" style="border: 1px dotted silver; padding: 8px">
+      <g-flip style="border: 1px dotted silver; padding: 8px;">Flip</g-flip>
+      <g-bounce startOffset="-0.2" magnitude="-100px" style="border: 1px dotted silver; padding: 8px;">Bounce</g-bounce>
+      SeqGroup
+    </g-animation-group>
+  </template>
+</tk-meta>
+
+<tk-meta id="g-flip-out" label="Flip Out">
+  <template>
+    <g-animation-group type="par" style="border: 1px dotted silver; padding: 8px">
+      <g-flip duration="0.7" style="border: 1px dotted silver; padding: 8px;">Flip</g-flip>
+      <g-animation duration="0.5" startOffset="0.5" easing="ease-out" style="border: 1px dotted silver; padding: 8px">
+        <g-property name="opacity">
+          <g-keyframe value="1"></g-keyframe>
+          <g-keyframe value="0"></g-keyframe>
+        </g-property>
+        Fade Out
+      </g-animation>
+      ParGroup
     </g-animation-group>
   </template>
 </tk-meta>
