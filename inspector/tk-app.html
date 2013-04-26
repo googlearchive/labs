@@ -14,32 +14,23 @@ license that can be found in the LICENSE file.
         left: 8px;
         overflow: auto;
       }
-      .left {
-        position: absolute !important;
-        top: 0;
-        width: 264px;
-        bottom: 0;
-        left: 0;
-        background-color: white !important;
-      }
-      .middle {
-        position: absolute;
-        top: 34px;
-        right: 350px;
-        bottom: 0;
-        left: 264px;
-        background-color: white;
-        overflow: hidden;
-      }
       .top {
         position: absolute;
         top: 0px;
         padding: 4px;
         right: 350px;
-        left: 264px;
+        left: 0px;
         height: 34px;
         background-color: white;
         overflow: hidden;
+      }
+      .left {
+        position: absolute !important;
+        top: 34px;
+        right: 350px;
+        bottom: 0;
+        left: 0;
+        background-color: white !important;
       }
       .right {
         position: absolute;
@@ -48,6 +39,23 @@ license that can be found in the LICENSE file.
         bottom: 0;
         width: 350px;
         overflow: auto;
+      }
+      .left-inner {
+        position: absolute !important;
+        top: 0;
+        width: 264px;
+        bottom: 0;
+        left: 0;
+        background-color: white !important;
+      }
+      .middle-inner {
+        position: absolute;
+        top: 0px;
+        right: 0;
+        bottom: 0;
+        left: 264px;
+        background-color: white;
+        overflow: hidden;
       }
       .fit {
         position: absolute;
@@ -64,7 +72,12 @@ license that can be found in the LICENSE file.
         z-index: 100;
       }
     </style>
-    <g-sidebar class="left" label="Palette">
+    <g-tabs id="tabs" class="top" selected="{{selectedTab}}">
+      <div name="design">Design</div>
+      <div name="source">Source</div>
+    </g-tabs>
+    <div id="design" class="left">
+      <g-sidebar class="left-inner" label="Palette">
       <tk-palette
           id="palette"
           class="fit"
@@ -74,20 +87,17 @@ license that can be found in the LICENSE file.
           on-palette-drag-end="paletteDragEnd">
       </tk-palette>
     </g-sidebar>
-    <g-tabs id="tabs" class="top" selected="{{selectedTab}}">
-      <div name="canvas">Canvas</div>
-      <div name="source">Source</div>
-    </g-tabs>
-    <tk-canvas
-      id="canvas"
-      tabIndex="-1"
-      on-tap="canvasTap"
-      on-pointerup="canvasDrop"
-      class="middle">
-    </tk-canvas>
+      <tk-canvas
+        id="canvas"
+        tabIndex="-1"
+        on-tap="canvasTap"
+        on-pointerup="canvasDrop"
+        class="middle-inner">
+      </tk-canvas>
+    </div>
     <tk-source
       id="source"
-      class="middle"
+      class="left"
       element="{{$.canvas}}">
     </tk-source>
     <tk-inspector
@@ -106,7 +116,7 @@ license that can be found in the LICENSE file.
 
     Toolkit.register(this, {
       selected: null,
-      selectedTab: 'canvas',
+      selectedTab: 'design',
       ready: function() {
         this.elements = Array.prototype.slice.call(
             metadata.querySelectorAll('tk-meta'));
