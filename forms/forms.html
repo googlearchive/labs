@@ -4,9 +4,9 @@
 <link rel="import" href="elements/all.html">
 
 <style>
-  body, input, button {
+  body, input {
     font-family: 'Helvetica Neue', 'Roboto', 'Arial', sans-serif;
-    font-size: 14pt;
+    font-size: 14px;
   }
   body {
     background-color: #f2f2f2;
@@ -17,20 +17,17 @@
 
 <g-signin-header></g-signin-header>
 <g-form>
-  <g-field label="Login">
-    <input placeholder="email" />
-    <input placeholder="password" />
+  <g-field label="Name">
+    <input placeholder="First"/>
+    <input placeholder="Last"/>
   </g-field>
-  <g-field label="Remember me">
-    <g-checkbox></g-checkbox>
+  <g-field label="Choose your username">
+    <input type="email" placeholder="@google" />
   </g-field>
-  <g-field label="Pick">
-    <g-select>
-      <div>foo</div>
-      <div>bar</div>
-    </g-select>
+  <g-field label="Choose your Password">
+    <input type="password" />
   </g-field>
-  <g-field label="Login Completion">
-    <g-progress value="0.3"></g-progress>
+  <g-field label="Confirm your Password">
+    <input type="password" />
   </g-field>
 </g-form>
