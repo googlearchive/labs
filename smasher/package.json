@@ -1,0 +1,17 @@
+{
+  "name": "smelter",
+  "version": "0.0.0",
+  "description": "> Smash all the components into one output file, with dependencies in the proper order",
+  "main": "smelt.js",
+  "dependencies": {
+    "cheerio": "~0.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
