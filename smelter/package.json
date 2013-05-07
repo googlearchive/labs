@@ -4,7 +4,8 @@
   "description": "> Smash all the components into one output file, with dependencies in the proper order",
   "main": "smelt.js",
   "dependencies": {
-    "cheerio": "~0.11.0"
+    "cheerio": "~0.11.0",
+    "nopt": "~2.1.1"
   },
   "devDependencies": {},
   "scripts": {

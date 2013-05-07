@@ -1,17 +1,36 @@
 var fs = require('fs');
 var path = require('path');
 var cheerio = require('cheerio');
+var nopt = require('nopt');
+
+var options = nopt(
+  {
+    'output': path,
+    'input': [path, Array],
+    'verbose': Boolean
+  },
+  {
+    'o': ['--output'],
+    'i': ['--input'],
+    'v': ['--verbose']
+  }
+);
+
+if (!options.input) {
+  console.error('No input files given');
+  process.exit(1);
+}
+
+if (!options.output) {
+  console.warn('Default output to output.html');
+  options.output = path.resolve('output.html');
+}
 
 var IMPORTS = 'link[rel="import"][href]';
 var ELEMENTS = 'element';
 
-// return all files on commandline as absolute paths
-function getFiles() {
-  return process.argv.slice(2).map(function(p){ return path.resolve(p) });
-}
-
-function concatElement(e) {
-  rewritePaths(e);
+function concatElement(dir, e) {
+  rewritePaths(dir, e);
   buffer.push(e);
 }
 
@@ -21,9 +40,11 @@ function rewritePaths(e) {
 }
 
 function readDocument(docname) {
-  console.log('Reading:', docname);
+  if (options.verbose) {
+    console.log('Reading:', docname);
+  }
   var content = fs.readFileSync(docname, 'utf8');
-  return cheerio.load(content, {ignoreWhitespace: true});
+  return cheerio.load(content);
 }
 
 function extractImports(doc) {
@@ -47,23 +68,26 @@ function concat(filename) {
     links = links.map(resolvePath.bind(this, dir));
     resolve(filename, links);
     var es = extractElements(doc);
-    es.forEach(concatElement);
+    es.forEach(concatElement.bind(this, dir));
   } else {
-    console.log('Dependency deduplicated');
+    if (options.verbose) {
+      console.log('Dependency deduplicated');
+    }
   }
 }
 
 function resolve(inName, inDependencies) {
   if (inDependencies.length > 0) {
-    console.log('Dependencies:', inDependencies);
+    if (options.verbose) {
+      console.log('Dependencies:', inDependencies);
+    }
     inDependencies.forEach(concat);
   }
 }
 
-var files = getFiles();
 var buffer = [];
 var read = {};
 
-files.forEach(concat);
+options.input.forEach(concat);
 
-fs.writeFileSync('output.html', buffer.join('\n'), 'utf8');
+fs.writeFileSync(options.output, buffer.join('\n'), 'utf8');
