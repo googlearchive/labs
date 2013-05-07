@@ -4,7 +4,7 @@ var wc = require('./wc-lib.js');
 
 // return all files on commandline as absolute paths
 function getFiles() {
-  return process.argv.slice(2).map(path.resolve);
+  return process.argv.slice(2).map(function(p){ return path.resolve(p) });
 }
 
 function concatElement(e) {

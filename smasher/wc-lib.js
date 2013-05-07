@@ -3,8 +3,8 @@ var path = require('path');
 
 // find all element tags in a file
 var elementRx = /\<element[\s\S]*?\<\/element\>/gi;
-// find all web component links <link rel="components" href="..">
-var linkRx = /\<link rel=(["'])components\1 href=(["'])([^]*?)\2\/?\>/gi;
+// find all web component links <link rel="import" href="..">
+var linkRx = /\<link rel=(["'])import\1\s+href=(["'])([^]*?)\2\/?\>/gi;
 // extract the href attribute of a web component link
 var hrefRx = /href=(["'])([^]*?)\1/i;
 
