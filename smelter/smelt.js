@@ -37,12 +37,17 @@ var URL = /url\([^)]*\)/g;
 var URL_TEMPLATE = '{{.*}}';
 
 function concatElement(dir, output, e) {
-  e = resolvePaths(dir, output, e);
+  e = resolveElementPaths(dir, output, e);
   buffer.push(e);
 }
 
-function resolvePaths(input, output, element) {
+function resolveElementPaths(input, output, element) {
   var $ = cheerio.load(element);
+  resolvePaths(input, output, $);
+  return $.html('element');
+}
+
+function resolvePaths(input, output, $) {
   // resolve attributes
   $(URL_ATTR_SEL).each(function() {
     var val;
@@ -63,7 +68,6 @@ function resolvePaths(input, output, element) {
     var val = this.html();
     this.html(rewriteURL(input, output, val));
   });
-  return $.html('element');
 }
 
 function rewriteRelPath(inputPath, outputPath, rel) {
@@ -90,12 +94,9 @@ function readDocument(docname) {
   return cheerio.load(content);
 }
 
-function extractImports($) {
-  return $(IMPORTS).map(function(){ return this.attr('href') });
-}
-
-function resolvePath(dirname, relpath) {
-  return path.resolve(dirname, relpath);
+function extractImports($, dir) {
+  var hrefs = $(IMPORTS).map(function(){ return this.attr('href') });
+  return hrefs.map(function(h) { return path.resolve(dir, h) });
 }
 
 function extractElements($) {
@@ -107,8 +108,7 @@ function concat(filename) {
     read[filename] = true;
     var $ = readDocument(filename);
     var dir = path.dirname(filename);
-    var links = extractImports($);
-    links = links.map(resolvePath.bind(this, dir));
+    var links = extractImports($, dir);
     resolve(filename, links);
     var es = extractElements($);
     es.forEach(concatElement.bind(this, dir, outputDir));
