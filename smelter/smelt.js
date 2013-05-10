@@ -26,17 +26,56 @@ if (!options.output) {
   options.output = path.resolve('output.html');
 }
 
+var outputDir = path.dirname(options.output);
+
 var IMPORTS = 'link[rel="import"][href]';
 var ELEMENTS = 'element';
+var URL_ATTR = ['href', 'src', 'action', 'style'];
+var URL_ATTR_SEL = '[' + URL_ATTR.join('],[') + ']';
+var ABS_URL = /(^data:)|(^http[s]?:)|(^\/)/;
+var URL = /url\([^)]*\)/g;
 
-function concatElement(dir, e) {
-  rewritePaths(dir, e);
+function concatElement(dir, output, e) {
+  e = resolvePaths(dir, output, e);
   buffer.push(e);
 }
 
-function rewritePaths(e) {
-  // TODO: make this rewrite css paths
-  return e;
+function resolvePaths(input, output, element) {
+  var $ = cheerio.load(element);
+  // resolve attributes
+  $(URL_ATTR_SEL).each(function() {
+    var val;
+    URL_ATTR.forEach(function(a) {
+      if (val = this.attr(a)) {
+        if (a === 'style') {
+          this.attr(a, rewriteURL(input, output, val));
+        } else {
+          this.attr(a, rewriteRelPath(input, output, val));
+        }
+      }
+    }, this);
+  });
+  // resolve style elements
+  $('style').text(function(i, text) {
+    return rewriteURL(input, output, text);
+  });
+  return $.html('element');
+}
+
+function rewriteRelPath(inputPath, outputPath, rel) {
+  if (ABS_URL.test(rel)) {
+    return rel;
+  }
+  var abs = path.resolve(inputPath, rel);
+  return path.relative(outputPath, abs);
+}
+
+function rewriteURL(inputPath, outputPath, cssText) {
+  return cssText.replace(URL, function(match) {
+    var path = match.replace(/["']/g, "").slice(4, -1);
+    path = rewriteRelPath(inputPath, outputPath, path);
+    return 'url(' + path + ')';
+  });
 }
 
 function readDocument(docname) {
@@ -47,28 +86,28 @@ function readDocument(docname) {
   return cheerio.load(content);
 }
 
-function extractImports(doc) {
-  return doc(IMPORTS).map(function(i, e){ return doc(e).attr('href') });
+function extractImports($) {
+  return $(IMPORTS).map(function(){ return this.attr('href') });
 }
 
 function resolvePath(dirname, relpath) {
   return path.resolve(dirname, relpath);
 }
 
-function extractElements(doc) {
-  return doc(ELEMENTS).map(function(i, e){ return doc.html(e) });
+function extractElements($) {
+  return $(ELEMENTS).map(function(i, e){ return $.html(e) });
 }
 
 function concat(filename) {
   if (!read[filename]) {
     read[filename] = true;
-    var doc = readDocument(filename);
+    var $ = readDocument(filename);
     var dir = path.dirname(filename);
-    var links = extractImports(doc);
+    var links = extractImports($);
     links = links.map(resolvePath.bind(this, dir));
     resolve(filename, links);
-    var es = extractElements(doc);
-    es.forEach(concatElement.bind(this, dir));
+    var es = extractElements($);
+    es.forEach(concatElement.bind(this, dir, outputDir));
   } else {
     if (options.verbose) {
       console.log('Dependency deduplicated');
@@ -90,4 +129,6 @@ var read = {};
 
 options.input.forEach(concat);
 
-fs.writeFileSync(options.output, buffer.join('\n'), 'utf8');
+if (buffer.length) {
+  fs.writeFileSync(options.output, buffer.join('\n'), 'utf8');
+}
