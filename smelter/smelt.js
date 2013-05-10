@@ -56,8 +56,9 @@ function resolvePaths(input, output, element) {
     }, this);
   });
   // resolve style elements
-  $('style').text(function(i, text) {
-    return rewriteURL(input, output, text);
+  $('style').each(function() {
+    var val = this.html();
+    this.html(rewriteURL(input, output, val));
   });
   return $.html('element');
 }
