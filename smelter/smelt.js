@@ -34,6 +34,7 @@ var URL_ATTR = ['href', 'src', 'action', 'style'];
 var URL_ATTR_SEL = '[' + URL_ATTR.join('],[') + ']';
 var ABS_URL = /(^data:)|(^http[s]?:)|(^\/)/;
 var URL = /url\([^)]*\)/g;
+var TEMPLATE = '{{.*}}';
 
 function concatElement(dir, output, e) {
   e = resolvePaths(dir, output, e);
@@ -47,10 +48,12 @@ function resolvePaths(input, output, element) {
     var val;
     URL_ATTR.forEach(function(a) {
       if (val = this.attr(a)) {
-        if (a === 'style') {
-          this.attr(a, rewriteURL(input, output, val));
-        } else {
-          this.attr(a, rewriteRelPath(input, output, val));
+        if (val.search(URL_TEMPLATE) < 0) {
+          if (a === 'style') {
+            this.attr(a, rewriteURL(input, output, val));
+          } else {
+            this.attr(a, rewriteRelPath(input, output, val));
+          }
         }
       }
     }, this);
