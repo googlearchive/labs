@@ -34,7 +34,7 @@ var URL_ATTR = ['href', 'src', 'action', 'style'];
 var URL_ATTR_SEL = '[' + URL_ATTR.join('],[') + ']';
 var ABS_URL = /(^data:)|(^http[s]?:)|(^\/)/;
 var URL = /url\([^)]*\)/g;
-var TEMPLATE = '{{.*}}';
+var URL_TEMPLATE = '{{.*}}';
 
 function concatElement(dir, output, e) {
   e = resolvePaths(dir, output, e);
