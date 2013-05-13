@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<style>
+
+.container {
+  display: -webkit-flex;
+  -webkit-flex-flow: column;
+}
+
+.container > div {
+  border: 2px solid black;
+  border-radius: 5px;
+  font-size: 28px;
+  margin: 10px;
+  padding: 10px;
+}
+
+</style>
+<div class="container">
+  <div>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+  </div>
+  <div>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+  </div>
+  <div>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+  </div>
+</div>
+<script src="../../../platform/WebAnimations/web-animations.js"></script>
+<script src="../src/layout-animation.js"></script>
+<script>
+registerLayoutKeyframes("default", [
+  {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",
+                            layoutTop: "from()", layoutLeft: "from()" }},
+  {offset: 1, properties: { layoutWidth: "to()", layoutHeight: "to()",
+                            layoutTop: "to()", layoutLeft: "to()" }}]);
+
+setLayoutTransition(document.querySelectorAll(".container > div"), "default", 1);
+
+var isColumn = true;
+
+var container = document.querySelector(".container");
+
+document.onkeydown = function(event) {
+  var char = String.fromCharCode(event.which);
+  if (char == 'S') {
+    transitionThis(function() { container.style.webkitFlexFlow = isColumn ? "row" : "column"; });
+    isColumn = !isColumn;
+  }
+}
+</script>
