@@ -12,7 +12,7 @@ function rectsToTransformValues(desired, current, ignoreScale) {
 }
 
 function transformValuesToCss(values, ignoreScale) {
-  return "translate(" + values.tx + "px, " + values.ty + "px)" + (ignoreScale ? "" : 
+  return "translate3d(" + values.tx + "px, " + values.ty + "px, 0px)" + (ignoreScale ? "" : 
          " scale(" + values.sx + ", " + values.sy + ")");
 }
 
@@ -277,6 +277,46 @@ function cleanup() {
   }
 }
 
+function positionListFromKeyframes(keyframes, element) {
+  positions = keyframes.slice();
+  positions.sort(function(a, b) {
+    if (a.offset > b.offset) {
+      return 1;
+    }
+    if (a.offset < b.offset) {
+      return -1;
+    }
+    return 0;
+  });
+  if (positions[0].offset != 0) {
+    throw "NoOffsetAt0";
+  }
+  if (positions[positions.length - 1].offset != 1) {
+    throw "NoOffsetAt1";
+  }
+
+  var before = element._transitionBefore;
+  var after = element._transitionAfter;
+
+  var properties = ["left", "top", "width", "height"];
+
+  for (var i = 0; i < positions.length; i++) {
+    for (var j = 0; j < properties.length; j++) {
+      var property = properties[j];
+      var layoutProperty = 'layout' + properties[j][0].toUpperCase() + properties[j].slice(1);
+      if (positions[i].properties[layoutProperty] == "from()") {
+        positions[i][property] = before[property];
+      } else if (positions[i].properties[layoutProperty] == "to()") {
+        positions[i][property] = after[property];
+      } else {
+        positions[i][property] = v(positions[i].properties[layoutProperty]);
+      }
+    }
+  }
+
+  return positions;
+}
+
 function transitionThis(action) {
   // record positions before action
   setPositions(transitionable, '_transitionBefore');
@@ -290,10 +330,22 @@ function transitionThis(action) {
   var tree = buildTree(movedList);
 
   // construct animations
+
   var parGroup = new ParGroup();
   for (var i = 0; i < tree.length; i++) {
-    parGroup.add(
-      animationToPositionTransform(tree[i], tree[i]._transitionBefore, tree[i]._transitionAfter, tree[i]._transitionBefore, tree[i]._layout.duration));
+    var keyframes = layoutKeyframes[tree[i]._layout.name];
+    var positionList = positionListFromKeyframes(keyframes, tree[i]);
+    if (positionList.length == 2) {
+      parGroup.add(
+        animationToPositionTransform(tree[i], positionList[0], positionList[1], tree[i]._transitionBefore, tree[i]._layout.duration));
+    } else {
+      var seqGroup = new SeqGroup();
+      for (var j = 1; j < positionList.length; j++) {
+        seqGroup.add(
+          animationToPositionTransform(tree[i], positionList[j-1], positionList[j], tree[i]._transitionBefore, tree[i]._layout.duration * (positionList[j].offset - positionList[j-1].offset)));
+      }
+      parGroup.add(seqGroup);
+    } 
   } 
   document.timeline.play(new SeqGroup([
     parGroup,
@@ -304,9 +356,6 @@ function transitionThis(action) {
         tree[i].style.top = "";
         tree[i].style.width = "";
         tree[i].style.height = "";
-        // workaround for the fact that fillMode: 'none' doesn't work if the parent has a non-none fillMode.
-        tree[i].style.position = "";
-        tree[i].style.webkitTransform = "";
       }
     }), 0)]));
 

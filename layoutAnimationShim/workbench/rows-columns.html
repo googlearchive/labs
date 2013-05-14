@@ -29,13 +29,45 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
 <script src="../../../platform/WebAnimations/web-animations.js"></script>
 <script src="../src/layout-animation.js"></script>
 <script>
-registerLayoutKeyframes("default", [
+/*
+
+@layout-keyframes default {
+  0% {
+    layout-width: from();
+    layout-height: from();
+    layout-top: from();
+    layout-left: from();
+  }
+  100% {
+    ..
+  }
+}
+
+*/
+registerLayoutKeyframes("to", [
   {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",
                             layoutTop: "from()", layoutLeft: "from()" }},
+  {offset: 0.5, properties: {layoutWidth: "to()", layoutHeight: "from()",
+                            layoutLeft: "to()", layoutTop: "from()"}},
   {offset: 1, properties: { layoutWidth: "to()", layoutHeight: "to()",
                             layoutTop: "to()", layoutLeft: "to()" }}]);
 
-setLayoutTransition(document.querySelectorAll(".container > div"), "default", 1);
+registerLayoutKeyframes("from", [
+  {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",
+                            layoutTop: "from()", layoutLeft: "from()" }},
+  {offset: 0.5, properties: {layoutWidth: "from()", layoutHeight: "to()",
+                            layoutLeft: "from()", layoutTop: "to()"}},
+  {offset: 1, properties: { layoutWidth: "to()", layoutHeight: "to()",
+                            layoutTop: "to()", layoutLeft: "to()" }}]);
+
+
+
+/*
+.container > div {
+  layout-transition: default 1s;
+}
+*/
+setLayoutTransition(document.querySelectorAll(".container > div"), "to", 1);
 
 var isColumn = true;
 
@@ -46,6 +78,11 @@ document.onkeydown = function(event) {
   if (char == 'S') {
     transitionThis(function() { container.style.webkitFlexFlow = isColumn ? "row" : "column"; });
     isColumn = !isColumn;
+    if (isColumn) {
+      setLayoutTransition(document.querySelectorAll(".container > div"), "to", 1);
+    } else {
+      setLayoutTransition(document.querySelectorAll(".container > div"), "from", 1);
+    }
   }
 }
 </script>
