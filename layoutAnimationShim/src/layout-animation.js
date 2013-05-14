@@ -39,6 +39,18 @@ function fixTiming(timing) {
   return timing;
 }
   
+function animationToPositionLayout(target, source, destination, current, timing) {
+  timing = fixTiming(timing);
+   
+  source = boundingRectToContentRect(target, source);
+  destination = boundingRectToContentRect(target, destination);
+  return new Animation(target, {position: ["absolute", "absolute"],
+                                left: [source.left + "px", destination.left + "px"], 
+                                top: [source.top + "px", destination.top + "px"], 
+                                width: [source.width + "px", destination.width + "px"], 
+                                height: [source.height + "px", destination.height + "px"]},
+                       timing); 
+}
 
 function animationToPositionTransform(target, source, destination, current, timing) {
   var startCss = rectsToCss(source, current);
@@ -224,17 +236,22 @@ function v(s) {
   return s.substring(0, s.length - 2);
 }
 
-function forceToPosition(element, rect) {
-  console.log(rect);
+function boundingRectToContentRect(element, rect) {
   var style = window.getComputedStyle(element);
   var width = rect.width - v(style.borderLeftWidth) - v(style.borderRightWidth) - v(style.paddingLeft) - v(style.paddingRight);
   var height = rect.height - v(style.borderTopWidth) - v(style.borderBottomWidth) - v(style.paddingTop) - v(style.paddingBottom);
   var left = rect.left - v(style.marginLeft);
   var top = rect.top - v(style.marginTop);
-  element.style.left = left + 'px';
-  element.style.top = top + 'px';
-  element.style.width = width + 'px';
-  element.style.height = height + 'px';
+  return {width: width, top: top, left: left, height: height};
+}
+  
+
+function forceToPosition(element, rect) {
+  rect = boundingRectToContentRect(element, rect);
+  element.style.left = rect.left + 'px';
+  element.style.top = rect.top + 'px';
+  element.style.width = rect.width + 'px';
+  element.style.height = rect.height + 'px';
   element.style.position = "absolute";
 }
 
@@ -325,6 +342,7 @@ function transitionThis(action) {
   // record positions after action
   setPositions(transitionable, '_transitionAfter');
   // put everything back
+  // TODO: Don't need to force to position for layout animations.
   movedList = forceToPositions(transitionable);
   // construct transition tree  
   var tree = buildTree(movedList);
@@ -333,16 +351,21 @@ function transitionThis(action) {
 
   var parGroup = new ParGroup();
   for (var i = 0; i < tree.length; i++) {
+    if (tree[i]._layout.outer == 'transform') {
+      generator = animationToPositionTransform;
+    } else {
+      generator = animationToPositionLayout;
+    }
     var keyframes = layoutKeyframes[tree[i]._layout.name];
     var positionList = positionListFromKeyframes(keyframes, tree[i]);
     if (positionList.length == 2) {
       parGroup.add(
-        animationToPositionTransform(tree[i], positionList[0], positionList[1], tree[i]._transitionBefore, tree[i]._layout.duration));
+        generator(tree[i], positionList[0], positionList[1], tree[i]._transitionBefore, tree[i]._layout.duration));
     } else {
       var seqGroup = new SeqGroup();
       for (var j = 1; j < positionList.length; j++) {
         seqGroup.add(
-          animationToPositionTransform(tree[i], positionList[j-1], positionList[j], tree[i]._transitionBefore, tree[i]._layout.duration * (positionList[j].offset - positionList[j-1].offset)));
+          generator(tree[i], positionList[j-1], positionList[j], tree[i]._transitionBefore, tree[i]._layout.duration * (positionList[j].offset - positionList[j-1].offset)));
       }
       parGroup.add(seqGroup);
     } 

@@ -12,6 +12,7 @@
   font-size: 28px;
   margin: 10px;
   padding: 10px;
+  overflow: hidden;
 }
 
 </style>
@@ -66,8 +67,12 @@ registerLayoutKeyframes("from", [
 .container > div {
   layout-transition: default 1s;
 }
+
+.container > div:first-child {
+  layout-effect: transform;
 */
 setLayoutTransition(document.querySelectorAll(".container > div"), "to", 1);
+setLayoutEffect(document.querySelector(".container > div"), "transform");
 
 var isColumn = true;
 
