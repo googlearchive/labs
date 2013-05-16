@@ -15,6 +15,10 @@
   overflow: hidden;
 }
 
+#crossfader {
+  background: red;
+}
+
 </style>
 <div class="container">
   <div>
@@ -22,6 +26,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
   </div>
   <div>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+  </div>
+  <div id="crossfader">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+  </div>
+  <div>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
   </div>
   <div>
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
@@ -71,8 +81,12 @@ registerLayoutKeyframes("from", [
 .container > div:first-child {
   layout-effect: transform;
 */
-setLayoutTransition(document.querySelectorAll(".container > div"), "to", 1);
-setLayoutEffect(document.querySelector(".container > div"), "transform");
+setLayoutTransition(document.querySelectorAll(".container > div"), "to", 5);
+setLayoutEffect(document.querySelectorAll(".container > div:first-child"), "transform");
+setLayoutEffect(document.querySelectorAll(".container > div:nth-child(2)"), "none");
+setLayoutEffect(document.querySelectorAll(".container > div:nth-child(3)"), "crossfade");
+setLayoutEffect(document.querySelectorAll(".container > div:nth-child(4)"), "transfade");
+//setLayoutEffect(document.querySelectorAll(".container > div"), "crossfade");
 
 var isColumn = true;
 
@@ -82,11 +96,14 @@ document.onkeydown = function(event) {
   var char = String.fromCharCode(event.which);
   if (char == 'S') {
     transitionThis(function() { container.style.webkitFlexFlow = isColumn ? "row" : "column"; });
+    /*setTimeout(function() {
+    document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = 0; });
+    }, 2000);*/
     isColumn = !isColumn;
     if (isColumn) {
-      setLayoutTransition(document.querySelectorAll(".container > div"), "to", 1);
+      setLayoutTransition(document.querySelectorAll(".container > div"), "to", 5);
     } else {
-      setLayoutTransition(document.querySelectorAll(".container > div"), "from", 1);
+      setLayoutTransition(document.querySelectorAll(".container > div"), "from", 5);
     }
   }
 }

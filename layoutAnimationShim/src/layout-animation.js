@@ -1,13 +1,13 @@
 var _DEBUG_CONTROL_POSITIONS = false;
 
-function rectsToTransformValues(desired, current, ignoreScale) {
+function rectsToTransformValues(desired, current, origin, ignoreScale) {
+  var sx = (ignoreScale ? 1 : desired.width / current.width);
+  var sy = (ignoreScale ? 1 : desired.height / current.height);
   return {
-    // The center of the object needs to be translated by the delta between desired
-    // and current, but we also need to take into account the change of scale.
-    tx: desired.left - current.left + (ignoreScale ? 0 : (desired.width - current.width) / 2),
-    ty: desired.top - current.top + (ignoreScale ? 0 : (desired.height - current.height) / 2),
-    sx: (ignoreScale ? 1 : desired.width / current.width),
-    sy: (ignoreScale ? 1 : desired.height / current.height)
+    tx: desired.left - current.left - origin.x * (1 - sx),
+    ty: desired.top - current.top - origin.y * (1 - sy),
+    sx: sx,
+    sy: sy
   };
 }
 
@@ -16,8 +16,8 @@ function transformValuesToCss(values, ignoreScale) {
          " scale(" + values.sx + ", " + values.sy + ")");
 }
 
-function rectsToCss(desired, current, ignoreScale) {
-  return transformValuesToCss(rectsToTransformValues(desired, current, ignoreScale), ignoreScale);
+function rectsToCss(desired, current, origin, ignoreScale) {
+  return transformValuesToCss(rectsToTransformValues(desired, current, origin, ignoreScale), ignoreScale);
 }
 
 function rectToClip(rect) {
@@ -39,32 +39,145 @@ function fixTiming(timing) {
   return timing;
 }
   
-function animationToPositionLayout(target, source, destination, current, timing) {
+function animationToPositionLayout(target, positions, current, timing) {
   timing = fixTiming(timing);
    
-  source = boundingRectToContentRect(target, source);
-  destination = boundingRectToContentRect(target, destination);
+  var mkPosList = function(property, list) {
+    return list.map(function(input) {
+      contentRect = boundingRectToContentRect(target, input);
+      var out = {offset: input.offset};
+      out.value = contentRect[property] + 'px';
+      return out;
+    });
+  }
+
   return new Animation(target, {position: ["absolute", "absolute"],
-                                left: [source.left + "px", destination.left + "px"], 
-                                top: [source.top + "px", destination.top + "px"], 
-                                width: [source.width + "px", destination.width + "px"], 
-                                height: [source.height + "px", destination.height + "px"]},
+                                left: mkPosList('left', positions),
+                                top: mkPosList('top', positions),
+                                width: mkPosList('width', positions),
+                                height: mkPosList('height', positions)}, 
                        timing); 
 }
 
-function animationToPositionTransform(target, source, destination, current, timing) {
-  var startCss = rectsToCss(source, current);
-  var endCss = rectsToCss(destination, current);
-  console.log(startCss, endCss);
+function origin(element) {
+  var str = getComputedStyle(element).webkitTransformOrigin;
+  var arr = str.split('px');
+  return {x: Number(arr[0]), y: Number(arr[1])};
+}
+
+function animationToPositionTransform(target, positions, current, timing) {
+
+  var cssList = positions.map(function(position) {
+    var str = rectsToCss(position, current, origin(target));
+    return {offset: position.offset, value: str};
+  });
 
   timing = fixTiming(timing);
 
-  return new Animation(target, {transform: [startCss, endCss], 
+  return new Animation(target, {transform: cssList, position: ["absolute", "absolute"]}, timing);
+}
+
+function animationToPositionNone(target, positions, current, timing) {
+
+  var cssList = positions.map(function(position) {
+    var str = rectsToCss(position, current, origin(target), true);
+    return { offset: position.offset, value: str};
+  });
+
+  timing = fixTiming(timing);
+  
+  return new Animation(target, {transform: cssList,
                                 position: ["absolute", "absolute"]}, timing);
 }
 
+function animationToPositionFadeOutIn(outTo, inFrom) {
+  return function(target, positions, current, timing) {
+    timing = fixTiming(timing);
+    var opacityTiming = {};
+    for (d in timing) {
+      opacityTiming[d] = timing[d];
+    }
+    opacityTiming.duration = timing.duration * outTo;
+    opacityTiming.fillMode = 'forwards';
+
+    var cssList = positions.map(function(position) {
+      var str = rectsToCss(position, positions[0], origin(target), true);
+      return { offset: position.offset, value: str};
+    });
+    
+    var fromAnim = new Animation(target, {transform: cssList,
+            position: ["absolute", "absolute"]}, timing);
+    var fromOpacAnim = new Animation(target, {opacity: ["1", "0"]}, opacityTiming);
+
+    opacityTiming.duration = timing.duration * (1 - inFrom);
+    if (opacityTiming.startDelay == undefined) {
+      opacityTiming.startDelay = 0;
+    }
+    opacityTiming.startDelay += timing.duration * inFrom;  
+    opacityTiming.fillMode = 'backwards';
+
+    var cssList = positions.map(function(position) {
+      var str = rectsToCss(position, positions[positions.length - 1], origin(target), true);
+      return { offset: position.offset, value: str};
+    });
+
+    var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
+    var to = cloneToSize(target, toPosition);
+
+    var toAnim = new Animation(to, {transform: cssList,
+              position: ["absolute", "absolute"]}, timing);
+    var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, opacityTiming);
+
+    timing.fillMode = 'forwards';
+    var cleanupAnimation = new Animation(null, new Cleaner(function() {
+      to.parentElement.removeChild(to);
+    }), timing);
+    
+    return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
+      new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
+  }
+}
+
+function animationToPositionTransfade(target, positions, current, timing) {
+  timing = fixTiming(timing);
+
+  var cssList = positions.map(function(position) {
+    var str = rectsToCss(position, positions[0], origin(target));
+    return { offset: position.offset, value: str};
+  });
+    
+  var fromAnim = new Animation(target, {transform: cssList,
+          position: ["absolute", "absolute"]}, timing);
+  var fromOpacAnim = new Animation(target, {opacity: ["1", "0"]}, timing);
+
+    var cssList = positions.map(function(position) {
+      var str = rectsToCss(position, positions[positions.length - 1], origin(target));
+      return { offset: position.offset, value: str};
+    });
+
+    var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
+    var to = cloneToSize(target, toPosition);
+
+    var toAnim = new Animation(to, {transform: cssList,
+              position: ["absolute", "absolute"]}, timing);
+    var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, timing);
+
+    timing.fillMode = 'forwards';
+    var cleanupAnimation = new Animation(null, new Cleaner(function() {
+      to.parentElement.removeChild(to);
+    }), timing);
+    
+    return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
+      new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
+  }
+
+
 function cloneToSize(node, rect) {
   var div = document.createElement("div");
+  div.style.opacity = "0";
+  nodeStyle = window.getComputedStyle(node);
+  div.setAttribute("style", nodeStyle.cssText);
+  div.style.opacity = "0";
   div.style.position = "absolute";
   div.style.left = rect.left + 'px';
   div.style.top = rect.top + 'px';
@@ -86,7 +199,7 @@ function Cleaner(action) {
   }
 }
 
-function animationToPositionFadeOutIn(target, source, destination, current, timing, outTo, inFrom) {
+function animationToPositionFadeOutIn2(target, source, destination, current, timing, outTo, inFrom) {
 
   timing = fixTiming(timing);
   var opacityTiming = {};
@@ -342,7 +455,8 @@ function transitionThis(action) {
   // record positions after action
   setPositions(transitionable, '_transitionAfter');
   // put everything back
-  // TODO: Don't need to force to position for layout animations.
+  // note that we don't need to do this for all transition types, but
+  // by doing it here we avoid a layout flicker.
   movedList = forceToPositions(transitionable);
   // construct transition tree  
   var tree = buildTree(movedList);
@@ -351,24 +465,27 @@ function transitionThis(action) {
 
   var parGroup = new ParGroup();
   for (var i = 0; i < tree.length; i++) {
-    if (tree[i]._layout.outer == 'transform') {
-      generator = animationToPositionTransform;
-    } else {
-      generator = animationToPositionLayout;
+    switch(tree[i]._layout.outer) {
+      case 'transform':
+        generator = animationToPositionTransform;
+        break;
+      case 'none':
+        generator = animationToPositionNone;
+        break;
+      case 'crossfade':
+        generator = animationToPositionFadeOutIn(1, 0);
+        break;
+      case 'transfade':
+        generator = animationToPositionTransfade;
+        break;
+      default:
+        generator = animationToPositionLayout;
+        break;
     }
     var keyframes = layoutKeyframes[tree[i]._layout.name];
     var positionList = positionListFromKeyframes(keyframes, tree[i]);
-    if (positionList.length == 2) {
-      parGroup.add(
-        generator(tree[i], positionList[0], positionList[1], tree[i]._transitionBefore, tree[i]._layout.duration));
-    } else {
-      var seqGroup = new SeqGroup();
-      for (var j = 1; j < positionList.length; j++) {
-        seqGroup.add(
-          generator(tree[i], positionList[j-1], positionList[j], tree[i]._transitionBefore, tree[i]._layout.duration * (positionList[j].offset - positionList[j-1].offset)));
-      }
-      parGroup.add(seqGroup);
-    } 
+    parGroup.add(
+        generator(tree[i], positionList, tree[i]._transitionBefore, tree[i]._layout.duration));
   } 
   document.timeline.play(new SeqGroup([
     parGroup,
