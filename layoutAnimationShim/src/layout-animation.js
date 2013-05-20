@@ -38,7 +38,42 @@ function fixTiming(timing) {
   }
   return timing;
 }
-  
+
+function setupShadowContainer(target) {
+  var parent = target.parentElement;
+  var shadowRoot = parent.webkitShadowRoot;
+  if (shadowRoot == null) {
+    shadowRoot = parent.webkitCreateShadowRoot();
+    for (var i = 0; i < parent.children.length; i++) {
+      var content = document.createElement("content");
+      content.setAttribute("select", ":nth-child(" + (i + 1) + ")");
+      var opacDiv = document.createElement("div");
+      opacDiv.appendChild(content);
+      var div = document.createElement("div");
+      div.appendChild(opacDiv);
+      shadowRoot.appendChild(div);
+    }
+  }
+
+  for (var i = 0; i < parent.children.length; i++) {
+    if (parent.children[i] == target) {
+      break;
+    }
+  }
+
+  target.shadow = {root: shadowRoot, parent: shadowRoot.childNodes[i], content: shadowRoot.childNodes[i].querySelector('content').parentElement};
+  return target.shadow;
+}
+
+function createShadowPlaceholder(shadow, target, rect) {
+  var div = document.createElement("div");
+  var replacement = boundingRectToReplacementRect(target, rect);
+  div.style.width = replacement.width + 'px';
+  div.style.height = replacement.height + 'px';
+  shadow.parent.appendChild(div);
+  return div;
+}
+ 
 function animationToPositionLayout(target, positions, current, timing) {
   timing = fixTiming(timing);
    
@@ -51,42 +86,55 @@ function animationToPositionLayout(target, positions, current, timing) {
     });
   }
 
-  return new Animation(target, {position: ["absolute", "absolute"],
+  // copy style from initial state to final state. This tries to capture CSS transitions.
+  sourceStyle = window.getComputedStyle(target.shadow.from);
+  targetStyle = window.getComputedStyle(target);
+  for (var i = 0; i < targetStyle.length; i++) {
+    var prop = targetStyle[i];
+    if (sourceStyle[prop] != targetStyle[prop]) {
+      if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", "width", "height"].indexOf(prop) == -1) {
+        target.shadow.from.style[prop] = targetStyle[prop];
+      }
+    }
+  }
+
+  return new Animation(target.shadow.from, {position: ["absolute", "absolute"],
                                 left: mkPosList('left', positions),
                                 top: mkPosList('top', positions),
-                                width: mkPosList('width', positions),
+                                width: mkPosList('width', positions), 
                                 height: mkPosList('height', positions)}, 
-                       timing); 
+                       timing);
 }
 
-function origin(element) {
-  var str = getComputedStyle(element).webkitTransformOrigin;
+function origin(str) {
   var arr = str.split('px');
   return {x: Number(arr[0]), y: Number(arr[1])};
 }
 
 function animationToPositionTransform(target, positions, current, timing) {
 
+  var transOrig = origin(target.shadow.from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, origin(target));
+    var str = rectsToCss(position, current, transOrig);
     return {offset: position.offset, value: str};
   });
 
   timing = fixTiming(timing);
 
-  return new Animation(target, {transform: cssList, position: ["absolute", "absolute"]}, timing);
+  return new Animation(target.shadow.from, {transform: cssList}, timing);
 }
 
 function animationToPositionNone(target, positions, current, timing) {
 
+  var transOrig = origin(target.shadow.from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, origin(target), true);
+    var str = rectsToCss(position, current, transOrig, true);
     return { offset: position.offset, value: str};
   });
 
   timing = fixTiming(timing);
   
-  return new Animation(target, {transform: cssList,
+  return new Animation(target.shadow.from, {transform: cssList,
                                 position: ["absolute", "absolute"]}, timing);
 }
 
@@ -100,14 +148,15 @@ function animationToPositionFadeOutIn(outTo, inFrom) {
     opacityTiming.duration = timing.duration * outTo;
     opacityTiming.fillMode = 'forwards';
 
+    var transOrig = origin(target.shadow.from.style.webkitTransformOrigin);
     var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, positions[0], origin(target), true);
+      var str = rectsToCss(position, positions[0], transOrig, true);
       return { offset: position.offset, value: str};
     });
-    
-    var fromAnim = new Animation(target, {transform: cssList,
+   
+    var fromAnim = new Animation(target.shadow.from, {transform: cssList,
             position: ["absolute", "absolute"]}, timing);
-    var fromOpacAnim = new Animation(target, {opacity: ["1", "0"]}, opacityTiming);
+    var fromOpacAnim = new Animation(target.shadow.from, {opacity: ["1", "0"]}, opacityTiming);
 
     opacityTiming.duration = timing.duration * (1 - inFrom);
     if (opacityTiming.startDelay == undefined) {
@@ -116,13 +165,14 @@ function animationToPositionFadeOutIn(outTo, inFrom) {
     opacityTiming.startDelay += timing.duration * inFrom;  
     opacityTiming.fillMode = 'backwards';
 
+    var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
+    var to = cloneToSize(target, toPosition, true);
+
+    transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
     var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, positions[positions.length - 1], origin(target), true);
+      var str = rectsToCss(position, positions[positions.length - 1], transOrig, true);
       return { offset: position.offset, value: str};
     });
-
-    var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-    var to = cloneToSize(target, toPosition);
 
     var toAnim = new Animation(to, {transform: cssList,
               position: ["absolute", "absolute"]}, timing);
@@ -141,114 +191,72 @@ function animationToPositionFadeOutIn(outTo, inFrom) {
 function animationToPositionTransfade(target, positions, current, timing) {
   timing = fixTiming(timing);
 
+  var transOrig = origin(target.shadow.from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, positions[0], origin(target));
+    var str = rectsToCss(position, positions[0], transOrig);
     return { offset: position.offset, value: str};
   });
-    
-  var fromAnim = new Animation(target, {transform: cssList,
+   
+  var fromAnim = new Animation(target.shadow.from, {transform: cssList,
           position: ["absolute", "absolute"]}, timing);
-  var fromOpacAnim = new Animation(target, {opacity: ["1", "0"]}, timing);
+  var fromOpacAnim = new Animation(target.shadow.from, {opacity: ["1", "0"]}, timing);
 
-    var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, positions[positions.length - 1], origin(target));
-      return { offset: position.offset, value: str};
-    });
+  var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
+  var to = cloneToSize(target, toPosition, true);
 
-    var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-    var to = cloneToSize(target, toPosition);
+  transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
+  var cssList = positions.map(function(position) {
+    var str = rectsToCss(position, positions[positions.length - 1], transOrig);
+    return { offset: position.offset, value: str};
+  });
 
-    var toAnim = new Animation(to, {transform: cssList,
-              position: ["absolute", "absolute"]}, timing);
-    var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, timing);
+  var toAnim = new Animation(to, {transform: cssList,
+            position: ["absolute", "absolute"]}, timing);
+  var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, timing);
 
-    timing.fillMode = 'forwards';
-    var cleanupAnimation = new Animation(null, new Cleaner(function() {
-      to.parentElement.removeChild(to);
-    }), timing);
+  timing.fillMode = 'forwards';
+  var cleanupAnimation = new Animation(null, new Cleaner(function() {
+    to.parentElement.removeChild(to);
+  }), timing);
     
-    return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
-      new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
-  }
+  return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
+    new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
+}
 
 
-function cloneToSize(node, rect) {
+function cloneToSize(node, rect, hide) {
   var div = document.createElement("div");
-  div.style.opacity = "0";
   nodeStyle = window.getComputedStyle(node);
   div.setAttribute("style", nodeStyle.cssText);
-  div.style.opacity = "0";
+  if (hide) {
+    div.style.opacity = "0";
+  }
   div.style.position = "absolute";
   div.style.left = rect.left + 'px';
   div.style.top = rect.top + 'px';
   div.style.width = rect.width + 'px';
   div.style.height = rect.height + 'px';
   div.innerHTML = node.innerHTML;
-  node.parentElement.appendChild(div);
+  node.shadow.parent.appendChild(div);
   return div;
 }
 
 function Cleaner(action) {
   this.fired = false;
+  this.action = action;
   this.sample = function(t) {
     if (t == 1 && !this.fired) {
-      console.log("fired action");
-      action();
+      this.action();
       this.fired = true;
     }
-  }
+  }.bind(this);
 }
 
-function animationToPositionFadeOutIn2(target, source, destination, current, timing, outTo, inFrom) {
-
-  timing = fixTiming(timing);
-  var opacityTiming = {};
-  for (d in timing) {
-    opacityTiming[d] = timing[d];
-  }
-  opacityTiming.duration = timing.duration * outTo;
-  opacityTiming.fillMode = 'forwards';
-
-  var startClip = rectToClip(source);
-  var endClip = rectToClip(destination);
-  
-  var from = cloneToSize(target, source);
-  var startCss = rectsToCss(source, source, true);
-  var endCss = rectsToCss(destination, source, true);
-  console.log(startClip, endClip);
-  var fromAnim = new Animation(from, {transform: [startCss, endCss],
-            position: ["absolute", "absolute"], clip: [startClip, endClip]}, timing);
-  var fromOpacAnim = new Animation(from, {opacity: ["1", "0"]}, opacityTiming);
-
-  opacityTiming.duration = timing.duration * (1 - inFrom);
-  if (opacityTiming.startDelay == undefined) {
-    opacityTiming.startDelay = 0;
-  }
-  opacityTiming.startDelay += timing.duration * inFrom;  
-  opacityTiming.fillMode = 'backwards';
-
-  var to = cloneToSize(target, destination);
-  var startCss = rectsToCss(source, destination, true);
-  var endCss = rectsToCss(destination, destination, true);
-  console.log(startCss, endCss);
-  var toAnim = new Animation(to, {transform: [startCss, endCss],
-            position: ["absolute", "absolute"], clip: [startClip, endClip]}, timing);
-  var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, opacityTiming);
-
-  target.innerHTML = "";
-
-  var containerAnimation = animationToPositionTransform(target, source, destination, current, timing);
-
-  var cleanupAnimation = new Animation(null, new Cleaner(function() {
-    target.innerHTML = from.innerHTML;
-    from.parentElement.removeChild(from);
-    to.parentElement.removeChild(to);
-  }), timing);
-
-  return new ParGroup([fromAnim, toAnim, containerAnimation, cleanupAnimation,
-    new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
-  
+function cleaner(action, timing) {
+  return new Animation(null, new Cleaner(action), timing);
 }
+
+//========================
 
 var layoutKeyframes = {};
 
@@ -340,13 +348,26 @@ function setPositions(target, name) {
   }
   
   var rect = cloneRect(target.getBoundingClientRect());
+  var parent = target.parentElement;
+  while (parent) {
+    var style = getComputedStyle(parent);
+    if (style.position == 'absolute' || style.position == 'relative') {
+      break;
+    }  
+    parent = parent.parentElement;
+  }
+  if (parent) {
+    var parentRect = parent.getBoundingClientRect();
+    rect.top -= parentRect.top;
+    rect.left -= parentRect.left;
+  }
   setPosition(target, rect, name);
 }
 
 // Convert CSS Strings to numbers.
 // Maybe its time to think about exposing some of the core CSS emulation functionality of Web Animations?
 function v(s) {
-  return s.substring(0, s.length - 2);
+  return Number(s.substring(0, s.length - 2));
 }
 
 function boundingRectToContentRect(element, rect) {
@@ -357,9 +378,22 @@ function boundingRectToContentRect(element, rect) {
   var top = rect.top - v(style.marginTop);
   return {width: width, top: top, left: left, height: height};
 }
-  
+
+function boundingRectToReplacementRect(element, rect) {
+  var style = window.getComputedStyle(element);
+  var width = rect.width + v(style.marginLeft) + v(style.marginRight);
+  var height = rect.height + v(style.marginTop) + v(style.marginBottom);
+  var left = rect.left - v(style.marginLeft);
+  var top = rect.top - v(style.marginTop);
+  return {width: width, top: top, left: left, height: height}; 
+}
 
 function forceToPosition(element, rect) {
+  var shadow = setupShadowContainer(element);
+  var div = createShadowPlaceholder(shadow, element, element._transitionAfter);
+  
+  element.placeholder = div;
+  
   rect = boundingRectToContentRect(element, rect);
   element.style.left = rect.left + 'px';
   element.style.top = rect.top + 'px';
@@ -368,14 +402,29 @@ function forceToPosition(element, rect) {
   element.style.position = "absolute";
 }
 
-function forceToPositions(list) {
+function forceToStartPositions(list) {
   return list.filter(function(listItem) {
+    listItem.shadow.parent.removeChild(listItem.shadow.content);
+    listItem.shadow.content.style.opacity = "1";
     if (rectEquals(listItem._transitionBefore, listItem._transitionAfter)) {
       return false;
     }
-    forceToPosition(listItem, listItem._transitionBefore); 
+    // forceToPosition(listItem, listItem._transitionBefore); 
     return true;
   });
+}
+
+function createCopy(element) {
+  var shadow = setupShadowContainer(element);
+  var fromPosition = boundingRectToContentRect(element, element._transitionBefore);
+  var from = cloneToSize(element, fromPosition);
+  element.shadow.from = from;
+  element.shadow.content.style.opacity = "0";
+  // element.shadow.parent.removeChild(element.shadow.content);
+} 
+
+function createCopies(list) {
+  list.forEach(function(listItem) { createCopy(listItem); });
 }
 
 function buildTree(list) {
@@ -450,6 +499,8 @@ function positionListFromKeyframes(keyframes, element) {
 function transitionThis(action) {
   // record positions before action
   setPositions(transitionable, '_transitionBefore');
+  // duplicate divs before action
+  createCopies(transitionable);
   // move to new position
   action();
   // record positions after action
@@ -457,7 +508,7 @@ function transitionThis(action) {
   // put everything back
   // note that we don't need to do this for all transition types, but
   // by doing it here we avoid a layout flicker.
-  movedList = forceToPositions(transitionable);
+  movedList = forceToStartPositions(transitionable);
   // construct transition tree  
   var tree = buildTree(movedList);
 
@@ -496,12 +547,28 @@ function transitionThis(action) {
         tree[i].style.top = "";
         tree[i].style.width = "";
         tree[i].style.height = "";
+        tree[i].style.position = "";
+        // tree[i].shadow.parent.removeChild(tree[i].placeholder);
+        // tree[i].shadow.parent.removeChild(tree[i]._transitionStartCopy);
+        // tree[i].shadow.root.innerHTML = "";
+        tree[i].placeholder = undefined; 
+      }
+      for (var i = 0; i < transitionable.length; i++) {
+        for (var j = transitionable[i].shadow.parent.children.length - 1; j >= 0; j--) {
+          if (transitionable[i].shadow.parent.children[j].tagName != 'CONTENT') {
+            transitionable[i].shadow.parent.removeChild(transitionable[i].shadow.parent.children[j]);
+          } else {
+            var foundContent = true;
+          } 
+        }
+        if (!foundContent) {
+          transitionable[i].shadow.parent.appendChild(transitionable[i].shadow.content);
+        }
+        transitionable[i].style.opacity = "";
+        transitionable[i].shadow = undefined;
+        transitionable[i]._transitionStartCopy = undefined;
       }
     }), 0)]));
-
-  // revert to positioned layout under the hood
-  //setTimeout(function() {
-    
 
   // get rid of all the junk
   cleanup();

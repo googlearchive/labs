@@ -30,12 +30,14 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
   <div id="crossfader">
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
   </div>
+  <!--
   <div>
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
   </div>
   <div>
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
   </div>
+  -->
 </div>
 <script src="../../../platform/WebAnimations/web-animations.js"></script>
 <script src="../src/layout-animation.js"></script>
@@ -53,8 +55,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
     ..
   }
 }
-
 */
+var duration = 1;
+
 registerLayoutKeyframes("to", [
   {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",
                             layoutTop: "from()", layoutLeft: "from()" }},
@@ -81,16 +84,18 @@ registerLayoutKeyframes("from", [
 .container > div:first-child {
   layout-effect: transform;
 */
-setLayoutTransition(document.querySelectorAll(".container > div"), "to", 5);
+setLayoutTransition(document.querySelectorAll(".container > div"), "to", duration);
 setLayoutEffect(document.querySelectorAll(".container > div:first-child"), "transform");
-setLayoutEffect(document.querySelectorAll(".container > div:nth-child(2)"), "none");
+setLayoutEffect(document.querySelectorAll(".container > div:nth-child(2)"), "layout");
 setLayoutEffect(document.querySelectorAll(".container > div:nth-child(3)"), "crossfade");
 setLayoutEffect(document.querySelectorAll(".container > div:nth-child(4)"), "transfade");
-//setLayoutEffect(document.querySelectorAll(".container > div"), "crossfade");
+setLayoutEffect(document.querySelectorAll(".container > div"), "none");
 
 var isColumn = true;
 
 var container = document.querySelector(".container");
+
+var paused = false;
 
 document.onkeydown = function(event) {
   var char = String.fromCharCode(event.which);
@@ -101,10 +106,13 @@ document.onkeydown = function(event) {
     }, 2000);*/
     isColumn = !isColumn;
     if (isColumn) {
-      setLayoutTransition(document.querySelectorAll(".container > div"), "to", 5);
+      setLayoutTransition(document.querySelectorAll(".container > div"), "to", duration);
     } else {
-      setLayoutTransition(document.querySelectorAll(".container > div"), "from", 5);
+      setLayoutTransition(document.querySelectorAll(".container > div"), "from", duration);
     }
+  } else if (char == 'P') {
+    document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = (paused ? 1 : 0); });
+    paused = !paused;
   }
 }
 </script>
