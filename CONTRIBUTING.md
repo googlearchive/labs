@@ -40,7 +40,6 @@ That's it for the one time setup. Now you're ready to make a change.
 
 We iterate fast! To avoid potential merge conflicts, it's a good idea to pull from the main project before making a change and submitting a pull request. The easiest way to do this is setup a remote called `upstream` and do a pull before working on a change:
 
-    cd polymer
     git remote add upstream git://github.com/Polymer/repository.git
 
 Then before making a change, do a pull from the upstream `master` branch:
