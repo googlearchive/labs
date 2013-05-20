@@ -104,7 +104,7 @@
       return arr;
     }
 
-    Toolkit.register(this, {
+    Polymer.register(this, {
       count: 10,
       loadedCount: 0,
       contents: null,
@@ -259,7 +259,7 @@
     <img id="image" src="{{url}}">
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       url: null,
       ready: function() {
         this.$.image.onload = this.onLoad.bind(this);

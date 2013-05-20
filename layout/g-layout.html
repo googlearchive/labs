@@ -1,5 +1,5 @@
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -22,7 +22,7 @@ license that can be found in the LICENSE file.
   <script>
     // MDV ref search for source template in the ownerDocument.
     // So here we add the template to the document.body so it can be found.
-    // https://github.com/toolkitchen/mdv/issues/33
+    // https://github.com/Polymer/mdv/issues/33
     var t = this.querySelector('[id=layoutTemplate]');
     document.body.appendChild(t);
   </script>
@@ -56,7 +56,7 @@ license that can be found in the LICENSE file.
   <!-- Styling to apply to element children. This should be removed
   when the :root pseudo selector is available.
   https://www.w3.org/Bugs/Public/show_bug.cgi?id=21389 -->
-  <style toolkit-scope="controller">
+  <style polymer-scope="controller">
     g-layout > * {
       -webkit-flex: 1;
     }
@@ -64,9 +64,9 @@ license that can be found in the LICENSE file.
   
   <script>
     var element = this;  
-    Toolkit.register(this, {
+    Polymer.register(this, {
       ready: function() {
-        Toolkit.installControllerStyles(this, element);
+        Polymer.installControllerStyles(this, element);
       }
     });
   </script>

@@ -1,4 +1,4 @@
-<script src="../../../toolkit/platform/WebAnimations/web-animations.js"></script>
+<script src="../../../polymer/platform/WebAnimations/web-animations.js"></script>
 <link rel="component" href="x-animation.html">
 <element name="x-animation-group" extends="x-animation" on-animationchange="onAnimationChange">
   <script>
@@ -6,7 +6,7 @@
       'par': ParGroup,
       'seq': SeqGroup
     };
-    Toolkit.register(this, {
+    Polymer.register(this, {
       target: null,
       type: 'par',
       // timing

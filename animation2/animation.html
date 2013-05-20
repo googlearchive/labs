@@ -6,7 +6,7 @@
     <link rel="component" href="components/x-animation-group.html">
     <link rel="component" href="components/x-fade.html">
     <link rel="component" href="components/x-slide.html">
-    <script src="../../toolkit/toolkit.js"></script>
+    <script src="../../polymer/polymer.js"></script>
     <style>
       body {
         font-family: 'Helvetica Neue', 'Roboto', 'Helvetica', 'Arial', 'open sans', 'sans-serif';
@@ -60,7 +60,7 @@
     </x-animation-group>
     <element name="x-animated" on-click="play">
       <script>
-        Toolkit.register(this, {
+        Polymer.register(this, {
           animation: null,
           play: function() {
             var animation = document.querySelector(this.animation);

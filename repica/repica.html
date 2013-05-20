@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -8,21 +8,21 @@ license that can be found in the LICENSE file.
 <head>
   <title>Pica</title>
   <script src="https://www.google.com/jsapi"></script>
-  <script src="../../toolkit/platform/WebAnimations/web-animations.js"></script>
-  <script src="../../toolkit/toolkit.min.js"></script>
+  <script src="../../polymer/platform/WebAnimations/web-animations.js"></script>
+  <script src="../../polymer/polymer.min.js"></script>
   <script>
     HTMLImports.load = function(document, callback) {
       callback();
     };
   </script>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 /**
  * g-jsonp can be used to perform JSONP requests.
@@ -46,7 +46,7 @@ license that can be found in the LICENSE file.
     
     var callbackId = 0;
   
-    Toolkit.register(this, {
+    Polymer.register(this, {
       /**
        * The URL target of the request.
        * 
@@ -108,13 +108,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 /**
  * g-menu is a g-selector styled to look like a menu. Use it
@@ -169,18 +169,18 @@ license that can be found in the LICENSE file.
     <shadow></shadow>
   </template>
   <script>
-    Toolkit.register(this);
+    Polymer.register(this);
   </script>
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 -->
 <link rel="import" href="g-icon-button.html"/>
@@ -201,7 +201,7 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       src: '',
       selected: '',
       opened: false,
@@ -220,13 +220,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 /**
  * g-toolbar is a horizontal bar containing elements that can perform actions.
@@ -301,7 +301,7 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       responsive: false,
       ready: function() {
         this.setAttribute('touch-action', 'none');
@@ -311,13 +311,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 -->
 <element name="g-selection" attributes="multi">
@@ -331,7 +331,7 @@ license that can be found in the LICENSE file.
     </style>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       multi: false,
       ready: function() {
         this.clear();
@@ -376,13 +376,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 /**
  * g-icon-button enables you to place an image centered in a button.
@@ -433,7 +433,7 @@ license that can be found in the LICENSE file.
     <g-icon src="{{src}}"></g-icon>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       /**
        * The URL of an image for the icon.
        *
@@ -461,13 +461,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 /**
  * g-selector is used to display a list of elements that can be selected.
@@ -515,7 +515,7 @@ license that can be found in the LICENSE file.
     <content id="items" select="*"></content>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       /**
        * Gets or sets the selected element.  Default is to use the index
        * of the currently selected element.
@@ -615,7 +615,7 @@ license that can be found in the LICENSE file.
           return;
         }
         var items = this.items;
-        var i = Toolkit.findDistributedTarget(inEvent.target, items);
+        var i = Polymer.findDistributedTarget(inEvent.target, items);
         if (i >= 0) {
           var selected = this.valueForNode(items[i]) || i;
           if (this.multi) {
@@ -631,15 +631,15 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
-* Toolkit Elements
-* @module Toolkit Elements
-* @main Toolkit Elements
+* Polymer Elements
+* @module Polymer Elements
+* @main Polymer Elements
 */  
 /**
  * g-icon is a 24x24 glyph expressed as a background-image.
@@ -677,7 +677,7 @@ license that can be found in the LICENSE file.
     <div id="icon" style="background-image:url({{src}}); width:{{size}}px; height:{{size}}px"></div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       /**
        * The URL of an image for the icon.
        *
@@ -699,13 +699,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
- Copyright 2013 The Toolkitchen Authors. All rights reserved.
+ Copyright 2013 The Polymer Authors. All rights reserved.
  Use of this source code is governed by a BSD-style
  license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 /**
  * g-ribbon is a g-selector styled to look like a sidebar menu.
@@ -803,7 +803,7 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       /**
        * Label to put on the top portion of ribbon.
        *
@@ -817,13 +817,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 
 /**
@@ -852,7 +852,7 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       /**
        * The URL of an image for the icon.
        *
@@ -882,13 +882,13 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
 <!--
 /**
- * @module Toolkit Elements
+ * @module Polymer Elements
  */
 /**
  * g-app is a basic application component that provides some convenient
@@ -934,7 +934,7 @@ license that can be found in the LICENSE file.
  *         <footer>more...</footer>
  *       </template>
  *       <script>
- *         Toolkit.register(this, {
+ *         Polymer.register(this, {
  *           ready: function() {
  *             this.super(arguments);
  *             console.log('app ready!');
@@ -1004,12 +1004,12 @@ license that can be found in the LICENSE file.
       var ensureHostStyles = function(inNode) {
         var root = inNode.webkitShadowRoot;
         if (root) {
-          Toolkit.shimShadowDOMStyling([style], inNode.localName);
+          Polymer.shimShadowDOMStyling([style], inNode.localName);
           root.insertBefore(style.cloneNode(true), root.childNodes[0]);
         }
       }
     }
-    Toolkit.register(this, {
+    Polymer.register(this, {
       ready: function() {
         ensureHostStyles(this);
       }
@@ -1019,7 +1019,7 @@ license that can be found in the LICENSE file.
 
 <!--
 /*
- * Copyright 2013 The Toolkitchen Authors. All rights reserved.
+ * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
  */
@@ -1063,7 +1063,7 @@ license that can be found in the LICENSE file.
     </g-toolbar>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       publish: {
         nav: 'menu'
       },
@@ -1088,7 +1088,7 @@ license that can be found in the LICENSE file.
 </element>
 
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1119,11 +1119,11 @@ license that can be found in the LICENSE file.
   </style>
   </template>
   <script>
-    Toolkit.register(this);
+    Polymer.register(this);
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1157,12 +1157,12 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
     });
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1197,7 +1197,7 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       pageSize: 6,
       storiesChanged: function() {
         if (this.stories) {
@@ -1226,7 +1226,7 @@ license that can be found in the LICENSE file.
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1244,12 +1244,12 @@ license that can be found in the LICENSE file.
     {{topic.title}}
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
     });
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1271,7 +1271,7 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       topicsChanged: function() {
         this.scrollTop = 0;
       },
@@ -1282,7 +1282,7 @@ license that can be found in the LICENSE file.
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1334,7 +1334,7 @@ license that can be found in the LICENSE file.
         {title: 'The Kitchn', feed: 'http://feeds.thekitchn.com/apartmenttherapy/thekitchn'},
         {title: 'Scanwiches', feed: 'http://scanwiches.com/rss'}]}
     ];
-    Toolkit.register(this, {
+    Polymer.register(this, {
       topics: DEFAULT_TOPICS,
       topic: '',
       topicChanged: function() {
@@ -1345,13 +1345,13 @@ license that can be found in the LICENSE file.
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<link rel="import" href="../../../pantry/CoolClock/coolclock.html"/>
-<link rel="import" href="../../../pantry/Stock/stock.html"/>
-<link rel="import" href="../../../pantry/Weather/wu-weather.html"/>
+<link rel="import" href="../../../more-elements/CoolClock/coolclock.html"/>
+<link rel="import" href="../../../more-elements/Stock/stock.html"/>
+<link rel="import" href="../../../more-elements/Weather/wu-weather.html"/>
 <!-- -->
 <!--<link rel="import" href="pica-loading.html">-->
 <!-- -->
@@ -1377,13 +1377,13 @@ license that can be found in the LICENSE file.
     </template>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       stocks: ['GOOG', 'MSFT', 'AAPL']
     });
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1412,7 +1412,7 @@ license that can be found in the LICENSE file.
     </pica-panels>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       panel: '',
       topicPanel: 'topics',
       ready: function() {
@@ -1426,7 +1426,7 @@ license that can be found in the LICENSE file.
   </script>
 </element>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -1449,7 +1449,7 @@ license that can be found in the LICENSE file.
     <pica-main id="main" touch-action="user" on-tap="hideRibbon" on-back="backAction" panel="{{selected}}" hideactionbar="{{hideActionbar}}"></pica-main>
   </template>
   <script>
-    Toolkit.register(this, {
+    Polymer.register(this, {
       ribbon: true,
       selected: 'Topics',
       ready: function() {

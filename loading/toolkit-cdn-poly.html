@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
@@ -13,14 +13,14 @@ license that can be found in the LICENSE file.
         flags: {shadowdom: "polyfill"}
       };
     </script>
-    <script src="https://rawgithub.com/toolkitchen/toolkit/gh-pages/toolkit.min.js?shadow"></script>
+    <script src="https://rawgithub.com/Polymer/polymer/gh-pages/polymer.min.js?shadow"></script>
     <style>
     </style>
   </head>
   <body>
     <element name="x-test">
       <script>
-        Toolkit.register(this, {
+        Polymer.register(this, {
           readyCallback: function() {
             this.textContent = window.ShadowDOMPolyfill ? 'Working' : 'bad shadowdom';
           }

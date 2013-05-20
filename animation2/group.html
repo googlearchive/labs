@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="../../toolkit-ui/elements/css/g-flex-layout.css">
     <link rel="import" href="../../toolkit-ui/elements/g-animation.html">
     <link rel="import" href="../../toolkit-ui/elements/g-animation-group.html">
-    <script src="../../toolkit/toolkit.js"></script>
+    <script src="../../polymer/polymer.js"></script>
   </head>
   <body>
     <x-test></x-test>
@@ -19,7 +19,7 @@
         <button on-click="onClick">play!</button>
       </template>
       <script>
-        Toolkit.register(this, {
+        Polymer.register(this, {
           ids: null,
           onClick: function() {
             this.send('play', this.ids[this.$.select.selectedIndex]);
@@ -62,7 +62,7 @@
         </g-animation-group>
       </template>
       <script>
-        Toolkit.register(this, {
+        Polymer.register(this, {
           ids: ['seqgroup','pargroup','fadeout','moveright','grow'],
           ready: function() {
             this.$.fadeout.target = this.$.d;

@@ -20,7 +20,7 @@
       });
     };
 
-    Toolkit.register(this, {
+    Polymer.register(this, {
       inline: false,
       type: 'row',
       wrap: false,
@@ -28,8 +28,8 @@
       align: null,
       ready: function() {
         // TODO: can't make a this.node due to workaround for
-        // https://github.com/toolkitchen/shadowdom/issues/27
-        // bug: https://github.com/toolkitchen/toolkit/issues/78
+        // https://github.com/Polymer/shadowdom/issues/27
+        // bug: https://github.com/Polymer/polymer/issues/78
         this.flexNode = this.parentNode && (this.parentNode.host || this.parentNode);
         this.inlineChanged();
         this.typeChanged();
