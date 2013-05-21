@@ -402,14 +402,13 @@ function forceToPosition(element, rect) {
   element.style.position = "absolute";
 }
 
-function forceToStartPositions(list) {
+function findMovedElements(list) {
   return list.filter(function(listItem) {
     listItem.shadow.parent.removeChild(listItem.shadow.content);
     listItem.shadow.content.style.opacity = "1";
     if (rectEquals(listItem._transitionBefore, listItem._transitionAfter)) {
       return false;
     }
-    // forceToPosition(listItem, listItem._transitionBefore); 
     return true;
   });
 }
@@ -496,6 +495,35 @@ function positionListFromKeyframes(keyframes, element) {
   return positions;
 }
 
+// Transition the provided action.
+//
+// Overview:
+// All potentially transitionable content is stored in the transitionable list.
+// Each element in this list has initial position marked and a copy created.
+// Additionally, a shadow DOM tree is created for each container of a transitionable
+// element. Details of this tree are stored on the transitionable elements themselves,
+// in a member variable called shadow:
+// {
+//   root: root of the shadow DOM tree
+//   parent: root of the element's tree
+//   content: root of the element's content exposure
+//   from: initial created copy
+// }
+// The initial position is stored in a member variable called _transitionBefore
+// TODO: Is the initial position needed any more?
+// As part of the process of creating a copy, the content is hidden by setting
+// a wrapping div in the shadow DOM to opacity: 0.
+//
+// The action is then executed. This updates the content to its new position,
+// but the change is not visible on-screen. The new position is captured into
+// element._transitionAfter, and a list of moved elements is generated.
+// Additionally, the content node is removed from the shadow DOM to prevent 
+// further interaction from the actual content.
+//
+// Each different transition type has a different approach to generating the
+// transition effect, but essentially transform, layout and none operate on the
+// created copy, while transfade and crossfade need to create an aditional copy
+// of the to state. This is performed in the animation generation functions directly.
 function transitionThis(action) {
   // record positions before action
   setPositions(transitionable, '_transitionBefore');
@@ -508,7 +536,7 @@ function transitionThis(action) {
   // put everything back
   // note that we don't need to do this for all transition types, but
   // by doing it here we avoid a layout flicker.
-  movedList = forceToStartPositions(transitionable);
+  movedList = findMovedElements(transitionable);
   // construct transition tree  
   var tree = buildTree(movedList);
 
