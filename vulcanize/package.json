@@ -1,8 +1,8 @@
 {
-  "name": "smelter",
+  "name": "vulcanize",
   "version": "0.0.0",
-  "description": "> Smash all the components into one output file, with dependencies in the proper order",
-  "main": "smelt.js",
+  "description": "Concat all the components into one output file, with dependencies in the proper order",
+  "main": "vulcan.js",
   "dependencies": {
     "cheerio": "~0.11.0",
     "nopt": "~2.1.1"
