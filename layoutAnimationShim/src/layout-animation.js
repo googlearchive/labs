@@ -159,6 +159,28 @@ function animationToPositionNone(target, positions, current, timing, isContents)
                                 position: ["absolute", "absolute"]}, timing);
 }
 
+function animationToPositionClip(target, positions, current, timing, isContents) {
+  if (isContents) {
+    var from = target.shadow.fromContents;
+  } else {
+    var from = target.shadow.from
+  }
+  timing = fixTiming(timing);
+  
+  var transOrig = origin(from.style.webkitTransformOrigin);
+  var cssList = positions.map(function(position) {
+    var str = rectsToCss(position, current, transOrig, true);
+    return { offset: position.offset, value: str };
+  });
+
+  var clipList = positions.map(function(position) {
+    var str = rectToClip(position);
+    return { offset: position.offset, value: str };
+  });
+
+  return new Animation(from, {transform: cssList, clip: clipList, position: ["absolute", "absolute"]}, timing);
+}
+
 function animationToPositionFadeOutIn(outTo, inFrom) {
   return function(target, positions, current, timing, isContents) {
     if (isContents) {
@@ -333,6 +355,8 @@ function animationGenerator(effect) {
       return animationToPositionFadeOutIn(1, 0);
     case 'transfade':
       return animationToPositionTransfade;
+    case 'clip':
+      return animationToPositionClip;
     default:
       return animationToPositionLayout;
   }

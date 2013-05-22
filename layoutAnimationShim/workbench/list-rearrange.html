@@ -98,8 +98,8 @@ button.onclick = function() {
   movedChild.style.zIndex = 1;
   transitionThis(function() {
     canvas.insertBefore(canvas.children[from], canvas.children[to]); 
-    //getComputedStyle(movedChild).top;
-    //movedChild.classList.add("moved");
+    getComputedStyle(movedChild).top;
+    movedChild.classList.add("moved");
   });
   //canvas.insertBefore(canvas.children[from], canvas.children[to]); getComputedStyle(movedChild).top; movedChild.classList.add("moved"); 
   setTimeout(function() { movedChild.style.zIndex = 0; }, duration * 1000);
