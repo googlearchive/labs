@@ -181,7 +181,7 @@ function animationToPositionClip(target, positions, current, timing, isContents)
   return new Animation(from, {transform: cssList, clip: clipList, position: ["absolute", "absolute"]}, timing);
 }
 
-function animationToPositionFadeOutIn(outTo, inFrom) {
+function animationToPositionFadeOutIn(outTo, inFrom, clip) {
   return function(target, positions, current, timing, isContents) {
     if (isContents) {
       var from = target.shadow.fromContents;
@@ -201,9 +201,18 @@ function animationToPositionFadeOutIn(outTo, inFrom) {
       var str = rectsToCss(position, positions[0], transOrig, true);
       return { offset: position.offset, value: str};
     });
-   
-    var fromAnim = new Animation(from, {transform: cssList,
+  
+    if (clip) {
+      var clipList = positions.map(function(position) {
+        var str = rectToClip(position);
+        return { offset: position.offset, value: str};
+      });
+      var fromAnim = new Animation(from, {transform: cssList, clip: clipList,
             position: ["absolute", "absolute"]}, timing);
+    } else { 
+      var fromAnim = new Animation(from, {transform: cssList,
+            position: ["absolute", "absolute"]}, timing);
+    }
     var fromOpacAnim = new Animation(from, {opacity: ["1", "0"]}, opacityTiming);
 
     opacityTiming.duration = timing.duration * (1 - inFrom);
@@ -234,8 +243,13 @@ function animationToPositionFadeOutIn(outTo, inFrom) {
       return { offset: position.offset, value: str};
     });
 
-    var toAnim = new Animation(to, {transform: cssList,
-              position: ["absolute", "absolute"]}, timing);
+    if (clip) {
+      var toAnim = new Animation(to, {transform: cssList, clip: clipList,
+                position: ["absolute", "absolute"]}, timing);
+    } else {
+      var toAnim = new Animation(to, {transform: cssList,
+                position: ["absolute", "absolute"]}, timing);
+    }
     var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, opacityTiming);
 
     timing.fillMode = 'forwards';
@@ -352,11 +366,13 @@ function animationGenerator(effect) {
     case 'none':
       return animationToPositionNone;
     case 'crossfade':
-      return animationToPositionFadeOutIn(1, 0);
+      return animationToPositionFadeOutIn(1, 0, false);
     case 'transfade':
       return animationToPositionTransfade;
     case 'clip':
       return animationToPositionClip;
+    case 'clipfade':
+      return animationToPositionFadeOutIn(1, 0, true);
     default:
       return animationToPositionLayout;
   }
