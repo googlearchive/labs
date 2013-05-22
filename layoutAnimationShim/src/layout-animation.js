@@ -373,8 +373,13 @@ function animationGenerator(effect) {
       return animationToPositionClip;
     case 'clipfade':
       return animationToPositionFadeOutIn(1, 0, true);
-    default:
+    case 'layout':
       return animationToPositionLayout;
+    default:
+      var result = /fade-out-in\(([0-9.]+)%, ([0-9.]+)%(, (clip))?\)/.exec(effect);
+      if (result != null) {
+        return animationToPositionFadeOutIn(Number(result[1])/100, Number(result[2])/100, result[4] == null ? false : true);
+      } 
   }
 }
 

@@ -41,7 +41,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
 </div>
 
 <form>
-  <select id="containerEffect">
+  <input id="containerEffect" type='text' list='effects' value='none'>
+  <input id="contentsEffect" type='text' list='effects' value='none'>
+  <datalist id='effects'>
     <option value="none">none</option>
     <option value="clip">clip</option>
     <option value="transform">transform</option>
@@ -49,16 +51,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
     <option value="crossfade">crossfade</option>
     <option value="clipfade">clipfade</option>
     <option value="transfade">transfade</option>
-  </select>
-  <select id="contentsEffect">
-    <option value="none">none</option>
-    <option value="clip">clip</option>
-    <option value="transform">transform</option>
-    <option value="layout">layout</option>
-    <option value="crossfade">crossfade</option>
-    <option value="clipfade">clipfade</option>
-    <option value="transfade">transfade</option>
-  </select>
+  </datalist>
 </form>
 <script src="../../../platform/WebAnimations/web-animations.js"></script>
 <script src="../src/layout-animation.js"></script>
