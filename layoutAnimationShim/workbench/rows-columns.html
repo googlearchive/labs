@@ -39,9 +39,34 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
   </div>
   -->
 </div>
+
+<form>
+  <select id="containerEffect">
+    <option value="none">none</option>
+    <option value="transform">transform</option>
+    <option value="layout">layout</option>
+    <option value="crossfade">crossfade</option>
+    <option value="transfade">transfade</option>
+  </select>
+  <select id="contentsEffect">
+    <option value="none">none</option>
+    <option value="transform">transform</option>
+    <option value="layout">layout</option>
+    <option value="crossfade">crossfade</option>
+    <option value="transfade">transfade</option>
+  </select>
+</form>
 <script src="../../../platform/WebAnimations/web-animations.js"></script>
 <script src="../src/layout-animation.js"></script>
 <script>
+
+function updateEffects() {
+  setLayoutEffect(document.querySelectorAll(".container > div"), containerEffect.value, contentsEffect.value);
+}
+
+containerEffect.onchange = updateEffects;
+contentsEffect.onchange = updateEffects;
+
 /*
 
 @layout-keyframes default {
@@ -85,11 +110,7 @@ registerLayoutKeyframes("from", [
   layout-effect: transform;
 */
 setLayoutTransition(document.querySelectorAll(".container > div"), "to", duration);
-setLayoutEffect(document.querySelectorAll(".container > div:first-child"), "transform");
-setLayoutEffect(document.querySelectorAll(".container > div:nth-child(2)"), "layout");
-setLayoutEffect(document.querySelectorAll(".container > div:nth-child(3)"), "crossfade");
-setLayoutEffect(document.querySelectorAll(".container > div:nth-child(4)"), "transfade");
-setLayoutEffect(document.querySelectorAll(".container > div"), "none");
+updateEffects();
 
 var isColumn = true;
 
