@@ -119,6 +119,7 @@ document.onkeydown = function(event) {
   var char = String.fromCharCode(event.which);
   if (char == 'S') {
     transitionThis(function() { container.style.webkitFlexFlow = isColumn ? "row" : "column"; });
+    //container.style.webkitFlexFlow = isColumn ? "row" : "column";
     /*setTimeout(function() {
     document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = 0; });
     }, 2000);*/

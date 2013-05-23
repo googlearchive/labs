@@ -44,6 +44,8 @@ function setupShadowContainer(target) {
   var shadowRoot = parent.webkitShadowRoot;
   if (shadowRoot == null) {
     shadowRoot = parent.webkitCreateShadowRoot();
+    parent.classList.add("specialClassForLayoutTransitions");
+    shadowRoot.applyAuthorStyles = true;
     for (var i = 0; i < parent.children.length; i++) {
       var content = document.createElement("content");
       content.setAttribute("select", ":nth-child(" + (i + 1) + ")");
@@ -53,6 +55,10 @@ function setupShadowContainer(target) {
       div.appendChild(opacDiv);
       shadowRoot.appendChild(div);
     }
+    // make sure that child layout transitions show up
+    var content = document.createElement("content");
+    content.setAttribute("select", ".specialClassForLayoutTransitions");
+    shadowRoot.appendChild(content);
   }
 
   for (var i = 0; i < parent.children.length; i++) {
@@ -706,17 +712,27 @@ function transitionThis(action) {
   // construct animations
 
   var parGroup = new ParGroup();
-  for (var i = 0; i < tree.length; i++) {
-    if (tree[i]._layout.outer == tree[i]._layout.inner) {
-      generator = animationGenerator(tree[i]._layout.outer);
-    } else {
-      generator = animationForHybridTransition(tree[i]._layout.outer, tree[i]._layout.inner);
+
+  function processList(list) {
+    if (!list) {
+      return;
     }
-    var keyframes = layoutKeyframes[tree[i]._layout.name];
-    var positionList = positionListFromKeyframes(keyframes, tree[i]);
-    parGroup.add(
-        generator(tree[i], positionList, tree[i]._transitionBefore, tree[i]._layout.duration));
-  } 
+    for (var i = 0; i < list.length; i++) {
+      processList(list[i]._transitionChildren);
+      if (list[i]._layout.outer == list[i]._layout.inner) {
+        generator = animationGenerator(list[i]._layout.outer);
+      } else {
+        generator = animationForHybridTransition(list[i]._layout.outer, list[i]._layout.inner);
+      }
+      var keyframes = layoutKeyframes[list[i]._layout.name];
+      var positionList = positionListFromKeyframes(keyframes, list[i]);
+      parGroup.add(
+          generator(list[i], positionList, list[i]._transitionBefore, list[i]._layout.duration));
+    }
+  }
+
+  processList(tree);
+
   document.timeline.play(new SeqGroup([
     parGroup,
     new Animation(undefined, new Cleaner(function() {

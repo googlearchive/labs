@@ -86,7 +86,7 @@ registerLayoutKeyframes("default", [
   {offset: 1, properties: { layoutWidth: "to()", layoutHeight: "to()",
                             layoutTop: "to()", layoutLeft: "to()" }}]);
 
-setLayoutTransition(document.querySelectorAll(".item"), "default", duration);
+setLayoutTransition(document.querySelectorAll(".item"), "layout", duration);
 setLayoutEffect(document.querySelectorAll(".item"), "transfade");
 
 button.onclick = function() {
