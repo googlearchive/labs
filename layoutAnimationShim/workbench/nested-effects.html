@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<style>
+.outer {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background-color: green;
+  left: 100px;
+  top: 100px;
+}
+
+.outer.after {
+  left: 500px;
+  top: 500px;
+}
+
+.inner {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  left: 225px;
+  top: 225px;
+}
+
+.inner.after {
+  left: 25px;
+  top: 25px;
+}
+</style>
+<div id='container'>
+<div class="outer"><div class="inner"></div></div>
+</div>
+<script src="../../../platform/WebAnimations/web-animations.js"></script>
+<script src="../src/layout-animation.js"></script>
+<script>
+
+var duration = 1;
+
+registerLayoutKeyframes("outer", [
+  {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",
+                            layoutTop: "from()", layoutLeft: "from()" }},
+  {offset: 0.5, properties: {layoutWidth: "to()", layoutHeight: "to()",
+                            layoutLeft: "to()", layoutTop: "from()"}},
+  {offset: 1, properties: { layoutWidth: "to()", layoutHeight: "to()",
+                            layoutTop: "to()", layoutLeft: "to()" }}]);
+
+setLayoutTransition(document.querySelectorAll(".outer"), "outer", duration);
+setLayoutTransition(document.querySelectorAll(".inner"), "outer", duration);
+setLayoutEffect(document.querySelectorAll(".outer"), "layout", "none");
+setLayoutEffect(document.querySelectorAll(".inner"), "layout", "none");
+
+paused = 0;
+
+document.onkeydown = function(event) {
+  var char = String.fromCharCode(event.which);
+  if (char == 'S') {
+    transitionThis(function() {
+      document.querySelector(".outer").classList.toggle('after');
+      document.querySelector(".inner").classList.toggle('after');
+    });
+  } else if (char == 'P') {
+    document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = (paused ? 1 : 0); });
+    paused = !paused;
+  }
+
+}
+</script>

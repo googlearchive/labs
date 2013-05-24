@@ -39,35 +39,50 @@ function fixTiming(timing) {
   return timing;
 }
 
-function setupShadowContainer(target) {
-  var parent = target.parentElement;
+var classNum=0;
+
+function setupShadowContainer(target, root) {
+  console.log("setup shadow container", target, root);
+  var parent = root.parentElement;
   var shadowRoot = parent.webkitShadowRoot;
   if (shadowRoot == null) {
     shadowRoot = parent.webkitCreateShadowRoot();
-    parent.classList.add("specialClassForLayoutTransitions");
     shadowRoot.applyAuthorStyles = true;
     for (var i = 0; i < parent.children.length; i++) {
       var content = document.createElement("content");
-      content.setAttribute("select", ":nth-child(" + (i + 1) + ")");
+      content.setAttribute("select", ".scflt_" + classNum);
+      content.classList.add("scflt_" + classNum);
+      parent.children[i].classList.add("scflt_" + classNum);
       var opacDiv = document.createElement("div");
       opacDiv.appendChild(content);
       var div = document.createElement("div");
       div.appendChild(opacDiv);
       shadowRoot.appendChild(div);
-    }
-    // make sure that child layout transitions show up
-    var content = document.createElement("content");
-    content.setAttribute("select", ".specialClassForLayoutTransitions");
-    shadowRoot.appendChild(content);
-  }
-
-  for (var i = 0; i < parent.children.length; i++) {
-    if (parent.children[i] == target) {
-      break;
+      if (parent.children[i] == target) {
+        var newSel = ".scflt_" + classNum;
+        var parentDiv = div;
+      }
+      classNum ++;
     }
   }
 
-  target.shadow = {root: shadowRoot, parent: shadowRoot.childNodes[i], content: shadowRoot.childNodes[i].querySelector('content').parentElement};
+  if (target != root) {
+    var newSel = ".scflt_" + classNum;
+    classNum ++;
+
+    var content = document.createElement("div");
+    var contentChild = document.createElement("content");
+    contentChild.setAttribute("select", newSel);
+    content.appendChild(contentChild);
+    target.classList.add(newSel);
+    var parentDiv = document.createElement("div");
+    parentDiv.appendChild(content);
+    shadowRoot.appendChild(parentDiv);
+  } else {
+    content = shadowRoot.querySelector('content' + newSel).parentElement;
+  }
+
+  target.shadow = {root: shadowRoot, parent: parentDiv, content: content};
   return target.shadow;
 }
 
@@ -406,6 +421,7 @@ function cloneToSize(node, rect, hide) {
     // NB: This is a hacky way to put to containers before from contents.
     node.shadow.parent.insertBefore(div, node.shadow.parent.children[2]);
   } else {
+    console.log(node.shadow);
     node.shadow.parent.appendChild(div);
   }
   return div;
@@ -559,7 +575,7 @@ function boundingRectToReplacementRect(element, rect) {
 }
 
 function forceToPosition(element, rect) {
-  var shadow = setupShadowContainer(element);
+  var shadow = element.shadow; //setupShadowContainer(element);
   var div = createShadowPlaceholder(shadow, element, element._transitionAfter);
   element.placeholder = div;
   
@@ -574,7 +590,9 @@ function forceToPosition(element, rect) {
 function findMovedElements(list) {
   return list.filter(function(listItem) {
     listItem.shadow.placeholder = createShadowPlaceholder(listItem.shadow, listItem, listItem._transitionAfter);
-    listItem.shadow.parent.removeChild(listItem.shadow.content);
+    if (listItem.shadow.content.parentElement) {
+      listItem.shadow.parent.removeChild(listItem.shadow.content);
+    }
     listItem.shadow.content.style.opacity = "1";
     if (rectEquals(listItem._transitionBefore, listItem._transitionAfter)) {
       return false;
@@ -583,16 +601,34 @@ function findMovedElements(list) {
   });
 }
 
-function createCopy(element) {
-  var shadow = setupShadowContainer(element);
+function walkTrees(element, copy, fun) {
+  var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT,
+    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
+  var copyWalker = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT,
+    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
+
+  while (treeWalker.nextNode()) {
+    copyWalker.nextNode();
+    fun(treeWalker.currentNode, copyWalker.currentNode);
+  }
+}
+
+function createCopy(element, root) {
+  var shadow = setupShadowContainer(element, root);
   var fromPosition = boundingRectToContentRect(element, element._transitionBefore);
   var from = cloneToSize(element, fromPosition);
   element.shadow.from = from;
   element.shadow.content.style.opacity = "0";
 } 
 
-function createCopies(list) {
-  list.forEach(function(listItem) { createCopy(listItem); });
+function createCopies(tree) {
+  function createCopiesWithRoot(item, root) {
+    createCopy(item, root);
+    if (item._transitionChildren) {
+      item._transitionChildren.forEach(function(child) { createCopiesWithRoot(child, root); });
+    }
+  }
+  tree.forEach(function(root) { createCopiesWithRoot(root, root); });
 }
 
 function buildTree(list) {
@@ -609,7 +645,9 @@ function buildTree(list) {
         break;
       }
     }
-    roots.push(current);
+    if (p == null) {
+      roots.push(current);
+    }
   }
   return roots;
 }
@@ -696,8 +734,10 @@ function positionListFromKeyframes(keyframes, element) {
 function transitionThis(action) {
   // record positions before action
   setPositions(transitionable, '_transitionBefore');
+  // construct transition tree  
+  var tree = buildTree(transitionable);
   // duplicate divs before action
-  createCopies(transitionable);
+  createCopies(tree);
   // move to new position
   action();
   // record positions after action
@@ -706,8 +746,6 @@ function transitionThis(action) {
   // note that we don't need to do this for all transition types, but
   // by doing it here we avoid a layout flicker.
   movedList = findMovedElements(transitionable);
-  // construct transition tree  
-  var tree = buildTree(movedList);
 
   // construct animations
 
@@ -719,6 +757,14 @@ function transitionThis(action) {
     }
     for (var i = 0; i < list.length; i++) {
       processList(list[i]._transitionChildren);
+
+
+      walkTrees(list[i], list[i].shadow.from, function(child, copy) {
+        if (child._transitionParent == list[i]) {
+          copy.style.opacity = "0";
+        }
+      });
+
       if (list[i]._layout.outer == list[i]._layout.inner) {
         generator = animationGenerator(list[i]._layout.outer);
       } else {
