@@ -42,7 +42,6 @@ function fixTiming(timing) {
 var classNum=0;
 
 function setupShadowContainer(target, root) {
-  console.log("setup shadow container", target, root);
   var parent = root.parentElement;
   var shadowRoot = parent.webkitShadowRoot;
   if (shadowRoot == null) {
@@ -57,14 +56,22 @@ function setupShadowContainer(target, root) {
       opacDiv.appendChild(content);
       var div = document.createElement("div");
       div.appendChild(opacDiv);
+      div.classList.add("scflt_" + classNum);
       shadowRoot.appendChild(div);
       if (parent.children[i] == target) {
         var newSel = ".scflt_" + classNum;
-        var parentDiv = div;
       }
       classNum ++;
     }
+  } else {
+    for (var i = 0; i < target.classList.length; i++) {
+      if (target.classList[i].substring(0, 6) == "scflt_") {
+        var newSel = '.' + target.classList[i];
+        break;
+      }
+    }
   }
+
 
   if (target != root) {
     var newSel = ".scflt_" + classNum;
@@ -77,9 +84,12 @@ function setupShadowContainer(target, root) {
     target.classList.add(newSel);
     var parentDiv = document.createElement("div");
     parentDiv.appendChild(content);
+    parentDiv.classList.add(newSel.substring(1));
     shadowRoot.appendChild(parentDiv);
   } else {
+    console.log(newSel);
     content = shadowRoot.querySelector('content' + newSel).parentElement;
+    parentDiv = content.parentElement;
   }
 
   target.shadow = {root: shadowRoot, parent: parentDiv, content: content};
@@ -616,7 +626,19 @@ function walkTrees(element, copy, fun) {
 function createCopy(element, root) {
   var shadow = setupShadowContainer(element, root);
   var fromPosition = boundingRectToContentRect(element, element._transitionBefore);
+  if (element != root) {
+    var parent = element.parentElement;
+    while (parent != root.parentElement) {
+      var style = getComputedStyle(parent);
+      if (style.position == "relative" || style.position == "absolute") {
+        fromPosition.left += v(style.left);
+        fromPosition.top += v(style.top);
+      }
+      parent = parent.parentElement;
+    } 
+  }
   var from = cloneToSize(element, fromPosition);
+  from.classList.add("fromStateCopy");
   element.shadow.from = from;
   element.shadow.content.style.opacity = "0";
 } 
@@ -663,7 +685,7 @@ function cleanup() {
 }
 
 function positionListFromKeyframes(keyframes, element) {
-  positions = keyframes.slice();
+  var positions = keyframes.slice();
   positions.sort(function(a, b) {
     if (a.offset > b.offset) {
       return 1;
@@ -700,6 +722,19 @@ function positionListFromKeyframes(keyframes, element) {
   }
 
   return positions;
+}
+
+function makePositionListRelative(list, parentList) {
+  var result = []
+  for (var i = 0; i < list.length; i++) {
+    result.push({
+      top: list[i].top + parentList[i].top,
+      left: list[i].left + parentList[i].left,
+      width: list[i].width,
+      height: list[i].height,
+      offset: list[i].offset});
+  }
+  return result;
 }
 
 // Transition the provided action.
@@ -756,9 +791,18 @@ function transitionThis(action) {
       return;
     }
     for (var i = 0; i < list.length; i++) {
-      processList(list[i]._transitionChildren);
+      var keyframes = layoutKeyframes[list[i]._layout.name];
+      var positionList = positionListFromKeyframes(keyframes, list[i]);
+     
+      if (list[i]._transitionParent) {
+        positionList = makePositionListRelative(positionList, list[i]._transitionParent._transitionPositionList);
+      }
 
-
+      list[i]._transitionPositionList = [];
+      for (var j = 0; j < positionList.length; j++) {
+        list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
+      }
+      
       walkTrees(list[i], list[i].shadow.from, function(child, copy) {
         if (child._transitionParent == list[i]) {
           copy.style.opacity = "0";
@@ -770,10 +814,11 @@ function transitionThis(action) {
       } else {
         generator = animationForHybridTransition(list[i]._layout.outer, list[i]._layout.inner);
       }
-      var keyframes = layoutKeyframes[list[i]._layout.name];
-      var positionList = positionListFromKeyframes(keyframes, list[i]);
+
       parGroup.add(
           generator(list[i], positionList, list[i]._transitionBefore, list[i]._layout.duration));
+      
+      processList(list[i]._transitionChildren);
     }
   }
 
