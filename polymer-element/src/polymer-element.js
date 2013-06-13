@@ -56,21 +56,25 @@
 
   // build prototype combining extendee, Polymer base, and named api
   function generateCustomPrototype(name, extnds) {
-    // mix registered custom api into basal prototype
-    return addNamedApi(generateBasePrototype(extnds), name);
+    // basal prototype
+    var prototype = generateBasePrototype(extnds)
+    // mixin registered custom api
+    return addNamedApi(prototype, name);
   }
 
   // build prototype combining extendee, Polymer base, and named api
   function generateBasePrototype(extnds) {
     // create a prototype based on tag-name extension
+    var prototype = generatePrototype(extnds)
     // insert base api in inheritance chain (if needed)
-    return ensureBaseApi(generatePrototype(extnds));
+    return ensureBaseApi(prototype);
   }
   
-  // returns a prototype that chains to one of element `tag` 
-  // or HTMLElement
+  // returns a prototype that chains to <tag> or HTMLElement
   function generatePrototype(tag) {
     return Object.create(!tag ? HTMLElement.prototype :
+        // TODO(sjmiles): creating <tag> is likely to have wasteful 
+        // side-effects, we need a better way to access this prototype.
         Object.getPrototypeOf(document.createElement(tag)));
   }
 
