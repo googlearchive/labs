@@ -16,30 +16,47 @@
   // polymer-element implementation (declarative part of a Polymer element)
   element.prototype = generatePrototype();
   element.prototype.readyCallback = function() {
+    // fetch our element name
     var name = this.getAttribute('name');
-    var extnds = this.getAttribute('extends');
     // build prototype combining extendee, Polymer base, and named api
-    var prototype = generateCustomPrototype(name, extnds);
+    var prototype = generateCustomPrototype(name, this.getAttribute('extends'));
     // declarative features
-    decorate(prototype, this);
+    desugar(prototype, this);
     // register our custom element
     register(prototype, name);
     // cache useful stuff
     this.prototype = prototype;
     this.ctor = prototype.constructor;
-    // reference constructor in a global named by 'constructor' attribute
-    publishConstructor(this);
     // questionable backref
     prototype.element = this;
+    // reference constructor in a global named by 'constructor' attribute
+    publishConstructor(this);
   };
 
   // register polymer-element
   document.register('polymer-element', element);
 
+  // declarative features
+  function desugar(prototype, element) {
+    // parse attributes
+    scope.parseAttributes(prototype, element);
+    // parse declared on-* delegates into imperative form
+    //scope.parseHostEvents(element.attributes, prototype);
+    // install external stylesheets as if they are inline
+    //scope.installSheets(element);
+    // transforms to approximate missing CSS features
+    //scope.shimStyling(element);
+    // allow custom element access to the declarative context
+    if (prototype.registerCallback) {
+      prototype.registerCallback(element);
+    }
+  }
+  
+  // prototype marshaling
+
   // build prototype combining extendee, Polymer base, and named api
   function generateCustomPrototype(name, extnds) {
-    // create a basal prototype
-    // mix registered custom api into prototype
+    // mix registered custom api into basal prototype
     return addNamedApi(generateBasePrototype(extnds), name);
   }
 
@@ -60,7 +77,9 @@
   // mix Polymer.base into prototype chain, as needed 
   function ensureBaseApi(prototype) { 
     if (!prototype.PolymerBase) {
-      extend(prototype, Polymer.base);
+      Object.keys(scope.api).forEach(function(n) {
+        extend(prototype, scope.api[n]);
+      });
       prototype = Object.create(prototype);
     }
     return prototype;
@@ -90,8 +109,7 @@
     });
   }
 
-  function decorate(prototype, element) {
-  }
+  // registration
 
   // register 'prototype' to custom element 'name', store constructor 
   function register(prototype, name) { 
