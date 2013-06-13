@@ -79,6 +79,9 @@
     }
   };
 
+  var lowerCase = String.prototype.toLowerCase.call.bind(
+      String.prototype.toLowerCase);
+
   // exports
 
   scope.parseAttributes = parseAttributes;
