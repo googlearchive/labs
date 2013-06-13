@@ -9,10 +9,9 @@
 
   var log = window.logFlags || 0;
 
-  // use this MDV syntax
+  // use an MDV syntax
     
   var SYNTAX = 'MDV';
-
   HTMLTemplateElement.syntax[SYNTAX] = new MDVSyntax();
 
   // element api supporting mdv
@@ -24,14 +23,14 @@
     // custom MDV entry point (overrides [at least] `HTMLElement.prototype.bind`)
     bind: function(name, model, path) {
       // is the bind target a published property?
-      var property = this.propertyForAttribute.call(name);
+      var property = this.propertyForAttribute(name);
       if (property) {
         // use n-way Polymer binding
         this.bindProperty(property, model, path);
         // bookkeep the binding
         registerBinding(this, property, path);
       } else {
-        this.super();
+        this.super(arguments);
         // HTMLElement.prototype.bind.apply(this, arguments);
       }
     },
@@ -41,7 +40,7 @@
         // bookkeep the binding
         unregisterBinding(this, name);
       } else {
-        this.super();
+        this.super(arguments);
         //HTMLElement.prototype.unbind.apply(this, arguments);
       }
     },

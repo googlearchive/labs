@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="../../../platform/platform.js"></script>
+  <script>
+    Polymer = {};
+  </script>
+  <script src="../src/base.js"></script>
+  <script src="../src/super.js"></script>
+  <script src="../src/job.js"></script>
+  <script src="../src/properties.js"></script>
+  <script src="../src/attributes.js"></script>
+  <script src="../src/mdv.js"></script>
+  <script src="../src/polymer-element.js"></script>
+  <script src="elements.js"></script>
+</head>
+<body>
+
+  <br>
+  <x-foo></x-foo>  
+  <br>
+  <br>
+  <br>
+  <x-bar></x-bar>  
+  
+  <polymer-element name="x-foo" attributes="you">
+    <template>
+      Hi <b>{{me}}</b>, hey <b>{{you}}</b>
+    </template>
+    <script>
+      Polymer.element('x-foo', {
+        me: 'foo',
+        // you is published, can be changed via attribute (markup or binding)
+        you: '?',
+        ready: function() {
+          this.style.padding = '4px';
+          this.style.backgroundColor = 'tomato';
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="x-bar">
+    <template>
+      <!-- me is not published by x-foo, so foo.me is unchanged -->
+      <!-- you is published by x-foo, so foo.you === this.me -->
+      <x-foo me="{{me}}" you="{{me}}"></x-foo>
+    </template>
+    <script>
+      Polymer.element('x-bar', {
+        me: "bar",
+        ready: function() {
+          this.style.padding = '12px';
+          this.style.backgroundColor = 'gold';
+        }
+      });
+    </script>
+  </polymer-element>
+
+</body>
+</html>

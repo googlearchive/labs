@@ -12,7 +12,7 @@
   var properties = {
     bindProperty: function(property, model, path) {
       // apply Polymer two-way reference binding
-      var observer = scope.bindProperties(this, property, model, path);
+      var observer = bindProperties(this, property, model, path);
       // bookkeep this observer for memory management
       registerObserver(this, 'binding', property, observer);
     },
