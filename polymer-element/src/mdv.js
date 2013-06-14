@@ -54,13 +54,31 @@
       if (!this._unbound) {
         this.unbindAllProperties();
         this.super(); //HTMLElement.prototype.unbindAll.apply(this, arguments);
-        // unbind shadowRoot, whee
-        //unbindNodeTree(this.shadowRoot, true);
+        // unbind shadowRoot
+        unbindNodeTree(this.shadowRoot);
+        // TODO(sjmiles): must also unbind inherited shadow roots
         this._unbound = true;
       }
     }
   };
 
+  function unbindNodeTree(node) {
+    forNodeTree(node, _nodeUnbindAll);
+  }
+  
+  function _nodeUnbindAll(node) {
+    node.unbindAll();
+  }
+  
+  function forNodeTree(node, callback) {
+    if (node) {
+      callback(node);
+      for (var child = node.firstChild; child; child = child.nextSibling) {
+        forNodeTree(child, callback);
+      }
+    }
+  }
+  
   // bookkeep bindings for reflection
 
   var bindings = new SideTable();
@@ -80,8 +98,11 @@
     }
   }
 
+  var mustachePattern = /\{\{([^{}]*)}}/;
+   
   // exports
 
+  scope.bindPattern = mustachePattern;
   scope.api.mdv = mdv;
 
   //scope.registerBinding = registerBinding;

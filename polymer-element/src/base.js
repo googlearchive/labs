@@ -13,13 +13,13 @@
     },
     // system entry point, do not override
     readyCallback: function() {
-      // install property observation side effects
+      // install property observers
       // do this first so we can observe changes during initialization
-      //scope.observeProperties.call(this);
+      this.observeProperties();
       // install boilerplate attributes
-      //scope.installInstanceAttributes.call(this);
+      this.copyInstanceAttributes();
       // process input attributes
-      //scope.takeAttributes.call(this);
+      this.takeAttributes();
       // add host-events...
       //var hostEvents = scope.accumulateHostEvents.call(this);
       //scope.bindAccumulatedHostEvents.call(this, hostEvents);
@@ -49,12 +49,16 @@
     shadowFromTemplate: function(template) {
       if (template) {
         // apply MDV strategy
-        // TODO(sjmiles): we have to apply this strategy directly for the root template
-        // in createInstance (below), but we also need the attribute here so sub-templates 
-        // can see it
+        // TODO(sjmiles): we have to apply this strategy directly for the root 
+        // template in createInstance (below), but we also need the attribute 
+        // here so sub-templates can see it
         template.setAttribute('syntax', 'MDV_STRATEGY');
+        // cache elder shadow root (if any)
+        var elderRoot = this.shadowRoot;
         // make a shadow root
         var root = this.createShadowRoot();
+        // memoize the elder root
+        root.olderShadowRoot = elderRoot;
         // migrate flag(s)
         root.applyAuthorStyles = this.applyAuthorStyles;
         // TODO(sjmiles): override createShadowRoot to do this automatically
@@ -104,6 +108,10 @@
     }
   };
 
+  function isBase(object) {
+    return object.hasOwnProperty('PolymerBase') 
+  }
+
   // name a base constructor for dev tools
 
   function PolymerBase() {};
@@ -111,6 +119,7 @@
 
   // exports
 
+  scope.isBase = isBase;
   scope.api = {
     base: base
   };

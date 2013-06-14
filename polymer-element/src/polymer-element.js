@@ -12,7 +12,11 @@
   function element(name, prototype) {
     registry[name] = prototype;
   }
-
+  
+  // TODO(sjmiles): find a way to do this that is less terrible
+  extend(element, Polymer);
+  scope = Polymer = element;
+  
   // polymer-element implementation (declarative part of a Polymer element)
   element.prototype = generatePrototype();
   element.prototype.readyCallback = function() {
@@ -20,6 +24,8 @@
     var name = this.getAttribute('name');
     // build prototype combining extendee, Polymer base, and named api
     var prototype = generateCustomPrototype(name, this.getAttribute('extends'));
+    // questionable backref
+    prototype.element = this;
     // declarative features
     desugar(prototype, this);
     // register our custom element
@@ -27,8 +33,6 @@
     // cache useful stuff
     this.prototype = prototype;
     this.ctor = prototype.constructor;
-    // questionable backref
-    prototype.element = this;
     // reference constructor in a global named by 'constructor' attribute
     publishConstructor(this);
   };
@@ -38,10 +42,12 @@
 
   // declarative features
   function desugar(prototype, element) {
-    // parse attributes
+    // parse `attribute` attribute and `publish` object
     scope.parseAttributes(prototype, element);
+    // cache attributes for cloning on instances
+    scope.accumulateInstanceAttributes(prototype, element);
     // parse declared on-* delegates into imperative form
-    //scope.parseHostEvents(element.attributes, prototype);
+    scope.parseHostEvents(prototype, element);
     // install external stylesheets as if they are inline
     //scope.installSheets(element);
     // transforms to approximate missing CSS features
@@ -57,7 +63,7 @@
   // build prototype combining extendee, Polymer base, and named api
   function generateCustomPrototype(name, extnds) {
     // basal prototype
-    var prototype = generateBasePrototype(extnds)
+    var prototype = generateBasePrototype(extnds);
     // mixin registered custom api
     return addNamedApi(prototype, name);
   }
@@ -65,7 +71,7 @@
   // build prototype combining extendee, Polymer base, and named api
   function generateBasePrototype(extnds) {
     // create a prototype based on tag-name extension
-    var prototype = generatePrototype(extnds)
+    var prototype = generatePrototype(extnds);
     // insert base api in inheritance chain (if needed)
     return ensureBaseApi(prototype);
   }

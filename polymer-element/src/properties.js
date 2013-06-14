@@ -7,9 +7,32 @@
   
   // imports
 
-  var log = window.logFlags || {};
+  var logFlags = window.logFlags || {};
+  var log = logFlags.observe || logFlags.data;
+  
+  // logging
+  
+  LOG_OBSERVE = '[%s] watching [%s]';
+  LOG_OBSERVED = '[%s#%s] watch: [%s] now [%s] was [%s]';
+  LOG_CHANGED = '[%s#%s] propertyChanged: [%s] now [%s] was [%s]';
+  
+  // element api
   
   var properties = {
+    // fetch an array of all property names in our prototype chain
+    // above PolymerBase
+    getCustomPropertyNames: function() {
+      var properties = {};
+      // TODO(sjmiles): __proto__ is simulated on non-supporting platforms
+      var p = this.__proto__;
+      while (p && !scope.isBase(p)) {
+        Object.getOwnPropertyNames(p).forEach(function(n) {
+          properties[n] = true;
+        });
+        p = p.__proto__;
+      }  
+      return Object.keys(properties);
+    },
     bindProperty: function(property, model, path) {
       // apply Polymer two-way reference binding
       var observer = bindProperties(this, property, model, path);
@@ -21,13 +44,45 @@
     },
     unbindAllProperties: function() {
       unregisterObserversOfType(this, 'property');
+    },
+    // set up property observers 
+    observeProperties: function() {
+      this.getCustomPropertyNames().forEach(this.observeProperty, this);
+    },
+    // observe property if shouldObserveProperty 
+    observeProperty: function(name) {
+      if (this.shouldObserveProperty(name)) {
+        log && console.log(LOG_OBSERVE, this.localName, name);
+        var propertyChanged = function(neo, old) {
+            log && console.log(LOG_OBSERVED, this.localName, this.node.id || '', name, this[name], old);
+            this.propertyChanged(name, old);
+          }.bind(this);
+        var observer = new PathObserver(this, name, propertyChanged);
+        registerObserver(this, 'property', name, observer);
+      }
+    },
+    // property should be observed if it has an observation callback
+    shouldObserveProperty: function(name) {
+      return Boolean(this[name + OBSERVE_SUFFIX]);
+    },
+    propertyChanged: function(name, oldValue) {
+      invoke.call(this, name + OBSERVE_SUFFIX, [oldValue]);
     }
   };
+  
+  function invoke(method, args) {
+    var fn = this[method] || method;
+    if (typeof fn === 'function') {
+      fn.call(this, args);
+    }
+  }
 
+  // property binding
+  
   // bind a property in A to a path in B by converting A[property] to a
   // getter/setter pair that accesses B[...path...]
   function bindProperties(inA, inProperty, inB, inPath) {
-    log.bind && console.log("[%s]: bindProperties: [%s] to [%s].[%s]", inB.localName || 'object', inPath, inA.localName, inProperty);
+    log && console.log("[%s]: bindProperties: [%s] to [%s].[%s]", inB.localName || 'object', inPath, inA.localName, inProperty);
     // capture A's value if B's value is null or undefined,
     // otherwise use B's value
     var v = PathObserver.getValueAtPath(inB, inPath);
@@ -41,7 +96,7 @@
   // magic words
 
   var OBSERVE_SUFFIX = 'Changed';
-
+  
   // bookkeeping observers for memory management
 
   var observers = new SideTable();

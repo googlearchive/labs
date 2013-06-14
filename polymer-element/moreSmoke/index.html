@@ -11,43 +11,54 @@
   <script src="../src/job.js"></script>
   <script src="../src/properties.js"></script>
   <script src="../src/attributes.js"></script>
+  <script src="../src/deserialize.js"></script>
   <script src="../src/mdv.js"></script>
+  <script src="../src/events.js"></script>
   <script src="../src/polymer-element.js"></script>
 </head>
 <body>
+  <br>
+
+  <x-foo></x-foo>  
 
   <br>
-  <x-foo></x-foo>  
   <br>
   <br>
-  <br>
+
   <x-bar></x-bar>  
   
-  <polymer-element name="x-foo" attributes="you">
+  <polymer-element name="x-foo" attributes="you color" on-squid="tentacles">
     <template>
       Hi <b>{{me}}</b>, hey <b>{{you}}</b>
     </template>
     <script>
-      Polymer.element('x-foo', {
+      Polymer('x-foo', {
         me: 'foo',
         // you is published, can be changed via attribute (markup or binding)
         you: '?',
+        color: 'tomato',
         ready: function() {
           this.style.padding = '4px';
-          this.style.backgroundColor = 'tomato';
+          this.colorChanged();
+        },
+        colorChanged: function() {
+          this.style.backgroundColor = this.color;
         }
       });
     </script>
   </polymer-element>
 
-  <polymer-element name="x-bar">
+  <polymer-element name="x-foo-foo" extends="x-foo" on-play="clarinet">
+  </polymer-element>
+  
+  <polymer-element name="x-bar" on-sponge="bob">
     <template>
       <!-- me is not published by x-foo, so foo.me is unchanged -->
       <!-- you is published by x-foo, so foo.you === this.me -->
-      <x-foo me="{{me}}" you="{{me}}"></x-foo>
+      <x-foo me="{{me}}" you="{{me}}" color="orange"></x-foo>
     </template>
     <script>
-      Polymer.element('x-bar', {
+      Polymer('x-bar', {
         me: "bar",
         ready: function() {
           this.style.padding = '12px';

@@ -80,6 +80,7 @@
     };
 
     function nameInThis(value) {
+      console.warn('nameInThis called');
       var p = this;
       while (p && p !== HTMLElement.prototype) {
         var n$ = Object.getOwnPropertyNames(p);
@@ -89,7 +90,7 @@
             return n;
           }
         }
-        p = Object.getPrototypeOf(p);
+        p = p.__proto__;
       }
     }
 
