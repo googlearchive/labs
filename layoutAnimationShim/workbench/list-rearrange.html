@@ -97,7 +97,9 @@ button.onclick = function() {
   var movedChild = canvas.children[from];
   movedChild.style.zIndex = 1;
   transitionThis(function() {
+    console.log(canvas.children); 
     canvas.insertBefore(canvas.children[from], canvas.children[to]); 
+    console.log(canvas.children); 
     getComputedStyle(movedChild).top;
     movedChild.classList.add("moved");
   });

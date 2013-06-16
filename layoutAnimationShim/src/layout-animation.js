@@ -87,7 +87,6 @@ function setupShadowContainer(target, root) {
     parentDiv.classList.add(newSel.substring(1));
     shadowRoot.appendChild(parentDiv);
   } else {
-    console.log(newSel);
     content = shadowRoot.querySelector('content' + newSel).parentElement;
     parentDiv = content.parentElement;
   }
@@ -97,10 +96,15 @@ function setupShadowContainer(target, root) {
 }
 
 function createShadowPlaceholder(shadow, target, rect) {
+  var style = getComputedStyle(target);
+  if (style.position == 'absolute' || style.position == 'relative') {
+    return undefined;
+  }
   var div = document.createElement("div");
   var replacement = boundingRectToReplacementRect(target, rect);
   div.style.width = replacement.width + 'px';
   div.style.height = replacement.height + 'px';
+  div.classList.add('placeholder');
   shadow.parent.appendChild(div);
   return div;
 }
@@ -431,7 +435,6 @@ function cloneToSize(node, rect, hide) {
     // NB: This is a hacky way to put to containers before from contents.
     node.shadow.parent.insertBefore(div, node.shadow.parent.children[2]);
   } else {
-    console.log(node.shadow);
     node.shadow.parent.appendChild(div);
   }
   return div;
@@ -584,19 +587,6 @@ function boundingRectToReplacementRect(element, rect) {
   return {width: width, top: top, left: left, height: height}; 
 }
 
-function forceToPosition(element, rect) {
-  var shadow = element.shadow; //setupShadowContainer(element);
-  var div = createShadowPlaceholder(shadow, element, element._transitionAfter);
-  element.placeholder = div;
-  
-  rect = boundingRectToContentRect(element, rect);
-  element.style.left = rect.left + 'px';
-  element.style.top = rect.top + 'px';
-  element.style.width = rect.width + 'px';
-  element.style.height = rect.height + 'px';
-  element.style.position = "absolute";
-}
-
 function findMovedElements(list) {
   return list.filter(function(listItem) {
     listItem.shadow.placeholder = createShadowPlaceholder(listItem.shadow, listItem, listItem._transitionAfter);
@@ -724,6 +714,52 @@ function positionListFromKeyframes(keyframes, element) {
   return positions;
 }
 
+/*
+function walkTrees(element, copy, fun) {
+  var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT,
+    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
+  var copyWalker = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT,
+    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
+
+  while (treeWalker.nextNode()) {
+    copyWalker.nextNode();
+    fun(treeWalker.currentNode, copyWalker.currentNode);
+  }
+}
+*/
+
+function updateContentTagOrder(tree) {
+  // The tree is in DOM order, so we shouldn't ever have to revisit a container.
+  var container;
+  for (var i = 0; i < tree.length; i++) {
+    var element = tree[i];
+    if (container == element.shadow.root) {
+      continue;
+    }
+    container = element.shadow.root;
+    var current = undefined;
+    
+    var treeWalker = document.createTreeWalker(tree[i].parentElement, NodeFilter.SHOW_ELEMENT,
+      { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
+    
+    while (treeWalker.nextNode()) {
+      var element = treeWalker.currentNode;
+      if (element.shadow != undefined) {
+        if (current == undefined) {
+          if (container.firstChild != element.shadow.parent) {
+            element.shadow.root.insertBefore(element.shadow.parent, container.firstChild);
+          }
+        } else {
+          if (current.nextSibling != element.shadow.parent) {
+            element.shadow.root.insertBefore(element.shadow.parent, current.nextSibling);
+          }
+        }
+        current = element.shadow.parent;
+      }
+    }
+  }
+}
+
 function makePositionListRelative(list, parentList) {
   var result = []
   for (var i = 0; i < list.length; i++) {
@@ -775,6 +811,9 @@ function transitionThis(action) {
   createCopies(tree);
   // move to new position
   action();
+  // update content tag order if action() has caused DOM changes
+  updateContentTagOrder(tree);
+
   // record positions after action
   setPositions(transitionable, '_transitionAfter');
   // put everything back

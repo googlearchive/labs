@@ -2,25 +2,26 @@
 <style>
 .outer {
   position: absolute;
-  width: 350px;
-  height: 350px;
+  width: 200px;
+  height: 200px;
   background-color: green;
-  left: 100px;
-  top: 100px;
+  left: 50px;
+  top: 50px;
 }
 
 .outer.after {
-  left: 500px;
-  top: 500px;
+  left: 300px;
+  top: 300px;
+  width: 150px;
 }
 
 .inner {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 50px;
   background-color: red;
-  left: 225px;
-  top: 225px;
+  left: 125px;
+  top: 125px;
 }
 
 .inner.after {
@@ -29,11 +30,36 @@
 }
 </style>
 <div id='container'>
-<div class="outer"><div class="inner"></div></div>
+<div class="outer">Outer text over multiple lines like this.<div class="inner">Inner text</div></div>
 </div>
+
+<form>
+  <input id="containerEffect" type='text' list='effects' value='none'>
+  <input id="contentsEffect" type='text' list='effects' value='none'>
+  <datalist id='effects'>
+    <option value="none">none</option>
+    <option value="clip">clip</option>
+    <option value="transform">transform</option>
+    <option value="layout">layout</option>
+    <option value="crossfade">crossfade</option>
+    <option value="clipfade">clipfade</option>
+    <option value="transfade">transfade</option>
+  </datalist>
+</form>
+
+
 <script src="../../../platform/WebAnimations/web-animations.js"></script>
 <script src="../src/layout-animation.js"></script>
 <script>
+
+function updateEffects() {
+  setLayoutEffect(document.querySelectorAll(".outer"), containerEffect.value, contentsEffect.value);
+}
+
+containerEffect.onchange = updateEffects;
+contentsEffect.onchange = updateEffects;
+
+updateEffects();
 
 var duration = 1;
 
@@ -47,7 +73,7 @@ registerLayoutKeyframes("outer", [
 
 setLayoutTransition(document.querySelectorAll(".outer"), "outer", duration);
 setLayoutTransition(document.querySelectorAll(".inner"), "outer", duration);
-setLayoutEffect(document.querySelectorAll(".outer"), "layout", "none");
+//setLayoutEffect(document.querySelectorAll(".outer"), "layout", "none");
 setLayoutEffect(document.querySelectorAll(".inner"), "layout", "none");
 
 paused = 0;
