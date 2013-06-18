@@ -26,6 +26,28 @@ license that can be found in the LICENSE file.
         computed: {
           fullName: ['first last', 'toFullName', 'fromFullName']
         },
+        /*
+        manager: null,
+        observers: {
+          // batching
+          'first last': 'nameChanged',
+          // sub-paths
+          //manager.name.first manage.name.last': 'nameChanged',
+          // override
+          'name': 'somethingElse'
+          
+        },
+        firstChanged: function() {
+          
+          this.nameChanged();
+        },
+        lastChanged: function() {
+          this.nameChanged();
+        },
+        nameChanged: function() {
+          this.nameChangeJob = this.job( ... );
+        },
+        */
         ready: function() {
           Polymer.parseComputedProperties(this);
         },
