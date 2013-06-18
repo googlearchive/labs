@@ -48,16 +48,35 @@
         // acquire delegates from entire subtree at t
         this.accumulateTemplatedEvents(t, delegates);
       }, this);
+      /*
+      // have root listen for the event delegates
+      this.prototype.installLocalEvents = function(root) {
+        this.installDelegates(delegates, root);
+        this.super();
+      };
+      */
       console.log('[%s] parseLocalEvents:', this.attributes.name.value, delegates);
     },
+    accumulateTemplatedEvents: function(node, events) {
+      if (node.localName === 'template') {
+        var content = getTemplateContent(node);
+        if (content) {
+          this.accumulateChildEvents(content, events);
+        }
+      }
+    },
+    accumulateChildEvents: function(node, events) {
+      node.childNodes.forEach(function(n) {
+        this.accumulateEvents(n, events);
+      }, this);
+    },
     accumulateEvents: function(node, events) {
-      events = events || {};
-      this.accumulateNodeEvents(node, events);
+      this.accumulateAttributeEvents(node, events);
       this.accumulateChildEvents(node, events);
       this.accumulateTemplatedEvents(node, events);
       return events;
     },
-    accumulateNodeEvents: function(node, events) {
+    accumulateAttributeEvents: function(node, events) {
       if (node.attributes) {
         node.attributes.forEach(function(a) {
           if (hasEventPrefix(a.name)) {
@@ -67,21 +86,9 @@
       }
     },
     accumulateEvent: function(name, events) {
-      events[event_translations[name] || name] = 1;
-    },
-    accumulateChildEvents: function(node, events) {
-      node.childNodes.forEach(function(n) {
-        this.accumulateEvents(n, events);
-      }, this);
-    },
-    accumulateTemplatedEvents: function(node, events) {
-      if (node.localName == 'template') {
-        var content = getTemplateContent(node);
-        if (content) {
-          this.accumulateChildEvents(content, events);
-        }
-      }
-    },
+      name = event_translations[name] || name;
+      events[name] = events[name] || 1;
+    }
   };
 
   var event_translations = {

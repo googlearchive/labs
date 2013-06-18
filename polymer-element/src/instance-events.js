@@ -9,6 +9,7 @@
   // imports
 
   // logging flags
+
   var log = window.logFlags || {};
   log.events = true;
 
@@ -23,17 +24,11 @@
     // magic words
     EVENT_PREFIX: EVENT_PREFIX,
     DELEGATES: DELEGATES,
-    // event listeners on the host element
+    // event listeners on host
     addHostListeners: function() {
       var events = this[DELEGATES];
       log.events && (Object.keys(events).length > 0) && console.log('[%s] addHostListeners:', this.localName, events);
       this.addNodeListeners(this, events, this.hostEventListener);
-    },
-    // event listeners in the shadow-root element
-    addInstanceListeners: function(root) {
-      var events = this.accumulateEvents(root);
-      log.events && (Object.keys(events).length > 0) && console.log('[%s:root] addInstanceListeners:', this.localName, events);
-      this.addNodeListeners(root, events, this.instanceEventListener);
     },
     addNodeListeners: function(node, events, listener) {
       var fn = listener.bind(this);
@@ -41,9 +36,17 @@
         node.addEventListener(n, fn);
       });
     },
+    // event listeners inside a shadow-root
+    /*
+    addInstanceListeners: function(root) {
+      var events = this.accumulateEvents(root);
+      log.events && (Object.keys(events).length > 0) && console.log('[%s:root] addInstanceListeners:', this.localName, events);
+      this.addNodeListeners(root, events, this.instanceEventListener);
+    },
+    */
     hostEventListener: function(event) {
       if (!event.cancelBubble) {
-        log.events && console.group("[%s]: listenHost [%s]", this.localName, event.type);
+        log.events && console.group("[%s]: hostEventListener(%s)", this.localName, event.type);
         var h = this.findEventDelegate(event);
         if (h) {
           log.events && console.log('[%s] found host handler name [%s]', this.localName, h);
@@ -51,9 +54,6 @@
         }
         log.events && console.groupEnd();
       }
-    },
-    instanceEventListener: function(event) {
-      listenLocal(this, event);
     },  
     // find the method name in delegates mapped to event.type
     findEventDelegate: function(event) {
@@ -69,6 +69,9 @@
         }
         log.events && console.groupEnd();
       }
+    },
+    instanceEventListener: function(event) {
+      listenLocal(this, event);
     }
   };
 

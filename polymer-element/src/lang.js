@@ -38,6 +38,7 @@
     });
   }
 
+  // we have to flag propagation stoppage for the event dispatcher
   var originalStopPropagation = Event.prototype.stopPropagation;
   Event.prototype.stopPropagation = function() {
     this.cancelBubble = true;
