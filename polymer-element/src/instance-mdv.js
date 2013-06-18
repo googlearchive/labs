@@ -103,9 +103,6 @@
   // exports
 
   scope.bindPattern = mustachePattern;
-  scope.api.mdv = mdv;
-
-  //scope.registerBinding = registerBinding;
-  //scope.unregisterBinding = unregisterBinding;
+  scope.api.instance.mdv = mdv;
   
 })(Polymer);

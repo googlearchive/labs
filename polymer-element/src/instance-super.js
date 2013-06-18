@@ -94,10 +94,11 @@
       }
     }
 
+    var super_api = {
+      super: $super
+    }
     // exports
     
-    scope.api.super = {
-      super: $super
-    };
+    scope.api.instance.super = super_api;
     
   })(Polymer);

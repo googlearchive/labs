@@ -2,34 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <script src="../../../platform/platform.js"></script>
+  <script src="../../../platform/platform.js" debug></script>
   <script>
     Polymer = {};
   </script>
-  <script src="../src/base.js"></script>
-  <script src="../src/super.js"></script>
+  <script src="../src/lang.js"></script>
   <script src="../src/job.js"></script>
-  <script src="../src/properties.js"></script>
-  <script src="../src/attributes.js"></script>
   <script src="../src/deserialize.js"></script>
-  <script src="../src/mdv.js"></script>
-  <script src="../src/events.js"></script>
-  <script src="../src/polymer-element.js"></script>
+
+  <script src="../src/api.js"></script>
+
+  <script src="../src/instance-super.js"></script>
+  <script src="../src/instance-events.js"></script>
+  <script src="../src/instance-attributes.js"></script>
+  <script src="../src/instance-properties.js"></script>
+<!-- <script src="../src/instance-styles.js"></script>-->
+  <script src="../src/instance-mdv.js"></script>
+  <script src="../src/instance-base.js"></script>
+
+  <script src="../src/declarative-events.js"></script>
+  <script src="../src/declarative-attributes.js"></script>
+<!-- <script src="../src/declarative-styles.js"></script>-->
+<script src="../src/polymer-element.js"></script>
 </head>
 <body>
   <br>
 
   <x-foo></x-foo>  
 
-  <br>
-  <br>
-  <br>
+    <br><br><br>
 
   <x-bar></x-bar>  
-  
-  <polymer-element name="x-foo" attributes="you color" on-squid="tentacles">
+
+    <br><br><br>
+
+  <x-baz></x-baz>  
+
+  <script>
+    function twiddleFont(e) {
+      e.style.fontSize = Math.floor(Math.random() * 46) + 12 + 'px';
+    }
+  </script>
+
+  <polymer-element name="x-foo" attributes="you color" on-squid="tentacles" on-click="clicked">
     <template>
-      Hi <b>{{me}}</b>, hey <b>{{you}}</b>
+      Hi <b id="me" on-click="meClicked">{{me}}</b>, hey <b id="you" on-click="youClicked">{{you}}</b>
     </template>
     <script>
       Polymer('x-foo', {
@@ -43,13 +60,24 @@
         },
         colorChanged: function() {
           this.style.backgroundColor = this.color;
+        },
+        meClicked: function(event, details, sender) {
+          twiddleFont(sender);
+          event.stopPropagation();
+        },
+        youClicked: function(event, details, sender) {
+          twiddleFont(sender);
+          event.stopPropagation();
+        },
+        clicked: function(event, details, sender) {
+          this.$.me.style.fontSize = '';
+          this.$.you.style.fontSize = '';
         }
       });
     </script>
   </polymer-element>
 
-  <polymer-element name="x-foo-foo" extends="x-foo" on-play="clarinet">
-  </polymer-element>
+  <polymer-element name="x-foo-foo" extends="x-foo" on-play="clarinet"></polymer-element>
   
   <polymer-element name="x-bar" on-sponge="bob">
     <template>
@@ -68,5 +96,26 @@
     </script>
   </polymer-element>
 
+  <polymer-element name="x-baz">
+    <template>
+      <style>
+        @host {*{ 
+          background-color: lightgreen;
+          padding: 8px;
+        }};
+      </style>
+      <template repeat="{{cheese}}">
+        <div><span on-click="nameAction">{{name}}</span> is tasty.</div>
+      </template>
+    </template>
+    <script>
+      Polymer('x-baz', {
+        cheese: [{name: "Gouda"}, {name: "Cheddar"}, {name: "Brie"}, {name: "Mozarella"}],
+        nameAction: function(event, detail, sender) {
+          twiddleFont(sender);
+        }
+      });
+    </script>
+  </polymer-element>
 </body>
 </html>

@@ -9,10 +9,10 @@
     PolymerBase: true,
     // user entry point for constructor-like initialization
     ready: function() {
-      this.super();
     },
     // system entry point, do not override
     readyCallback: function() {
+      this.style.display = 'inline-block';
       // install property observers
       // do this first so we can observe changes during initialization
       this.observeProperties();
@@ -20,17 +20,16 @@
       this.copyInstanceAttributes();
       // process input attributes
       this.takeAttributes();
-      // add host-events...
-      //var hostEvents = scope.accumulateHostEvents.call(this);
-      //scope.bindAccumulatedHostEvents.call(this, hostEvents);
+      // add event listeners
+      this.addHostListeners();
+      // process declarative resources
+      this.parseElements(this.__proto__);
       // unless this element is inserted into the main document
       // (or the user otherwise specifically prevents it)
       // bindings will self destruct after a short time; this is 
       // necessary to make elements collectable as garbage
       // when polyfilling Object.observe
-      this.asyncUnbindAll();
-      // process declarative resources
-      this.parseElements(this.__proto__);
+      //this.asyncUnbindAll();
       // user initialization
       this.ready();
     },
@@ -74,20 +73,19 @@
         // append to shadow dom
         root.appendChild(dom);
         // perform post-construction initialization tasks on shadow root
-        this.shadowRootCreated(root);
+        this.shadowRootReady(root);
         // return the created shadow root
         return root;
       }
     },
-    shadowRootCreated: function(root) {
+    shadowRootReady: function(root) {
       // to resolve this node synchronously we must process custom elements 
       // in the subtree immediately
       CustomElements.takeRecords();
       // locate nodes with id and store references to them in this.$ hash
-      this.marshalNodeReferences.call(root);
+      this.marshalNodeReferences(root);
       // add local events of interest...
-      //var events = scope.accumulateEvents(root);
-      //scope.bindAccumulatedLocalEvents.call(this, root, events);
+      //this.addInstanceListeners(root);
       // set up pointer gestures
       PointerGestures.register(root);
       // set up pointer events
@@ -95,19 +93,19 @@
       PointerEventsPolyfill.setTouchAction(root, touchAction);
     },
     // locate nodes with id and store references to them in this.$ hash
-    marshalNodeReferences: function(inRoot) {
+    marshalNodeReferences: function(root) {
       // establish $ instance variable
       var $ = this.$ = this.$ || {};
       // populate $ from nodes with ID from the LOCAL tree
-      if (inRoot) {
-        var nodes = inRoot.querySelectorAll("[id]");
-        forEach(nodes, function(n) {
+      if (root) {
+        root.querySelectorAll("[id]").forEach(function(n) {
           $[n.id] = n;
         });
       }
     }
   };
 
+  // true if object has own PolymerBase api
   function isBase(object) {
     return object.hasOwnProperty('PolymerBase') 
   }
@@ -120,8 +118,6 @@
   // exports
 
   scope.isBase = isBase;
-  scope.api = {
-    base: base
-  };
+  scope.api.base = base;
   
 })(Polymer);

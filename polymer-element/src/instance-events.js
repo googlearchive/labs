@@ -8,17 +8,21 @@
 
   // imports
 
+  // logging flags
   var log = window.logFlags || {};
   log.events = true;
 
   // magic words
-  
-  var EVENT_PREFIX = "on-";
-  var DELEGATES = '__eventDelegates';
+
+  var EVENT_PREFIX = 'on-';
+  var DELEGATES = 'eventDelegates';
 
   // instance api for events
 
   var events = {
+    // magic words
+    EVENT_PREFIX: EVENT_PREFIX,
+    DELEGATES: DELEGATES,
     // event listeners on the host element
     addHostListeners: function() {
       var events = this[DELEGATES];
@@ -31,51 +35,12 @@
       log.events && (Object.keys(events).length > 0) && console.log('[%s:root] addInstanceListeners:', this.localName, events);
       this.addNodeListeners(root, events, this.instanceEventListener);
     },
-    // find event delegations: re-entrant function walks a tree
-    // - process events on node
-    // - process my children
-    // - process content children for templates
-    accumulateEvents: function(node, events) {
-      events = events || {};
-      this.accumulateNodeEvents(node, events);
-      this.accumulateChildEvents(node, events);
-      this.accumulateTemplatedEvents(node, events);
-      return events;
-    },
-    accumulateNodeEvents: function(node, events) {
-      if (node.attributes) {
-        node.attributes.forEach(function(a) {
-          if (hasEventPrefix(a.name)) {
-            this.accumulateEvent(removeEventPrefix(a.name), events);
-          }
-        }, this);
-      }
-    },
-    accumulateEvent: function(name, events) {
-      events[event_translations[name] || name] = 1;
-    },
-    accumulateChildEvents: function(node, events) {
-      node.childNodes.forEach(function(n) {
-        this.accumulateEvents(n, events);
-      }, this);
-    },
-    accumulateTemplatedEvents: function(node, events) {
-      if (node.localName == 'template') {
-        var content = getTemplateContent(node);
-        if (content) {
-          this.accumulateChildEvents(content, events);
-        }
-      }
-    },
     addNodeListeners: function(node, events, listener) {
       var fn = listener.bind(this);
       Object.keys(events).forEach(function(n) {
         node.addEventListener(n, fn);
       });
     },
-    instanceEventListener: function(event) {
-      listenLocal(this, event);
-    },  
     hostEventListener: function(event) {
       if (!event.cancelBubble) {
         log.events && console.group("[%s]: listenHost [%s]", this.localName, event.type);
@@ -87,6 +52,9 @@
         log.events && console.groupEnd();
       }
     },
+    instanceEventListener: function(event) {
+      listenLocal(this, event);
+    },  
     // find the method name in delegates mapped to event.type
     findEventDelegate: function(event) {
       return this[DELEGATES][event.type];
@@ -103,15 +71,6 @@
       }
     }
   };
-
-  // TODO(sorvell): Currently in MDV, there is no way to get a template's
-  // effective content. A template can have a ref property
-  // that points to the template from which this one has been cloned.
-  // Remove this when the MDV api is improved
-  // (https://github.com/polymer-project/mdv/issues/15).
-  function getTemplateContent(template) {
-    return template.ref ? template.ref.content : template.content;
-  }
 
   // TODO(sjmiles): much of the below privatized only because of the vague 
   // notion that the below is too fiddly and we need to revisit the core
@@ -201,96 +160,9 @@
 
   var eventHandledTable = new SideTable('handledList');
 
-  // polymer-element event feature
-
-  var events_feature = { 
-    inheritDelegates: function() {
-      this.inheritObject(DELEGATES);
-    },
-    parseHostEvents: function() {
-      // our delegates map
-      var delegates = this.prototype[DELEGATES];
-      // extract data from attributes into delegates
-      this.addAttributeDelegates(delegates);
-    },
-    addAttributeDelegates: function(delegates) {
-      // for each attribute
-      for (var i=0, a; a=this.attributes[i]; i++) {
-        // does it have magic marker identifying it as an event delegate?
-        if (hasEventPrefix(a.name)) {
-          // if so, add the info to delegates
-          delegates[removeEventPrefix(a.name)] = 1;
-        }
-      }
-    },
-    parseLocalEvents: function() {
-      // our suffix prototype chain
-      var inherited = this.prototype.__proto__;
-      // extract data from templates into delegates
-      var delegates = Object.create(inherited[DELEGATES] || null);
-      this.querySelectorAll('template').forEach(function(t) {
-        // acquire delegates from entire subtree at t
-        this.accumulateTemplatedEvents(t);
-      }, this);
-      console.log('[%s]', this.attributes.name.value, delegates);
-    },
-    accumulateEvents: function(node, events) {
-      events = events || {};
-      this.accumulateNodeEvents(node, events);
-      this.accumulateChildEvents(node, events);
-      this.accumulateTemplatedEvents(node, events);
-      return events;
-    },
-    accumulateNodeEvents: function(node, events) {
-      if (node.attributes) {
-        node.attributes.forEach(function(a) {
-          if (hasEventPrefix(a.name)) {
-            this.accumulateEvent(removeEventPrefix(a.name), events);
-          }
-        }, this);
-      }
-    },
-    accumulateEvent: function(name, events) {
-      events[event_translations[name] || name] = 1;
-    },
-    accumulateChildEvents: function(node, events) {
-      node.childNodes.forEach(function(n) {
-        this.accumulateEvents(n, events);
-      }, this);
-    },
-    accumulateTemplatedEvents: function(node, events) {
-      if (node.localName == 'template') {
-        var content = getTemplateContent(node);
-        if (content) {
-          this.accumulateChildEvents(content, events);
-        }
-      }
-    },
-  };
-
-
-  var event_translations = {
-    webkitanimationstart: 'webkitAnimationStart',
-    webkitanimationend: 'webkitAnimationEnd',
-    webkittransitionend: 'webkitTransitionEnd',
-    domfocusout: 'DOMFocusOut',
-    domfocusin: 'DOMFocusIn'
-  };
-
-  function hasEventPrefix(n) {
-    return n.slice(0, prefixLength) == EVENT_PREFIX;
-  }
-
-  function removeEventPrefix(n) {
-    return n.slice(prefixLength);
-  }
-
-  var prefixLength = EVENT_PREFIX.length;
-  
   // exports
 
-  scope.api.events = events;
-  scope.features.events = events_feature;
-  scope.event_translations = event_translations;
+  // object where we should export our new api
+  scope.api.instance.events = events;
 
 })(Polymer);
