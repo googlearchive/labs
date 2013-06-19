@@ -3,34 +3,29 @@
 <head>
 
   <meta charset="utf-8" />
+  <script src="../polymer.js"></script>
 
+  <!--
   <script src="../../../platform/platform.js" debug></script>
-
+  <script src="../src/shimStyling.js"></script>
   <script src="../src/polymer.js"></script>
-  
   <script src="../src/lang.js"></script>
   <script src="../src/dom.js"></script>
   <script src="../src/deserialize.js"></script>
   <script src="../src/job.js"></script>
   <script src="../src/super.js"></script>
-
   <script src="../src/api.js"></script>
-
   <script src="../src/instance-events.js"></script>
   <script src="../src/instance-attributes.js"></script>
   <script src="../src/instance-properties.js"></script>
   <script src="../src/instance-mdv.js"></script>
   <script src="../src/instance-base.js"></script>
-
+  <script src="../src/instance-styles.js"></script>
   <script src="../src/declarative-events.js"></script>
   <script src="../src/declarative-attributes.js"></script>
-
   <script src="../src/declarative-styles.js"></script>
-  <script src="../src/instance-styles.js"></script>
-
-  <script src="../src/shimStyling.js"></script>
-
   <script src="../src/polymer-element.js"></script>
+  -->
 </head>
 <body>
   <br>
@@ -117,7 +112,7 @@
     </template>
     <script>
       Polymer('x-baz', {
-        cheese: [{name: "Gouda"}, {name: "Cheddar"}, {name: "Brie"}, {name: "Mozarella"}],
+        cheese: [{name: "Gouda"}, {name: "Cheddar"}, {name: "Brie"}, {name: "Mozzarella"}],
         nameAction: function(event, detail, sender) {
           twiddleFont(sender);
         }

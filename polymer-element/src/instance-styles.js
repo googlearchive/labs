@@ -8,14 +8,14 @@
   // imports
 
   var log = window.logFlags || {};
-  var api = scope.api.declarative.styles;
-  var STYLE_SCOPE_ATTRIBUTE = api.STYLE_SCOPE_ATTRIBUTE;
   
   // magic words
   
+  var STYLE_SCOPE_ATTRIBUTE = 'element';
   var STYLE_CONTROLLER_SCOPE = 'controller';
   
   var styles = {
+    STYLE_SCOPE_ATTRIBUTE: STYLE_SCOPE_ATTRIBUTE,
     /**
      * Installs external stylesheets and <style> elements with the attribute 
      * polymer-scope='controller' into the scope of element. This is intended

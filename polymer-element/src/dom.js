@@ -19,5 +19,8 @@
     this.cancelBubble = true;
     originalStopPropagation.apply(this, arguments);
   };
+  
+  HTMLImports.importer.preloadSelectors += 
+      ', polymer-element link[rel=stylesheet]';
 
 })(Polymer);

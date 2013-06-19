@@ -5,18 +5,20 @@
  */
 (function(scope) {
 
-  var STYLE_SELECTOR = 'style';
-  var SHEET_SELECTOR = '[rel=stylesheet]';
-  var STYLE_SCOPE_ATTRIBUTE = 'element';
-  var STYLE_GLOBAL_SCOPE = 'global';
-  var SCOPE_ATTR = 'polymer-scope';
-
   // imports
 
   var log = window.logFlags || {};
+  var api = scope.api.instance.styles;
+  var STYLE_SCOPE_ATTRIBUTE = api.STYLE_SCOPE_ATTRIBUTE;
+
+  // magic words
+
+  var STYLE_SELECTOR = 'style';
+  var SHEET_SELECTOR = '[rel=stylesheet]';
+  var STYLE_GLOBAL_SCOPE = 'global';
+  var SCOPE_ATTR = 'polymer-scope';
 
   var styles = {
-    STYLE_SCOPE_ATTRIBUTE: STYLE_SCOPE_ATTRIBUTE,
     /**
      * Install external stylesheets loaded in <element> elements into the 
      * element's template.
@@ -39,7 +41,7 @@
       var sheets = this.findNodes(SHEET_SELECTOR, function(s) {
         return !s.hasAttribute(SCOPE_ATTR);
       });
-      var content = elementTemplateContent(this);
+      var content = this.templateContent();
       if (content) {
         // in case we're in document, remove from element
         var cssText = '';
@@ -51,6 +53,19 @@
           content.insertBefore(createStyleElement(cssText), content.firstChild);
         }
       }
+    },
+    findNodes: function(selector, matcher) {
+      var nodes = this.querySelectorAll(selector).array();
+      var content = this.templateContent();
+      if (content) {
+        var templateNodes = content.querySelectorAll(selector).array();
+        nodes = nodes.concat(templateNodes);
+      }
+      return nodes.filter(matcher);
+    },
+    templateContent: function() {
+      var template = this.querySelector('template');
+      return template && templateContent(template);
     },
     /**
      * Promotes external stylesheets and <style> elements with the attribute 
@@ -64,15 +79,6 @@
     installGlobalStyles: function() {
       var style = this.styleForScope(STYLE_GLOBAL_SCOPE);
       applyStyleToScope(style, document.head);
-    },
-    findNodes: function(selector, matcher) {
-      var nodes = array(this.querySelectorAll(selector));
-      var content = elementTemplateContent(this);
-      if (content) {
-        var templateNodes = array(content.querySelectorAll(selector));
-        nodes = nodes.concat(templateNodes);
-      }
-      return nodes.filter(matcher);
     },
     cssTextForScope: function(scopeDescriptor) {
       var cssText = '';
@@ -107,11 +113,6 @@
     }
   };
 
-  function elementTemplateContent(elementElement) {
-    var template = elementElement.querySelector('template');
-    return template && templateContent(template);
-  }
-
   function applyStyleToScope(style, scope) {
     if (style) {
       // TODO(sorvell): necessary for IE
@@ -128,10 +129,6 @@
     var style = document.createElement('style');
     style.textContent = cssText;
     return style;
-  }
-  
-  function array(list) {
-    return list ? Array.prototype.slice.call(list, 0) : [];
   }
 
   function cssTextFromSheet(sheet) {
