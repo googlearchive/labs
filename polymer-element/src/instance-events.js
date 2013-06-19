@@ -37,13 +37,13 @@
       });
     },
     // event listeners inside a shadow-root
-    /*
-    addInstanceListeners: function(root) {
-      var events = this.accumulateEvents(root);
-      log.events && (Object.keys(events).length > 0) && console.log('[%s:root] addInstanceListeners:', this.localName, events);
-      this.addNodeListeners(root, events, this.instanceEventListener);
+    addInstanceListeners: function(root, template) {
+      var events = template.delegates;
+      if (events) {
+        log.events && (Object.keys(events).length > 0) && console.log('[%s:root] addInstanceListeners:', this.localName, events);
+        this.addNodeListeners(root, events, this.instanceEventListener);
+      }
     },
-    */
     hostEventListener: function(event) {
       if (!event.cancelBubble) {
         log.events && console.group("[%s]: hostEventListener(%s)", this.localName, event.type);
@@ -100,9 +100,11 @@
       if (t === host) {
         return true;
       }
-      // find a controller for target `t`, unless we already found `host` as a controller
+      // find a controller for target `t`, unless we already found `host` 
+      // as a controller
       c = (c === host) ? c : findController(t);
-      // if we have a controller, dispatch the event, return 'true' if handler returns true
+      // if we have a controller, dispatch the event, return 'true' if 
+      // handler returns true
       if (c && handleEvent(c, t, event)) {
         return true;
       }
@@ -121,9 +123,11 @@
     var t = event.target, c = null;
    // if we hit dirt or host, stop
     while (t && t != host) {
-      // find a controller for target `t`, unless we already found `host` as a controller
+      // find a controller for target `t`, unless we already found `host` 
+      // as a controller
       c = (c === host) ? c : findController(t);
-      // if we have a controller, dispatch the event, return 'true' if handler returns true
+      // if we have a controller, dispatch the event, return 'true' if 
+      // handler returns true
       if (c && handleEvent(c, t, event)) {
         return true;
       }
@@ -132,13 +136,19 @@
   }
 
   function findController(node) {
+    while (node.parentNode) {
+      node = node.parentNode;
+    }
+    return node.host;
+    /*
     // find the shadow root with dispatching host that contains node
     while (node) {
-      if (/*node.localName === 'shadow-root' &&*/ node.host && node.host.dispatchMethod) {
+      if (node.host && node.host.dispatchMethod) {
         return node.host
       }
       node = node.parentNode;
     }
+    */
   };
 
   function handleEvent(ctrlr, node, event) {
@@ -165,7 +175,6 @@
 
   // exports
 
-  // object where we should export our new api
   scope.api.instance.events = events;
 
 })(Polymer);

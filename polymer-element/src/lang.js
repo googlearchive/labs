@@ -5,19 +5,6 @@
  */
 (function(scope) {
 
-  // get prototype mapped to node <tag>
-  HTMLElement.getPrototypeForTag = function(tag) {
-    return !tag ? HTMLElement.prototype :
-      // TODO(sjmiles): creating <tag> is likely to have wasteful 
-      // side-effects, we need a better way to access the prototype
-      Object.getPrototypeOf(document.createElement(tag));
-  };
-
-  // returns a prototype that chains to <tag> or HTMLElement
-  function generatePrototype(tag) {
-    return Object.create(HTMLElement.getPrototypeForTag(tag));
-  };
-
   // copy own properties from 'api' to 'prototype, with name hinting for 'super'
   function extend(prototype, api) {
     // use only own properties of 'api'
@@ -37,20 +24,9 @@
       }
     });
   }
-
-  // we have to flag propagation stoppage for the event dispatcher
-  var originalStopPropagation = Event.prototype.stopPropagation;
-  Event.prototype.stopPropagation = function() {
-    this.cancelBubble = true;
-    originalStopPropagation.apply(this, arguments);
-  };
-
+  
   // exports
 
-  scope.api = {
-    instance: {},
-    declaration: {}
-  };
   scope.extend = extend;
 
 })(Polymer);

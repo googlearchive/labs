@@ -7,25 +7,30 @@
   <script src="../../../platform/platform.js" debug></script>
 
   <script src="../src/polymer.js"></script>
+  
   <script src="../src/lang.js"></script>
-  <script src="../src/job.js"></script>
+  <script src="../src/dom.js"></script>
   <script src="../src/deserialize.js"></script>
+  <script src="../src/job.js"></script>
+  <script src="../src/super.js"></script>
 
   <script src="../src/api.js"></script>
 
-  <script src="../src/instance-super.js"></script>
   <script src="../src/instance-events.js"></script>
   <script src="../src/instance-attributes.js"></script>
   <script src="../src/instance-properties.js"></script>
-  <!-- <script src="../src/instance-styles.js"></script>-->
   <script src="../src/instance-mdv.js"></script>
   <script src="../src/instance-base.js"></script>
 
   <script src="../src/declarative-events.js"></script>
   <script src="../src/declarative-attributes.js"></script>
-  <!-- <script src="../src/declarative-styles.js"></script>-->
-  <script src="../src/polymer-element.js"></script>
 
+  <script src="../src/declarative-styles.js"></script>
+  <script src="../src/instance-styles.js"></script>
+
+  <script src="../src/shimStyling.js"></script>
+
+  <script src="../src/polymer-element.js"></script>
 </head>
 <body>
   <br>
@@ -48,6 +53,7 @@
 
   <polymer-element name="x-foo" attributes="you color" on-squid="tentacles" on-click="clicked">
     <template>
+      <link rel="stylesheet" href="x-foo.css">
       Hi <b id="me" on-click="meClicked">{{me}}</b>, hey <b id="you" on-click="youClicked">{{you}}</b>
     </template>
     <script>
@@ -57,7 +63,6 @@
         you: '?',
         color: 'tomato',
         ready: function() {
-          this.style.padding = '4px';
           this.colorChanged();
         },
         colorChanged: function() {

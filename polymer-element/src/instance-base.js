@@ -7,6 +7,8 @@
 
   var base = {
     PolymerBase: true,
+    job: Polymer.job,
+    super: Polymer.super,
     // user entry point for constructor-like initialization
     ready: function() {
     },
@@ -15,7 +17,7 @@
       this.style.display = 'inline-block';
       // install property observers
       // do this first so we can observe changes during initialization
-      //this.observeProperties();
+      this.observeProperties();
       // install boilerplate attributes
       this.copyInstanceAttributes();
       // process input attributes
@@ -47,11 +49,6 @@
     // utility function that creates a shadow root from a <template>
     shadowFromTemplate: function(template) {
       if (template) {
-        // apply MDV strategy
-        // TODO(sjmiles): we have to apply this strategy directly for the root 
-        // template in createInstance (below), but we also need the attribute 
-        // here so sub-templates can see it
-        template.setAttribute('syntax', 'MDV_STRATEGY');
         // cache elder shadow root (if any)
         var elderRoot = this.shadowRoot;
         // make a shadow root
@@ -73,19 +70,19 @@
         // append to shadow dom
         root.appendChild(dom);
         // perform post-construction initialization tasks on shadow root
-        this.shadowRootReady(root);
+        this.shadowRootReady(root, template);
         // return the created shadow root
         return root;
       }
     },
-    shadowRootReady: function(root) {
+    shadowRootReady: function(root, template) {
       // to resolve this node synchronously we must process custom elements 
       // in the subtree immediately
       CustomElements.takeRecords();
       // locate nodes with id and store references to them in this.$ hash
       this.marshalNodeReferences(root);
       // add local events of interest...
-      //this.addInstanceListeners(root);
+      this.addInstanceListeners(root, template);
       // set up pointer gestures
       PointerGestures.register(root);
       // set up pointer events

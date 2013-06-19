@@ -42,20 +42,14 @@
       }
     },
     parseLocalEvents: function() {
-      var delegates = this.prototype[DELEGATES];
       // extract data from all templates into delegates
       this.querySelectorAll('template').forEach(function(t) {
+        // store delegate information directly on template
+        t.delegates = {};
         // acquire delegates from entire subtree at t
-        this.accumulateTemplatedEvents(t, delegates);
+        this.accumulateTemplatedEvents(t, t.delegates);
+        console.log('[%s] parseLocalEvents:', this.attributes.name.value, t.delegates);
       }, this);
-      /*
-      // have root listen for the event delegates
-      this.prototype.installLocalEvents = function(root) {
-        this.installDelegates(delegates, root);
-        this.super();
-      };
-      */
-      console.log('[%s] parseLocalEvents:', this.attributes.name.value, delegates);
     },
     accumulateTemplatedEvents: function(node, events) {
       if (node.localName === 'template') {

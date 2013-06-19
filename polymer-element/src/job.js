@@ -46,11 +46,9 @@
     job.go(callback, wait);
     return job;
   }
-
+  
   // exports 
 
-  scope.api.job = {
-    job: job
-  };
+  scope.job = job;
   
 })(Polymer);

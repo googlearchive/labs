@@ -16,94 +16,92 @@
 
   var log = window.logFlags || {};
 
-  /**
-   * Install external stylesheets loaded in <element> elements into the 
-   * element's template.
-   * @param elementElement The <element> element to style.
-   */
-  function installSheets(elementElement) {
-    installLocalSheets(elementElement);
-    installGlobalStyles(elementElement);
-  }
-  
-  /**
-   * Takes external stylesheets loaded in an <element> element and moves
-   * their content into a <style> element inside the <element>'s template.
-   * The sheet is then removed from the <element>. This is done only so 
-   * that if the element is loaded in the main document, the sheet does
-   * not become active.
-   * Note, ignores sheets with the attribute 'polymer-scope'.
-   * @param elementElement The <element> element to style.
-   */
-  function installLocalSheets(elementElement) {
-    var sheets = findInElement(elementElement, SHEET_SELECTOR, function(s) {
-      return !s.hasAttribute(SCOPE_ATTR);
-    });
-    var content = elementTemplateContent(elementElement);
-    if (content) {
-      // in case we're in document, remove from element
-      var cssText = '';
-      sheets.forEach(function(sheet) {
-        sheet.parentNode.removeChild(sheet);
-        cssText += cssTextFromSheet(sheet) + '\n';
+  var styles = {
+    /**
+     * Install external stylesheets loaded in <element> elements into the 
+     * element's template.
+     * @param elementElement The <element> element to style.
+     */
+    installSheets: function(elementElement) {
+      installLocalSheets(elementElement);
+      installGlobalStyles(elementElement);
+    },
+    /**
+     * Takes external stylesheets loaded in an <element> element and moves
+     * their content into a <style> element inside the <element>'s template.
+     * The sheet is then removed from the <element>. This is done only so 
+     * that if the element is loaded in the main document, the sheet does
+     * not become active.
+     * Note, ignores sheets with the attribute 'polymer-scope'.
+     * @param elementElement The <element> element to style.
+     */
+    installLocalSheets: function (elementElement) {
+      var sheets = findInElement(elementElement, SHEET_SELECTOR, function(s) {
+        return !s.hasAttribute(SCOPE_ATTR);
       });
-      if (cssText) {
-        content.insertBefore(createStyleElement(cssText), content.firstChild);
+      var content = elementTemplateContent(elementElement);
+      if (content) {
+        // in case we're in document, remove from element
+        var cssText = '';
+        sheets.forEach(function(sheet) {
+          sheet.parentNode.removeChild(sheet);
+          cssText += cssTextFromSheet(sheet) + '\n';
+        });
+        if (cssText) {
+          content.insertBefore(createStyleElement(cssText), content.firstChild);
+        }
       }
+    },
+    /**
+     * Promotes external stylesheets and <style> elements with the attribute 
+     * polymer-scope='global' into global scope.
+     * This is particularly useful for defining @keyframe rules which 
+     * currently do not function in scoped or shadow style elements.
+     * (See wkb.ug/72462)
+     * @param elementElement The <element> element to style.
+    */
+    // TODO(sorvell): remove when wkb.ug/72462 is addressed.
+    installGlobalStyles: function(elementElement) {
+      applyStyleToScope(styleFromElement(elementElement, STYLE_GLOBAL_SCOPE),
+        document.head);
+    },
+    /**
+     * Installs external stylesheets and <style> elements with the attribute 
+     * polymer-scope='controller' into the scope of element. This is intended
+     * to be a called during custom element construction. Note, this incurs a per
+     * instance cost and should be used sparingly.
+     *
+     * The need for this type of styling should go away when the shadowDOM spec
+     * addresses these issues:
+     * 
+     * https://www.w3.org/Bugs/Public/show_bug.cgi?id=21391
+     * https://www.w3.org/Bugs/Public/show_bug.cgi?id=21390
+     * https://www.w3.org/Bugs/Public/show_bug.cgi?id=21389
+     * 
+     * @param element The custom element instance into whose controller (parent)
+     * scope styles will be installed.
+     * @param elementElement The <element> containing controller styles.
+    */
+    // TODO(sorvell): remove when spec issues are addressed
+    installControllerStyles: function(element, elementElement) {
+      if (!elementElement.controllerStyle) {
+        elementElement.controllerStyle = styleFromElement(elementElement,
+          STYLE_CONTROLLER_SCOPE);
+      }
+      var styleElement = elementElement.controllerStyle;
+      var scope = findStyleController(element);
+      // apply controller styles only if they are not yet applied
+      if (scope && !scopeHasElementStyle(scope, element, 
+        STYLE_CONTROLLER_SCOPE)) {
+        Polymer.shimPolyfillDirectives([styleElement], element.localName);
+        applyStyleToScope(styleElement, scope);
+      }
+    },
+    scopeHasElementStyle: function(scope, element, descriptor) {
+      return scope.querySelector('style[' + STYLE_SCOPE_ATTRIBUTE + '=' + 
+        element.localName + '-' + descriptor + ']');
     }
-  }
-  
-  /**
-   * Promotes external stylesheets and <style> elements with the attribute 
-   * polymer-scope='global' into global scope.
-   * This is particularly useful for defining @keyframe rules which 
-   * currently do not function in scoped or shadow style elements.
-   * (See wkb.ug/72462)
-   * @param elementElement The <element> element to style.
-  */
-  // TODO(sorvell): remove when wkb.ug/72462 is addressed.
-  function installGlobalStyles(elementElement) {
-    applyStyleToScope(styleFromElement(elementElement, STYLE_GLOBAL_SCOPE),
-      document.head);
-  }
-  
-  /**
-   * Installs external stylesheets and <style> elements with the attribute 
-   * polymer-scope='controller' into the scope of element. This is intended
-   * to be a called during custom element construction. Note, this incurs a per
-   * instance cost and should be used sparingly.
-   *
-   * The need for this type of styling should go away when the shadowDOM spec
-   * addresses these issues:
-   * 
-   * https://www.w3.org/Bugs/Public/show_bug.cgi?id=21391
-   * https://www.w3.org/Bugs/Public/show_bug.cgi?id=21390
-   * https://www.w3.org/Bugs/Public/show_bug.cgi?id=21389
-   * 
-   * @param element The custom element instance into whose controller (parent)
-   * scope styles will be installed.
-   * @param elementElement The <element> containing controller styles.
-  */
-  // TODO(sorvell): remove when spec issues are addressed
-  function installControllerStyles(element, elementElement) {
-    if (!elementElement.controllerStyle) {
-      elementElement.controllerStyle = styleFromElement(elementElement,
-        STYLE_CONTROLLER_SCOPE);
-    }
-    var styleElement = elementElement.controllerStyle;
-    var scope = findStyleController(element);
-    // apply controller styles only if they are not yet applied
-    if (scope && !scopeHasElementStyle(scope, element, 
-      STYLE_CONTROLLER_SCOPE)) {
-      Polymer.shimPolyfillDirectives([styleElement], element.localName);
-      applyStyleToScope(styleElement, scope);
-    }
-  }
-  
-  function scopeHasElementStyle(scope, element, descriptor) {
-    return scope.querySelector('style[' + STYLE_SCOPE_ATTRIBUTE + '=' + 
-      element.localName + '-' + descriptor + ']');
-  }
+  };
   
   function cssTextFromElement(elementElement, descriptor) {
     var cssText = '';
@@ -188,7 +186,6 @@
       return matches.call(node, inSelector);
     }
   }
-
   var p = HTMLElement.prototype;
   var matches = p.matches || p.matchesSelector || p.webkitMatchesSelector 
       || p.mozMatchesSelector;
@@ -200,6 +197,8 @@
 
   // exports
 
+  scope.api.declarative.styles = styles;
+  
   scope.installSheets = installSheets;
   scope.installControllerStyles = installControllerStyles;
   
