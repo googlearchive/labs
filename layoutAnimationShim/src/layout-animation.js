@@ -44,6 +44,7 @@ var classNum=0;
 function setupShadowContainer(target, root) {
   var parent = root.parentElement;
   var shadowRoot = parent.webkitShadowRoot;
+  console.log(shadowRoot);
   if (shadowRoot == null) {
     shadowRoot = parent.webkitCreateShadowRoot();
     shadowRoot.applyAuthorStyles = true;
@@ -65,13 +66,14 @@ function setupShadowContainer(target, root) {
     }
   } else {
     for (var i = 0; i < target.classList.length; i++) {
-      if (target.classList[i].substring(0, 6) == "scflt_") {
+      if (target.classList[i].substring(0, 7) == "scflt_") {
         var newSel = '.' + target.classList[i];
         break;
       }
     }
   }
 
+  console.log(newSel);
 
   if (target != root) {
     var newSel = ".scflt_" + classNum;
@@ -80,6 +82,7 @@ function setupShadowContainer(target, root) {
     var content = document.createElement("div");
     var contentChild = document.createElement("content");
     contentChild.setAttribute("select", newSel);
+    contentChild.classList.add(newSel.substring(1));
     content.appendChild(contentChild);
     target.classList.add(newSel);
     var parentDiv = document.createElement("div");
