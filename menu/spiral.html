@@ -6,7 +6,7 @@ license that can be found in the LICENSE file.
 -->
 <html>
 <head>
-  <script src="../polymer/polymer.js"></script>
+  <script src="../../polymer/polymer.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -14,8 +14,11 @@ license that can be found in the LICENSE file.
       height: 100%;
       text-align: center;
     }
+    body {
+      font-family: Arial, Consolas, Helvetica, sans-serif;
+    }
   </style>
-  <link rel="import" href="../polymer-elements/polymer-ajax/polymer-ajax.html">
+  <link rel="import" href="../../polymer-elements/polymer-ajax/polymer-ajax.html">
 </head>
 <body>
   <polymer-element name="x-cover" attributes="ry ty">
@@ -24,10 +27,11 @@ license that can be found in the LICENSE file.
         @host{*{
           display: block;
           position: absolute;
-          width: 128px;
-          height: 96px;
+          border-radius: 16px;
+          border: px solid #666666;
           -webkit-backface-visibility: hidden;
           -webkit-transform-origin: center center -600px;
+          overflow: hidden;
         }}
       </style>
       <content></content>
@@ -36,10 +40,10 @@ license that can be found in the LICENSE file.
       Polymer('x-cover', {
         display: '',
         ready: function() {
-          //this.display = 'none';
+          this.display = 'none';
         },
         ryChanged: function() {
-          this.style.webkitTransform = 'translateX(436px) translateY(' + (436 + this.ty) + 'px) rotateY(' + this.ry + 'deg)';
+          this.style.webkitTransform = 'translateX(-50%) translateX(500px) translateY(-50%) translateY(' + (400 + this.ty) + 'px) rotateY(' + this.ry + 'deg)';
         },
         displayChanged: function() {
           this.style.display = this.display;
@@ -53,51 +57,51 @@ license that can be found in the LICENSE file.
       <style>
         @host{*{
           display: block;
-          width: 1000px;
-          height: 1000px;
+          width: 100%;
+          height: 100%;
           position: relative;
           border: 3px solid lightblue;
-          -webkit-perspective: 2000px; 
+          -webkit-perspective: 1000px; 
           -webkit-transform-style: preserve-3d;
           -webkit-transform: scale(1.0);
         }}
       </style>
-      <div style="">
-        <content id="content" select="x-cover"></content>
-      </div>
+      <content id="content" select="x-cover"></content>
     </template>
     <script>
       Polymer('x-spiral', {
         off: 0,
         ready: function() {
-          var o = new MutationObserver(this.update.bind(this));
-          o.observe(this, {childList: true});
+          new MutationObserver(this.childrenChanged.bind(this)).observe(this, {childList: true});
         },
-        update: function() {
+        childrenChanged: function() {
           var off = this.off;
-          this.$.content.getDistributedNodes().forEach(function(n, i) {
+          this.children.forEach(function(n, i) {
             i += off;
             if (i < -80 || i > 140) {
               n.display = 'none';
               return;
             }
-            n.ry = Math.floor(i * 18 * 1000) / 1000;
-            n.ty = Math.floor(i * 8 * 1000) / 1000;
+            //
+            n.ry = Math.floor(i * 18 * 1e5) / 1e5;
+            n.ty = Math.floor(i * 8 * 1e5) / 1e5;
             n.display = '';
+            //
+            n.ryChanged();
+            n.displayChanged();
           });
-          Platform.flush();
         }
       });
     </script>
   </polymer-element>
   <!-- -->
-  <polymer-element name="x-menu" on-track="track" on-trackEnd="trackEnd" touch-action="none">
+  <polymer-element name="x-menu" attributes="xml" on-track="track" on-trackEnd="trackEnd" touch-action="none">
     <template>
       <style>
         @host{*{
           display: inline-block;
           -webkit-user-select: none;
-          height: 1000px;
+          height: 800px;
           width: 1000px;
           background-color: whitesmoke;
         }}
@@ -111,8 +115,9 @@ license that can be found in the LICENSE file.
       
       <button on-tap="spin">Spin Down</button><button id="up" on-tap="spin">Spin Up</button>
       <x-spiral id="spiral" off="{{off}}">
-        <template repeat="{{covers}}">
-          <x-cover><img draggable="false" src="http://itch.selfip.net/~sjmiles/polymer/polymer-all/UberMenu/snap/{{}}" width="128px" height="96px"><div style="text-align:center;">{{}}</div></x-cover>
+        <template repeat="{{games}}">
+          <x-cover><img draggable="false" src="http://itch.selfip.net/hyper/Media/MAME/snaps320/{{name}}.png" width="160px" height="120px">
+          <div style="text-align:center; padding: 4px 8px 8px;">{{description}} ({{year}})</div></x-cover>
         </template>
       </x-spiral>
       <button on-tap="spin">Spin Down</button><button id="up" on-tap="spin">Spin Up</button>
@@ -120,6 +125,7 @@ license that can be found in the LICENSE file.
     </template>
     <script>
       Polymer('x-menu', {
+        xml: null,
         off: 0,
         raw: '',
         ready: function() {
@@ -132,12 +138,13 @@ license that can be found in the LICENSE file.
           this.$.spiral.update();
         },
         track: function(event) {
-          this.off -= event.ddx / 30;
-          this.async(function(){});
+          this.off += event.ddx / 60;
+          Platform.flush();
         },
         trackEnd: function(event) {
-          this.dir = -event.xDirection;
+          this.dir = event.xDirection;
           this.mo = Math.abs(event.dx) / 70;
+          this.falloff();
         },
         spin: function(event) {
           this.dir = event.target.id === 'up' ? -1 : 1;
@@ -151,7 +158,8 @@ license that can be found in the LICENSE file.
             if (this.mo < 1e-2) {
               this.mo = 0;
             }
-            this.async(this.falloff);
+            this.update();
+            requestAnimationFrame(this.falloff.bind(this));
           }
         },
         rawChanged: function() {
@@ -160,11 +168,34 @@ license that can be found in the LICENSE file.
           for (var i=0; i<500; i++) {
             this.covers.push(names[i % 150]);
           }
+        },
+        xmlChanged: function() {
+          this.games = this.xml.querySelectorAll('game').array().map(function(g) {
+            var o = {
+              name: g.getAttribute('name'),
+              description: g.querySelector('description').textContent.slice(0, 16),
+              year: g.querySelector('year').textContent
+            };
+            var snaps = ['1944', 'aburner', 'alexkidd', 'marble2', 'stmblade', 'lwings', 'pang', 'puckman'];
+            o.name = snaps[Math.floor(Math.random() * snaps.length)];
+            return o;
+          });
+          this.games = this.games.slice(0, 1000);
         }
       });
     </script>
   </polymer-element>
   <!-- -->
   <x-menu></x-menu>
+  <polymer-ajax id="ajax" url="databases/MAME.xml" handleAs="xml" response="{{xml}}" auto></polymer-ajax>
+  <script>
+    addEventListener('WebComponentsReady', function() {
+      Platform.flush();
+    });
+    ajax.addEventListener('polymer-response', function(event) {
+      document.querySelector('x-menu').xml = event.detail.response;
+      Platform.flush();
+    });
+  </script>
 </body>
 </html>
