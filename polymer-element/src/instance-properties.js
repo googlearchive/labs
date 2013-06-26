@@ -140,11 +140,6 @@
 
   // exports
 
-  //scope.bindProperties = bindProperties;
-  //scope.registerObserver = registerObserver;
-  //scope.unregisterObserver = unregisterObserver;
-  //scope.unregisterObserversOfType = unregisterObserversOfType;
-
-  scope.api.properties = properties;
+  scope.api.instance.properties = properties;
   
 })(Polymer);

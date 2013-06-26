@@ -96,8 +96,6 @@
 
     // exports
     
-    scope.api.super = {
-      super: $super
-    };
+    scope.super = $super;
     
   })(Polymer);

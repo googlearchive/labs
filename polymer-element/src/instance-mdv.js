@@ -11,14 +11,13 @@
 
   // use an MDV syntax
     
-  var SYNTAX = 'MDV';
-  HTMLTemplateElement.syntax[SYNTAX] = new MDVSyntax();
+  var mdv_syntax = new ExpressionSyntax();
 
   // element api supporting mdv
 
   var mdv = {
     instanceTemplate: function(template) {
-      return template.createInstance(this, SYNTAX);
+      return template.createInstance(this, mdv_syntax);
     },
     // custom MDV entry point (overrides [at least] `HTMLElement.prototype.bind`)
     bind: function(name, model, path) {
@@ -103,9 +102,6 @@
   // exports
 
   scope.bindPattern = mustachePattern;
-  scope.api.mdv = mdv;
-
-  //scope.registerBinding = registerBinding;
-  //scope.unregisterBinding = unregisterBinding;
+  scope.api.instance.mdv = mdv;
   
 })(Polymer);
