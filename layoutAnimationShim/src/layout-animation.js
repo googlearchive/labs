@@ -549,6 +549,11 @@ function setPositions(target, name) {
     return;
   }
   
+  var rect = sensePosition(target);
+  setPosition(target, rect, name);
+}
+
+function sensePosition(target) {
   var rect = cloneRect(target.getBoundingClientRect());
   var parent = target.parentElement;
   while (parent) {
@@ -563,8 +568,9 @@ function setPositions(target, name) {
     rect.top -= parentRect.top;
     rect.left -= parentRect.left;
   }
-  setPosition(target, rect, name);
+  return rect;
 }
+
 
 // Convert CSS Strings to numbers.
 // Maybe its time to think about exposing some of the core CSS emulation functionality of Web Animations?
@@ -900,4 +906,73 @@ function transitionThis(action) {
 
   // get rid of all the junk
   cleanup();
+}
+
+function cacheCopy(element, state, copy) {
+  if (!(element._copyCache)) {
+    element._copyCache = {}
+  }
+  element._copyCache[state] = copy;
+}
+
+function removeCopy(element, state) {
+  if (!(element._copyCache)) {
+    return;
+  }
+  element._copyCache[state] = undefined;
+}
+
+function getCopy(element, state) {
+  if (!(element._copyCache)) {
+    return;
+  }
+  return element._copyCache[state];
+}
+
+function generateCopy(element, state) {
+  var rect = sensePosition(element);
+  setPosition(target, rect, state);
+  var fromPosition = boundingRectToContentRect(element);
+  if (element != root) {
+    var parent = element.parentElement;
+    while (parent != root.parentElement) {
+      var style = getComputedStyle(parent);
+      if (style.position == "relative" || style.position == "absolute") {
+        fromPosition.left += v(style.left);
+        fromPosition.top += v(style.top);
+      }
+      parent = parent.parentElement;
+    } 
+  }
+  var from = cloneElementToSize(element, fromPosition);
+
+  cacheCopy(element, state, from);
+}
+
+function showCopy(element, state) {
+  var copy = getCopy(element, state);
+  document.documentElement.appendChild(copy);
+  return copy;
+}
+
+function hideCopy(element, state) {
+  var copy = getCopy(element, state);
+  document.documentElement.removeChild(copy);
+}
+
+function cloneElementToSize(node, rect, hide) {
+  var div = document.createElement("div");
+  var nodeStyle = window.getComputedStyle(node);
+  div.setAttribute("style", nodeStyle.cssText);
+  if (hide) {
+    div.style.opacity = "0";
+  }
+  div.style.position = "absolute";
+  div.style.left = rect.left + 'px';
+  div.style.top = rect.top + 'px';
+  div.style.width = rect.width + 'px';
+  div.style.height = rect.height + 'px';
+  div.innerHTML = node.innerHTML;
+
+  return div;
 }
