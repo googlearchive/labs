@@ -1,2 +1,19 @@
 <!DOCTYPE html>
 <script src="endOfMicroTask.js"></script>
+<script>
+  function timer(type) {
+    var start = performance.now();
+    return function() {
+      var end = performance.now();
+      console.log('type:', type, 'start:', start, 'end:', end, 'elapsed:', end - start);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    endOfMicroTask(timer('EoMT'));
+    requestAnimationFrame(timer('rAF'));
+    setTimeout(timer('timeout'), 0);
+    window.onmessage = timer('postMessage');
+    window.postMessage('', '*');
+  });
+</script>
