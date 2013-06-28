@@ -598,11 +598,6 @@ function boundingRectToReplacementRect(element, rect) {
 
 function findMovedElements(list) {
   return list.filter(function(listItem) {
-    listItem.shadow.placeholder = createShadowPlaceholder(listItem.shadow, listItem, listItem._transitionAfter);
-    if (listItem.shadow.content.parentElement) {
-      listItem.shadow.parent.removeChild(listItem.shadow.content);
-    }
-    listItem.shadow.content.style.opacity = "1";
     if (rectEquals(listItem._transitionBefore, listItem._transitionAfter)) {
       return false;
     }
@@ -723,20 +718,6 @@ function positionListFromKeyframes(keyframes, element) {
   return positions;
 }
 
-/*
-function walkTrees(element, copy, fun) {
-  var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-  var copyWalker = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-
-  while (treeWalker.nextNode()) {
-    copyWalker.nextNode();
-    fun(treeWalker.currentNode, copyWalker.currentNode);
-  }
-}
-*/
-
 function updateContentTagOrder(tree) {
   // The tree is in DOM order, so we shouldn't ever have to revisit a container.
   var container;
@@ -813,18 +794,17 @@ function makePositionListRelative(list, parentList) {
 // of the to state. This is performed in the animation generation functions directly.
 function transitionThis(action) {
   // record positions before action
-  setPositions(transitionable, '_transitionBefore');
+  transitionable.map(function(element) { ensureCopy(element, '_transitionBefore'); });
+
   // construct transition tree  
   var tree = buildTree(transitionable);
-  // duplicate divs before action
-  createCopies(tree);
+  
   // move to new position
   action();
-  // update content tag order if action() has caused DOM changes
-  updateContentTagOrder(tree);
 
   // record positions after action
-  setPositions(transitionable, '_transitionAfter');
+  transitionable.map(function(element) { ensureCopy(element, '_transitionAfter'); });
+
   // put everything back
   // note that we don't need to do this for all transition types, but
   // by doing it here we avoid a layout flicker.
@@ -851,12 +831,6 @@ function transitionThis(action) {
         list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
       }
       
-      walkTrees(list[i], list[i].shadow.from, function(child, copy) {
-        if (child._transitionParent == list[i]) {
-          copy.style.opacity = "0";
-        }
-      });
-
       if (list[i]._layout.outer == list[i]._layout.inner) {
         generator = animationGenerator(list[i]._layout.outer);
       } else {
@@ -931,22 +905,29 @@ function getCopy(element, state) {
 
 function generateCopy(element, state) {
   var rect = sensePosition(element);
-  setPosition(target, rect, state);
-  var fromPosition = boundingRectToContentRect(element);
-  if (element != root) {
-    var parent = element.parentElement;
-    while (parent != root.parentElement) {
-      var style = getComputedStyle(parent);
-      if (style.position == "relative" || style.position == "absolute") {
-        fromPosition.left += v(style.left);
-        fromPosition.top += v(style.top);
-      }
-      parent = parent.parentElement;
-    } 
-  }
+  setPosition(element, rect, state);
+  var fromPosition = boundingRectToContentRect(element, rect);
+  // TODO: This used to be guarded so that it only executed if this
+  // element wasn't the root in the layout transition tree.
+  var parent = element.parentElement;
+  while (parent && !parent._layout) {
+    var style = getComputedStyle(parent);
+    if (style.position == "relative" || style.position == "absolute") {
+      fromPosition.left += v(style.left);
+      fromPosition.top += v(style.top);
+    }
+    parent = parent.parentElement;
+  } 
   var from = cloneElementToSize(element, fromPosition);
 
   cacheCopy(element, state, from);
+}
+
+function ensureCopy(element, state) {
+  if (getCopy(element, state)) {
+    return;
+  }
+  generateCopy(element, state);
 }
 
 function showCopy(element, state) {
