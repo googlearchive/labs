@@ -9,11 +9,13 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    endOfMicroTask(timer('EoMT'));
-    requestAnimationFrame(timer('rAF'));
-    setTimeout(timer('timeout'), 0);
-    window.onmessage = timer('postMessage');
-    window.postMessage('', '*');
+  endOfMicroTask(function() {
+    console.log(eomtNode.textContent === '0');
+    console.log('outer');
+    endOfMicroTask(function() {
+      console.log(eomtNode.textContent === '1');
+      console.log('inner');
+      endOfMicroTask(function(){ return a.b });
+    });
   });
 </script>
