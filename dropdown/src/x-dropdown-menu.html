@@ -7,8 +7,8 @@
     <button class="dropdown-button" on-tap="toggle">
       <div>{{output}}</div><img src="arrow_down.png">
     </button>
-    <div class="menu-container">
-      <polymer-ui-menu id="menu" hidden?="{{!show}}" multi="{{multi}}" valueattr="{{valueattr}}" on-polymer-select="selectionChange">
+    <div class="menu-container" hidden?="{{!show}}">
+      <polymer-ui-menu id="menu" multi="{{multi}}" valueattr="{{valueattr}}" on-polymer-select="selectionChange">
         <content></content>
       </polymer-ui-menu>
     </div>
@@ -19,8 +19,10 @@
       valueattr: 'label',
       toggle: function() {
         this.show = !this.show;
+        this.enableCaptureHandler(this.show);
       },
-      selectionChange: function() {
+      selectionChange: function(e) {
+        console.log('selectionChange', e.detail.isSelected, e.detail.item && e.detail.item.label)
         var s = this.$.menu.selection;
         if (this.multi) {
           this._value = [];
@@ -48,6 +50,17 @@
             }.bind(this));
         } else {
           this.$.menu.valueToSelection(this.value);
+        }
+      },
+      enableCaptureHandler: function(enable) {
+        document[enable ? 'addEventListener' : 'removeEventListener'](
+            'click', this.captureHandler.bind(this), true);
+      },
+      captureHandler: function(e) {
+        if ((this != e.target) && !(this.contains(e.target))) {
+          this.autoCloseJob = this.job(this.autoCloseJob, function() {
+            this.show = false;
+          });
         }
       }
     });

@@ -44,14 +44,13 @@
 	min-width: 100px;
 	z-index: 1;
   background: white;
-}
-
-.menu-container > polymer-ui-menu {
+  max-height: 372px;
+  overflow: auto;
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-polymer-ui-menu[hidden] {
+.menu-container[hidden] {
 	display: none !important;
 }
 
