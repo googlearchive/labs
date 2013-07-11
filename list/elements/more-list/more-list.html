@@ -1,0 +1,46 @@
+<polymer-element name="more-list" attributes="items pageSize">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+      }
+      
+      .item {
+        height: 60px;
+        line-height: 60px;
+        border-bottom: 1px solid #ccc;
+        padding: 0 20px;
+      }
+      
+      #more {
+        height: 60px;
+        line-height: 60px;
+        padding: 0 20px;
+        background: #ccc;
+      }
+    </style>
+    <template repeat="{{viewItems}}">
+      <div class="item">{{label}}</div>
+    </template>
+    <div id="more" on-tap="loadMore" hidden?="{{viewItems.length >= items.length}}">Load more items</div>
+  </template>
+  <script>
+    Polymer('more-list', {
+      pageSize: 100,
+      itemsChanged: function() {
+        if (this.items && this.pageSize > 0) {
+          this.viewItems = this.items.slice(0, this.pageSize);
+        }
+      },
+      loadMore: function() {
+        var l = this.viewItems.length;
+        var more = this.items.slice(l, l + this.pageSize);
+        this.viewItems.push.apply(this.viewItems, more);
+      },
+    });
+  </script>
+</polymer-element>
