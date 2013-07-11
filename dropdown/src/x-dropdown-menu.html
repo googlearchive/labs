@@ -1,0 +1,55 @@
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html">
+
+<polymer-element name="x-dropdown-menu" attributes="value multi">
+  <template>
+    <link rel="stylesheet" href="x-dropdown-menu.css">
+    <button class="dropdown-button" on-tap="toggle">
+      <div>{{output}}</div><img src="arrow_down.png">
+    </button>
+    <div class="menu-container">
+      <polymer-ui-menu id="menu" hidden?="{{!show}}" multi="{{multi}}" valueattr="{{valueattr}}" on-polymer-select="selectionChange">
+        <content></content>
+      </polymer-ui-menu>
+    </div>
+  </template>
+  <script>
+    Polymer('x-dropdown-menu', {
+      multi: false,
+      valueattr: 'label',
+      toggle: function() {
+        this.show = !this.show;
+      },
+      selectionChange: function() {
+        var s = this.$.menu.selection;
+        if (this.multi) {
+          this._value = [];
+          s.forEach(function(item) {
+            this._value.push(item[this.valueattr]);
+          }.bind(this));
+        } else {
+          this._value = s[this.valueattr];
+        }
+      },
+      get value() {
+        return this._value || null;
+      },
+      set value(value) {
+        this._value = value;
+        this.asyncMethod('updateSelection');
+      },
+      valueChanged: function() {
+        this.output = this.multi ? this.value.join(',') : this.value;
+      },
+      updateSelection: function() {
+        if (this.multi) {
+          this.value.forEach(function(v) {
+            this.$.menu.valueToSelection(v);
+            }.bind(this));
+        } else {
+          this.$.menu.valueToSelection(this.value);
+        }
+      }
+    });
+  </script>
+</polymer-element>
