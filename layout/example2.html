@@ -29,52 +29,58 @@ license that can be found in the LICENSE file.
       padding: 4px;
     }
     
-    .header, .info, .toc, .main, .footer {
-      border: 1px solid #ccc;
+    #header, #info, #toc, #main, #footer {
+      border: 4px solid #aaa;
       padding: 10px;
       margin: 4px;
+      font-size: 24px;
+      font-weight: bold;
     }
     
-    .header {
+    #header {
       min-height: 80px;
       min-width: 120px;
+      background: #ccc;
     }
     
-    .toc {
+    #toc {
       min-width: 300px;
       min-height: 160px;
+      background: lightblue;
     }
     
-    .info {
+    #info {
       min-height: 100px;
+      background: lightgreen;
     }
     
-    .footer {
+    #footer {
       min-height: 60px;
+      background: yellow;
     }
   </style>
 </head>
 <body>
   <g-layout>
-    <div class="header">Header</div>
-    <div class="info">Info</div>
-    <div class="toc">TOC</div>
-    <div class="main">Main</div>
-    <div class="footer">Footer</div>
+    <div id="header">Header</div>
+    <div id="info">Info</div>
+    <div id="toc">TOC</div>
+    <div id="main">Main</div>
+    <div id="footer">Footer</div>
   </g-layout>
   
   <script>
     landscape =
       {flex: 1, flow: 'column', items: [
-        {index: 1},
+        {id: 'header'},
         {flex: 1, items: [
           {flow: 'column', items: [
-            {index: 2, flex: 1}, 
-            {index: 3, flex: 2}
+            {id: 'info', flex: 1}, 
+            {id: 'toc', flex: 2}
           ]}, 
           {flex: 1, flow: 'column', items: [
-            {index: 4, flex: 1},
-            {index: 5}
+            {id: 'main', flex: 1},
+            {id: 'footer'}
           ]}
         ]}
       ]};
@@ -82,11 +88,11 @@ license that can be found in the LICENSE file.
     portrait =
       {flex: 1, flow: 'column', items: [
         {items: [
-          {index: 3, flex: 1},
-          {index: 1}]},
-        {index: 4, flex: 1},
-        {index: 2},
-        {index: 5}
+          {id: 'toc', flex: 1},
+          {id: 'header'}]},
+        {id: 'main', flex: 1},
+        {id: 'info'},
+        {id: 'footer'}
       ]};
     
     myLayout = document.querySelector('g-layout');

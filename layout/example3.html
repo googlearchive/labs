@@ -20,7 +20,7 @@ license that can be found in the LICENSE file.
       margin: 0;
     }
     
-    #g0 {
+    #section {
       position: absolute;
       top: 0;
       right: 0;
@@ -29,7 +29,7 @@ license that can be found in the LICENSE file.
       padding: 4px;
     }
     
-    .box {
+    .section {
       border: 1px solid #ccc;
       padding: 30px;
       margin: 4px;
@@ -37,66 +37,81 @@ license that can be found in the LICENSE file.
   </style>
 </head>
 <body>
-  <g-layout id="g0">
-    <div class="box">1</div>
-    <div class="box">2</div>
-    <g-layout id="g3">
-      <div class="box">3.1</div>
-      <div class="box">3.2</div>
-      <div class="box">3.3</div>
-      <g-layout id="g34">
-        <div class="box">3.4.1</div>
-        <div class="box">3.4.2</div>
-        <div class="box">3.4.3</div>
-        <div class="box">3.4.4</div>
-        <div class="box">3.4.5</div>
+  <g-layout id="section">
+    <div id="section1" class="section">1</div>
+    <div id="section2" class="section">2</div>
+    <g-layout id="section3">
+      <div id="section3_1" class="section">3.1</div>
+      <div id="section3_2" class="section">3.2</div>
+      <div id="section3_3" class="section">3.3</div>
+      <g-layout id="section3_4">
+        <div id="section3_4_1" class="section">3.4.1</div>
+        <div id="section3_4_2" class="section">3.4.2</div>
+        <div id="section3_4_3" class="section">3.4.3</div>
+        <div id="section3_4_4" class="section">3.4.4</div>
+        <div id="section3_4_5" class="section">3.4.5</div>
       </g-layout>
-      <div class="box">3.5</div>
+      <div id="section3_5" class="section">3.5</div>
     </g-layout>
-    <g-layout id="g4">
-      <div class="box">4.1</div>
-      <div class="box">4.2</div>
-      <div class="box">4.3</div>
-      <div class="box">4.4</div>
-      <div class="box">4.5</div>
+    <g-layout id="section4">
+      <div id="section4_1" class="section">4.1</div>
+      <div id="section4_2" class="section">4.2</div>
+      <div id="section4_3" class="section">4.3</div>
+      <div id="section4_4" class="section">4.4</div>
+      <div id="section4_5" class="section">4.5</div>
     </g-layout>
-    <div class="box">5</div>
+    <div id="section5" class="section">5</div>
   </g-layout>
   
   <script>
-    layout1 = 
+    layout0 =
       {flex: 1, flow: 'column', items: [
-        {index: 1}, {index: 2}, {index: 3, flex: 1}, {index: 4}, {index: 5}
-      ]};
-
-    layout2 =
-      {flex: 1, flow: 'column', items: [
-        {index: 1},
+        {id: 'section1'},
         {flex: 1, items: [
-          {index: 2}, {index: 3, flex: 1}, {index: 4}
+          {id: 'section2'}, 
+          {id: 'section3', flex: 1}, 
+          {id: 'section4'}
         ]},
-        {index: 5}
+        {id: 'section5'}
       ]};
     
     layout3 =
       {flex: 1, flow: 'column', items: [
         {flex: 1, items: [
           {flex: 1, flow: 'column', items: [
-            {index: 1}, {index: 2, flex: 2}, {index: 3, flex: 1}
+            {id: 'section3_1'}, 
+            {id: 'section3_2', flex: 2}, 
+            {id: 'section3_3', flex: 1}
           ]},
-          {index: 4, flex: 3}
+          {id: 'section3_4', flex: 3}
         ]},
-        {index: 5}
+        {id: 'section3_5'}
       ]};
     
-    g0 = document.querySelector('#g0');
-    g3 = document.querySelector('#g3');
-    g34 = document.querySelector('#g34');
-    g4 = document.querySelector('#g4');
-    g0.layout = layout2;
-    g3.layout = layout3;
-    g34.layout = layout2;
-    g4.layout = layout1;
+    layout3_4 = 
+      {flex: 1, flow: 'column', items: [
+        {id: 'section3_4_1'},
+        {flex: 1, items: [
+          {id: 'section3_4_2'}, 
+          {id: 'section3_4_3', flex: 1}, 
+          {id: 'section3_4_4'}
+        ]},
+        {id: 'section3_4_5'}
+      ]};
+    
+    layout4 = 
+      {flex: 1, flow: 'column', items: [
+        {id: 'section4_1'}, 
+        {id: 'section4_2'}, 
+        {id: 'section4_3', flex: 1}, 
+        {id: 'section4_4'}, 
+        {id: 'sectionk4_5'}
+      ]};
+    
+    document.querySelector('#section').layout = layout0;
+    document.querySelector('#section3').layout = layout3;
+    document.querySelector('#section3_4').layout = layout3_4;
+    document.querySelector('#section4').layout = layout4;
   </script>
 </body>
 </html>

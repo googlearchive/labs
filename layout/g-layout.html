@@ -3,32 +3,7 @@ Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<element name="g-layout-template">
-  <template id="layoutTemplate">
-    <template bind="{{}}" if="{{index}}">
-      <div class="content" style="-webkit-flex: {{flex}};">
-        <content select=":nth-child({{index}})"></content>
-      </div>
-    </template>
-    <template bind="{{}}" if="{{items}}">
-      <div class="flexbox {{flow}}" style="-webkit-flex: {{flex}};">
-        <template repeat="{{items}}">
-          <template ref="layoutTemplate" bind="{{}}"></template>
-        </template>
-      </div>
-    </template>
-  </template>
-  
-  <script>
-    // MDV ref search for source template in the ownerDocument.
-    // So here we add the template to the document.body so it can be found.
-    // https://github.com/Polymer/mdv/issues/33
-    var t = this.querySelector('[id=layoutTemplate]');
-    document.body.appendChild(t);
-  </script>
-</element>
-
-<element name="g-layout" attributes="layout">
+<polymer-element name="g-layout" attributes="layout">
   <template>
     <style>
       @host {
@@ -49,25 +24,24 @@ license that can be found in the LICENSE file.
       .content > * {
         -webkit-flex: 1;
       }
-    </style>
-    <template ref="layoutTemplate" bind="{{layout}}"></template>
-  </template>
-  
-  <!-- Styling to apply to element children. This should be removed
-  when the :root pseudo selector is available.
-  https://www.w3.org/Bugs/Public/show_bug.cgi?id=21389 -->
-  <style polymer-scope="controller">
-    g-layout > * {
-      -webkit-flex: 1;
-    }
-  </style>
-  
-  <script>
-    var element = this;  
-    Polymer.register(this, {
-      ready: function() {
-        Polymer.installControllerStyles(this, element);
+      /*@polyfill @host > * */
+      content::-webkit-distributed(> *) {
+        -webkit-flex: 1;
       }
-    });
-  </script>
-</element>
+    </style>
+    <template id="layoutTemplate" bind="{{layout}}">
+      <template if="{{id}}">
+        <div class="content" style="-webkit-flex: {{flex}};">
+          <content select="#{{id}}"></content>
+        </div>
+      </template>
+      <template if="{{items}}">
+        <div class="flexbox {{flow}}" style="-webkit-flex: {{flex}};">
+          <template repeat="{{items}}">
+            <template ref="layoutTemplate" bind></template>
+          </template>
+        </div>
+      </template>
+    </template>
+  </template>
+</polymer-element>

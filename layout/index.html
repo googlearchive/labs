@@ -11,23 +11,35 @@ license that can be found in the LICENSE file.
   <title>layout examples</title>
 </head>
 <body>
-  <b>g-layout</b> uses Shadow DOM, MDV and CSS flexbox to acheive different layouts.
-  It creates flex boxes inside shadow root and with Shadow DOM distribution allows for
-  complex layout without needing to alter the DOM structure in the &lt;g-layout&gt; element.
+  <b>g-layout</b> uses Shadow DOM, MDV and CSS flexbox to acheive many different layouts.
   <h4>Examples:</h4>
+  <pre>
+    &lt;g-layout id="myapp"&gt;
+    &nbsp;&nbsp;&lt;div id="header"&gt;1&lt;/div&gt;
+    &nbsp;&nbsp;&lt;div id="info"&gt;2&lt;/div&gt;
+    &nbsp;&nbsp;&lt;div id="toc"&gt;3&lt;/div&gt;
+    &nbsp;&nbsp;&lt;div id="main"&gt;4&lt;/div&gt;
+    &nbsp;&nbsp;&lt;div id="footer"&gt;5&lt;/div&gt;
+    &lt;/g-layout&gt;
+  </pre>
+  <pre>
+    myapp.layout =
+      {flex: 1, flow: 'column', items: [
+        {id: 'header'},
+        {flex: 1, items: [
+          {flow: 'column', items: [
+            {id: 'info', flex: 1}, 
+            {id: 'toc', flex: 2}
+          ]}, 
+          {flex: 1, flow: 'column', items: [
+            {id: 'main', flex: 1},
+            {id: 'footer'}
+          ]}
+        ]}
+      ]};
+  </pre>
   <ul>
-    <li>
-      <a href="example1.html">Apply different layouts to a &lt;g-layout&gt; element that contains 5 children</a><br>
-      <pre>
-        &lt;g-layout&gt;<br>
-        &nbsp;&nbsp;&lt;div class="box"&gt;1&lt;/div&gt;<br>
-        &nbsp;&nbsp;&lt;div class="box"&gt;2&lt;/div&gt;<br>
-        &nbsp;&nbsp;&lt;div class="box"&gt;3&lt;/div&gt;<br>
-        &nbsp;&nbsp;&lt;div class="box"&gt;4&lt;/div&gt;<br>
-        &nbsp;&nbsp;&lt;div class="box"&gt;5&lt;/div&gt;<br>
-        &lt;/g-layout&gt;<br>
-      </pre>
-    </li>
+    <li><a href="example1.html">Apply different layouts to the &lt;g-layout&gt; element</a></li><br>
     <li><a href="example2.html">Adapt to different layout when screen size changes</a></li><br>
     <li><a href="example3.html">Nested &lt;g-layout&gt;</a></li>
   </ul>

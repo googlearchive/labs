@@ -38,8 +38,8 @@ license that can be found in the LICENSE file.
       padding: 4px;
     }
     
-    .box {
-      border: 1px solid #ccc;
+    .section {
+      border: 4px solid #aaa;
       padding: 30px;
       margin: 4px;
     }
@@ -57,71 +57,83 @@ license that can be found in the LICENSE file.
     </select>
   </div>
   <g-layout>
-    <div class="box">1</div>
-    <div class="box">2</div>
-    <div class="box">3</div>
-    <div class="box">4</div>
-    <div class="box">5</div>
+    <div id="section1" class="section">1</div>
+    <div id="section2" class="section">2</div>
+    <div id="section3" class="section">3</div>
+    <div id="section4" class="section">4</div>
+    <div id="section5" class="section">5</div>
   </g-layout>
   
   <script>
     layout0 = 
       {flex: 1, flow: 'column', items: [
-        {index: 1}, {index: 2}, {index: 3}, {index: 4}, {index: 5}
+        {id: 'section1', flex: 1}, 
+        {id: 'section2', flex: 1}, 
+        {id: 'section3', flex: 1}, 
+        {id: 'section4', flex: 1}, 
+        {id: 'section5', flex: 1}
       ]};
 
     layout1 = 
       {flex: 1, flow: 'column', items: [
-        {index: 1}, {index: 2}, {index: 3, flex: 1}, {index: 4}, {index: 5}
+        {id: 'section1'}, 
+        {id: 'section2'}, 
+        {id: 'section3', flex: 1}, 
+        {id: 'section4'}, 
+        {id: 'section5'}
       ]};
 
     layout2 =
       {flex: 1, flow: 'column', items: [
-        {index: 1},
+        {id: 'section1'},
         {flex: 1, items: [
-          {index: 2}, {index: 3, flex: 1}, {index: 4}
+          {id: 'section2'}, 
+          {id: 'section3', flex: 1}, 
+          {id: 'section4'}
         ]},
-        {index: 5}
+        {id: 'section5'}
       ]};
     
     layout3 =
       {flex: 1, flow: 'column', items: [
         {flex: 1, items: [
           {flex: 1, flow: 'column', items: [
-            {index: 1}, {index: 2, flex: 2}, {index: 3, flex: 1}
+            {id: 'section1'}, 
+            {id: 'section2', flex: 2}, 
+            {id: 'section3', flex: 1}
           ]},
-          {index: 4, flex: 3}
+          {id: 'section4', flex: 3}
         ]},
-        {index: 5}
+        {id: 'section5'}
       ]};
     
     layout4 =
       {flex: 1, items: [
         {flex: 1, flow: 'column', items: [
-          {index: 1, flex: 1},
+          {id: 'section1', flex: 1},
           {flex: 1, items: [
-            {index: 2, flex: 1},
-            {index: 3}
+            {id: 'section2', flex: 1},
+            {id: 'section3'}
           ]}
         ]},
         {flex: 3, flow: 'column', items: [
-          {index: 4, flex: 1},
-          {index: 5}
+          {id: 'section4', flex: 1},
+          {id: 'section5'}
         ]}
       ]};
     
     layout5 =
       {flex: 1, flow: 'column', items: [
         {items: [
-          {index: 3, flex: 2},
-          {index: 1, flex: 1}
+          {id: 'section3', flex: 2},
+          {id: 'section1', flex: 1}
         ]},
         {flex: 1, items: [
           {flow: 'column', flex: 1, items: [
-            {index: 5},
-            {index: 2, flex: 1}
+            {id: 'section5'},
+            {id: 'section2', flex: 1}
           ]},
-          {index: 4, flex: 4}
+          {id: 'section4', flex: 4}
         ]}
       ]};
     
