@@ -8,11 +8,11 @@
 <link rel="import" href="../../toolkit-ui/elements/g-icon.html"/>
 <link rel="import" href="../../polymer-elements/polymer-animation/web-animations.html">
 <script src="../layoutAnimationShim/src/layout-animation.js"></script>
-<element name="pi-items-view" attributes="layout view items selected">
-  <link rel="stylesheet" href="../../projects/pica/components/css/pi-items-view.css" />
-  <link rel="stylesheet" href="../../projects/pica/components/css/pi-layout-flex.css" />
-  <link rel="stylesheet" href="../../projects/pica/components/css/pi-layout.css" />
+<polymer-element name="pi-items-view" attributes="layout view items selected">
   <template>
+    <link rel="stylesheet" href="../../projects/pica/components/css/pi-items-view.css" />
+    <link rel="stylesheet" href="../../projects/pica/components/css/pi-layout-flex.css" />
+    <link rel="stylesheet" href="../../projects/pica/components/css/pi-layout.css" />
     <div id="container" loaded="{{loaded}}" class="{{view}}">
       <template repeat="{{viewItems}}">
         <div class="item">
@@ -35,7 +35,7 @@
         </div>
       </template>
       <div id="more" on-tap="loadMore">
-        <g-icon src="../images/refresh_lightreg.png"></g-icon>
+        <g-icon src="../../projects/pica/images/refresh_lightreg.png"></g-icon>
           Load more articles
       </div>
     </div>
@@ -53,7 +53,7 @@
       return maxX;
     }
     
-    Polymer.register(this, {
+    Polymer('pi-items-view', {
       layout: 'grid',
       loaded: true,
       pageSize: 24,
@@ -325,4 +325,4 @@
       }
     });
   </script>
-</element>
+</polymer-element>

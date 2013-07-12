@@ -14,6 +14,7 @@
   <link rel="import" href="../../projects/pica/components/pi-toolbar-buttons.html"/>
   <link rel="import" href="../../projects/pica/components/pi-toolbar.html"/>
   <link rel="import" href="pi-items-view-layout-animation.html"/>
+  <!--<link rel="import" href="../../projects/pica/components/pi-items-view.html"/>//-->
 	<script src="../../polymer/polymer.js"></script>
   <style>
     html, body {
@@ -26,7 +27,7 @@
   </style>
 </head>
 <body>
-	<element name="pi-item-view-layout-animations" attributes="layout">
+	<polymer-element name="pi-item-view-layout-animations" attributes="layout">
 		<template>
 			<style>
 				pi-toolbar {
@@ -47,7 +48,7 @@
 			<pi-items-view id="itemsView" layout="{{layout}}"></pi-items-view>
 		</template>
 		<script>
-			Polymer.register(this, {
+			Polymer('pi-item-view-layout-animations', {
 				count: 200,
 				feed: [
 					{feed: 'http://www.theverge.com/rss/index.xml'},
@@ -63,7 +64,7 @@
 				}
 			});
 		</script>
-	</element>
+	</polymer-element>
 	<pi-item-view-layout-animations></pi-item-view-layout-animations>
 </body>
 </html>
