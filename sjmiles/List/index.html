@@ -1,0 +1,69 @@
+﻿<!doctype html>
+<html>
+<head>
+  <title>List</title>
+  <script src="../../../polymer/polymer.js"></script>
+</head>
+<body>
+  <polymer-element name="list-item" attributes="item">
+    <template>
+      <b>{{item}}</b>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="list-list" attributes="items offset limit">
+    <template>
+      <template repeat="{{live}}">
+        <list-item style="display: block;" item="{{}}"></list-item>
+      </template>
+    </template>
+    <script>
+      Polymer('list-list', {
+        offset: 0,
+        limit: 50,
+        items: null,
+        itemsChanged: function() {
+          this.changeJob = this.job(this.changeJob, this.relist);
+        },
+        offsetChanged: function() {
+          this.changeJob = this.job(this.changeJob, this.relist);
+        },
+        limitChanged: function() {
+          this.changeJob = this.job(this.changeJob, this.relist);
+        },
+        relist: function() {
+          this.live = this.items.slice(this.offset, this.offset + this.limit);
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="list-app">
+    <template>
+      <button on-tap="up">Up</button><!--<button on-tap="down">Down</button>-->
+      <list-list items="{{items}}" offset="{{offset}}" limit="{{limit}}"></list-list>
+    </template>
+    <script>
+      Polymer('list-app', {
+        offset: 0,
+        limit: 20,
+        items: null,
+        ready: function() {
+          this.items = [];
+          for (var i = 0; i < 5000; i++) {
+            this.items[i] = 'Item [' + ('0000' + i).slice(-4) + ']';
+          }
+        },
+        up: function() {
+          this.offset++;
+        },
+        down: function() {
+          this.offset--;
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <list-app></list-app>
+</body>
+</html>

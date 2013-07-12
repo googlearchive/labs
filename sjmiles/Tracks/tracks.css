@@ -9,14 +9,15 @@
 
 #output {
   width: 400px;
-  background-color: whitesmoke;
   padding: 16px;
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  background-color: whitesmoke;
 }
 
 * {
-  X-webkit-transition: top, left;
   -webkit-transition: top, right, bottom, left;
-  X-webkit-transition: width, height;
   -webkit-transition-duration: 0.3s;
+  transition: top, right, bottom, left;
+  transition-duration: 0.3s;
 }
