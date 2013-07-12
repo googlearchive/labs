@@ -2,46 +2,16 @@
 <html>
 <head>
   <title>Tracks Layout</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-      user-select: none;
-      -webkit-user-select: none;
-      background-color: gray;
-    }
-  </style>
-  <script src="../../../polymer/polymer.js"></script>
-  <link href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
-  <link href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
-  <link href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
-  <link href="../../../polymer-ui-elements/polymer-ui-sidebar-menu/polymer-ui-sidebar-menu.html" rel="import">
+  <link href="app.css" rel="stylesheet">
   <script src="tracks.js"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link href="elements.html" rel="import">
 </head>
 <body>
   <polymer-element name="tracks-app">
     <template>
-      <link href="lines.css" rel="stylesheet" />  
-      <style>
-        #sidebar {
-          position: absolute !important;
-        }
-        #workspace {
-          border: 5px dashed orange;
-          background-color: white;
-        }
-        #output {
-          width: 400px;
-          background-color: whitesmoke;
-          padding: 16px;
-          box-sizing: border-box;
-        }
-        * {
-          X-webkit-transition: top, left;
-          -webkit-transition: top, right, bottom, left;
-          X-webkit-transition: width, height;
-          -webkit-transition-duration: 0.3s;
-        }
-      </style>
+      <link href="lines.css" rel="stylesheet" />
+      <link href="tracks.css" rel="stylesheet" />
 
       <polymer-ui-toolbar id="toolbar">
         <polymer-ui-icon-button icon="menu" on-click="toggleLayout"></polymer-ui-icon-button>
@@ -75,17 +45,24 @@
     </template>
     <script>
       Polymer('tracks-app', {
-        arrangement: [
-          [1, 1, 1],
-          [2, 3, 5],
-          [2, 3, 4]
+        arrangements: [
+          [
+            [1, 1, 1],
+            [2, 3, 5],
+            [2, 3, 4]
+          ],
+          [
+            [5, 3, 2],
+            [4, 3, 2],
+            [4, 1, 1]
+          ],
+          [
+            [1, 1],
+            [2, 3],
+            [5, 3]
+          ]
         ],
-        arrangement2: [
-          [1, 1],
-          [2, 3],
-          [5, 3]
-        ],
-        outputLayout: false,
+        outputLayout: 0,
         ready: function() {
           this.outputLayoutChanged();
         },
@@ -100,10 +77,10 @@
           );
         },
         outputLayoutChanged: function() {
-           this.layout(this.outputLayout ? this.arrangement : this.arrangement2);
+           this.layout(this.arrangements[this.outputLayout]);
         },
         toggleLayout: function() {
-          this.outputLayout = !this.outputLayout;
+          this.outputLayout = (this.outputLayout + 1) % this.arrangements.length;
         }
       });
     </script>
