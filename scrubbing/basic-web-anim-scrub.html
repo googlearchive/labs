@@ -4,9 +4,9 @@
   <title>Simple Scrubbing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
-  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
-  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
-  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="../../web-animations-js/web-animations.js"></script>
+  <script src="../../PointerEvents/pointerevents.js"></script>
+  <script src="../../pointergestures/pointergestures.js"></script>
   <script src="src/Scrub.js"></script>
   <style>
     body {
@@ -44,12 +44,14 @@
 </head>
 <body>
   <h4>Simple Scrubbing</h4>
+  <!--
   <h5>Drag left/right in the box</h5>
   <div class="container">
     <div id="c1" class="circle">&perp;</div>
   </div>
 	<script>
     // animation
+    /*
     anim1 = new Animation(
       document.querySelector('#c1'), {
         sample: function(timeFraction, currentIteration, target, underlyingValue) {
@@ -66,28 +68,32 @@
       snapPoints: [0, 0.25, 0.5, 0.75, 1],
       animation: anim1
     });
+    */
 	</script>
+  //-->
   <h5>Drag left/right in the box</h5>
   <div class="container container2">
     <div id="c2" class="circle">&perp;</div>
   </div>
 	<script>
     // animation
-    var anim2 = new Animation(
-      document.querySelector('#c2'),
-      {
-        "-webkit-transform": ["translate(0px, 0px)", "translate(200px, 0px)", 
-          "translate(400px, 0px) rotate(360deg)", "translate(600px, 0px)", "translate(800px, 0px)"],
-        "opacity": ["1", "1", "0.5", "1", "1"]
-      },
-      {duration: 3, fillMode: 'both'}
-    );
+    var props2 = [
+      {transform: 'translate(0px, 0px) rotate(0deg)', opacity: 1},
+      {transform: 'translate(200px, 0px) rotate(360deg)', opacity: 1},
+      {transform: 'translate(400px, 0px) rotate(720deg)', opacity: 0.5},
+      {transform: 'translate(600px, 0px) rotate(1080deg)', opacity: 1},
+      {transform: 'translate(800px, 0px) rotate(1440deg)', opacity: 1}
+    ];
+    var anim2 = new Animation(document.querySelector('#c2'), props2, {
+      iterationDuration: 3,
+      fillMode: 'both'
+    });
       
     var scrub2 = new Scrub({
       node: document.querySelector('.container2'),
       animation: anim2,
-      wrap: true,
-      snapPoints: [0, 0.5, 1]
+      snapPoints: [0, 0.5, 1],
+      scrubClick: true
     });
 	</script>
 </body>
