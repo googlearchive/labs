@@ -47,8 +47,10 @@
           var inner = template.content.querySelector('template');
           var inner = inner.content.querySelector('template');
           var item = inner.content.querySelector('.item');
-          // patch in our custom nodes
-          item.innerHTML = this.innerHTML;
+          // trasnplant our custom nodes
+          while (this.firstChild) {
+            item.append(this.firstChild);
+          }
           // use the patched template
           this.shadowFromTemplate(template);
         }

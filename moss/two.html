@@ -5,52 +5,53 @@
   <script src="../../polymer/polymer.js"></script>
 </head>
 <body>
-  <x-browser>
-    <b>ITEM: </b> <a href="{{href}}">{{text}}</a>
-  </x-browser>
 
-  <x-browser>
-    <b>***</b> <i>{{text}}</i>
-  </x-browser>
-  
-  <polymer-element name="x-browser">
+  <x-sbrowser></x-sbrowser>
+  <x-sbrowser kind="x-browser2"></x-sbrowser>
+
+  <polymer-element name="x-browser1" attributes="item">
     <template>
-      <ul class="columns">
-        <template repeat="{{columns}}">
-          <li class="column">
-            {{items.length}}
-            <ul class="items">
-              <template repeat="{{items}}">
-                <li class="item"></li>
-              </template> 
-            </ul>
-          </li>
-        </template>
+      <b>ITEM: </b> <a href="{{item.href}}">{{item.text}}</a>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-browser2" attributes="item">
+    <template>
+      <b>***</b> <i>{{item.text}}</i>
+    </template>
+  </polymer-element>
+  
+  <polymer-element name="x-sbrowser" attributes="kind">
+    <template>
+      <ul class="items">
+        <template repeat="{{items}}">
+          <li class="item"></li>
+        </template> 
+      </ul>
     </template>
     <script>
-      Polymer('x-browser', {
-        columns: [
-          {items: [
-            {text: 'flarn'},
-            {text: 'squid'}
-          ]},
-          {items: [
-            {text: 'zoppe'},
-            {text: 'rutgy'}
-          ]}
+      Polymer('x-sbrowser', {
+        items: [
+          {text: 'flarn'},
+          {text: 'squid'}
         ],
+        kind: 'x-browser1',
         // parse input <element> as needed, override for custom behavior
-        parseTemplate: function(template) {
-          // need a fresh template so we can monkey-patch it
-          template = template.cloneNode(true);
-          // takes some effort to locate .item
-          var inner = template.content.querySelector('template');
-          var inner = inner.content.querySelector('template');
-          var item = inner.content.querySelector('.item');
-          // patch in our custom nodes
-          item.innerHTML = this.innerHTML;
-          // use the patched template
-          this.shadowFromTemplate(template);
+        parseElement: function(elementElement) {
+          var template = elementElement.querySelector('template');
+          if (template) {
+            // need a copy so we can monkey-patch it
+            template = template.cloneNode(true);
+            // takes some effort to locate .item
+            var inner = template.content.querySelector('template');
+            var item = inner.content.querySelector('.item');
+            // patch in our custom element
+            item.textContent = '';
+            this.customItem = item.appendChild(document.createElement(this.kind));
+            this.customItem.setAttribute('item', '{{}}');
+            // use the patched template
+            this.shadowFromTemplate(template);
+          }
         }
       })
     </script>
