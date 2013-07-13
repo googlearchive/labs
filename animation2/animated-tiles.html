@@ -1,0 +1,137 @@
+<link rel="import" href="../../../toolkit-ui/elements/animation/g-animation-group.html">
+<link rel="import" href="../../../toolkit-ui/elements/animation/g-translate.html">
+<link rel="import" href="../../../toolkit-ui/elements/g-toolbar.html">
+<link rel="import" href="../../../toolkit-ui/elements/g-icon-button.html">
+<link rel="import" href="../../../aux-elements/aux-clock/aux-clock.html">
+<link rel="import" href="../../../aux-elements/aux-weather/aux-weather.html">
+<link rel="import" href="../../../aux-elements/aux-stock/aux-stock.html">
+<link rel="import" href="scale-out.html">
+<element name="animated-tiles">
+  <template>
+    <style>
+      aux-clock, aux-stock, aux-weather {
+        width: 320px;
+        height: 320px;
+        border: 1px solid rgba(32, 32, 32, 0.6);
+        position: absolute;
+      }
+      #all {
+        width: 960px;
+        border: 1px solid white;
+        overflow: hidden;
+        /*-webkit-transform: perspective(1000px) rotateY(-30deg) translateX(200px);*/
+      }
+      #tiles {
+        width: 960px;
+        height: 640px;
+        position: relative;
+      }
+      .tile1 {
+        top: 0;
+        left: 0;
+        -webkit-transform: translate(480px, 700px);
+      }
+      .tile2 {
+        top: 0;
+        left: 320px;
+        -webkit-transform: translate(160px, 700px);
+      }
+      .tile3 {
+        top: 0;
+        left: 640px;
+        -webkit-transform: translate(-160px, 700px);
+      }
+      .tile4 {
+        top: 320px;
+        left: 0;
+        -webkit-transform: translate(20px, 380px);
+      }
+      .tile5 {
+        top: 320px;
+        left: 320px;
+        -webkit-transform: translate(-300px, 380px);
+      }
+      .tile6 {
+        top: 320px;
+        left: 640px;
+        -webkit-transform: translate(-620px, 380px);
+      }
+      .initialized .group1,
+      .initialized .group2 {
+        -webkit-transform: translate(0,0);
+      }
+      /*
+      .animating .group1,
+      .animating .group2 {
+        top: 0;
+        left: 0;
+      }
+      .initialized .group1,
+      .initialized .group2 {
+        -webkit-transform: translate(0,0);
+      }
+      */
+    </style>
+    <div id="all">
+      <g-toolbar>
+        <g-icon-button src="../../../projects/Sandbox/lib/assets/menu.png"></g-icon-button>
+        <div class="flex"></div>
+        <g-icon-button src="../../../projects/Sandbox/lib/assets/ic_refresh_darkreg.png"></g-icon-button>
+        <g-icon-button src="../../../projects/Sandbox/lib/assets/fullscreen.png"></g-icon-button>
+      </g-toolbar>
+      <div id="tiles" class="{{state}}">
+        <aux-clock id="tile1" class="tile1 group1"></aux-clock>
+        <aux-weather id="tile2" class="tile2 group1"></aux-weather>
+        <aux-stock id="tile3" class="tile3 group1"></aux-stock>
+        <aux-stock id="tile4" class="tile4 group2"></aux-stock>
+        <aux-clock id="tile5" class="tile5 group2"></aux-clock>
+        <aux-weather id="tile6" class="tile6 group2"></aux-weather>
+      </div>
+    </div>
+    <g-animation-group id="animation" type="seq">
+      <g-animation-group easing="ease-in" on-complete="onTilesShow">
+        <g-translate target="{{$.tile3}}" duration="{{duration}}" easing="{{easing}}" fromX="-160px" fromY="700px" toX="0px" toY="0px"></g-translate>
+        <g-translate target="{{$.tile6}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.05" fromX="-620px" fromY="380px" toX="0px" toY="0px"></g-translate>
+        <g-translate target="{{$.tile2}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.1" fromX="160px" fromY="700px" toX="0px" toY="0px"></g-translate>
+        <g-translate target="{{$.tile5}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.15" fromX="-300px" fromY="380px" toX="0px" toY="0px"></g-translate>
+        <g-translate target="{{$.tile1}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.2" fromX="480px" fromY="700px" toX="0px" toY="0px"></g-translate>
+        <g-translate target="{{$.tile4}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.3" fromX="20px" fromY="380px" toX="0px" toY="0px"></g-translate>
+      </g-animation-group>
+      <g-animation-group startDelay="0.8" easing="ease-out">
+        <scale-out target="{{$.tile1}}" duration="{{outDuration}}"></scale-out>
+        <scale-out target="{{$.tile2}}" duration="{{outDuration}}" startDelay="0.15"></scale-out>
+        <scale-out target="{{$.tile3}}" duration="{{outDuration}}" startDelay="0.3"></scale-out>
+        <scale-out target="{{$.tile4}}" duration="{{outDuration}}" startDelay="0.1"></scale-out>
+        <scale-out target="{{$.tile5}}" duration="{{outDuration}}" startDelay="0.05"></scale-out>
+        <scale-out target="{{$.tile6}}" duration="{{outDuration}}" startDelay="0.2"></scale-out>
+      </g-animation-group>
+      <!--
+      <g-animation target="{{$.all}}" duration="0.3">
+        <g-property name="transform">
+          <g-keyframe value="perspective(1000px) rotateY(-30deg) translateX(200px)"></g-keyframe>
+          <g-keyframe value="perspective(1000px) rotateY(0deg) translateX(0px)"></g-keyframe>
+        </g-property>
+      </g-animation>
+      //-->
+    </g-animation-group>
+  </template>
+  <script>
+    Toolkit.register(this, {
+      publish: {
+        state: '',
+        duration: 0.3,
+        outDuration: 0.4
+      },
+      ready: function() {
+        this.go();
+      },
+      onTilesShow: function() {
+        this.state = 'initialized';
+      },
+      go: function() {
+        this.state = 'animating';
+        this.$.animation.play();
+      }
+    });
+  </script>
+</element>
