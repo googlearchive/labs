@@ -45,18 +45,18 @@
         }}
         #content {
           position: relative;
+          -webkit-perspective: 1800px; 
+          -webkit-transform-style: preserve-3d;
         }
         list-item {
+          visibility: hidden;
           display: block;
-          padding: 8px;
-          border-radius: 8px;
-          Xbackground-color: lightblue;
-          Xborder: 1px dotted silver;
-          Xheight: 32px;
           position: absolute;
           left: 0;
           top: 0;
-          visibility: hidden;
+          padding: 8px;
+          border-radius: 8px;
+          -webkit-transform-origin: center center 0;
         }
       </style>
       <div id="content">
@@ -74,6 +74,7 @@
         amplitude: 120,
         colWidth: 108,
         centerY: 200,
+        centerZ: 0,
         ready: function() {
           observeNodes(this.$.content, this.contentNodesChanged, this);
         },
@@ -105,8 +106,9 @@
             if (n.localName === 'list-item') {
               var x = Math.round((j - frac) * this.colWidth);
               var y = Math.round(Math.sin((j - frac) / 5 * 180 * Math.PI/180) * this.amplitude) + this.centerY;
+              var z = Math.round(Math.sin(((j - frac) / 5 * 180 + 180) * Math.PI/180) * this.amplitude * 3) + this.centerZ;
               j++;
-              n.style.transform = n.style.webkitTransform = 'translateX(' + x + 'px)' + ' translateY(' + y + 'px)';  
+              n.style.transform = n.style.webkitTransform = 'translateX(' + x + 'px)' + ' translateY(' + y + 'px)' + ' translateZ(' + z + 'px)';  
               n.style.visibility = 'visible';
             }
           }
