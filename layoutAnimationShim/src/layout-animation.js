@@ -30,7 +30,7 @@ function setPosition(target, rect, name) {
 
 function fixTiming(timing) {
   if (typeof timing == "number") {
-    timing = {duration: timing};
+    timing = {iterationDuration: timing};
   }
   timing.fillMode = _DEBUG_CONTROL_POSITIONS ? 'both' : 'none';
   if (_DEBUG_CONTROL_POSITIONS) {
@@ -44,7 +44,6 @@ var classNum=0;
 function setupShadowContainer(target, root) {
   var parent = root.parentElement;
   var shadowRoot = parent.webkitShadowRoot;
-  console.log(shadowRoot);
   if (shadowRoot == null) {
     shadowRoot = parent.webkitCreateShadowRoot();
     shadowRoot.applyAuthorStyles = true;
@@ -66,14 +65,12 @@ function setupShadowContainer(target, root) {
     }
   } else {
     for (var i = 0; i < target.classList.length; i++) {
-      if (target.classList[i].substring(0, 7) == "scflt_") {
+      if (target.classList[i].substring(0, 6) == "scflt_") {
         var newSel = '.' + target.classList[i];
         break;
       }
     }
   }
-
-  console.log(newSel);
 
   if (target != root) {
     var newSel = ".scflt_" + classNum;
@@ -147,17 +144,44 @@ function animationToPositionLayout(target, positions, current, timing, isContent
     from.style.borderColor = "rgba(0, 0, 0, 0)";
   }
 
-  return new Animation(from, {position: ["absolute", "absolute"],
+  return new Animation(from, toStinkyAPI({position: ["absolute", "absolute"],
                                 left: mkPosList('left', positions),
                                 top: mkPosList('top', positions),
                                 width: mkPosList('width', positions), 
-                                height: mkPosList('height', positions)}, 
+                                height: mkPosList('height', positions)}), 
                        timing);
 }
 
 function origin(str) {
   var arr = str.split('px');
   return {x: Number(arr[0]), y: Number(arr[1])};
+}
+
+function toStinkyAPI(dict) {
+  var keyframes = {};
+  for (var key in dict) {
+    for (var i = 0; i < dict[key].length; i++) {
+      var item = dict[key][i];
+      var offset = i / (dict[key].length - 1);
+      if (item.offset !== undefined) {
+        offset = item.offset;
+        item = item.value;
+      }
+      if (keyframes[offset] == undefined) {
+        keyframes[offset] = {}
+      }
+      keyframes[offset][key] = item;
+    }
+  }
+  var keyframeList = [];
+  for (var offset in keyframes) {
+    keyframeList.push([Number(offset), keyframes[offset]]);
+  }
+  keyframeList.sort();
+  return keyframeList.map(function(a) {
+    a[1].offset = a[0];
+    return a[1];
+  });
 }
 
 function animationToPositionTransform(target, positions, current, timing, isContents) {
@@ -175,7 +199,9 @@ function animationToPositionTransform(target, positions, current, timing, isCont
 
   timing = fixTiming(timing);
 
-  return new Animation(from, {transform: cssList}, timing);
+  console.log(toStinkyAPI({transform: cssList}));
+
+  return new Animation(from, toStinkyAPI({transform: cssList}), timing);
 }
 
 function animationToPositionNone(target, positions, current, timing, isContents) {
@@ -193,8 +219,9 @@ function animationToPositionNone(target, positions, current, timing, isContents)
 
   timing = fixTiming(timing);
   
-  return new Animation(from, {transform: cssList,
-                                position: ["absolute", "absolute"]}, timing);
+  var a = new Animation(from, toStinkyAPI({transform: cssList,
+                                position: ["absolute", "absolute"]}), timing);
+  return a;
 }
 
 function animationToPositionClip(target, positions, current, timing, isContents) {
@@ -216,7 +243,7 @@ function animationToPositionClip(target, positions, current, timing, isContents)
     return { offset: position.offset, value: str };
   });
 
-  return new Animation(from, {transform: cssList, clip: clipList, position: ["absolute", "absolute"]}, timing);
+  return new Animation(from, toStinkyAPI({transform: cssList, clip: clipList, position: ["absolute", "absolute"]}), timing);
 }
 
 function animationToPositionFadeOutIn(outTo, inFrom, clip) {
@@ -231,7 +258,7 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
     for (d in timing) {
       opacityTiming[d] = timing[d];
     }
-    opacityTiming.duration = timing.duration * outTo;
+    opacityTiming.iterationDuration = timing.iterationDuration * outTo;
     opacityTiming.fillMode = 'forwards';
 
     var transOrig = origin(from.style.webkitTransformOrigin);
@@ -245,19 +272,19 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
         var str = rectToClip(position);
         return { offset: position.offset, value: str};
       });
-      var fromAnim = new Animation(from, {transform: cssList, clip: clipList,
-            position: ["absolute", "absolute"]}, timing);
+      var fromAnim = new Animation(from, toStinkyAPI({transform: cssList, clip: clipList,
+            position: ["absolute", "absolute"]}), timing);
     } else { 
-      var fromAnim = new Animation(from, {transform: cssList,
-            position: ["absolute", "absolute"]}, timing);
+      var fromAnim = new Animation(from, toStinkyAPI({transform: cssList,
+            position: ["absolute", "absolute"]}), timing);
     }
-    var fromOpacAnim = new Animation(from, {opacity: ["1", "0"]}, opacityTiming);
+    var fromOpacAnim = new Animation(from, toStinkyAPI({opacity: ["1", "0"]}), opacityTiming);
 
-    opacityTiming.duration = timing.duration * (1 - inFrom);
+    opacityTiming.iterationDuration = timing.iterationDuration * (1 - inFrom);
     if (opacityTiming.startDelay == undefined) {
       opacityTiming.startDelay = 0;
     }
-    opacityTiming.startDelay += timing.duration * inFrom;  
+    opacityTiming.startDelay += timing.iterationDuration * inFrom;  
     opacityTiming.fillMode = 'backwards';
 
     if (isContents) {
@@ -282,13 +309,13 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
     });
 
     if (clip) {
-      var toAnim = new Animation(to, {transform: cssList, clip: clipList,
-                position: ["absolute", "absolute"]}, timing);
+      var toAnim = new Animation(to, toStinkyAPI({transform: cssList, clip: clipList,
+                position: ["absolute", "absolute"]}), timing);
     } else {
-      var toAnim = new Animation(to, {transform: cssList,
-                position: ["absolute", "absolute"]}, timing);
+      var toAnim = new Animation(to, toStinkyAPI({transform: cssList,
+                position: ["absolute", "absolute"]}), timing);
     }
-    var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, opacityTiming);
+    var toOpacAnim = new Animation(to, toStinkyAPI({opacity: ["0", "1"]}), opacityTiming);
 
     timing.fillMode = 'forwards';
     var cleanupAnimation = new Animation(null, new Cleaner(function() {
@@ -314,9 +341,9 @@ function animationToPositionTransfade(target, positions, current, timing, isCont
     return { offset: position.offset, value: str};
   });
    
-  var fromAnim = new Animation(from, {transform: cssList,
-          position: ["absolute", "absolute"]}, timing);
-  var fromOpacAnim = new Animation(from, {opacity: ["1", "0"]}, timing);
+  var fromAnim = new Animation(from, toStinkyAPI({transform: cssList,
+          position: ["absolute", "absolute"]}), timing);
+  var fromOpacAnim = new Animation(from, toStinkyAPI({opacity: ["1", "0"]}), timing);
 
   if (isContents) {
     if (!target.shadow.toContents) { 
@@ -339,9 +366,9 @@ function animationToPositionTransfade(target, positions, current, timing, isCont
     return { offset: position.offset, value: str};
   });
 
-  var toAnim = new Animation(to, {transform: cssList,
-            position: ["absolute", "absolute"]}, timing);
-  var toOpacAnim = new Animation(to, {opacity: ["0", "1"]}, timing);
+  var toAnim = new Animation(to, toStinkyAPI({transform: cssList,
+            position: ["absolute", "absolute"]}), timing);
+  var toOpacAnim = new Animation(to, toStinkyAPI({opacity: ["0", "1"]}), timing);
 
   timing.fillMode = 'forwards';
   var cleanupAnimation = new Animation(null, new Cleaner(function() {
@@ -857,7 +884,7 @@ function transitionThis(action) {
         generator = animationForHybridTransition(list[i]._layout.outer, list[i]._layout.inner);
       }
 
-      parGroup.add(
+      parGroup.append(
           generator(list[i], positionList, list[i]._transitionBefore, list[i]._layout.duration));
       
       processList(list[i]._transitionChildren);
