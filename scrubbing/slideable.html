@@ -4,9 +4,9 @@
   <title>Scrubbing: Slideable</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
-  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
-  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
-  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="../../web-animations-js/web-animations.js"></script>
+  <script src="../../PointerEvents/pointerevents.js"></script>
+  <script src="../../PointerGestures/pointergestures.js"></script>
   <script src="src/Scrub.js"></script>
   <style>
     html, body {
@@ -63,24 +63,28 @@
   <div class="hSlideable right">&laquo; I slide.</div>
 	<script>
     
-    
-    
-    rightKeyframes = {
-      '-webkit-transform': ['translate(225px,0)', 'translate(0px, 0)'],
-      opacity: ['0.75', '1']
-    };
+    rightKeyframes = [{
+      transform: 'translate(0px,0)',
+      opacity: 1
+    }, {
+      transform: 'translate(255px,0)',
+      opacity: 0.75
+    }];
 
-    bottomKeyframes = {
-       '-webkit-transform': ['translate(0, 225px)', 'translate(0px, 0)'],
-      opacity: ['0.75', '1']
-    };
+    bottomKeyframes = [{
+      transform: 'translate(0px,0)',
+      opacity: 1
+    }, {
+      transform: 'translate(0,255px)',
+      opacity: 0.75
+    }];
     
     makeSlideable = function(inSelector, inKeyframes, inScrubType, inScale) {
       var n = document.querySelector(inSelector);
       if (n) {
         n.scrub = new Scrub({
           node: n,
-          animation: new Animation(n, inKeyframes, {duration: 0.5}),
+          animation: new Animation(n, inKeyframes, {iterationDuration: 0.5}),
           scrubType: inScrubType,
           scale: inScale
         });
