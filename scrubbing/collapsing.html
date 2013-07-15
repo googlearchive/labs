@@ -4,9 +4,9 @@
   <title>Scrubbing: Collapsing Panels</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
-  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
-  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
-  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="../../web-animations-js/web-animations.js"></script>
+  <script src="../../PointerEvents/pointerevents.js"></script>
+  <script src="../../PointerGestures/pointergestures.js"></script>
   <script src="src/Scrub.js"></script>
 	<style>
     body, html {
@@ -89,11 +89,13 @@
       var w = getAnimWidth(inContainer);
       var p = inContainer.children[inIndex];
       Array.prototype.forEach.call(inContainer.children, function(c, i) {
-        keyframes.push({value: 'translate(' + 
-          Math.max(-x, -p.offsetLeft) + 'px,0)', offset: x / w});
+        keyframes.push({
+          transform: 'translate(' + Math.max(-x, -p.offsetLeft) + 'px,0)',
+          offset: x / w
+        });
         x += c.offsetWidth;
       });
-      return {'-webkit-transform': keyframes};
+      return keyframes;
     }
     
     // make an Animation for each panel
@@ -102,17 +104,18 @@
       var animations = [];
       for (var i=0, x, p; (p=p$[i]); i++) {
         animations.push(new Animation(p, makeKeyframes(inContainer, i),
-          {duration: inDuration}));
+          {iterationDuration: inDuration}));
       }
       return animations;
     }
     
     findKeyframes = function(inAnim) {
-      if (inAnim.animationFunction && inAnim.animationFunction.frames) {
-        return inAnim.animationFunction.frames;
+      if (inAnim.effect) {
+        return inAnim.effect.getFrames();
       } else if (inAnim.children) {
-        for (var i=0, c, k; c=inAnim.children[i]; i++) {
-          k = findKeyframes(c);
+        var children = inAnim.children;
+        for (var i = 0; i < children.length; i++) {
+          var k = findKeyframes(children[i]);
           if (k) {
             return k;
           }
@@ -123,7 +126,7 @@
     makeSnaps = function(inAnim) {
       var keyframes = findKeyframes(inAnim);
       var snaps = [];
-      keyframes.frames.forEach(function(f) {
+      keyframes.forEach(function(f) {
         snaps.push(f.offset);
       });
       return snaps;
