@@ -4,9 +4,9 @@
   <title>Scrubbing: Scaling Grid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
-  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
-  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
-  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="../../web-animations-js/web-animations.js"></script>
+  <script src="../../PointerEvents/pointerevents.js"></script>
+  <script src="../../PointerGestures/pointergestures.js"></script>
   <script src="src/Scrub.js"></script>
   <style>
     html, body {
@@ -114,19 +114,20 @@
         x = (targetCol * w/cols);
         y = (targetRow * h/rows);
         // make keyframes for animation
-        var frame = inScrub.animation.animationFunction.frames.item(1);
-        frame.value = 'translate(' +
+        var k = inScrub.animation.effect.getFrames();
+        k[1].transform = 'translate(' +
           -x + 'px,' + -y + 'px) scale(' + cols + ',' + rows + ')';
         // TODO(sorvell): doesn't seem like you're meant to rewrite keyframe values?
-        frame.rawValue = null;
+        inScrub.animation.effect.setFrames(k);
       }
     }
     
     // setup timeline/ and animation to scale scrub content.
-    var animation = new Animation(grid, {'-webkit-transform': [
-      'translate(0,0) scale(1, 1)',
-      'translate(0,0) scale(1, 1)'
-    ]}, {duration: 0.333});
+    var animation = new Animation(grid, [{
+      transform: 'translate(0,0) scale(1, 1)'
+    }, {
+      transform: 'translate(0,0) scale(1, 1)'
+    }], {iterationDuration: 0.333});
     var scrub = new Scrub({
       node: grid, 
       animation: animation,
