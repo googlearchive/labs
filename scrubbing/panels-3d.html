@@ -4,9 +4,9 @@
   <title>Scrubbing: Panels 3d</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
-  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
-  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
-  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="../../web-animations-js/web-animations.js"></script>
+  <script src="../../PointerEvents/pointerevents.js"></script>
+  <script src="../../PointerGestures/pointergestures.js"></script>
   <script src="src/Scrub.js"></script>
 	<style>
     body, html {
@@ -104,7 +104,9 @@
       var keyframes = [];
       var z = calcZTranslate(inContainer, inCount)*2;
       for (var i=0, x, s; i< inCount; i++) {
-        keyframes.push(' translateZ(' + -z + ') rotateY(' + (-360 * (i / inCount)) + 'deg)');
+        keyframes.push({
+          transform: 'translateZ(' + -z + ') rotateY(' + (-360 * (i / inCount)) + 'deg)'
+        });
       }
       return keyframes;
     }
@@ -126,8 +128,8 @@
     // make timeline and animation
     
     var animation = new Animation(container,
-      {'-webkit-transform': makeKeyframes(count, container)},
-      {duration: 0.5 * count}
+      makeKeyframes(count, container),
+      {iterationDuration: 0.5 * count}
     );
     
     var snapPoints = makeSnapPoints(count);
