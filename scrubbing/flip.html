@@ -4,9 +4,9 @@
   <title>Flip Scrub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
-  <script src="../../polyfills/web-animations-js/web-animation.js"></script>
-  <script src="../../pointergestures/libs/PointerEvents/src/pointerevents.js"></script>
-  <script src="../../pointergestures/src/pointergestures.js"></script>
+  <script src="../../web-animations-js/web-animations.js"></script>
+  <script src="../../PointerEvents/pointerevents.js"></script>
+  <script src="../../PointerGestures/pointergestures.js"></script>
   <script src="src/Scrub.js"></script>
   <style>
    
@@ -59,9 +59,12 @@
 	<script>
     // animation
     var animation = new Animation(
-      document.querySelector('.flipper'),
-      {"-webkit-transform": ["rotateY(0deg)", "rotateY(360deg)"]},
-      {duration: 0.8, fillMode: 'both'}
+    document.querySelector('.flipper'), [{
+        transform: 'rotateY(0deg)'
+      }, {
+        transform: 'rotateY(360deg)'
+      }],
+      {iterationDuration: 0.8, fillMode: 'both'}
     );
       
     var scrub = new Scrub({
