@@ -263,7 +263,9 @@
     scrubAnimation: function() {
       if (this.animation.parent) {
         var reversing = this.animation.parent.specified.direction === 'reverse';
-        var segmentDuration = reversing ? this.segment.specified.iterationDuration % this.animation.specified.iterationDuration : this.segment.specified.iterationDuration;
+        var segmentDuration = reversing ?
+          this.animation.specified.iterationDuration - this.segment.specified.iterationDuration :
+          this.segment.specified.iterationDuration;
         // remove animation from segment
         this.animation.remove();
         this.segment.parent && this.segment.remove();
