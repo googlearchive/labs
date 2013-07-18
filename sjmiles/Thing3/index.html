@@ -5,6 +5,8 @@
   <link href="index.css" rel="stylesheet">
   <script src="../../../polymer/polymer.js"></script>
   <link href="elements.html" rel="import">
+  <link href="element-database.html" rel="import">
+  <link href="metadata.html" rel="import">
 </head>
 <body>
   <polymer-element name="tracks-app">
@@ -59,9 +61,16 @@
           border: 1px solid silver;
         }
 
-        #do {
+        #designer {
           background: white url(assets/grid.png) repeat;
+          -webkit-transition: none;
+          transition: none;
         }
+
+        x-palette {
+          width: 292px;
+        }
+
       </style>
 
       <polymer-media-query query="min-width: 800px" on-polymer-mediachange="mediaChange"></polymer-media-query>
@@ -71,7 +80,7 @@
         <polymer-ui-tabs selected="{{selectedTab}}">
           <span>Learn</span>
           <span>Code</span>
-          <span>Do</span>
+          <span>Design</span>
           <span on-tap="toggleLayout">Lucky</span>
         </polymer-ui-tabs>
         <polymer-ui-icon-button icon="settings" on-tap="toggleLayout"></polymer-ui-icon-button>
@@ -127,7 +136,13 @@
         <span flex>Do</span>
       </polymer-ui-toolbar>
 
-      <div id="do" v-flex></div>
+      <div id="do" v-flex>
+        <polymer-layout></polymer-layout>
+        <x-meta list="{{elements}}"></x-meta>
+        <x-palette elements="{{elements}}" canvas="{{$.designer}}"></x-palette>
+        <div id="designer" flex>
+        </div>
+      </div>
 
       <polymer-ajax url="../../../{{item.folder}}/{{item.name}}/index.html" response="{{sourceText}}" auto handleAs="text"></polymer-ajax>
       <element-database items="{{itemsBase}}"></element-database>
