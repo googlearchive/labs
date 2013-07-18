@@ -11,9 +11,10 @@
 </head>
 <body>
   <script>
-    clearInterval(Platform.dirtyPoll);
     addEventListener('WebComponentsReady', function() {
-      Platform.performMicrotaskCheckpoint();
+      setTimeout(function() {
+        clearInterval(Platform.dirtyPoll);
+      }, 100)
     });  
   </script>
   
