@@ -13,11 +13,13 @@
     <template>
       <style style="display: none;">
         * {
+          /*
           -webkit-transition: top, right, bottom, left;
           -webkit-transition-duration: 0.2s;
           -webkit-transition-timing-function: ease-in;
           transition: top, right, bottom, left;
           transition-duration: 0.3s;
+          */
         }
 
         @media (max-width: 800px) {
@@ -69,6 +71,8 @@
 
         x-palette {
           width: 292px;
+          -webkit-transition: none;
+          transition: none;
         }
 
       </style>
@@ -129,7 +133,8 @@
         <span flex>Code</span>
       </polymer-ui-toolbar>
 
-      <code-mirror id="code" flex></code-mirror>
+      <x-live-edit id="code" flex></x-live-edit>
+      <!--<code-mirror id="code" flex></code-mirror>-->
 
       <polymer-ui-toolbar h-flex id="dobar">
         <polymer-ui-icon-button icon="search"on-tap="toggleLayout"></polymer-ui-icon-button>
@@ -209,7 +214,15 @@
             this.arrangeFor = 'desktop';
           }
           this.selectedTab = 0;
-          this.$.layout.async('relayout');
+          // Canary doesn't reach stable CSS state, tickle it here
+          /*this.async(function() {
+            document.body.style.fontSize = '12px';
+            this.async(function() {
+              document.body.style.fontSize = '';
+              this.$.layout.async('relayout', null, 100);
+            }, null, 100);
+          }, null, 100);*/
+         this.$.layout.async('relayout');
         },
         arrangeForChanged: function() {
           this.arrangement = this.arrangements[this.arrangeFor];
@@ -227,7 +240,8 @@
         },
         layoutIndexChanged: function() {
           this.layout = this.arrangement[this.layoutIndex];
-          this.async(function(){this.$.code.refresh()}, null, 50);
+          //this.async(function(){this.$.code.refresh()}, null, 50);
+          this.async(function(){this.$.code.resize()}, null, 50);
         },
         selectedChanged: function() {
           if (this.selected.item && this.selected.item.name && this.selected.item.folder) {

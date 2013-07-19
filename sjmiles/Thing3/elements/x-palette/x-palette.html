@@ -69,6 +69,7 @@ license that can be found in the LICENSE file.
         var neo = meta.createElement();
         neo.style.position = 'absolute';
         neo.style.pointerEvents = 'none';
+        neo.style.transition = neo.style.webkitTransition = 'none';
         this.canvas.appendChild(neo);
         //this.canvas.childAdded(neo);
         this.neo = neo;
