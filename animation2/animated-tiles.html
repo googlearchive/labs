@@ -70,37 +70,47 @@
       </polymer-ui-toolbar>
       <div id="tiles" class="{{state}}">
         <polymer-ui-clock id="tile1" class="tile1 group1"></polymer-ui-clock>
-        <polymer-ui-weather id="tile2" class="tile2 group1"></polymer-ui-weather>
+        <polymer-ui-stock id="tile2" class="tile2 group1"></polymer-ui-stock>
         <polymer-ui-stock id="tile3" class="tile3 group1"></polymer-ui-stock>
         <polymer-ui-stock id="tile4" class="tile4 group2"></polymer-ui-stock>
         <polymer-ui-clock id="tile5" class="tile5 group2"></polymer-ui-clock>
-        <polymer-ui-weather id="tile6" class="tile6 group2"></polymer-ui-weather>
+        <polymer-ui-clock id="tile6" class="tile6 group2"></polymer-ui-clock>
       </div>
     </div>
     <polymer-animation-group id="animation" type="seq">
       <polymer-animation-group easing="ease-in" on-complete="onTilesShow">
-        <polymer-translate target="{{$.tile3}}" duration="{{duration}}" easing="{{easing}}" fromX="-160px" fromY="700px" toX="0px" toY="0px"></polymer-translate>
-        <polymer-translate target="{{$.tile6}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.1" fromX="-620px" fromY="380px" toX="0px" toY="0px"></polymer-translate>
-        <polymer-translate target="{{$.tile2}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.2" fromX="160px" fromY="700px" toX="0px" toY="0px"></polymer-translate>
-        <polymer-translate target="{{$.tile5}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.3" fromX="-300px" fromY="380px" toX="0px" toY="0px"></polymer-translate>
-        <polymer-translate target="{{$.tile1}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.4" fromX="480px" fromY="700px" toX="0px" toY="0px"></polymer-translate>
-        <polymer-translate target="{{$.tile4}}" duration="{{duration}}" easing="{{easing}}" startDelay="0.6" fromX="20px" fromY="380px" toX="0px" toY="0px"></polymer-translate>
+        <template repeat="{{inData}}">
+          <polymer-translate target="{{tile}}" duration="{{duration}}" startDelay="{{startDelay}}" fromX="{{fromX}}" fromY="{{fromY}}" toX="0px" toY="0px"></polymer-translate>
+        </template>
       </polymer-animation-group>
-      <polymer-animation-group startDelay="0.8" easing="ease-out">
-        <scale-out target="{{$.tile1}}" duration="{{outDuration}}"></scale-out>
-        <scale-out target="{{$.tile2}}" duration="{{outDuration}}" startDelay="0.3"></scale-out>
-        <scale-out target="{{$.tile3}}" duration="{{outDuration}}" startDelay="0.6"></scale-out>
-        <scale-out target="{{$.tile4}}" duration="{{outDuration}}" startDelay="0.2"></scale-out>
-        <scale-out target="{{$.tile5}}" duration="{{outDuration}}" startDelay="0.1"></scale-out>
-        <scale-out target="{{$.tile6}}" duration="{{outDuration}}" startDelay="0.4"></scale-out>
+      <polymer-animation-group startDelay="0.6" easing="ease-out">
+        <template repeat="{{outData}}">
+          <scale-out target="{{tile}}" duration="{{duration}}" startDelay="{{startDelay}}"></scale-out>
+        </template>
       </polymer-animation-group>
     </polymer-animation-group>
   </template>
   <script>
     Polymer('animated-tiles', {
       state: '',
-      duration: 0.6,
-      outDuration: 0.8,
+      ready: function() {
+        this.inData = [
+          {tile: this.$.tile3, duration: 0.8, startDelay: 0, fromX: '-160px', fromY: '700px'},
+          {tile: this.$.tile6, duration: 0.8, startDelay: 0.1, fromX: '-620px', fromY: '380px'},
+          {tile: this.$.tile2, duration: 0.8, startDelay: 0.2, fromX: '160px', fromY: '700px'},
+          {tile: this.$.tile5, duration: 0.8, startDelay: 0.3, fromX: '-300px', fromY: '380px'},
+          {tile: this.$.tile1, duration: 0.8, startDelay: 0.4, fromX: '480px', fromY: '700px'},
+          {tile: this.$.tile4, duration: 0.8, startDelay: 0.6, fromX: '20px', fromY: '380px'}
+        ];
+        this.outData = [
+          {tile: this.$.tile1, duration: 0.6, startDelay: 0},
+          {tile: this.$.tile2, duration: 0.6, startDelay: 0.3},
+          {tile: this.$.tile3, duration: 0.6, startDelay: 0.6},
+          {tile: this.$.tile4, duration: 0.6, startDelay: 0.2},
+          {tile: this.$.tile5, duration: 0.6, startDelay: 0.1},
+          {tile: this.$.tile6, duration: 0.6, startDelay: 0.4}
+        ];
+      },
       onTilesShow: function() {
         this.state = 'initialized';
       },

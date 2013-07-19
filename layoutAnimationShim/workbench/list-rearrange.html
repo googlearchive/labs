@@ -87,7 +87,7 @@ registerLayoutKeyframes("default", [
                             layoutTop: "to()", layoutLeft: "to()" }}]);
 
 setLayoutTransition(document.querySelectorAll(".item"), "default", duration);
-setLayoutEffect(document.querySelectorAll(".item"), "transfade");
+setLayoutEffect(document.querySelectorAll(".item"), "none");
 
 button.onclick = function() {
   var to = Math.round((Math.random() * canvas.children.length) - 0.5);

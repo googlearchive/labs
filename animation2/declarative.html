@@ -2,37 +2,76 @@
 <html>
   <head>
     <title>Declarative</title>
-    <link rel="stylesheet" type="text/css" href="../../toolkit-ui/elements/css/g-flex-layout.css">
-    <link rel="component" href="components/x-animation.html">
+    <link rel="import" href="../../polymer-elements/polymer-animation/polymer-animation-group.html">
+    <link rel="import" href="../../polymer-elements/polymer-animation/polymer-animation.html">
     <script src="../../polymer/polymer.js"></script>
     <style>
-      html, body {
-        margin: 0;
-        height: 100%;
+      #target {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 75px;
+        background-color: pink;
       }
-      body {
-        background: deeppink
+      #target2 {
+        position: absolute;
+        right: 300px;
+        width: 150px;
+        height: 150px;
+        background-color: lightgreen;
       }
     </style>
   </head>
   <body class="flexbox col">
-    <div flex id="d" style="background: darkgreen"></div>
-    <x-animation id="anim" duration="2" fillMode="forwards">
-      <x-property name="opacity">
-        <x-keyframe value="0.5"></x-keyframe>
-        <x-keyframe value="1"></x-keyframe>
-      </x-property>
-      <x-property name="transform">
-        <x-keyframe offset="0" value="translate3d(0,0,0)"></x-keyframe>
-        <x-keyframe offset="0.5" value="translate3d(0,100px,0)"></x-keyframe>
-        <x-keyframe offset="1" value="translate3d(0,100%,0)" easing="ease-in"></x-keyframe>
-      </x-property>
-    </x-animation>
+
+    <polymer-animation-group id="animation" type="par">
+
+      <polymer-animation>
+        <polymer-animation-keyframe offset="0">
+          <polymer-animation-prop name="transform" value="translate(0,0)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+
+        <polymer-animation-keyframe offset="0.5">
+          <polymer-animation-prop name="transform" value="translate(500px,0)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+
+        <polymer-animation-keyframe offset="1">
+          <polymer-animation-prop name="transform" value="translate(0,0)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+      </polymer-animation>
+
+      <polymer-animation>
+
+        <polymer-animation-keyframe offset="0">
+          <polymer-animation-prop name="transform" value="translate(0,0)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+
+        <polymer-animation-keyframe offset="0.5">
+          <polymer-animation-prop name="transform" value="translate(-500px,0)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+
+        <polymer-animation-keyframe offset="1">
+          <polymer-animation-prop name="transform" value="translate(0,0)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+
+      </polymer-animation>
+
+    </polymer-animation-group>
+
+    <div id="target"></div>
+    <div id="target2"></div>
+
     <script>
       document.addEventListener('WebComponentsReady', function() {
-        anim.target = d;
-        anim.play();
+        var sub = animation.querySelectorAll('polymer-animation');
+        sub[0].target = target;
+        sub[1].target = target2;
+        animation.duration = sub[0].duration = sub[1].duration = 2;
+        target.addEventListener('click', function() {
+          animation.play();
+        });
       });
     </script>
+
   </body>
 </html>

@@ -8,7 +8,7 @@
 <link rel="import" href="../../toolkit-ui/elements/g-icon.html"/>
 <script src="web-animations.js"></script>
 <script src="layout-animation.js"></script>
-<polymer-element name="pi-items-view" attributes="layout view items selected">
+<polymer-element name="pi-items-view" attributes="layout view items selected slow">
   <template>
     <link rel="stylesheet" href="../../projects/pica/components/css/pi-items-view.css" />
     <link rel="stylesheet" href="../../projects/pica/components/css/pi-layout-flex.css" />
@@ -54,6 +54,7 @@
     }
     
     Polymer('pi-items-view', {
+      slow: false,
       layout: 'grid',
       loaded: true,
       pageSize: 24,
@@ -242,13 +243,20 @@
 					this.$.container.classList.remove(old);
 					this.$.container.classList.add(this.layout);
 				}.bind(this);
-				var duration = 1;
+        var duration = 1;
+				var duration = this.slow ? 10 : duration;
 				if (this.$.container.querySelectorAll('.item').length) {
 					var cards = this.$.container.querySelectorAll('.item,#more');
 					if (old === 'quilt' && this.layout === 'grid') {
 						setLayoutTransition(Array.prototype.slice.call(cards, 0, 2), 'quiltgrid_morph', duration);
 						setLayoutTransition(cards[2], 'quiltgrid', duration);
-						setLayoutTransition(Array.prototype.slice.call(cards, 3), 'quiltgrid_morph2', duration);
+            var slowhighlight = Array.prototype.slice.call(cards, 3);
+            if (this.slow) {
+              slowhighlight.forEach(function(el) {
+                el.style['background-color'] = 'yellow';
+              });
+            }
+						setLayoutTransition(slowhighlight, 'quiltgrid_morph2', duration);
 					} else if (old === 'grid' && this.layout === 'quilt') {
 						setLayoutTransition(Array.prototype.slice.call(cards, 0, 2), 'gridquilt_morph', duration);
 						setLayoutTransition(cards[2], 'gridquilt', duration);
@@ -256,7 +264,7 @@
 					} else {
 						setLayoutTransition(cards, 'morph', duration);
 					}
-					setLayoutEffect(cards, 'transfade');
+					setLayoutEffect(cards, 'transform', 'crossfade');
 					transitionThis(fn);
 				} else {
 					fn();
