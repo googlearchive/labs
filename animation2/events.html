@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="../../web-animations-js/web-animations.js"></script>
+		<style>
+			#target {
+				background-color: orange;
+				width: 150px;
+				height: 150px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="target"></div>
+		<script>
+			var anim;
+			document.addEventListener('DOMContentLoaded', function() {
+				anim = new Animation(target, [
+					{transform: 'translate(0,0)'},
+					{transform: 'translate(300px,0)'}
+				], {iterationDuration: 1, iterationCount: 2, startDelay: 0.5});
+				anim.onstart = function() {
+					console.log('start!');
+				};
+				anim.oniteration = function() {
+					console.log('iteration!');
+				};
+				anim.onend = function() {
+					console.log('end!');
+				};
+			});
+		</script>
+	</body>
+</html>
