@@ -576,6 +576,11 @@ function setPositions(target, name) {
     return;
   }
   
+  var rect = sensePosition(target);
+  setPosition(target, rect, name);
+}
+
+function sensePosition(target) {
   var rect = cloneRect(target.getBoundingClientRect());
   var parent = target.parentElement;
   while (parent) {
@@ -590,8 +595,9 @@ function setPositions(target, name) {
     rect.top -= parentRect.top;
     rect.left -= parentRect.left;
   }
-  setPosition(target, rect, name);
+  return rect;
 }
+
 
 // Convert CSS Strings to numbers.
 // Maybe its time to think about exposing some of the core CSS emulation functionality of Web Animations?
@@ -619,11 +625,6 @@ function boundingRectToReplacementRect(element, rect) {
 
 function findMovedElements(list) {
   return list.filter(function(listItem) {
-    listItem.shadow.placeholder = createShadowPlaceholder(listItem.shadow, listItem, listItem._transitionAfter);
-    if (listItem.shadow.content.parentElement) {
-      listItem.shadow.parent.removeChild(listItem.shadow.content);
-    }
-    listItem.shadow.content.style.opacity = "1";
     if (rectEquals(listItem._transitionBefore, listItem._transitionAfter)) {
       return false;
     }
@@ -744,20 +745,6 @@ function positionListFromKeyframes(keyframes, element) {
   return positions;
 }
 
-/*
-function walkTrees(element, copy, fun) {
-  var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-  var copyWalker = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-
-  while (treeWalker.nextNode()) {
-    copyWalker.nextNode();
-    fun(treeWalker.currentNode, copyWalker.currentNode);
-  }
-}
-*/
-
 function updateContentTagOrder(tree) {
   // The tree is in DOM order, so we shouldn't ever have to revisit a container.
   var container;
@@ -834,18 +821,17 @@ function makePositionListRelative(list, parentList) {
 // of the to state. This is performed in the animation generation functions directly.
 function transitionThis(action) {
   // record positions before action
-  setPositions(transitionable, '_transitionBefore');
+  transitionable.map(function(element) { ensureCopy(element, '_transitionBefore'); });
+
   // construct transition tree  
   var tree = buildTree(transitionable);
-  // duplicate divs before action
-  createCopies(tree);
+  
   // move to new position
   action();
-  // update content tag order if action() has caused DOM changes
-  updateContentTagOrder(tree);
 
   // record positions after action
-  setPositions(transitionable, '_transitionAfter');
+  transitionable.map(function(element) { ensureCopy(element, '_transitionAfter'); });
+
   // put everything back
   // note that we don't need to do this for all transition types, but
   // by doing it here we avoid a layout flicker.
@@ -872,12 +858,6 @@ function transitionThis(action) {
         list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
       }
       
-      walkTrees(list[i], list[i].shadow.from, function(child, copy) {
-        if (child._transitionParent == list[i]) {
-          copy.style.opacity = "0";
-        }
-      });
-
       if (list[i]._layout.outer == list[i]._layout.inner) {
         generator = animationGenerator(list[i]._layout.outer);
       } else {
@@ -927,4 +907,80 @@ function transitionThis(action) {
 
   // get rid of all the junk
   cleanup();
+}
+
+function cacheCopy(element, state, copy) {
+  if (!(element._copyCache)) {
+    element._copyCache = {}
+  }
+  element._copyCache[state] = copy;
+}
+
+function removeCopy(element, state) {
+  if (!(element._copyCache)) {
+    return;
+  }
+  element._copyCache[state] = undefined;
+}
+
+function getCopy(element, state) {
+  if (!(element._copyCache)) {
+    return;
+  }
+  return element._copyCache[state];
+}
+
+function generateCopy(element, state) {
+  var rect = sensePosition(element);
+  setPosition(element, rect, state);
+  var fromPosition = boundingRectToContentRect(element, rect);
+  // TODO: This used to be guarded so that it only executed if this
+  // element wasn't the root in the layout transition tree.
+  var parent = element.parentElement;
+  while (parent && !parent._layout) {
+    var style = getComputedStyle(parent);
+    if (style.position == "relative" || style.position == "absolute") {
+      fromPosition.left += v(style.left);
+      fromPosition.top += v(style.top);
+    }
+    parent = parent.parentElement;
+  } 
+  var from = cloneElementToSize(element, fromPosition);
+
+  cacheCopy(element, state, from);
+}
+
+function ensureCopy(element, state) {
+  if (getCopy(element, state)) {
+    return;
+  }
+  generateCopy(element, state);
+}
+
+function showCopy(element, state) {
+  var copy = getCopy(element, state);
+  document.documentElement.appendChild(copy);
+  return copy;
+}
+
+function hideCopy(element, state) {
+  var copy = getCopy(element, state);
+  document.documentElement.removeChild(copy);
+}
+
+function cloneElementToSize(node, rect, hide) {
+  var div = document.createElement("div");
+  var nodeStyle = window.getComputedStyle(node);
+  div.setAttribute("style", nodeStyle.cssText);
+  if (hide) {
+    div.style.opacity = "0";
+  }
+  div.style.position = "absolute";
+  div.style.left = rect.left + 'px';
+  div.style.top = rect.top + 'px';
+  div.style.width = rect.width + 'px';
+  div.style.height = rect.height + 'px';
+  div.innerHTML = node.innerHTML;
+
+  return div;
 }
