@@ -208,7 +208,7 @@ function animationToPositionNone(target, positions, current, timing, isContents)
   if (isContents) {
     var from = target.shadow.fromContents;
   } else {
-    var from = target.shadow.from;
+    var from = getCopy(target, '_transitionBefore');
   }
 
   var transOrig = origin(from.style.webkitTransformOrigin);
@@ -832,6 +832,11 @@ function transitionThis(action) {
   // record positions after action
   transitionable.map(function(element) { ensureCopy(element, '_transitionAfter'); });
 
+  transitionable.map(function(element) { 
+    element.style.opacity = '0';
+    showCopy(element, '_transitionBefore'); 
+  });
+
   // put everything back
   // note that we don't need to do this for all transition types, but
   // by doing it here we avoid a layout flicker.
@@ -889,19 +894,8 @@ function transitionThis(action) {
         tree[i].placeholder = undefined; 
       }
       for (var i = 0; i < transitionable.length; i++) {
-        for (var j = transitionable[i].shadow.parent.children.length - 1; j >= 0; j--) {
-          if (transitionable[i].shadow.parent.children[j].tagName != 'CONTENT') {
-            transitionable[i].shadow.parent.removeChild(transitionable[i].shadow.parent.children[j]);
-          } else {
-            var foundContent = true;
-          } 
-        }
-        if (!foundContent) {
-          transitionable[i].shadow.parent.appendChild(transitionable[i].shadow.content);
-        }
         transitionable[i].style.opacity = "";
-        transitionable[i].shadow = undefined;
-        transitionable[i]._transitionStartCopy = undefined;
+        hideCopy(transitionable[i], '_transitionBefore');
       }
     }), 0)]));
 
