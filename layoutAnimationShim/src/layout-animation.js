@@ -894,6 +894,7 @@ function generateCopy(element, state) {
   // TODO: This used to be guarded so that it only executed if this
   // element wasn't the root in the layout transition tree.
   var parent = element.parentElement;
+  /*
   while (parent && !parent._layout) {
     var style = getComputedStyle(parent);
     if (style.position == "relative" || style.position == "absolute") {
@@ -901,9 +902,10 @@ function generateCopy(element, state) {
       fromPosition.top += parent.offsetTop;
     }
     parent = parent.parentElement;
-  } 
+  }
+  */ 
   var from = cloneElementToSize(element, fromPosition);
-
+  
   cacheCopy(element, state, from);
 }
 
@@ -916,13 +918,13 @@ function ensureCopy(element, state) {
 
 function showCopy(element, state) {
   var copy = getCopy(element, state);
-  document.documentElement.appendChild(copy);
+  element.parentElement.appendChild(copy);
   return copy;
 }
 
 function hideCopy(element, state) {
   var copy = getCopy(element, state);
-  document.documentElement.removeChild(copy);
+  element.parentElement.removeChild(copy);
 }
 
 function cloneElementToSize(node, rect, hide) {

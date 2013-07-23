@@ -15,14 +15,10 @@ div.item {
 
 div.moved {
   height: 100px;
-  font-size: 60px;
-  animation: increaseFontSize 0.5s;
+  -webkit-animation: increaseFontSize 0.5s forwards;
 }
 
-@keyframes increaseFontSize {
-  0% {
-    font-size: 30px;
-  }
+@-webkit-keyframes increaseFontSize {
   100% {
     font-size: 60px;
   }
