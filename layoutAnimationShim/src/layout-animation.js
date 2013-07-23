@@ -24,10 +24,6 @@ function rectToClip(rect) {
   return "rect(0px, " + rect.width + "px, " + rect.height + "px, 0px)";
 } 
 
-function setPosition(target, rect, name) {
-  target[name] = rect;
-}
-
 function fixTiming(timing) {
   if (typeof timing == "number") {
     timing = {iterationDuration: timing};
@@ -42,6 +38,7 @@ function fixTiming(timing) {
 var classNum=0;
 
 function setupShadowContainer(target, root) {
+  alert('sod');
   var parent = root.parentElement;
   var shadowRoot = parent.webkitShadowRoot;
   if (shadowRoot == null) {
@@ -115,7 +112,7 @@ function animationToPositionLayout(target, positions, current, timing, isContent
   if (isContents) {
     var from = target.shadow.fromContents;
   } else {
-    var from = target.shadow.from;
+    var from = getCopy(target, '_transitionBefore');
   }
 
   var mkPosList = function(property, list) {
@@ -133,7 +130,7 @@ function animationToPositionLayout(target, positions, current, timing, isContent
   for (var i = 0; i < targetStyle.length; i++) {
     var prop = targetStyle[i];
     if (sourceStyle[prop] != targetStyle[prop]) {
-      if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", "width", "height"].indexOf(prop) == -1) {
+      if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", "width", "height", "opacity"].indexOf(prop) == -1) {
         if (!isContents || prop.indexOf('background') == -1) {
           from.style[prop] = targetStyle[prop];
         }
@@ -188,7 +185,7 @@ function animationToPositionTransform(target, positions, current, timing, isCont
   if (isContents) {
     var from = target.shadow.fromContents;
   } else {
-    var from = target.shadow.from;
+    var from = getCopy(target, '_transitionBefore');
   }
 
   var transOrig = origin(from.style.webkitTransformOrigin);
@@ -228,7 +225,7 @@ function animationToPositionClip(target, positions, current, timing, isContents)
   if (isContents) {
     var from = target.shadow.fromContents;
   } else {
-    var from = target.shadow.from
+    var from = getCopy(target, '_transitionBefore');
   }
   timing = fixTiming(timing);
   
@@ -251,7 +248,7 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
     if (isContents) {
       var from = target.shadow.fromContents;
     } else {
-      var from = target.shadow.from;
+      var from = getCopy(target, '_transitionBefore');
     }
     timing = fixTiming(timing);
     var opacityTiming = {};
@@ -297,9 +294,14 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
       }
       var to = target.shadow.toContents;
     } else {
+      showCopy(target, '_transitionAfter');
+      var to = getCopy(target, '_transitionAfter');
+      
+    /*
       var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
       var to = cloneToSize(target, toPosition, true);
       target.shadow.to = to;
+    */
     }
 
     transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
@@ -319,7 +321,8 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
 
     timing.fillMode = 'forwards';
     var cleanupAnimation = new Animation(null, new Cleaner(function() {
-      to.parentElement.removeChild(to);
+      hideCopy(target, '_transitionAfter');
+      //to.parentElement.removeChild(to);
     }), timing);
     
     return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
@@ -331,7 +334,7 @@ function animationToPositionTransfade(target, positions, current, timing, isCont
   if (isContents) {
     var from = target.shadow.fromContents;
   } else {
-    var from = target.shadow.from;
+    var from = getCopy(target, '_transitionBefore');
   }
   timing = fixTiming(timing);
 
@@ -355,9 +358,8 @@ function animationToPositionTransfade(target, positions, current, timing, isCont
     }
     var to = target.shadow.toContents;
   } else {
-    var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-    var to = cloneToSize(target, toPosition, true);
-    target.shadow.to = to;
+    showCopy(target, '_transitionAfter');
+    var to = getCopy(target, '_transitionAfter');
   }
 
   transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
@@ -372,7 +374,7 @@ function animationToPositionTransfade(target, positions, current, timing, isCont
 
   timing.fillMode = 'forwards';
   var cleanupAnimation = new Animation(null, new Cleaner(function() {
-    to.parentElement.removeChild(to);
+    hideCopy(target, '_transitionAfter');
   }), timing);
     
   return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
@@ -645,6 +647,7 @@ function walkTrees(element, copy, fun) {
 }
 
 function createCopy(element, root) {
+  alert('boo');
   var shadow = setupShadowContainer(element, root);
   var fromPosition = boundingRectToContentRect(element, element._transitionBefore);
   if (element != root) {
@@ -896,11 +899,21 @@ function transitionThis(action) {
       for (var i = 0; i < transitionable.length; i++) {
         transitionable[i].style.opacity = "";
         hideCopy(transitionable[i], '_transitionBefore');
+        removeCopy(transitionable[i], '_transitionBefore');
+        removeCopy(transitionable[i], '_transitionAfter');
       }
     }), 0)]));
 
   // get rid of all the junk
   cleanup();
+}
+
+function clearPosition(target, name) {
+  target[name] = undefined;
+}
+
+function setPosition(target, rect, name) {
+  target[name] = rect;
 }
 
 function cacheCopy(element, state, copy) {
@@ -915,6 +928,7 @@ function removeCopy(element, state) {
     return;
   }
   element._copyCache[state] = undefined;
+  clearPosition(element, state);
 }
 
 function getCopy(element, state) {
