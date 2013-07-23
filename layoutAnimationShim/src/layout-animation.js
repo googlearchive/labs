@@ -35,63 +35,6 @@ function fixTiming(timing) {
   return timing;
 }
 
-var classNum=0;
-
-function setupShadowContainer(target, root) {
-  alert('sod');
-  var parent = root.parentElement;
-  var shadowRoot = parent.webkitShadowRoot;
-  if (shadowRoot == null) {
-    shadowRoot = parent.webkitCreateShadowRoot();
-    shadowRoot.applyAuthorStyles = true;
-    for (var i = 0; i < parent.children.length; i++) {
-      var content = document.createElement("content");
-      content.setAttribute("select", ".scflt_" + classNum);
-      content.classList.add("scflt_" + classNum);
-      parent.children[i].classList.add("scflt_" + classNum);
-      var opacDiv = document.createElement("div");
-      opacDiv.appendChild(content);
-      var div = document.createElement("div");
-      div.appendChild(opacDiv);
-      div.classList.add("scflt_" + classNum);
-      shadowRoot.appendChild(div);
-      if (parent.children[i] == target) {
-        var newSel = ".scflt_" + classNum;
-      }
-      classNum ++;
-    }
-  } else {
-    for (var i = 0; i < target.classList.length; i++) {
-      if (target.classList[i].substring(0, 6) == "scflt_") {
-        var newSel = '.' + target.classList[i];
-        break;
-      }
-    }
-  }
-
-  if (target != root) {
-    var newSel = ".scflt_" + classNum;
-    classNum ++;
-
-    var content = document.createElement("div");
-    var contentChild = document.createElement("content");
-    contentChild.setAttribute("select", newSel);
-    contentChild.classList.add(newSel.substring(1));
-    content.appendChild(contentChild);
-    target.classList.add(newSel);
-    var parentDiv = document.createElement("div");
-    parentDiv.appendChild(content);
-    parentDiv.classList.add(newSel.substring(1));
-    shadowRoot.appendChild(parentDiv);
-  } else {
-    content = shadowRoot.querySelector('content' + newSel).parentElement;
-    parentDiv = content.parentElement;
-  }
-
-  target.shadow = {root: shadowRoot, parent: parentDiv, content: content};
-  return target.shadow;
-}
-
 function createShadowPlaceholder(shadow, target, rect) {
   var style = getComputedStyle(target);
   if (style.position == 'absolute' || style.position == 'relative') {
@@ -115,6 +58,12 @@ function animationToPositionLayout(target, positions, current, timing, isContent
     var from = getCopy(target, '_transitionBefore');
   }
 
+  var transOrig = origin(from.style.webkitTransformOrigin);
+  var cssList = positions.map(function(position) {
+    var str = rectsToCss(position, current, transOrig, true);
+    return { offset: position.offset, value: str};
+  });
+
   var mkPosList = function(property, list) {
     return list.map(function(input) {
       contentRect = boundingRectToContentRect(target, input);
@@ -127,6 +76,7 @@ function animationToPositionLayout(target, positions, current, timing, isContent
   // copy style from initial state to final state. This tries to capture CSS transitions.
   sourceStyle = window.getComputedStyle(from);
   targetStyle = window.getComputedStyle(target);
+  console.log(sourceStyle.fontSize, targetStyle.fontSize);
   for (var i = 0; i < targetStyle.length; i++) {
     var prop = targetStyle[i];
     if (sourceStyle[prop] != targetStyle[prop]) {
@@ -142,8 +92,9 @@ function animationToPositionLayout(target, positions, current, timing, isContent
   }
 
   return new Animation(from, toStinkyAPI({position: ["absolute", "absolute"],
-                                left: mkPosList('left', positions),
-                                top: mkPosList('top', positions),
+                                /*left: mkPosList('left', positions),
+                                top: mkPosList('top', positions), */
+                                transform: cssList,
                                 width: mkPosList('width', positions), 
                                 height: mkPosList('height', positions)}), 
                        timing);
@@ -195,8 +146,6 @@ function animationToPositionTransform(target, positions, current, timing, isCont
   });
 
   timing = fixTiming(timing);
-
-  console.log(toStinkyAPI({transform: cssList}));
 
   return new Animation(from, toStinkyAPI({transform: cssList}), timing);
 }
@@ -948,8 +897,8 @@ function generateCopy(element, state) {
   while (parent && !parent._layout) {
     var style = getComputedStyle(parent);
     if (style.position == "relative" || style.position == "absolute") {
-      fromPosition.left += v(style.left);
-      fromPosition.top += v(style.top);
+      fromPosition.left += parent.offsetLeft;
+      fromPosition.top += parent.offsetTop;
     }
     parent = parent.parentElement;
   } 

@@ -87,7 +87,7 @@ registerLayoutKeyframes("default", [
                             layoutTop: "to()", layoutLeft: "to()" }}]);
 
 setLayoutTransition(document.querySelectorAll(".item"), "default", duration);
-setLayoutEffect(document.querySelectorAll(".item"), "none");
+setLayoutEffect(document.querySelectorAll(".item"), "layout");
 
 button.onclick = function() {
   var to = Math.round((Math.random() * canvas.children.length) - 0.5);
@@ -97,11 +97,11 @@ button.onclick = function() {
   var movedChild = canvas.children[from];
   movedChild.style.zIndex = 1;
   transitionThis(function() {
-    console.log(canvas.children); 
     canvas.insertBefore(canvas.children[from], canvas.children[to]); 
-    console.log(canvas.children); 
     getComputedStyle(movedChild).top;
     movedChild.classList.add("moved");
+    //console.log(movedChild.classList);
+    //console.log(getComputedStyle(movedChild).fontSize, "here");
   });
   //canvas.insertBefore(canvas.children[from], canvas.children[to]); getComputedStyle(movedChild).top; movedChild.classList.add("moved"); 
   setTimeout(function() { movedChild.style.zIndex = 0; }, duration * 1000);
