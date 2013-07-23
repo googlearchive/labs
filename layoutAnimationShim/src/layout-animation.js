@@ -76,7 +76,6 @@ function animationToPositionLayout(target, positions, current, timing, isContent
   // copy style from initial state to final state. This tries to capture CSS transitions.
   sourceStyle = window.getComputedStyle(from);
   targetStyle = window.getComputedStyle(target);
-  console.log(sourceStyle.fontSize, targetStyle.fontSize);
   for (var i = 0; i < targetStyle.length; i++) {
     var prop = targetStyle[i];
     if (sourceStyle[prop] != targetStyle[prop]) {
@@ -483,6 +482,15 @@ function setLayoutTransition(target, name, duration) {
     }
     return;
   }
+
+  if (target.classList.contains("_layoutAnimationContentSnapshot")) {
+    console.error("You're attempting to set a layout transition on a content snapshot." +
+      " This shim creates content snapshots as divs attached to the same parent as the content" +
+      " being snapshotted. You're probably using a selector that selects 'div' rather than" +
+      " something more specific.");
+    return;
+  }
+
   if (target._layout == undefined) {
     target._layout = new LayoutTransition();
   }
@@ -924,6 +932,9 @@ function showCopy(element, state) {
 
 function hideCopy(element, state) {
   var copy = getCopy(element, state);
+  if (!element.parentElement) {
+    console.log('huh');
+  }
   element.parentElement.removeChild(copy);
 }
 
@@ -940,6 +951,7 @@ function cloneElementToSize(node, rect, hide) {
   div.style.width = rect.width + 'px';
   div.style.height = rect.height + 'px';
   div.innerHTML = node.innerHTML;
+  div.classList.add("_layoutAnimationContentSnapshot");
 
   return div;
 }
