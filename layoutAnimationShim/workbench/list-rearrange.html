@@ -13,13 +13,19 @@ div.item {
   text-align: center;
 }
 
-div {
-  -webkit-transition: font-size 0.5s linear;
-}
-
 div.moved {
   height: 100px;
   font-size: 60px;
+  animation: increaseFontSize 0.5s;
+}
+
+@keyframes increaseFontSize {
+  0% {
+    font-size: 30px;
+  }
+  100% {
+    font-size: 60px;
+  }
 }
 
 div#container {
