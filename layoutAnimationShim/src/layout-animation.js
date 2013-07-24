@@ -582,58 +582,6 @@ function boundingRectToReplacementRect(element, rect) {
   return {width: width, top: top, left: left, height: height}; 
 }
 
-function findMovedElements(list) {
-  return list.filter(function(listItem) {
-    if (rectEquals(listItem._transitionBefore, listItem._transitionAfter)) {
-      return false;
-    }
-    return true;
-  });
-}
-
-function walkTrees(element, copy, fun) {
-  var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-  var copyWalker = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-
-  while (treeWalker.nextNode()) {
-    copyWalker.nextNode();
-    fun(treeWalker.currentNode, copyWalker.currentNode);
-  }
-}
-
-function createCopy(element, root) {
-  alert('boo');
-  var shadow = setupShadowContainer(element, root);
-  var fromPosition = boundingRectToContentRect(element, element._transitionBefore);
-  if (element != root) {
-    var parent = element.parentElement;
-    while (parent != root.parentElement) {
-      var style = getComputedStyle(parent);
-      if (style.position == "relative" || style.position == "absolute") {
-        fromPosition.left += v(style.left);
-        fromPosition.top += v(style.top);
-      }
-      parent = parent.parentElement;
-    } 
-  }
-  var from = cloneToSize(element, fromPosition);
-  from.classList.add("fromStateCopy");
-  element.shadow.from = from;
-  element.shadow.content.style.opacity = "0";
-} 
-
-function createCopies(tree) {
-  function createCopiesWithRoot(item, root) {
-    createCopy(item, root);
-    if (item._transitionChildren) {
-      item._transitionChildren.forEach(function(child) { createCopiesWithRoot(child, root); });
-    }
-  }
-  tree.forEach(function(root) { createCopiesWithRoot(root, root); });
-}
-
 function buildTree(list) {
   var roots = [];
   for (var i = 0; i < list.length; i++) {
@@ -797,13 +745,7 @@ function transitionThis(action) {
     showCopy(element, '_transitionBefore'); 
   });
 
-  // put everything back
-  // note that we don't need to do this for all transition types, but
-  // by doing it here we avoid a layout flicker.
-  movedList = findMovedElements(transitionable);
-
   // construct animations
-
   var parGroup = new ParGroup();
 
   function processList(list) {
