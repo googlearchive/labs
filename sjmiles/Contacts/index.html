@@ -5,14 +5,16 @@
   <script src="../../../polymer/polymer.js"></script>
 
   <link href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
+  <link href="../../../polymer-elements/polymer-list/polymer-list.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-sidebar-menu/polymer-ui-sidebar-menu.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
+  <link href="../../../polymer-ui-elements/polymer-ui-accordion/polymer-ui-accordion.html" rel="import">
 
   <style>
     body {
       font-family: 'Helvetica Neue', Roboto, Arial, Helvetica, sans-serif;
-      background-color: #333;
+      background-color: #ddd;
       margin: 0;
       overflow: hidden;
     }
@@ -26,102 +28,153 @@
   </style>
 </head>
 <body theme="polymer-ui-light-theme">
+
   <mock-tacts></mock-tacts>
-  
+
   <polymer-element name="mock-tacts">
     <template>
       <style>
-        #workspace, #toolbar, #groupbar {
-          -webkit-transition: top, right, bottom, left;
-          -webkit-transition-duration: 0.3s;
-        }
-        xpanel {
-          display: inline-block;
-          border: 4px dotted lightblue;
-          padding: 16px;
-          box-sizing: border-box;
-        }
-        #output {
-          width: 400px;
-        }
-        #workspace {
-          padding: 8px;
-          background-color: white;
-        }
         #sidebar {
           width: 248px;
+        }
+        #otherbar {
+          padding: 16px;
+          background-color: #282828;
+          color: #aaa;
+        }
+        #sidebar, #groups, #collection, #collectionbar, #groupbar {
+          /*-webkit-transition: opacity;
+          -webkit-transition-duration: 0.2s;
+          -webkit-transition-timing-function: ease-in;*/
+        }
+        #groups, #collection, #collectionbar, #groupbar {
+          min-width: 200px;
+        }
+        #groups, #collection {
+          padding: 16px;
+          background-color: white;
+        }
+        /*list-item {
+          display: block;
+          padding: 8px;
+          border-radius: 8px;
+          margin: 0px 16px;
+        }*/
+        contact {
+          display: block;
+          padding: 12px;
+          margin: 0px 16px;
+          font-weight: bold;
+          color: #333;
+          border: 1px solid rgba(221, 221, 221, 0.25);
+        }
+        contact polymer-ui-icon {
+          margin-right: 18px;
+        }
+        .polymer-ui-collapsible-header {
+          padding: 24px;
+          font-size: 0.8em;
+          font-weight: bold;
+          border: 1px solid rgba(221, 221, 221, 0.25);
         }
       </style>
 
       <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
 
-      <polymer-ui-sidebar-menu id="sidebar" label="Contacts" selected="0" theme="polymer-ui-dark-theme">
+      <polymer-ui-sidebar-menu id="sidebar" label="Contacts" selected="{{selectedNav}}" theme="polymer-ui-dark-theme">
         <polymer-ui-menu-item label="Explore" on-tap="exploreAction"></polymer-ui-menu-item>
         <polymer-ui-menu-item label="Me" on-tap="meAction"></polymer-ui-menu-item>
         <polymer-ui-menu-item label="Updates"></polymer-ui-menu-item>
         <polymer-ui-menu-item label="Settings"></polymer-ui-menu-item>
       </polymer-ui-sidebar-menu>
       
-      <polymer-ui-toolbar id="toolbar">
-        <polymer-ui-icon-button icon="menu" on-click="sidebarToggleAction"></polymer-ui-icon-button>
-      </polymer-ui-toolbar>
-      
       <polymer-ui-toolbar id="groupbar">
-        <polymer-ui-icon-button icon="menu" on-click="sidebarToggleAction"></polymer-ui-icon-button>
-        <span flex>Group</span>
+        <polymer-ui-icon-button icon="menu" on-tap="sidebarToggleAction"></polymer-ui-icon-button>
+        <span flex>Groups</span>
+      </polymer-ui-toolbar>
+
+      <panel id="groups">
+        <polymer-ui-accordion>
+          <!-- for each groups -->
+          <template repeat="{{groups}}">
+            <polymer-ui-collapsible>
+              <!-- make a collapsible with a header -->
+              <div class="polymer-ui-collapsible-header">{{header}}</div>
+              <!-- and a list of contact items -->
+              <template repeat="{{contacts}}">
+                <contact on-tap="selectContact">
+                  <polymer-ui-icon icon="dialog"></polymer-ui-icon> {{}}
+                </contact>
+              </template>
+            </polymer-ui-collapsible>
+          </template>
+        </polymer-ui-accordion>
+      </panel>
+
+      <polymer-ui-toolbar id="collectionbar">
+        <polymer-ui-icon-button icon="menu" on-click="exploreAction"></polymer-ui-icon-button>
+        <span flex>Collection</span>
         <polymer-ui-icon-button icon="dialog" on-click="sidebarToggleAction"></polymer-ui-icon-button>
         <polymer-ui-icon-button icon="add" on-click="sidebarToggleAction"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
-      <panel id="workspace">workspace</panel>
-      
-      <panel id="outputToolbar">otherbar</panel>
-      <panel id="output">
-        output
-        <h2>Documentation</h2>
-        <h1>Verbiage</h1>
-        <p>In backbone record integer LED amplified internet protocol a extension reflective. 
-        Array kilohertz LED. Wavelength extension patch supporting wave an by prompt.</p>
+      <panel id="collection">
+        <polymer-list></polymer-list>
       </panel>
-
+      
+      <panel id="otherbar">Otherbar</panel>
     </template>
     <script>
       Polymer('mock-tacts', {
-        arrangements: [[
-          [2, 1],
-          [2, 3],
-          [5, 3]
+        groups: [
+          {header: 'Favorites', contacts: ["John", "James", "Jingleheimer", "Schmidt"]},
+          {header: 'Near By', contacts: ["John", "James", "Jingleheimer", "Schmidt"]},
+          {header: 'Recent', contacts: ["John", "James", "Jingleheimer", "Schmidt"]},
+          {header: 'All', contacts: ["John", "James", "Jingleheimer", "Schmidt"]}
+        ],
+        pages: [[
+          [1, 3],
+          [1, 4],
+          [2, 4]
         ], [
-          [1, 1],
-          [3, 3],
-          [3, 3]
+          [3],
+          [4],
+          [4]
         ], [
-          [6, 6],
-          [3, 3],
-          [3, 3]
+          [1, 5],
+          [1, 6],
+          [2, 6]
+        ], [
+          [5],
+          [6],
+          [6]
         ]],
-        layoutIndex: 0,
+        page: 0,
+        selectedNav: 0,
         ready: function() {
           this.nodes = [
-            this.$.toolbar, this.$.sidebar, this.$.workspace, 
-            this.$.output, this.$.outputToolbar, this.$.groupbar
+            this.$.sidebar, this.$.otherbar, this.$.groupbar,
+            this.$.groups, this.$.collectionbar, this.$.collection
           ];
-          this.layoutIndexChanged();
+          this.pageChanged();
         },
-        layoutIndexChanged: function() {
-          this.layout = this.arrangements[this.layoutIndex];
-        },
-        toggleLayout: function() {
-          this.layoutIndex = (this.layoutIndex + 1) % this.arrangements.length;
+        pageChanged: function() {
+          this.layout = this.pages[this.page];
         },
         sidebarToggleAction: function() {
-          this.layoutIndex = this.layoutIndex ? 0 : 1;
+          this.page = this.page ^ 1;
         },
         exploreAction: function() {
-          this.layoutIndex = 1;
+          this.page = 1;
         },
         meAction: function() {
-          this.layoutIndex = 2;
+        },
+        selectContact: function() {
+          this.selectedNav = 0;
+          this.page = 3;
+        },
+        selectedNavChanged: function() {
+          //this.page = this.selectedNav * 2 + 1;
         }
       });
     </script>
