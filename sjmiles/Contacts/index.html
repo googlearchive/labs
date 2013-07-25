@@ -5,7 +5,7 @@
   <script src="../../../polymer/polymer.js"></script>
 
   <link href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
-  <link href="../../../polymer-elements/polymer-list/polymer-list.html" rel="import">
+  <link href="../../../polymer-elements/polymer-list/polymer-grid.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-sidebar-menu/polymer-ui-sidebar-menu.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
@@ -43,23 +43,18 @@
           color: #aaa;
         }
         #sidebar, #groups, #collection, #collectionbar, #groupbar {
-          /*-webkit-transition: opacity;
+          /*
+          -webkit-transition: opacity;
           -webkit-transition-duration: 0.2s;
-          -webkit-transition-timing-function: ease-in;*/
+          -webkit-transition-timing-function: ease-in;
+          */
         }
         #groups, #collection, #collectionbar, #groupbar {
           min-width: 200px;
         }
         #groups, #collection {
-          padding: 16px;
           background-color: white;
         }
-        /*list-item {
-          display: block;
-          padding: 8px;
-          border-radius: 8px;
-          margin: 0px 16px;
-        }*/
         contact {
           display: block;
           padding: 12px;
@@ -72,10 +67,12 @@
           margin-right: 18px;
         }
         .polymer-ui-collapsible-header {
-          padding: 24px;
+          padding: 20px;
           font-size: 0.8em;
           font-weight: bold;
-          border: 1px solid rgba(221, 221, 221, 0.25);
+          border: 1px solid rgba(64, 64, 64, 0.25);
+          background-color: #eee;
+          box-sizing: border-box;
         }
       </style>
 
@@ -94,18 +91,19 @@
       </polymer-ui-toolbar>
 
       <panel id="groups">
-        <polymer-ui-accordion>
+        <polymer-ui-accordion selected="0">
           <!-- for each groups -->
           <template repeat="{{groups}}">
             <polymer-ui-collapsible>
               <!-- make a collapsible with a header -->
               <div class="polymer-ui-collapsible-header">{{header}}</div>
+              <polymer-grid style="position: relative; height: 239px;"></polymer-grid>
               <!-- and a list of contact items -->
-              <template repeat="{{contacts}}">
+<!--              <template repeat="{{contacts}}">
                 <contact on-tap="selectContact">
                   <polymer-ui-icon icon="dialog"></polymer-ui-icon> {{}}
                 </contact>
-              </template>
+              </template>-->
             </polymer-ui-collapsible>
           </template>
         </polymer-ui-accordion>
@@ -119,7 +117,7 @@
       </polymer-ui-toolbar>
 
       <panel id="collection">
-        <polymer-list></polymer-list>
+        <polymer-grid style="position: relative; height: 451px;"></polymer-grid>
       </panel>
       
       <panel id="otherbar">Otherbar</panel>
@@ -168,6 +166,8 @@
           this.page = 1;
         },
         meAction: function() {
+          this.selectedNav = 0;
+          this.page = 3;
         },
         selectContact: function() {
           this.selectedNav = 0;
