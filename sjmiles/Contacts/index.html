@@ -10,26 +10,55 @@
   <link href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-accordion/polymer-ui-accordion.html" rel="import">
+  <link href="contact-list/contact-list.html" rel="import">
 
   <style>
+    html, body {
+      height: 100%;
+    }
+
     body {
       font-family: 'Helvetica Neue', Roboto, Arial, Helvetica, sans-serif;
-      background-color: #ddd;
+      background-color: black;
       margin: 0;
       overflow: hidden;
+      text-align: center;
     }
+
     mock-tacts {
-      display: block;
+      display: inline-block;
       height: 100%;
+      width: 320px;
+      position: relative;
       overflow: hidden;
       background-color: whitesmoke;
       -webkit-user-select: none;
+      text-align: left;
     }
   </style>
 </head>
 <body theme="polymer-ui-light-theme">
 
   <mock-tacts></mock-tacts>
+
+  <polymer-element name="list-polyview" attributes="contacts grood">
+    <template>
+      <polymer-grid id="grid" style="position: relative; height: 239px;"></polymer-grid>
+      <contact-list id="list" contacts="{{contacts}}" on-select-contact="selectContact"></contact-list>
+    </template>
+    <script>
+      Polymer('list-polyview', {
+        grood: false,
+        ready: function() {
+          this.grood = true;
+        },
+        groodChanged: function() {
+          this.$.grid.style.display = this.grood ? '' : 'none';
+          this.$.list.style.display = this.grood ? 'none' : '';
+        }
+      });
+    </script>
+  </polymer-element>
 
   <polymer-element name="mock-tacts">
     <template>
@@ -43,14 +72,12 @@
           color: #aaa;
         }
         #sidebar, #groups, #collection, #collectionbar, #groupbar {
-          /*
-          -webkit-transition: opacity;
-          -webkit-transition-duration: 0.2s;
+          -webkit-transition: left, opacity;
+          -webkit-transition-duration: 0.3s;
           -webkit-transition-timing-function: ease-in;
-          */
         }
         #groups, #collection, #collectionbar, #groupbar {
-          min-width: 200px;
+          min-width: 320px;
         }
         #groups, #collection {
           background-color: white;
@@ -59,6 +86,7 @@
           display: block;
           padding: 12px;
           margin: 0px 16px;
+          font-size: 12px;
           font-weight: bold;
           color: #333;
           border: 1px solid rgba(221, 221, 221, 0.25);
@@ -88,29 +116,25 @@
       <polymer-ui-toolbar id="groupbar">
         <polymer-ui-icon-button icon="menu" on-tap="sidebarToggleAction"></polymer-ui-icon-button>
         <span flex>Groups</span>
+        <polymer-ui-icon-button icon="grid" on-tap="gridAction"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <panel id="groups">
         <polymer-ui-accordion selected="0">
-          <!-- for each groups -->
+          <!-- for each group -->
           <template repeat="{{groups}}">
             <polymer-ui-collapsible>
               <!-- make a collapsible with a header -->
               <div class="polymer-ui-collapsible-header">{{header}}</div>
-              <polymer-grid style="position: relative; height: 239px;"></polymer-grid>
-              <!-- and a list of contact items -->
-<!--              <template repeat="{{contacts}}">
-                <contact on-tap="selectContact">
-                  <polymer-ui-icon icon="dialog"></polymer-ui-icon> {{}}
-                </contact>
-              </template>-->
+              <!-- make a fancy list -->
+              <list-polyview contacts="{{contacts}}" grid="{{grood}}"></list-polyview>
             </polymer-ui-collapsible>
           </template>
         </polymer-ui-accordion>
       </panel>
 
       <polymer-ui-toolbar id="collectionbar">
-        <polymer-ui-icon-button icon="menu" on-click="exploreAction"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="left" on-click="exploreAction"></polymer-ui-icon-button>
         <span flex>Collection</span>
         <polymer-ui-icon-button icon="dialog" on-click="sidebarToggleAction"></polymer-ui-icon-button>
         <polymer-ui-icon-button icon="add" on-click="sidebarToggleAction"></polymer-ui-icon-button>
@@ -155,6 +179,16 @@
             this.$.groups, this.$.collectionbar, this.$.collection
           ];
           this.pageChanged();
+        },
+        gridAction: function() {
+          this.grid = !this.grid;
+          /*
+          var groups = this.groups.slice(0);
+          this.groups = null;
+          this.async(function() {
+            this.groups = groups;
+          });
+          */
         },
         pageChanged: function() {
           this.layout = this.pages[this.page];
