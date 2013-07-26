@@ -41,25 +41,6 @@
 
   <mock-tacts></mock-tacts>
 
-  <polymer-element name="list-polyview" attributes="contacts grood">
-    <template>
-      <polymer-grid id="grid" style="position: relative; height: 239px;"></polymer-grid>
-      <contact-list id="list" contacts="{{contacts}}" on-select-contact="selectContact"></contact-list>
-    </template>
-    <script>
-      Polymer('list-polyview', {
-        grood: false,
-        ready: function() {
-          this.grood = true;
-        },
-        groodChanged: function() {
-          this.$.grid.style.display = this.grood ? '' : 'none';
-          this.$.list.style.display = this.grood ? 'none' : '';
-        }
-      });
-    </script>
-  </polymer-element>
-
   <polymer-element name="mock-tacts">
     <template>
       <style>
@@ -120,14 +101,18 @@
       </polymer-ui-toolbar>
 
       <panel id="groups">
-        <polymer-ui-accordion selected="0">
+        <polymer-ui-accordion id="accordion">
           <!-- for each group -->
-          <template repeat="{{groups}}">
+          <template repeat="{{group in groups}}">
             <polymer-ui-collapsible>
               <!-- make a collapsible with a header -->
-              <div class="polymer-ui-collapsible-header">{{header}}</div>
-              <!-- make a fancy list -->
-              <list-polyview contacts="{{contacts}}" grid="{{grood}}"></list-polyview>
+              <div class="polymer-ui-collapsible-header">{{group.header}}</div>
+              <template if="{{grid}}">
+                <polymer-grid style="position: relative; height: 239px;"></polymer-grid>
+              </template>
+              <template if="{{!grid}}">
+                <contact-list contacts="{{group.contacts}}" on-select-contact="selectContact"></contact-list>
+              </template>
             </polymer-ui-collapsible>
           </template>
         </polymer-ui-accordion>
@@ -173,12 +158,16 @@
         ]],
         page: 0,
         selectedNav: 0,
+        grid: false,
         ready: function() {
           this.nodes = [
             this.$.sidebar, this.$.otherbar, this.$.groupbar,
             this.$.groups, this.$.collectionbar, this.$.collection
           ];
           this.pageChanged();
+          this.async(function() {
+             this.$.accordion.selected = 0;
+          });
         },
         gridAction: function() {
           this.grid = !this.grid;
