@@ -16,12 +16,18 @@ div.item {
 div.moved {
   height: 100px;
   -webkit-animation: increaseFontSize 0.5s forwards;
-  z-index: 1;
 }
 
 @-webkit-keyframes increaseFontSize {
+  0% {
+    z-index: 1;
+  }
+  99% {
+    z-index: 1;
+  }
   100% {
     font-size: 60px;
+    z-index: 0;
   }
 }
 
@@ -98,17 +104,12 @@ button.onclick = function() {
     var from = Math.round((Math.random() * canvas.children.length) - 0.5);
   } while (from == to);
   var movedChild = canvas.children[from];
-  movedChild.style.zIndex = 1;
   transitionThis(function() {
     canvas.insertBefore(canvas.children[from], canvas.children[to]); 
-    getComputedStyle(movedChild).top;
+    console.log(getComputedStyle(movedChild).zIndex);
     movedChild.classList.add("moved");
-    //console.log(movedChild.classList);
-    //console.log(getComputedStyle(movedChild).fontSize, "here");
+    console.log(getComputedStyle(movedChild).zIndex);
   });
-  //canvas.insertBefore(canvas.children[from], canvas.children[to]); getComputedStyle(movedChild).top; movedChild.classList.add("moved"); 
-  setTimeout(function() { movedChild.style.zIndex = 0; }, duration * 1000);
-  //setTimeout(function() { document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = 0; }) }, duration * 500); 
 }
 
 var paused = false;
