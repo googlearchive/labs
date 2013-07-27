@@ -1,4 +1,4 @@
-<element name="g-signin-header">
+<polymer-element name="g-signin-header">
   <link rel="stylesheet" href="../../../toolkit-ui/elements/css/g-flex-layout.css" />
   <template>
     <style type="text/css">
@@ -33,10 +33,10 @@
     <button id="signup">Sign Up</button>
   </template>
   <script>
-    Polymer.register(this, {
+    Polymer('g-signin-header', {
       ready: function() {
         this.classList.add('flexbox', 'align-center', 'justify-between');
       }
     });
   </script>
-</element>
+</polymer-element>
