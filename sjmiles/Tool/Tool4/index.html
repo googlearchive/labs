@@ -11,6 +11,12 @@
   <link href="../metadata.html" rel="import">
 </head>
 <body>
+  <tracks-app theme="polymer-ui-dark-theme">
+    <polymer-ajax url="../../../../polymer-elements/manifest.xml" handleAs="xml" folder="polymer-elements" auto></polymer-ajax>
+    <polymer-ajax url="../../../../polymer-ui-elements/manifest.xml" handleAs="xml" folder="polymer-ui-elements" auto></polymer-ajax>
+    <polymer-ajax url="../../../../polymer-more-elements/manifest.xml" handleAs="xml" folder="polymer-more-elements" auto></polymer-ajax>
+  </tracks-app>
+
   <polymer-element name="tracks-app">
     <template>
       <link href="tracks-app.css" rel="stylesheet">
@@ -263,10 +269,5 @@
       });
     </script>
   </polymer-element>
-
-  <tracks-app theme="polymer-ui-dark-theme">
-    <polymer-ajax url="../../../../polymer-elements/manifest.xml" handleAs="xml" folder="polymer-elements" auto></polymer-ajax>
-    <polymer-ajax url="../../../../polymer-ui-elements/manifest.xml" handleAs="xml" folder="polymer-ui-elements" auto></polymer-ajax>
-  </tracks-app>
 </body>
 </html>
