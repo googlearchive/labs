@@ -49,14 +49,10 @@ function createShadowPlaceholder(shadow, target, rect) {
   return div;
 }
  
-function animationToPositionLayout(target, positions, current, timing, isContents) {
+function animationToPositionLayout(target, positions, current, timing) {
   timing = fixTiming(timing);
   
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = getCopy(target, '_transitionBefore');
-  }
+  var from = getCopy(target, '_transitionBefore');
 
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
@@ -80,14 +76,11 @@ function animationToPositionLayout(target, positions, current, timing, isContent
     var prop = targetStyle[i];
     if (sourceStyle[prop] != targetStyle[prop]) {
       if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", "width", "height", "opacity"].indexOf(prop) == -1) {
-        if (!isContents || prop.indexOf('background') == -1) {
+        if (prop.indexOf('background') == -1) {
           from.style[prop] = targetStyle[prop];
         }
       }
     }
-  }
-  if (isContents) {
-    from.style.borderColor = "rgba(0, 0, 0, 0)";
   }
 
   return new Animation(from, toStinkyAPI({position: ["absolute", "absolute"],
@@ -131,12 +124,8 @@ function toStinkyAPI(dict) {
   });
 }
 
-function animationToPositionTransform(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = getCopy(target, '_transitionBefore');
-  }
+function animationToPositionTransform(target, positions, current, timing) {
+  var from = getCopy(target, '_transitionBefore');
 
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
@@ -149,12 +138,8 @@ function animationToPositionTransform(target, positions, current, timing, isCont
   return new Animation(from, toStinkyAPI({transform: cssList}), timing);
 }
 
-function animationToPositionNone(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = getCopy(target, '_transitionBefore');
-  }
+function animationToPositionNone(target, positions, current, timing) {
+  var from = getCopy(target, '_transitionBefore');
 
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
@@ -169,12 +154,8 @@ function animationToPositionNone(target, positions, current, timing, isContents)
   return a;
 }
 
-function animationToPositionClip(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = getCopy(target, '_transitionBefore');
-  }
+function animationToPositionClip(target, positions, current, timing) {
+  var from = getCopy(target, '_transitionBefore');
   timing = fixTiming(timing);
   
   var transOrig = origin(from.style.webkitTransformOrigin);
@@ -192,13 +173,10 @@ function animationToPositionClip(target, positions, current, timing, isContents)
 }
 
 function animationToPositionFadeOutIn(outTo, inFrom, clip) {
-  return function(target, positions, current, timing, isContents) {
-    if (isContents) {
-      var from = target.shadow.fromContents;
-    } else {
-      var from = getCopy(target, '_transitionBefore');
-    }
+  return function(target, positions, current, timing) {
+    var from = getCopy(target, '_transitionBefore');
     timing = fixTiming(timing);
+
     var opacityTiming = {};
     for (d in timing) {
       opacityTiming[d] = timing[d];
@@ -232,26 +210,9 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
     opacityTiming.startDelay += timing.iterationDuration * inFrom;  
     opacityTiming.fillMode = 'backwards';
 
-    if (isContents) {
-      if (!target.shadow.toContents) { 
-        var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-        var to = cloneToSize(target, toPosition, true);
-        target.shadow.toContents = extractContents(to);
-        target.shadow.parent.appendChild(target.shadow.toContents);
-        to.parentElement.removeChild(to);
-      }
-      var to = target.shadow.toContents;
-    } else {
-      showCopy(target, '_transitionAfter');
-      var to = getCopy(target, '_transitionAfter');
+    showCopy(target, '_transitionAfter');
+    var to = getCopy(target, '_transitionAfter');
       
-    /*
-      var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-      var to = cloneToSize(target, toPosition, true);
-      target.shadow.to = to;
-    */
-    }
-
     transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
     var cssList = positions.map(function(position) {
       var str = rectsToCss(position, positions[positions.length - 1], transOrig, true);
@@ -278,12 +239,8 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
   }
 }
 
-function animationToPositionTransfade(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = getCopy(target, '_transitionBefore');
-  }
+function animationToPositionTransfade(target, positions, current, timing) {
+  var from = getCopy(target, '_transitionBefore');
   timing = fixTiming(timing);
 
   var transOrig = origin(from.style.webkitTransformOrigin);
@@ -296,19 +253,8 @@ function animationToPositionTransfade(target, positions, current, timing, isCont
           position: ["absolute", "absolute"]}), timing);
   var fromOpacAnim = new Animation(from, toStinkyAPI({opacity: ["1", "0"]}), timing);
 
-  if (isContents) {
-    if (!target.shadow.toContents) { 
-      var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-      var to = cloneToSize(target, toPosition, true);
-      target.shadow.toContents = extractContents(to);
-      target.shadow.parent.appendChild(target.shadow.toContents);
-      to.parentElement.removeChild(to);
-    }
-    var to = target.shadow.toContents;
-  } else {
-    showCopy(target, '_transitionAfter');
-    var to = getCopy(target, '_transitionAfter');
-  }
+  showCopy(target, '_transitionAfter');
+  var to = getCopy(target, '_transitionAfter');
 
   transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
   var cssList = positions.map(function(position) {
@@ -353,25 +299,6 @@ function extractContents(container, copyContents) {
   fromContents.style.borderColor = "rgba(0, 0, 0, 0)";
 
   return fromContents; 
-}
-
-function animationForHybridTransition(container, contents) {
-  return function(target, positions, current, timing) {
-    var fromContents = extractContents(target.shadow.from);
-    target.shadow.parent.appendChild(fromContents);
-    target.shadow.fromContents = fromContents;
-
-    var containerAnimation = animationGenerator(container)(target, positions, current, timing);
-
-    if (target.shadow.to) {
-      var toContents = extractContents(target.shadow.to);
-      target.shadow.parent.appendChild(toContents);
-      target.shadow.toContents = toContents;
-    }
-
-    return new ParGroup([containerAnimation,
-      animationGenerator(contents)(target, positions, current, timing, true)]);
-  }
 }
 
 function animationGenerator(effect) {
@@ -448,8 +375,7 @@ function registerLayoutKeyframes(name, keyframes) {
 function LayoutTransition() {
   this.name = undefined;
   this.duration = 0;
-  this.inner = "none";
-  this.outer = "layout";
+  this.effect = "layout";
 }
 
 LayoutTransition.prototype = {
@@ -463,15 +389,11 @@ LayoutTransition.prototype = {
       this.duration = 0;
     }
   },
-  setLayout: function(outer, inner) {
-    if (outer == undefined) {
-      outer = "layout";
+  setEffect: function(effect) {
+    if (effect == undefined) {
+      effect = "layout";
     }
-    if (inner == undefined) {
-      inner = outer;
-    }
-    this.outer = outer;
-    this.inner = inner;
+    this.effect = effect;
   }
 }
 
@@ -501,17 +423,17 @@ function setLayoutTransition(target, name, duration) {
   }
 }
 
-function setLayoutEffect(target, outer, inner) {
+function setLayoutEffect(target, effect) {
   if (target.length !== undefined) {
     for (var i = 0; i < target.length; i++) {
-      setLayoutEffect(target[i], outer, inner);
+      setLayoutEffect(target[i], effect);
     }
     return;
   }
   if (target._layout == undefined) {
     target._layout = new LayoutTransition();
   }
-  target._layout.setLayout(outer, inner);
+  target._layout.setEffect(effect);
 }
 
 function cloneRect(rect) {
@@ -765,11 +687,7 @@ function transitionThis(action) {
         list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
       }
       
-      if (list[i]._layout.outer == list[i]._layout.inner) {
-        generator = animationGenerator(list[i]._layout.outer);
-      } else {
-        generator = animationForHybridTransition(list[i]._layout.outer, list[i]._layout.inner);
-      }
+      generator = animationGenerator(list[i]._layout.effect);
 
       parGroup.append(
           generator(list[i], positionList, list[i]._transitionBefore, list[i]._layout.duration));
@@ -790,9 +708,6 @@ function transitionThis(action) {
         tree[i].style.width = "";
         tree[i].style.height = "";
         tree[i].style.position = "";
-        // tree[i].shadow.parent.removeChild(tree[i].placeholder);
-        // tree[i].shadow.parent.removeChild(tree[i]._transitionStartCopy);
-        // tree[i].shadow.root.innerHTML = "";
         tree[i].placeholder = undefined; 
       }
       for (var i = 0; i < transitionable.length; i++) {
