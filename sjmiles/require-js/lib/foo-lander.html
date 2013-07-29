@@ -1,0 +1,13 @@
+﻿
+<polymer-element name="foo-lander">
+  <script>
+    Polymer.require('foo-lander', ['http://code.jquery.com/jquery-2.0.3.min.js'], function() {
+      return {
+        ready: function() {
+          $('#foo').html('the $(\'#foo\') has landed');
+          //$('#foo').textContent = 'the $(\'#foo\') has landed';
+        }
+      };
+    });
+  </script>
+</polymer-element>
