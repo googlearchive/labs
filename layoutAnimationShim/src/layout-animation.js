@@ -413,6 +413,14 @@ function setLayoutTransition(target, name, duration) {
     return;
   }
 
+  if (name == undefined) {
+    if (target._layout) {
+      target._layout = undefined;
+      transitionable.splice(transitionable.indexOf(target), 1);
+    }
+    return;
+  }
+
   if (target._layout == undefined) {
     target._layout = new LayoutTransition();
   }
