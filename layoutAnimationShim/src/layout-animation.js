@@ -35,20 +35,6 @@ function fixTiming(timing) {
   return timing;
 }
 
-function createShadowPlaceholder(shadow, target, rect) {
-  var style = getComputedStyle(target);
-  if (style.position == 'absolute' || style.position == 'relative') {
-    return undefined;
-  }
-  var div = document.createElement("div");
-  var replacement = boundingRectToReplacementRect(target, rect);
-  div.style.width = replacement.width + 'px';
-  div.style.height = replacement.height + 'px';
-  div.classList.add('placeholder');
-  shadow.parent.appendChild(div);
-  return div;
-}
- 
 function animationToPositionLayout(target, positions, current, timing) {
   timing = fixTiming(timing);
   
@@ -716,7 +702,6 @@ function transitionThis(action) {
         tree[i].style.width = "";
         tree[i].style.height = "";
         tree[i].style.position = "";
-        tree[i].placeholder = undefined; 
       }
       for (var i = 0; i < transitionable.length; i++) {
         transitionable[i].style.opacity = "";
