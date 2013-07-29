@@ -70,6 +70,7 @@
       </polymer-ui-toolbar>
 
       <div id="docs" v-flex>
+        <iframe style="height:100%; width: 100%; border: 0;" src="../../../{{item.folder}}/docs/classes/{{item.name}}.html"></iframe>
 <!--        <iframe style="height:100%; width: 100%; border: 0;" src="../../../{{item.folder}}/docs/classes/{{item.name}}.html"></iframe>-->
       </div>
 
@@ -245,7 +246,7 @@
         },
         itemChanged: function() {
           this.exampleFrame.src = '../../../../' + this.item.folder + '/' + this.item.name + '/index.html';
-          this.docsFrame.src = '../../../../' + this.item.folder + '/docs/classes/' + this.item.name + '.html';
+          //this.docsFrame.src = '../../../../' + this.item.folder + '/docs/classes/' + this.item.name + '.html';
         },
         itemsBaseChanged: function() {
           var names = {}, folders = [];
