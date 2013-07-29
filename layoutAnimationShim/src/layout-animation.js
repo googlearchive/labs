@@ -403,10 +403,13 @@ function setLayoutTransition(target, name, duration) {
     if (target._layout) {
       target._layout = undefined;
       transitionable.splice(transitionable.indexOf(target), 1);
+      target.removeAttribute('isTransitionable');
     }
     return;
   }
 
+
+  target.setAttribute('isTransitionable', 'isTransitionable');
   if (target._layout == undefined) {
     target._layout = new LayoutTransition();
   }
@@ -644,22 +647,17 @@ function makePositionListRelative(list, parentList) {
 // created copy, while transfade and crossfade need to create an aditional copy
 // of the to state. This is performed in the animation generation functions directly.
 function transitionThis(action) {
-  // record positions before action
-  transitionable.map(function(element) { ensureCopy(element, '_transitionBefore'); });
-
   // construct transition tree  
   var tree = buildTree(transitionable);
   
+  // record positions before action
+  transitionable.map(function(element) { ensureCopy(element, '_transitionBefore'); });
+
   // move to new position
   action();
 
   // record positions after action
   transitionable.map(function(element) { ensureCopy(element, '_transitionAfter'); });
-
-  transitionable.map(function(element) { 
-    element.style.opacity = '0';
-    showCopy(element, '_transitionBefore'); 
-  });
 
   // construct animations
   var parGroup = new ParGroup();
@@ -668,7 +666,11 @@ function transitionThis(action) {
     if (!list) {
       return;
     }
+
     for (var i = 0; i < list.length; i++) {
+      list[i].style.opacity = '0';
+      showCopy(list[i], '_transitionBefore');
+
       var keyframes = layoutKeyframes[list[i]._layout.name];
       var positionList = positionListFromKeyframes(keyframes, list[i]);
      
@@ -685,7 +687,7 @@ function transitionThis(action) {
 
       parGroup.append(
           generator(list[i], positionList, list[i]._transitionBefore, list[i]._layout.duration));
-      
+    
       processList(list[i]._transitionChildren);
     }
   }
@@ -723,6 +725,10 @@ function setPosition(target, rect, name) {
   target[name] = rect;
 }
 
+function getPosition(target, name) {
+  return target[name];
+}
+
 function cacheCopy(element, state, copy) {
   if (!(element._copyCache)) {
     element._copyCache = {}
@@ -747,21 +753,26 @@ function getCopy(element, state) {
 
 function generateCopy(element, state) {
   var rect = sensePosition(element);
+
+  if (element._transitionParent) {
+    // TODO: Do we still need to do this?
+    var parent = element.parentElement;
+    while (parent && !parent._layout) {
+      var style = getComputedStyle(parent);
+      if (style.position == "relative" || style.position == "absolute") {
+        fromPosition.left += parent.offsetLeft;
+        fromPosition.top += parent.offsetTop;
+      }
+      parent = parent.parentElement;
+    }
+   
+    rect.left -= getPosition(element._transitionParent, state).left;
+    rect.top -= getPosition(element._transitionParent, state).top;
+  }
+
+  
   setPosition(element, rect, state);
   var fromPosition = boundingRectToContentRect(element, rect);
-  // TODO: This used to be guarded so that it only executed if this
-  // element wasn't the root in the layout transition tree.
-  var parent = element.parentElement;
-  /*
-  while (parent && !parent._layout) {
-    var style = getComputedStyle(parent);
-    if (style.position == "relative" || style.position == "absolute") {
-      fromPosition.left += parent.offsetLeft;
-      fromPosition.top += parent.offsetTop;
-    }
-    parent = parent.parentElement;
-  }
-  */ 
   var from = cloneElementToSize(element, fromPosition);
   
   cacheCopy(element, state, from);
@@ -776,7 +787,13 @@ function ensureCopy(element, state) {
 
 function showCopy(element, state) {
   var copy = getCopy(element, state);
-  element.parentElement.appendChild(copy);
+ 
+  var insertion = element;
+  while (insertion._transitionParent) {
+    insertion = insertion._transitionParent;
+  }
+
+  insertion.parentElement.appendChild(copy);
   return copy;
 }
 
@@ -785,7 +802,7 @@ function hideCopy(element, state) {
   if (!element.parentElement) {
     console.log('huh');
   }
-  element.parentElement.removeChild(copy);
+  copy.parentElement.removeChild(copy);
 }
 
 function cloneElementToSize(node, rect, hide) {
@@ -801,6 +818,18 @@ function cloneElementToSize(node, rect, hide) {
   div.style.width = rect.width + 'px';
   div.style.height = rect.height + 'px';
   div.innerHTML = node.innerHTML;
+
+  var transitionChildren = node.querySelectorAll("[isTransitionable]");
+  var transitionMirrors = div.querySelectorAll("[isTransitionable]");
+  for (var i = 0; i < transitionChildren.length; i++) {
+    var child = transitionChildren[i];
+    var mirror = transitionMirrors[i];
+    var style = getComputedStyle(child);
+    var newDiv = document.createElement("div");
+    newDiv.setAttribute('style', "top: " + style.top + "; left: " + style.left + "; width: " + style.width + "; height: " + style.height);
+    mirror.parentElement.replaceChild(newDiv, mirror);
+  }
+
   div.classList.add("_layoutAnimationContentSnapshot");
 
   return div;

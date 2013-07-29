@@ -47,8 +47,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
 </div>
 
 <form>
-  <input id="containerEffect" type='text' list='effects' value='transfade'>
-  <input id="contentsEffect" type='text' list='effects' value='transfade'>
+  <input id="containerEffect" type='text' list='effects' value='layout'>
+  <input id="contentsEffect" type='text' list='effects' value='none'>
   <datalist id='effects'>
     <option value="none">none</option>
     <option value="clip">clip</option>
@@ -63,13 +63,17 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
 <script src="../src/layout-animation.js"></script>
 <script>
 
+var hasContentEffect = false;
+
 function updateEffects() {
   setLayoutEffect(document.querySelectorAll(".container > div"), containerEffect.value);
   if (contentsEffect.value == containerEffect.value) {
     setLayoutTransition(document.querySelectorAll('.panelText'));
+    hasContentEffect = false;
   } else {
-    setLayoutTransition(document.querySelectorAll('.panelText'), 'to', duration);
+    setLayoutTransition(document.querySelectorAll('.panelText'), direction, duration);
     setLayoutEffect(document.querySelectorAll('.panelText'), contentsEffect.value);
+    hasContentEffect = true;
   }
 }
 
@@ -119,6 +123,7 @@ registerLayoutKeyframes("from", [
   layout-effect: transform;
 */
 setLayoutTransition(document.querySelectorAll(".container > div"), "to", duration);
+var direction = "to";
 updateEffects();
 
 var isColumn = true;
@@ -137,9 +142,13 @@ document.onkeydown = function(event) {
     }, 2000);*/
     isColumn = !isColumn;
     if (isColumn) {
-      setLayoutTransition(document.querySelectorAll(".container > .panel"), "to", duration);
+      direction = "to"; 
     } else {
-      setLayoutTransition(document.querySelectorAll(".container > .panel"), "from", duration);
+      direction = "from";
+    }
+    setLayoutTransition(document.querySelectorAll(".container > .panel"), direction, duration);
+    if (hasContentEffect) {
+      setLayoutTransition(document.querySelectorAll(".container .panelText"), direction, duration);
     }
   } else if (char == 'P') {
     document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = (paused ? 1 : 0); });
