@@ -160,6 +160,7 @@ function animationToPositionClip(target, positions, current, timing) {
 
 function animationToPositionFadeOutIn(outTo, inFrom, clip) {
   return function(target, positions, current, timing) {
+
     var from = getCopy(target, '_transitionBefore');
     timing = fixTiming(timing);
 
@@ -172,10 +173,10 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
 
     var transOrig = origin(from.style.webkitTransformOrigin);
     var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, positions[0], transOrig, true);
+      var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
       return { offset: position.offset, value: str};
     });
-  
+
     if (clip) {
       var clipList = positions.map(function(position) {
         var str = rectToClip(position);
@@ -198,10 +199,10 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
 
     showCopy(target, '_transitionAfter');
     var to = getCopy(target, '_transitionAfter');
-      
+  
     transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
     var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, positions[positions.length - 1], transOrig, true);
+      var str = rectsToCss(position, getPosition(target, '_transitionAfter'), transOrig, true);
       return { offset: position.offset, value: str};
     });
 
@@ -231,7 +232,7 @@ function animationToPositionTransfade(target, positions, current, timing) {
 
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, positions[0], transOrig);
+    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig);
     return { offset: position.offset, value: str};
   });
    
@@ -244,7 +245,7 @@ function animationToPositionTransfade(target, positions, current, timing) {
 
   transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, positions[positions.length - 1], transOrig);
+    var str = rectsToCss(position, getPosition(target, '_transitionAfter'), transOrig);
     return { offset: position.offset, value: str};
   });
 
