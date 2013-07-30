@@ -47,16 +47,16 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
 </div>
 
 <form>
-  <input id="containerEffect" type='text' list='effects' value='layout'>
-  <input id="contentsEffect" type='text' list='effects' value='none'>
+  <input id="containerEffect" type='text' list='effects' value='none 50% layout'>
+  <input id="contentsEffect" type='text' list='effects' value='none 50% layout'>
   <datalist id='effects'>
     <option value="none">none</option>
     <option value="clip">clip</option>
     <option value="transform">transform</option>
     <option value="layout">layout</option>
-    <option value="crossfade">crossfade</option>
-    <option value="clipfade">clipfade</option>
-    <option value="transfade">transfade</option>
+    <option value="fade">crossfade</option>
+    <option value="clip fade">clipfade</option>
+    <option value="transform fade">transfade</option>
   </datalist>
 </form>
 <script src="../../../web-animations-js/web-animations.js"></script>
@@ -94,7 +94,7 @@ contentsEffect.onchange = updateEffects;
   }
 }
 */
-var duration = 1;
+var duration = 2;
 
 registerLayoutKeyframes("to", [
   {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",

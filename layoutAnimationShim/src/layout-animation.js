@@ -35,14 +35,14 @@ function fixTiming(timing) {
   return timing;
 }
 
-function animationToPositionLayout(target, positions, current, timing) {
+function animationToPositionLayout(target, positions, timing) {
   timing = fixTiming(timing);
   
   var from = getCopy(target, '_transitionBefore');
 
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, transOrig, true);
+    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
     return { offset: position.offset, value: str};
   });
 
@@ -70,8 +70,6 @@ function animationToPositionLayout(target, positions, current, timing) {
   }
 
   return new Animation(from, toStinkyAPI({position: ["absolute", "absolute"],
-                                /*left: mkPosList('left', positions),
-                                top: mkPosList('top', positions), */
                                 transform: cssList,
                                 width: mkPosList('width', positions), 
                                 height: mkPosList('height', positions)}), 
@@ -110,12 +108,12 @@ function toStinkyAPI(dict) {
   });
 }
 
-function animationToPositionTransform(target, positions, current, timing) {
+function animationToPositionTransform(target, positions, timing) {
   var from = getCopy(target, '_transitionBefore');
 
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, transOrig);
+    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig);
     return {offset: position.offset, value: str};
   });
 
@@ -124,12 +122,12 @@ function animationToPositionTransform(target, positions, current, timing) {
   return new Animation(from, toStinkyAPI({transform: cssList}), timing);
 }
 
-function animationToPositionNone(target, positions, current, timing) {
+function animationToPositionNone(target, positions, timing) {
   var from = getCopy(target, '_transitionBefore');
 
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, transOrig, true);
+    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
     return { offset: position.offset, value: str};
   });
 
@@ -140,13 +138,13 @@ function animationToPositionNone(target, positions, current, timing) {
   return a;
 }
 
-function animationToPositionClip(target, positions, current, timing) {
+function animationToPositionClip(target, positions, timing) {
   var from = getCopy(target, '_transitionBefore');
   timing = fixTiming(timing);
   
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, transOrig, true);
+    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
     return { offset: position.offset, value: str };
   });
 
@@ -159,7 +157,7 @@ function animationToPositionClip(target, positions, current, timing) {
 }
 
 function animationToPositionFadeOutIn(outTo, inFrom, clip) {
-  return function(target, positions, current, timing) {
+  return function(target, positions, timing) {
 
     var from = getCopy(target, '_transitionBefore');
     timing = fixTiming(timing);
@@ -226,7 +224,7 @@ function animationToPositionFadeOutIn(outTo, inFrom, clip) {
   }
 }
 
-function animationToPositionTransfade(target, positions, current, timing) {
+function animationToPositionTransfade(target, positions, timing) {
   var from = getCopy(target, '_transitionBefore');
   timing = fixTiming(timing);
 
@@ -288,7 +286,150 @@ function extractContents(container, copyContents) {
   return fromContents; 
 }
 
-function animationGenerator(effect) {
+var offsetRE = /^[0-9.]*\%?$/
+
+function Effect() {
+  this.isLayout = false;
+  this.scaleMode = "none";
+  this.blendMode = "none";
+  this.explicitNones = 0;
+}
+
+Effect.prototype = {
+  setLayout: function() {
+    console.assert(this.scaleMode == "none" && this.blendMode == "none");
+    this.isLayout = true;
+  },
+  setMode: function(mode) {
+    if (mode == 'layout') {
+      this.setLayout();
+    } else if (mode == 'clip' || mode == 'transform') {
+      console.assert(!this.isLayout);
+      this.scaleMode = mode;
+    } else if (mode == 'fade') {
+      console.assert(!this.isLayout);
+      this.blendMode = mode;
+    } else if (this.explicitNones == 0) {
+      console.assert(this.scaleMode == 'none' || this.blendMode == 'none');
+    } else {
+      console.assert(this.scaleMode == 'none' && this.blendMode == 'none' && this.explicitNones == 1);
+    }
+  }
+}
+
+function interp(a, b, p) {
+  return a * (1 - p) + b * p;
+}
+
+function interpPosition(a, b, f) {
+  var p = (f - a.offset) / (b.offset - a.offset);
+  return {
+    offset: f,
+    top: interp(a.top, b.top, p),
+    left: interp(a.left, b.left, p),
+    width: interp(a.width, b.width, p),
+    height: interp(a.height, b.height, p)
+  };
+}
+
+function clone(a) {
+  return {
+    offset: a.offset,
+    top: a.top,
+    left: a.left,
+    width: a.width,
+    height: a.height
+  };
+}
+
+function positionSubList(start, end, positionList) {
+  console.log(start, end);
+  var sublist = [];
+  for (var i = 0; i < positionList.length; i++) {
+    if (positionList[i].offset < start && positionList[i + 1].offset > start) {
+      sublist.push(interpPosition(positionList[i], positionList[i + 1], start));
+    } 
+    if (positionList[i].offset >= start && positionList[i].offset <= end) {
+      sublist.push(clone(positionList[i]));
+    }
+    if (positionList[i].offset < end && positionList[i + 1].offset > end) {
+      sublist.push(interpPosition(positionList[i], positionList[i + 1], end));
+    }
+    if (positionList[i].offset > end) {
+      break;
+    }
+  }
+
+  for (var i = 0; i < sublist.length; i++) {
+    sublist[i].offset = (sublist[i].offset - start) / (end - start);
+  }
+  return sublist;
+}
+
+function generateAnimation(element, positionList) {
+
+  var effect = element._layout.effect;
+  var duration = element._layout.duration;
+    
+  var effectList = effect.split(' ');
+  var effectResult = [];
+  var start = 0;
+  var effect = new Effect();
+  for (var i = 0; i < effectList.length; i++) {
+    if (offsetRE.exec(effectList[i]) != null) {
+      if (effectList[i].indexOf('%') != -1) {
+        var stop = Number(effectList[i].slice(0, effectList[i].length - 1)) / 100;
+      } else {
+        var stop = Number(effectList[i]);
+      }
+
+      if (start == stop) {
+        continue;
+      }
+      else {
+        effectResult.push({start: start, end: stop, effect: effect});
+        start = stop;
+        effect = new Effect();
+        continue;
+      }
+    }
+    effect.setMode(effectList[i]);
+  }
+
+  if (start != 1) {
+    effectResult.push({start: start, end: 1, effect: effect});
+  }
+
+  var seq = new SeqGroup();
+  var lastWasLayout = true;
+
+  for (var i = 0; i < effectResult.length; i++) {
+    var start = effectResult[i].start;
+    var end = effectResult[i].end;
+    var effect = effectResult[i].effect;
+    var sublist = positionSubList(start, end, positionList);
+    if (effect.isLayout) {
+      seq.append(animationToPositionLayout(element, sublist, duration * (end - start)));
+      lastWasLayout = true;
+    } else {
+      if (!lastWasLayout) {
+        var newList = [clone(sublist[0]), clone(sublist[0])];
+        newList[0].offset = 0;
+        newList[1].offset = 1;
+        var anim = animationToPositionLayout(element, newList, 0);
+        anim.specified.fillMode = 'forwards';
+        seq.append(anim);
+      }
+      lastWasLayout = false;
+      if (effect.scaleMode == 'none' && effect.blendMode == 'none') {
+        console.log(sublist);
+        seq.append(animationToPositionNone(element, sublist, duration * (end - start)));
+      }
+    }
+  }
+
+  return seq;
+
   switch(effect) {
     case 'transform':
       return animationToPositionTransform;
@@ -573,38 +714,6 @@ function positionListFromKeyframes(keyframes, element) {
   return positions;
 }
 
-function updateContentTagOrder(tree) {
-  // The tree is in DOM order, so we shouldn't ever have to revisit a container.
-  var container;
-  for (var i = 0; i < tree.length; i++) {
-    var element = tree[i];
-    if (container == element.shadow.root) {
-      continue;
-    }
-    container = element.shadow.root;
-    var current = undefined;
-    
-    var treeWalker = document.createTreeWalker(tree[i].parentElement, NodeFilter.SHOW_ELEMENT,
-      { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-    
-    while (treeWalker.nextNode()) {
-      var element = treeWalker.currentNode;
-      if (element.shadow != undefined) {
-        if (current == undefined) {
-          if (container.firstChild != element.shadow.parent) {
-            element.shadow.root.insertBefore(element.shadow.parent, container.firstChild);
-          }
-        } else {
-          if (current.nextSibling != element.shadow.parent) {
-            element.shadow.root.insertBefore(element.shadow.parent, current.nextSibling);
-          }
-        }
-        current = element.shadow.parent;
-      }
-    }
-  }
-}
-
 function makePositionListRelative(list, parentList) {
   var result = []
   for (var i = 0; i < list.length; i++) {
@@ -684,11 +793,8 @@ function transitionThis(action) {
         list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
       }
       
-      generator = animationGenerator(list[i]._layout.effect);
+      parGroup.append(generateAnimation(list[i], positionList)); 
 
-      parGroup.append(
-          generator(list[i], positionList, list[i]._transitionBefore, list[i]._layout.duration));
-    
       processList(list[i]._transitionChildren);
     }
   }
