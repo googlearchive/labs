@@ -46,11 +46,11 @@
 
       <polymer-ui-sidebar-menu v-flex label="Sidebar" id="sidebar" selectedItem="{{selected}}">
         <template repeat="{{items}}">
-          <polymer-ui-menu-item label="{{name}}" icon="settings">
+          <polymer-ui-submenu-item label="{{name}}" icon="settings">
             <template repeat="{{items}}">
               <polymer-ui-menu-item item="{{}}" label="{{name}}"></polymer-ui-menu-item>
             </template>
-          </polymer-ui-menu-item>
+          </polymer-ui-submenu-item>
         </template>
       </polymer-ui-sidebar-menu>
 
