@@ -1,0 +1,58 @@
+<link rel="import" href="../../../more-elements/google-map/google-map.html">
+  
+<polymer-element name="shuttle-map" attributes="stop">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      
+      google-map {
+        display: block;
+        height: 100%;
+      }
+    </style>
+    <google-map id="map" zoom="17" showCenterMarker></google-map>
+  </template>
+  <script>
+    Polymer('shuttle-map', {
+      initialize: function() {
+        if (!this._initialized) {
+          this._initialized = true;
+          this.asyncMethod(function() {
+            this.$.map.resize();
+            this.openInfoWindow();
+          }, null, 100);
+        }
+      },
+      stopChanged: function() {
+        if (this.stop) {
+          this.$.map.latitude = this.stop.in_lat;
+          this.$.map.longitude = this.stop.in_lon;
+          this.setupInfoWindow();
+        }
+      },
+      setupInfoWindow: function() {
+        if (!this.infoWindow) {
+          this.infoWindow = new google.maps.InfoWindow();
+          google.maps.event.addListener(this.$.map.centerMarker, 'click', 
+            function() {
+              this.openInfoWindow();
+            }.bind(this)
+          );
+        }
+        this.infoWindow.setContent(
+            '<div style="font-size: 14px; width: 200px; padding-right: 6px;">' + 
+            this.stop.description + '</div>');
+        if (!this.infoWindow.getMap()) {
+          this.openInfoWindow();
+        }
+      },
+      openInfoWindow: function() {
+        this.infoWindow.open(this.$.map.map, this.$.map.centerMarker);
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,204 @@
+<link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
+<link rel="import" href="../../../polymer-elements/polymer-localstorage/polymer-localstorage.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-ratings/polymer-ui-ratings.html">
+<link rel="import" href="shuttle-timetable.html">
+<link rel="import" href="shuttle-stop-picker.html">
+
+<polymer-element name="shuttle-schedule" attributes="fromStop favorites favorite">
+  <template>
+    <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
+    <style>
+      @host {
+        * {
+          color: #333;
+        }
+      }
+      
+      polymer-ui-toolbar {
+        position: relative;
+      }
+      
+      .stop-label {
+        height: 100%;
+        line-height: 60px;
+        text-align: center;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      
+      .stop-label[active] {
+        background: #ddd;
+      }
+      
+      .from-stop-label {
+        border-right: 1px solid #ccc;
+      }
+      
+      .to-stop-label {
+        border-left: 1px solid #ccc;
+      }
+      
+      #officeStopsMenu, #remoteStopsMenu {
+        position: absolute !important;
+        top: 60px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: hidden;
+        font-size: 12px;
+      }
+      
+      .swap-button-container {
+        width: 60px;
+        text-align: center;
+      }
+      
+      #description {
+        height: 110px;
+        font-size: 18px;
+        padding: 10px 20px;
+      }
+      
+      polymer-ui-ratings {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+      }
+      
+      #timetable {
+        border-top: 1px solid #ccc;
+        overflow: auto;
+      }
+    </style>
+    
+    <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
+    <polymer-localstorage id="storage" name="shuttle-storage" value="{{favorites}}"></polymer-localstorage>
+    
+    <polymer-ui-toolbar id="toolbar">
+      <div flex class="stop-label from-stop-label" on-tap="toggleFromMenu" active?="{{reverse ? remoteStopsMenuOpened : officeStopsMenuOpened}}">{{fromStop.short_name}}</div>
+      <div class="swap-button-container">
+        <polymer-ui-icon-button src="assets/ic_swaphoriz_darkreg.png" on-tap="swap"></polymer-ui-icon-button>
+      </div>
+      <div flex class="stop-label to-stop-label" on-tap="toggleToMenu" active?="{{reverse ? officeStopsMenuOpened : remoteStopsMenuOpened}}">{{toStop.short_name}}</div>
+    </polymer-ui-toolbar>
+    
+    <shuttle-stop-picker id="officeStopsMenu" selected="{{officeSelected}}" selectedItem="{{officeSelectedItem}}" stops="{{officeStops}}" opened="{{officeStopsMenuOpened}}"></shuttle-stop-picker>
+    <shuttle-stop-picker id="remoteStopsMenu" selected="{{remoteSelected}}" selectedItem="{{remoteSelectedItem}}" stops="{{remoteStops}}" opened="{{remoteStopsMenuOpened}}"></shuttle-stop-picker>
+    
+    <div id="description">
+      {{fromStop.name}} to {{toStop.name}}
+      <polymer-ui-ratings count="1" value="{{isFav}}" on-tap="handleFavTap"></polymer-ui-ratings>
+    </div>
+    
+    <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}" fromStops="{{fromStops}}" toStops="{{toStops}}"></shuttle-timetable>
+  </template>
+  <script>
+    Polymer('shuttle-schedule', {
+      officeSelectedItem: null,
+      remoteSelectedItem: null,
+      reverse: false,
+      isFav: false,
+      favorite: null,
+      ready: function() {
+        this.nodes = [this.$.toolbar, this.$.description, this.$.timetable];
+        this.layout = [
+          [1],
+          [2], 
+          [3],
+          [3]
+        ];
+        
+        this.populateStops();
+        
+        setTimeout(function() {
+          this.officeSelected = 7;
+          this.remoteSelected = 70;
+        }.bind(this), 0);
+        
+        this.favorites = this.favorites || [];
+      },
+      populateStops: function() {
+        Shuttle.stops.forEach(function(s, i) {
+          s.index = i;
+        });
+        this.officeStops = Shuttle.stops.filter(function(s) {
+          return s.is_work;
+        });
+        this.remoteStops = Shuttle.stops;
+      },
+      swap: function() {
+        this.reverse = !this.reverse;
+        this.officeSelectedItemChanged();
+        this.remoteSelectedItemChanged();
+      },
+      officeSelectedItemChanged: function() {
+        this[this.reverse ? 'toStop' : 'fromStop'] = 
+            this.officeSelectedItem.templateInstance.model;
+        this.updateFav();
+      },
+      remoteSelectedItemChanged: function() {
+        this[this.reverse ? 'fromStop' : 'toStop'] = 
+            this.remoteSelectedItem.templateInstance.model;
+        this.updateFav();
+      },
+      toggleFromMenu: function() {
+        this.toggleMenu(this.reverse ? 'remote' : 'office');
+      },
+      toggleToMenu: function() {
+        this.toggleMenu(this.reverse ? 'office' : 'remote');
+      },
+      toggleMenu: function(name) {
+        var m = this.$[name + 'StopsMenu'];
+        m.toggle();
+        this.asyncMethod(function() {
+          m.selectedItem && m.selectedItem.scrollIntoViewIfNeeded();
+        }, null, 1);
+      },
+      favoriteChanged: function() {
+        if (this.favorite) {
+          var f = this.favorite.fromStop.index;
+          var t = this.favorite.toStop.index;
+          this.reverse = this.favorite.reverse;
+          this.officeSelected = this.reverse ? t : f;
+          this.remoteSelected = this.reverse ? f : t;
+          this.officeSelectedItemChanged();
+          this.remoteSelectedItemChanged();
+        }
+      },
+      updateFav: function() {
+        if (!this.fromStop || !this.toStop) {
+          return;
+        }
+        for (var i = 0, f; f = this.favorites[i]; i++) {
+          if (f.fromStop.index === this.fromStop.index && 
+              f.toStop.index === this.toStop.index) {
+            this.isFav = true;
+            return;
+          }
+        }
+        this.isFav = false;
+      },
+      handleFavTap: function() {
+        var fav = {
+          fromStop: this.fromStop, 
+          toStop: this.toStop, 
+          reverse: this.reverse
+        };
+        if (this.isFav) {
+          this.favorites.push(fav);
+        } else {
+          this.favorites.forEach(function(f, i) {
+            if (f.fromStop.index === fav.fromStop.index && 
+                f.toStop.index === fav.toStop.index) {
+              this.favorites.splice(i, 1);
+              return;
+            }
+          }, this);
+        }
+        this.$.storage.save();
+      }
+    });
+  </script>
+</polymer-element>

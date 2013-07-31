@@ -1,0 +1,84 @@
+<link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-tabs/polymer-ui-tabs.html">
+<link rel="import" href="../../../more-elements/google-map/google-map.html">
+<link rel="import" href="shuttle-schedule.html">
+<link rel="import" href="shuttle-favorites.html">
+<link rel="import" href="shuttle-map.html">
+  
+<polymer-element name="shuttle-app">
+  <template>
+    <style>
+      #tabbar {
+        height: 45px !important;
+        background: -webkit-linear-gradient(-60deg, #3d3d3d, #353535);
+        background: -moz-linear-gradient(-60deg, #3d3d3d, #353535);
+        background: -ms-linear-gradient(-60deg, #3d3d3d, #353535);
+      }
+      
+      #tabbar > * {
+        height: 45px !important;
+        line-height: 45px !important;
+        text-align: center;
+      }
+      
+      #tabbar > *.polymer-selected {
+        background-color: #1e1d1d !important;
+      }
+      
+      #tabbar > * {
+        text-align: center;
+      }
+    </style>
+
+    <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
+
+    <shuttle-schedule id="schedule" fromStop="{{fromStop}}" favorites="{{favorites}}" favorite="{{favorite}}"></shuttle-schedule>
+    
+    <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" on-polymer-activate="favoriteSelect"></shuttle-favorites>
+    
+    <shuttle-map id="map" stop="{{fromStop}}"></shuttle-map>
+    
+    <polymer-ui-tabs id="tabbar" theme="polymer-ui-dark-theme" selected="{{selected}}">
+      <div flex><polymer-ui-icon icon="time"></polymer-ui-icon></div>
+      <div flex><polymer-ui-icon icon="favorite"></polymer-ui-icon></div>
+      <div flex><polymer-ui-icon icon="marker"></polymer-ui-icon></div>
+    </polymer-ui-tabs>
+  </template>
+  <script>
+    Polymer('shuttle-app', {
+      pages: [[
+        [1],
+        [1], 
+        [4]
+      ], [
+        [2],
+        [2],
+        [4]
+      ], [
+        [3],
+        [3],
+        [4]
+      ]],
+      selected: null,
+      fromStop: null,
+      ready: function() {
+        this.nodes = [
+          this.$.schedule, this.$.favorites, this.$.map, this.$.tabbar
+        ];
+        this.selected = 0;
+      },
+      selectedChanged: function() {
+        this.layout = this.pages[this.selected];
+        if (this.selected == 1) {
+          this.$.favorites.clearSelection();
+        } else if (this.selected == 2) {
+          this.$.map.initialize();
+        }
+      },
+      favoriteSelect: function() {
+        this.selected = 0;
+      }
+    });
+  </script>
+</polymer-element>

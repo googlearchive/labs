@@ -1,0 +1,36 @@
+<link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
+
+<polymer-element name="shuttle-favorites" attributes="favorites favorite">
+  <template>
+    <style>
+      .fav-item {
+        height: 59px;
+        line-height: 59px;
+        padding: 0 20px;
+        border-bottom: 1px solid #ccc;
+        font-size: 14px;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis
+      }
+      
+      .fav-item.polymer-selected {
+        background: #ddd;
+      }
+    </style>
+    
+    <polymer-selector selected="{{selected}}" selectedModel="{{favorite}}">
+      <template repeat="{{favorites}}">
+        <div class="fav-item">{{fromStop.name}} to {{toStop.name}}</div>
+      </template>
+    </polymer-selector>
+  </template>
+  <script>
+    Polymer('shuttle-favorites', {
+      clearSelection: function() {
+        this.selected = null;
+      }
+    });
+  </script>
+</polymer-element>

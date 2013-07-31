@@ -1,0 +1,83 @@
+<polymer-element name="shuttle-timetable" attributes="fromStop toStop fromStops toStops">
+  <template>
+    <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
+    <style>
+      .stops {
+        padding-left: 20px;
+      }
+      
+      .stops > .header {
+        height: 40px;
+        line-height: 40px;
+        font-size: 13px;
+        font-weight: bold;
+      }
+      
+      .time {
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+      }
+    </style>
+    
+    <div flexbox>
+      <div class="stops" flex>
+        <div class="header">Depart</div>
+        <template repeat="{{fromStops}}">
+          <div class="time">{{time}}</div>
+        </template>
+      </div>
+      <div class="stops" flex>
+        <div class="header">Arrive</div>
+        <template repeat="{{toStops}}">
+          <div class="time">{{time}}</div>
+        </template>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer('shuttle-timetable', {
+      fromStopChanged: function() {
+        this.updateTimetable();
+      },
+      toStopChanged: function() {
+        this.updateTimetable();
+      },
+      updateTimetable: function() {
+        if (!this.fromStop || !this.toStop) {
+          return;
+        }
+        // find trips that will stop in fromStop and toStop
+        var trips = [];
+        this.fromStop.trips.forEach(function(t) {
+          if (this.toStop.trips.indexOf(t) >= 0) {
+            trips.push(t);
+          }
+        }, this);
+        // find all the stops in the trip that stop at fromStop/toStop
+        this.fromStops = [];
+        this.toStops = []; 
+        for (var i = 0, trip; trip = Shuttle.trips[trips[i]]; i++) {
+          if (this.isOutbound(trip)) {
+            for (var j = 0, stop; stop = trip.stops[j]; j++) {
+              if (stop.stop == this.fromStop.index) {
+                this.fromStops.push(stop);
+              } else if (stop.stop == this.toStop.index) {
+                this.toStops.push(stop);
+              }
+            }
+          }
+        }
+      },
+      isOutbound: function(trip) {
+        for (var i = 0, stop; stop = trip.stops[i]; i++) {
+          if (stop.stop === this.fromStop.index) {
+            return true;
+          } else if (stop.stop === this.toStop.index) {
+            return false;
+          }
+        }
+      }
+    });
+  </script>
+</polymer-element>

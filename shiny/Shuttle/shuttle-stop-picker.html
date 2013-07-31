@@ -1,0 +1,145 @@
+<link rel="import" href="../../../polymer-elements/polymer-overlay/polymer-overlay.html">
+<link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
+
+<polymer-element name="shuttle-stop-picker" extends="polymer-overlay" attributes="stops selected selectedItem">
+  <template>
+    <link rel="stylesheet" href="../../../polymer-elements/polymer-overlay/polymer-overlay.css">
+    <style>
+      @host {
+        * {
+          position: relative;
+          background: white;
+        }
+      }
+      
+      #searchBox {
+        position: relative;
+        height: 60px;
+        border-bottom: 1px solid #ccc;
+      }
+      
+      #searchBox > input {
+        position: absolute;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0 14px;
+        border: 0;
+        font-size: 16px;
+        outline: none;
+      }
+      
+      #stops {
+        position: absolute;
+        top: 61px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: auto;
+      }
+      
+      .group {
+        height: 29px;
+        line-height: 29px;
+        padding-left: 20px;
+        border-bottom: 1px solid #ccc;
+        background: #eee;
+        color: #8f8f8f;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      
+      .stop {
+        height: 59px;
+        line-height: 59px;
+        padding-left: 20px;
+        border-bottom: 1px solid #ccc;
+        font-size: 14px;
+      }
+      
+      .stop-label {
+        display: inline-block;
+        width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis
+      }
+      
+      .check-icon {
+        visibility: hidden;
+      }
+      
+      .polymer-selected .check-icon {
+        visibility: visible;
+      }
+    </style>
+    
+    <polymer-selector id="selector" target="{{$.stops}}" itemsSelector=".stop" 
+        valueattr="index" selected="{{selected}}" selectedItem="{{selectedItem}}" 
+        on-polymer-activate="toggleAction"></polymer-selector>
+    
+    <div id="searchBox">
+      <input id="input" x-webkit-speech placeholder="Search" on-input="asyncSearch">
+    </div>
+    
+    <div id="stops">
+      <template repeat="{{groups}}">
+        <template if="{{stops}}">
+          <div class="group" hidden?="{{hidden}}">{{name}}</div>
+        </template>
+        <template repeat="{{stops}}">
+          <div class="stop" index="{{index}}" hidden?="{{hidden}}">
+            <div class="stop-label">{{name}}</div>
+            <polymer-ui-icon class="check-icon" src="assets/ic_check_darkreg.png"></polymer-ui-icon>
+          </div>
+        </template>
+      </template>
+    </div>
+  </template>
+  <script>
+    Polymer('shuttle-stop-picker', {
+      ready: function() {
+        this.target = this;
+      },
+      toggleAction: function() {
+        this.async('toggle');
+      },
+      stopsChanged: function() {
+        this.groups = [];
+        this.stops.forEach(function(s) {
+          var g = this.groups[s.group];
+          if (!g) {
+            g = this.groups[s.group] = {
+              name: Shuttle.groups[s.group].name, 
+              stops: []
+            };
+          }
+          g.stops.push(JSON.parse(JSON.stringify(s)));
+        }, this);
+        this.search();
+      },
+      asyncSearch: function() {
+        this.searchJob = this.job(this.searchJob, this.search, 300);
+      },
+      search: function() {
+        var q = this.$.input.value.toLowerCase();
+        this.groups.forEach(function(g) {
+          var c = 0;
+          g.stops.forEach(function(s) {
+            s.hidden = s.name.toLowerCase().indexOf(q) < 0;
+            if (s.hidden) {
+              c++;
+            }
+          });
+          g.hidden = c === g.stops.length;
+        });
+      }
+    });
+  </script>
+</polymer-element>
