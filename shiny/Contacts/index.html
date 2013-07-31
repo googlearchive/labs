@@ -63,7 +63,7 @@
         #groups, #collection {
           background-color: white;
         }
-        contact {
+				contact {
           display: block;
           padding: 12px;
           margin: 0px 16px;
@@ -72,9 +72,25 @@
           color: #333;
           border: 1px solid rgba(221, 221, 221, 0.25);
         }
-        contact polymer-ui-icon {
+        contact polymer-ui-icon, contact-info polymer-ui-icon {
           margin-right: 18px;
         }
+				contact-info {
+          display: block;
+          padding: 16px;
+          font-size: 12px;
+          font-weight: bold;
+          color: #333;
+          border: 1px solid rgba(221, 221, 221, 0.25);
+				}
+				contact-photo {
+					display: block;
+					width: 108px;
+					height: 108px;
+					margin: 16px;
+					background-color: #ccc;
+          border: 1px solid rgba(221, 221, 221, 0.25);
+				}
         .polymer-ui-collapsible-header {
           padding: 20px;
           font-size: 0.8em;
@@ -130,6 +146,36 @@
       <panel id="collection">
         <polymer-grid style="position: relative; height: 451px;"></polymer-grid>
       </panel>
+
+			<polymer-ui-toolbar id="contactbar">
+				<polymer-ui-icon-button icon="left" on-click="exploreAction"></polymer-ui-icon-button>
+				<span flex>Contact Name</span>
+				<polymer-ui-icon-button icon="dots" on-tap="gridAction"></polymer-ui-icon-button>
+			</polymer-ui-toolbar>
+
+			<panel id="contact">
+				<contact-photo></contact-photo>
+				<contact-info>
+					<polymer-ui-icon icon="contact"></polymer-ui-icon>
+					(555) 555-5555
+				</contact-info>
+				<contact-info>
+					<polymer-ui-icon icon="contact"></polymer-ui-icon>
+					foo@bar.com
+				</contact-info>
+				<contact-info>
+					<polymer-ui-icon icon="dialoga"></polymer-ui-icon>
+					@something
+				</contact-info>
+				<contact-info>
+					<polymer-ui-icon icon="marker"></polymer-ui-icon>
+					San Francisco, CA, USA
+				</contact-info>
+				<contact-info>
+					<polymer-ui-icon icon="marker"></polymer-ui-icon>
+					345 Spear St, Fl 4
+				</contact-info>
+			</panel>
     </template>
     <script>
       Polymer('mock-tacts', {
@@ -155,14 +201,19 @@
           [5],
           [6],
           [6]
-        ]],
+				], [
+          [7],
+          [8],
+          [8]
+				]],
         page: 0,
         selectedNav: 0,
         grid: false,
         ready: function() {
           this.nodes = [
             this.$.sidebar, this.$.otherbar, this.$.groupbar,
-            this.$.groups, this.$.collectionbar, this.$.collection
+						this.$.groups, this.$.collectionbar, this.$.collection,
+						this.$.contactbar, this.$.contact
           ];
           this.pageChanged();
           this.async(function() {
@@ -190,7 +241,7 @@
         },
         meAction: function() {
           this.selectedNav = 0;
-          this.page = 3;
+          this.page = 4;
         },
         selectContact: function() {
           this.selectedNav = 0;
