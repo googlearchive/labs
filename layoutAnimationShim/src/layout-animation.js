@@ -306,7 +306,7 @@ Effect.prototype = {
     } else if (mode == 'clip' || mode == 'transform') {
       console.assert(!this.isLayout);
       this.scaleMode = mode;
-    } else if (mode == 'fade') {
+    } else if (mode == 'fade' || mode == 'fade-in' || mode == 'fade-out') {
       console.assert(!this.isLayout);
       this.blendMode = mode;
     } else if (this.explicitNones == 0) {
@@ -343,7 +343,6 @@ function clone(a) {
 }
 
 function positionSubList(start, end, positionList) {
-  console.log(start, end);
   var sublist = [];
   for (var i = 0; i < positionList.length; i++) {
     if (positionList[i].offset < start && positionList[i + 1].offset > start) {
@@ -408,8 +407,10 @@ function generateAnimation(element, positionList) {
     var end = effectResult[i].end;
     var effect = effectResult[i].effect;
     var sublist = positionSubList(start, end, positionList);
+    console.log(start, end, sublist.map(function(a) { return a.offset + " " + a.height }));
     if (effect.isLayout) {
-      seq.append(animationToPositionLayout(element, sublist, duration * (end - start)));
+      var anim = animationToPositionLayout(element, sublist, duration * (end - start));
+      seq.append(anim);
       lastWasLayout = true;
     } else {
       if (!lastWasLayout) {
@@ -417,13 +418,26 @@ function generateAnimation(element, positionList) {
         newList[0].offset = 0;
         newList[1].offset = 1;
         var anim = animationToPositionLayout(element, newList, 0);
-        anim.specified.fillMode = 'forwards';
         seq.append(anim);
       }
+      // this will pick up either the previous layout or the inserted layout and fix it
+      // with forward fill.
+      if (anim) {
+        anim.specified.fillMode = 'forwards';
+      }
       lastWasLayout = false;
-      if (effect.scaleMode == 'none' && effect.blendMode == 'none') {
-        console.log(sublist);
-        seq.append(animationToPositionNone(element, sublist, duration * (end - start)));
+      if (effect.blendMode == 'none') {
+        switch(effect.scaleMode) {
+          case 'none':
+            seq.append(animationToPositionNone(element, sublist, duration * (end - start)));
+            break;
+          case 'transform':
+            seq.append(animationToPositionTransform(element, sublist, duration * (end - start)));
+            break;
+          case 'clip':
+            seq.append(animationToPositionClip(element, sublist, duration * (end - start)));
+            break;
+        }
       }
     }
   }
