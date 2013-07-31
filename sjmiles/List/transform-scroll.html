@@ -5,10 +5,13 @@
   <script src="../../../polymer/polymer.js"></script>
 </head>
 <body>
-  <polymer-element name="list-item" attributes="item" noscript>
+  <polymer-element name="list-item" attributes="item">
     <template>
       <b>{{item}}</b>
     </template>
+    <script>
+      Polymer('list-item');
+    </script>
   </polymer-element>
 
   <polymer-element name="list-list" attributes="items offset limit">
