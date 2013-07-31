@@ -44,8 +44,8 @@
           );
         }
         this.infoWindow.setContent(
-            '<div style="font-size: 14px; width: 200px; padding-right: 6px;">' + 
-            this.stop.description + '</div>');
+            '<div style="font-size: 14px; width: 200px;"><h4>' + 
+            this.stop.name + '</h4>' + this.stop.description + '</div>');
         if (!this.infoWindow.getMap()) {
           this.openInfoWindow();
         }

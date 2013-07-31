@@ -37,7 +37,7 @@
       
       #map.desktop {
         border-left: 1px solid #ccc;
-        box-shadow: inset -8px 0px 8px -4px rgba(0, 0, 0, 0.15);
+        box-shadow: -8px 0px 8px -4px rgba(0, 0, 0, 0.15);
       }
     </style>
 
@@ -72,17 +72,17 @@
         [4]
       ]],
       desktop: [[
-       [1, 3],
-       [1, 3], 
-       [4, 3]
+       [1, 3, 3],
+       [1, 3, 3], 
+       [4, 3, 3]
       ], [
-       [2, 3],
-       [2, 3],
-       [4, 3]
+       [2, 3, 3],
+       [2, 3, 3],
+       [4, 3, 3]
       ], [
-       [1, 3],
-       [1, 3],
-       [4, 3]
+       [1, 3, 3],
+       [1, 3, 3],
+       [4, 3, 3]
       ]],
       selected: null,
       fromStop: null,
@@ -91,8 +91,8 @@
         this.nodes = [
           this.$.schedule, this.$.favorites, this.$.map, this.$.tabbar
         ];
-        this.queryMatchesChanged();
         this.selected = 0;
+        this.queryMatchesChanged();
       },
       queryMatchesChanged: function() {
         this.layoutMode = this.queryMatches ? this.mobile : this.desktop;

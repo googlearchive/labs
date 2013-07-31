@@ -6,33 +6,9 @@
   <script src="https://uitoolkit.googleplex.com/schedule.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
   <link rel="import" href="shuttle-app.html">
-  <style>
-    html, body {
-      height: 100%;
-    }
-
-    body {
-      font-family: 'Helvetica Neue', Roboto, Arial, Helvetica, sans-serif;
-      background-color: black;
-      margin: 0;
-      overflow: hidden;
-      text-align: center;
-    }
-
-    shuttle-app {
-      display: inline-block;
-      height: 100%;
-      /* width: 320px; */
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      background-color: whitesmoke;
-      -webkit-user-select: none;
-      text-align: left;
-    }
-  </style>
+  <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
 </head>
-<body theme="polymer-ui-light-theme">
-  <shuttle-app></shuttle-app>
+<body class="polymer-ui-body-text">
+  <shuttle-app class="polymer-ui-fit" theme="polymer-ui-light-theme"></shuttle-app>
 </body>
 </html>
