@@ -1,0 +1,39 @@
+<link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
+
+<polymer-element name="contact-info-item" attributes="icon label value more">
+	<template>
+		<style>
+			@host {
+				:scope {
+					display: block;
+					padding: 16px;
+					font-size: 12px;
+					font-weight: bold;
+					color: #333;
+					border-bottom: 1px solid rgba(221, 221, 221, 0.25);
+				}
+			}
+			polymer-ui-icon {
+				margin-right: 18px;
+			}
+			div#label, div#more {
+				color: #a4a4a4;
+			}
+		</style>
+		<polymer-flex-layout align="center"></polymer-flex-layout>
+		<polymer-ui-icon icon="{{icon}}"></polymer-ui-icon>
+		<div flex>
+			<div>{{value}}</div>
+			<template if="{{label}}">
+				<div id="label">{{label}}</div>
+			</template>
+		</div>
+		<template if="{{more}}">
+			<div id="more">&gt;</div>
+		</template>
+	</template>
+	<script>
+		Polymer('contact-info-item');
+	</script>
+</polymer-element>
