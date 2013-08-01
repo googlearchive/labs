@@ -24,19 +24,24 @@
         opacity: 1;
         font-weight: bold;
       }
+      
+      .time[dog]:after {
+        content: '*';
+        padding-left: 4px;
+      }
     </style>
     
     <div flexbox>
       <div class="stops" flex>
         <div class="header">Depart</div>
         <template repeat="{{fs in fromStops}}">
-          <div class="time" avail?="{{fs.date >= now}}">{{fs.time}}</div>
+          <div class="time" avail?="{{fs.date >= now}}" dog?="{{fs.dog}}">{{fs.time}} </div>
         </template>
       </div>
       <div class="stops" flex>
         <div class="header">Arrive</div>
         <template repeat="{{ts in toStops}}">
-          <div class="time" avail?="{{ts.date >= now}}">{{ts.time}}</div>
+          <div class="time" avail?="{{ts.date >= now}}" dog?="{{ts.dog}}">{{ts.time}}</div>
         </template>
       </div>
     </div>
@@ -66,9 +71,11 @@
         this.toStops = []; 
         for (var i = 0, trip; trip = Shuttle.trips[trips[i]]; i++) {
           if (this.isOutbound(trip)) {
+            var dog = trip.name.search(/dog/i) > -1;
             for (var j = 0, stop; stop = trip.stops[j]; j++) {
               var ds = (new Date()).toDateString();
               stop.date = new Date(ds + ' ' + stop.time);
+              stop.dog = dog;
               if (stop.stop == this.fromStop.index) {
                 this.fromStops.push(stop);
               } else if (stop.stop == this.toStop.index) {
