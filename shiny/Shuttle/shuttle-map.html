@@ -18,14 +18,14 @@
   </template>
   <script>
     Polymer('shuttle-map', {
-      initialize: function() {
-        if (!this._initialized) {
-          this._initialized = true;
-          this.asyncMethod(function() {
-            this.$.map.resize();
+      resize: function() {
+        this.asyncMethod(function() {
+          this.$.map.resize();
+          if (!this._initialized) {
+            this._initialized = true;
             this.openInfoWindow();
-          }, null, 100);
-        }
+          }
+        }, null, 100);
       },
       stopChanged: function() {
         if (this.stop) {

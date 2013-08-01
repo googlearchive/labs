@@ -32,7 +32,7 @@
       }
       
       #schedule, #favorites {
-        min-width: 320px;
+        width: 320px;
       }
       
       #map.desktop {
@@ -103,7 +103,7 @@
         if (this.selected == 1) {
           this.$.favorites.clearSelection();
         } else if (this.selected == 2) {
-          this.$.map.initialize();
+          this.$.map.resize();
         }
       },
       favoriteSelect: function() {
