@@ -379,13 +379,14 @@ function generateAnimation(element, positionList) {
         var par = new ParGroup([], {fillMode: 'forwards'});
         par.append(group);
         seq.append(par);
+        console.log(start, end);
         if (end == 1) {
           var newState = '_transitionAfter';
         } else {
           var newState = '_at_' + end;
-          newStates.push(newState);
           generateCopyAtPosition(element, sublist[sublist.length - 1], newState);
         }
+        newStates.push(newState);
         toCopy = getCopy(element, newState);
         copies.push(toCopy);
         showCopy(element, newState);
@@ -441,28 +442,6 @@ function generateAnimation(element, positionList) {
   }
 
   return seq;
-
-  switch(effect) {
-    case 'transform':
-      return animationToPositionTransform;
-    case 'none':
-      return animationToPositionNone;
-    case 'crossfade':
-      return animationToPositionFadeOutIn(1, 0, false);
-    case 'transfade':
-      return animationToPositionTransfade;
-    case 'clip':
-      return animationToPositionClip;
-    case 'clipfade':
-      return animationToPositionFadeOutIn(1, 0, true);
-    case 'layout':
-      return animationToPositionLayout;
-    default:
-      var result = /fade-out-in\(([0-9.]+)%, ([0-9.]+)%(, (clip))?\)/.exec(effect);
-      if (result != null) {
-        return animationToPositionFadeOutIn(Number(result[1])/100, Number(result[2])/100, result[4] == null ? false : true);
-      } 
-  }
 }
 
 function cloneToSize(node, rect, hide) {
@@ -813,25 +792,25 @@ function transitionThis(action) {
 
   processList(tree);
 
-  document.timeline.play(new SeqGroup([
-    parGroup,
-    new Animation(undefined, new Cleaner(function() {
-      for (var i = 0; i < tree.length; i++) {
-        // workaround because we can't build animations that transition to empty values
-        tree[i].style.left = "";
-        tree[i].style.top = "";
-        tree[i].style.width = "";
-        tree[i].style.height = "";
-        tree[i].style.position = "";
-      }
-      for (var i = 0; i < transitionable.length; i++) {
-        transitionable[i].style.opacity = "";
-        hideCopy(transitionable[i], '_transitionBefore');
-        removeCopy(transitionable[i], '_transitionBefore');
-        removeCopy(transitionable[i], '_transitionAfter');
-      }
-    }), 0)]));
+  parGroup.onend = function() {
+    for (var i = 0; i < tree.length; i++) {
+      // workaround because we can't build animations that transition to empty values
+      tree[i].style.left = "";
+      tree[i].style.top = "";
+      tree[i].style.width = "";
+      tree[i].style.height = "";
+      tree[i].style.position = "";
+    }
+    for (var i = 0; i < transitionable.length; i++) {
+      transitionable[i].style.opacity = "";
+      hideCopy(transitionable[i], '_transitionBefore');
+      removeCopy(transitionable[i], '_transitionBefore');
+      removeCopy(transitionable[i], '_transitionAfter');
+    }
+  };
 
+  document.timeline.play(parGroup);
+  
   // get rid of all the junk
   cleanup();
 }
@@ -897,7 +876,7 @@ function generateCopyAtPosition(element, rect, state) {
   var fromPosition = boundingRectToContentRect(element, rect);
   var from = cloneElementToSize(element, fromPosition);
   from.label = state;
-  
+  from.classList.add(state)
   cacheCopy(element, state, from);
 }
 
