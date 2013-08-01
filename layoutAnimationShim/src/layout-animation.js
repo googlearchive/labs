@@ -35,14 +35,12 @@ function fixTiming(timing) {
   return timing;
 }
 
-function animationToPositionLayout(target, positions, timing) {
+function animationToPositionLayout(target, from, positions, timing) {
   timing = fixTiming(timing);
   
-  var from = getCopy(target, '_transitionBefore');
-
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
+    var str = rectsToCss(position, getPosition(target, from.label), transOrig, true);
     return { offset: position.offset, value: str};
   });
 
@@ -108,12 +106,10 @@ function toStinkyAPI(dict) {
   });
 }
 
-function animationToPositionTransform(target, positions, timing) {
-  var from = getCopy(target, '_transitionBefore');
-
+function animationToPositionTransform(target, from, positions, timing) {
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig);
+    var str = rectsToCss(position, getPosition(target, from.label), transOrig);
     return {offset: position.offset, value: str};
   });
 
@@ -122,12 +118,10 @@ function animationToPositionTransform(target, positions, timing) {
   return new Animation(from, toStinkyAPI({transform: cssList}), timing);
 }
 
-function animationToPositionNone(target, positions, timing) {
-  var from = getCopy(target, '_transitionBefore');
-
+function animationToPositionNone(target, from, positions, timing) {
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
+    var str = rectsToCss(position, getPosition(target, from.label), transOrig, true);
     return { offset: position.offset, value: str};
   });
 
@@ -138,13 +132,12 @@ function animationToPositionNone(target, positions, timing) {
   return a;
 }
 
-function animationToPositionClip(target, positions, timing) {
-  var from = getCopy(target, '_transitionBefore');
+function animationToPositionClip(target, from, positions, timing) {
   timing = fixTiming(timing);
   
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
+    var str = rectsToCss(position, getPosition(target, from.label), transOrig, true);
     return { offset: position.offset, value: str };
   });
 
@@ -154,110 +147,6 @@ function animationToPositionClip(target, positions, timing) {
   });
 
   return new Animation(from, toStinkyAPI({transform: cssList, clip: clipList, position: ["absolute", "absolute"]}), timing);
-}
-
-function animationToPositionFadeOutIn(outTo, inFrom, clip) {
-  return function(target, positions, timing) {
-
-    var from = getCopy(target, '_transitionBefore');
-    timing = fixTiming(timing);
-
-    var opacityTiming = {};
-    for (d in timing) {
-      opacityTiming[d] = timing[d];
-    }
-    opacityTiming.iterationDuration = timing.iterationDuration * outTo;
-    opacityTiming.fillMode = 'forwards';
-
-    var transOrig = origin(from.style.webkitTransformOrigin);
-    var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig, true);
-      return { offset: position.offset, value: str};
-    });
-
-    if (clip) {
-      var clipList = positions.map(function(position) {
-        var str = rectToClip(position);
-        return { offset: position.offset, value: str};
-      });
-      var fromAnim = new Animation(from, toStinkyAPI({transform: cssList, clip: clipList,
-            position: ["absolute", "absolute"]}), timing);
-    } else { 
-      var fromAnim = new Animation(from, toStinkyAPI({transform: cssList,
-            position: ["absolute", "absolute"]}), timing);
-    }
-    var fromOpacAnim = new Animation(from, toStinkyAPI({opacity: ["1", "0"]}), opacityTiming);
-
-    opacityTiming.iterationDuration = timing.iterationDuration * (1 - inFrom);
-    if (opacityTiming.startDelay == undefined) {
-      opacityTiming.startDelay = 0;
-    }
-    opacityTiming.startDelay += timing.iterationDuration * inFrom;  
-    opacityTiming.fillMode = 'backwards';
-
-    showCopy(target, '_transitionAfter');
-    var to = getCopy(target, '_transitionAfter');
-  
-    transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
-    var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, getPosition(target, '_transitionAfter'), transOrig, true);
-      return { offset: position.offset, value: str};
-    });
-
-    if (clip) {
-      var toAnim = new Animation(to, toStinkyAPI({transform: cssList, clip: clipList,
-                position: ["absolute", "absolute"]}), timing);
-    } else {
-      var toAnim = new Animation(to, toStinkyAPI({transform: cssList,
-                position: ["absolute", "absolute"]}), timing);
-    }
-    var toOpacAnim = new Animation(to, toStinkyAPI({opacity: ["0", "1"]}), opacityTiming);
-
-    timing.fillMode = 'forwards';
-    var cleanupAnimation = new Animation(null, new Cleaner(function() {
-      hideCopy(target, '_transitionAfter');
-      //to.parentElement.removeChild(to);
-    }), timing);
-    
-    return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
-      new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
-  }
-}
-
-function animationToPositionTransfade(target, positions, timing) {
-  var from = getCopy(target, '_transitionBefore');
-  timing = fixTiming(timing);
-
-  var transOrig = origin(from.style.webkitTransformOrigin);
-  var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, getPosition(target, '_transitionBefore'), transOrig);
-    return { offset: position.offset, value: str};
-  });
-   
-  var fromAnim = new Animation(from, toStinkyAPI({transform: cssList,
-          position: ["absolute", "absolute"]}), timing);
-  var fromOpacAnim = new Animation(from, toStinkyAPI({opacity: ["1", "0"]}), timing);
-
-  showCopy(target, '_transitionAfter');
-  var to = getCopy(target, '_transitionAfter');
-
-  transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
-  var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, getPosition(target, '_transitionAfter'), transOrig);
-    return { offset: position.offset, value: str};
-  });
-
-  var toAnim = new Animation(to, toStinkyAPI({transform: cssList,
-            position: ["absolute", "absolute"]}), timing);
-  var toOpacAnim = new Animation(to, toStinkyAPI({opacity: ["0", "1"]}), timing);
-
-  timing.fillMode = 'forwards';
-  var cleanupAnimation = new Animation(null, new Cleaner(function() {
-    hideCopy(target, '_transitionAfter');
-  }), timing);
-    
-  return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
-    new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
 }
 
 function extractContents(container, copyContents) {
@@ -306,9 +195,21 @@ Effect.prototype = {
     } else if (mode == 'clip' || mode == 'transform') {
       console.assert(!this.isLayout);
       this.scaleMode = mode;
-    } else if (mode == 'fade' || mode == 'fade-in' || mode == 'fade-out') {
+    } else if (mode.substr(0, 4) == 'fade') {
       console.assert(!this.isLayout);
-      this.blendMode = mode;
+      this.blendMode = 'fade';
+      if (mode == 'fade' || mode == 'fade-in') {
+        this.fadeInParam = 1;
+      }
+      if (mode == 'fade' || mode == 'fade-out') {
+        this.fadeOutParam = 0;
+      }
+      if (mode.substr(0, 7) == 'fade-to') {
+        console.assert(this.fadeInParam === undefined && this.fadeOutParam === undefined);
+        var modes = mode.substr(5).split(',');
+        this.fadeInParam = offsetToNumber(modes[0].trim());
+        this.fadeOutParam = offsetToNumber(modes[1].split(')')[0].trim());
+      }
     } else if (this.explicitNones == 0) {
       console.assert(this.scaleMode == 'none' || this.blendMode == 'none');
     } else {
@@ -365,6 +266,59 @@ function positionSubList(start, end, positionList) {
   return sublist;
 }
 
+function offsetToNumber(value) {
+  if (value.indexOf('%') != -1) {
+    return Number(value.slice(0, value.length - 1)) / 100;
+  }
+  return Number(value);
+}
+
+function prettyPrint(anim) {
+  function spaces(d) {
+    var s = '';
+    for (var i = 0; i < d; i++) {
+      s += ' ';
+    }
+    return s;
+  };
+
+  function prettyPrint_(anim, depth) {
+    if (anim instanceof SeqGroup) {
+      name = 'SeqGroup';
+    } else if (anim instanceof ParGroup) {
+      name = 'ParGroup';
+    } else {
+      name = 'Animation';
+    }
+    var arrow = '';
+    switch (anim.specified.fillMode) {
+      case 'forwards':
+        arrow = '->';
+        break;
+      case 'backwards':
+        arrow = '<-';
+        break;
+      case 'both':
+        arrow = '<->';
+        break;
+      case 'none':
+        arrow = '|';
+        break;
+      default:
+        arrow = '?';
+        break;
+    }
+    console.log(spaces(depth) + name + ': ' + anim.activeDuration + 's ' + arrow);
+    if (anim.children) {
+      for (var i = 0; i < anim.children.length; i++) {
+        prettyPrint_(anim.children[i], depth + 2);
+      }
+    }
+  };
+  prettyPrint_(anim, 0);
+}
+    
+
 function generateAnimation(element, positionList) {
 
   var effect = element._layout.effect;
@@ -376,11 +330,7 @@ function generateAnimation(element, positionList) {
   var effect = new Effect();
   for (var i = 0; i < effectList.length; i++) {
     if (offsetRE.exec(effectList[i]) != null) {
-      if (effectList[i].indexOf('%') != -1) {
-        var stop = Number(effectList[i].slice(0, effectList[i].length - 1)) / 100;
-      } else {
-        var stop = Number(effectList[i]);
-      }
+      var stop = offsetToNumber(effectList[i]);
 
       if (start == stop) {
         continue;
@@ -402,44 +352,92 @@ function generateAnimation(element, positionList) {
   var seq = new SeqGroup();
   var lastWasLayout = true;
 
+  var copies = [getCopy(element, '_transitionBefore')];
+  var fromCopy = copies[0];
+  var fromOpacity = 1;
+  var toOpacity = 0;
+
+  var newStates = [];
+
+  var anims = undefined;
   for (var i = 0; i < effectResult.length; i++) {
     var start = effectResult[i].start;
     var end = effectResult[i].end;
     var effect = effectResult[i].effect;
     var sublist = positionSubList(start, end, positionList);
-    console.log(start, end, sublist.map(function(a) { return a.offset + " " + a.height }));
     if (effect.isLayout) {
-      var anim = animationToPositionLayout(element, sublist, duration * (end - start));
-      seq.append(anim);
+      anims = [];
+      copies.forEach(function(copy) {
+        var anim = animationToPositionLayout(element, copy, sublist, duration * (end - start));
+        anims.push(anim);
+      });
+      seq.append(new ParGroup(anims, {fillMode: 'forwards'}));
       lastWasLayout = true;
     } else {
+      if (effect.blendMode != 'none') {
+        var group = new SeqGroup([], {fillMode: 'forwards'});
+        var par = new ParGroup([], {fillMode: 'forwards'});
+        par.append(group);
+        seq.append(par);
+        if (end == 1) {
+          var newState = '_transitionAfter';
+        } else {
+          var newState = '_at_' + end;
+          newStates.push(newState);
+          generateCopyAtPosition(element, sublist[sublist.length - 1], newState);
+        }
+        toCopy = getCopy(element, newState);
+        copies.push(toCopy);
+        showCopy(element, newState);
+        par.append(new Animation(fromCopy, [{opacity: fromOpacity + ''}, {opacity: effect.fadeOutParam + ''}],
+          {fillMode: 'forwards', iterationDuration: duration * (end - start)}));
+        par.append(new Animation(toCopy, [{opacity: toOpacity + ''}, {opacity: effect.fadeInParam + ''}],
+          {fillMode: 'forwards', iterationDuration: duration * (end - start)}));
+
+      } else {
+        var group = seq;
+      }
       if (!lastWasLayout) {
         var newList = [clone(sublist[0]), clone(sublist[0])];
         newList[0].offset = 0;
         newList[1].offset = 1;
-        var anim = animationToPositionLayout(element, newList, 0);
-        seq.append(anim);
+        anims = [];
+        copies.forEach(function(copy) {
+          var anim = animationToPositionLayout(element, copy, newList, 0);
+          anims.push(anim);
+        });
+        group.append(new ParGroup(anims, {fillMode: 'forwards'}));
       }
       // this will pick up either the previous layout or the inserted layout and fix it
       // with forward fill.
-      if (anim) {
-        anim.specified.fillMode = 'forwards';
+      if (anims) {
+        anims.forEach(function(anim) { anim.specified.fillMode = 'forwards'; });
+        anims = undefined;
       }
       lastWasLayout = false;
-      if (effect.blendMode == 'none') {
-        switch(effect.scaleMode) {
-          case 'none':
-            seq.append(animationToPositionNone(element, sublist, duration * (end - start)));
-            break;
-          case 'transform':
-            seq.append(animationToPositionTransform(element, sublist, duration * (end - start)));
-            break;
-          case 'clip':
-            seq.append(animationToPositionClip(element, sublist, duration * (end - start)));
-            break;
-        }
+      switch(effect.scaleMode) {
+        case 'none':
+          var f = animationToPositionNone;
+          break;
+        case 'transform':
+          var f = animationToPositionTransform;
+          break;
+        case 'clip':
+          var f = animationToPositionClip;
+          break;
       }
+      var copyAnims = []
+      copies.forEach(function(copy) { copyAnims.push(f(element, copy, sublist, duration * (end - start))); });
+      group.append(new ParGroup(copyAnims));
     }
+  }
+
+  seq.onend = function(e) {
+    hideCopy(element, '_transitionAfter');
+    newStates.forEach(function(state) { 
+      hideCopy(element, state);
+      removeCopy(element, state);
+    });
   }
 
   return seq;
@@ -874,7 +872,10 @@ function getCopy(element, state) {
 
 function generateCopy(element, state) {
   var rect = sensePosition(element);
+  generateCopyAtPosition(element, rect, state);
+}
 
+function generateCopyAtPosition(element, rect, state) {
   if (element._transitionParent) {
     // TODO: Do we still need to do this?
     var parent = element.parentElement;
@@ -895,6 +896,7 @@ function generateCopy(element, state) {
   setPosition(element, rect, state);
   var fromPosition = boundingRectToContentRect(element, rect);
   var from = cloneElementToSize(element, fromPosition);
+  from.label = state;
   
   cacheCopy(element, state, from);
 }
@@ -920,8 +922,8 @@ function showCopy(element, state) {
 
 function hideCopy(element, state) {
   var copy = getCopy(element, state);
-  if (!element.parentElement) {
-    console.log('huh');
+  if (!copy || !copy.parentElement) {
+    return;
   }
   copy.parentElement.removeChild(copy);
 }
