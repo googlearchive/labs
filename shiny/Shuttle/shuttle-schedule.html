@@ -4,6 +4,7 @@
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-ratings/polymer-ui-ratings.html">
 <link rel="import" href="shuttle-timetable.html">
+<link rel="import" href="shuttle-stop-picker-button.html">
 <link rel="import" href="shuttle-stop-picker.html">
 
 <polymer-element name="shuttle-schedule" attributes="fromStop favorites favorite">
@@ -20,23 +21,11 @@
         position: relative;
       }
       
-      .stop-label {
-        height: 100%;
-        line-height: 60px;
-        text-align: center;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      
-      .stop-label[active] {
-        background: #ddd;
-      }
-      
-      .from-stop-label {
+      .from-stop-button {
         border-right: 1px solid #ccc;
       }
       
-      .to-stop-label {
+      .to-stop-button {
         border-left: 1px solid #ccc;
       }
       
@@ -46,7 +35,6 @@
         right: 0;
         bottom: 0;
         left: 0;
-        overflow: hidden;
         font-size: 12px;
       }
       
@@ -70,6 +58,7 @@
       #timetable {
         border-top: 1px solid #ccc;
         overflow: auto;
+        -webkit-overflow-scrolling: touch;
       }
     </style>
     
@@ -77,15 +66,15 @@
     <polymer-localstorage id="storage" name="shuttle-storage" value="{{favorites}}"></polymer-localstorage>
     
     <polymer-ui-toolbar id="toolbar">
-      <div flex class="stop-label from-stop-label" on-tap="toggleFromMenu" active?="{{reverse ? remoteStopsMenuOpened : officeStopsMenuOpened}}">{{fromStop.short_name}}</div>
+      <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu" active="{{reverse ? remoteStopsMenuOpened : officeStopsMenuOpened}}">{{fromStop.short_name}}</shuttle-stop-picker-button>
       <div class="swap-button-container">
         <polymer-ui-icon-button src="assets/ic_swaphoriz_darkreg.png" on-tap="swap"></polymer-ui-icon-button>
       </div>
-      <div flex class="stop-label to-stop-label" on-tap="toggleToMenu" active?="{{reverse ? officeStopsMenuOpened : remoteStopsMenuOpened}}">{{toStop.short_name}}</div>
+      <shuttle-stop-picker-button flex class="to-stop-button" on-tap="toggleToMenu" active="{{reverse ? officeStopsMenuOpened : remoteStopsMenuOpened}}">{{toStop.short_name}}</shuttle-stop-picker-button>
     </polymer-ui-toolbar>
     
-    <shuttle-stop-picker id="officeStopsMenu" selected="{{officeSelected}}" selectedItem="{{officeSelectedItem}}" stops="{{officeStops}}" opened="{{officeStopsMenuOpened}}"></shuttle-stop-picker>
-    <shuttle-stop-picker id="remoteStopsMenu" selected="{{remoteSelected}}" selectedItem="{{remoteSelectedItem}}" stops="{{remoteStops}}" opened="{{remoteStopsMenuOpened}}"></shuttle-stop-picker>
+    <shuttle-stop-picker id="officeStopsMenu" selected="{{officeSelected}}" selectedStop="{{officeSelectedStop}}" stops="{{officeStops}}" opened="{{officeStopsMenuOpened}}"></shuttle-stop-picker>
+    <shuttle-stop-picker id="remoteStopsMenu" selected="{{remoteSelected}}" selectedStop="{{remoteSelectedStop}}" stops="{{remoteStops}}" opened="{{remoteStopsMenuOpened}}"></shuttle-stop-picker>
     
     <div id="description">
       {{fromStop.name}} to {{toStop.name}}
@@ -96,8 +85,8 @@
   </template>
   <script>
     Polymer('shuttle-schedule', {
-      officeSelectedItem: null,
-      remoteSelectedItem: null,
+      officeSelectedStop: null,
+      remoteSelectedStop: null,
       reverse: false,
       isFav: false,
       favorite: null,
@@ -130,17 +119,15 @@
       },
       swap: function() {
         this.reverse = !this.reverse;
-        this.officeSelectedItemChanged();
-        this.remoteSelectedItemChanged();
+        this.officeSelectedStopChanged();
+        this.remoteSelectedStopChanged();
       },
-      officeSelectedItemChanged: function() {
-        this[this.reverse ? 'toStop' : 'fromStop'] = 
-            this.officeSelectedItem.templateInstance.model;
+      officeSelectedStopChanged: function() {
+        this[this.reverse ? 'toStop' : 'fromStop'] = this.officeSelectedStop;
         this.updateFav();
       },
-      remoteSelectedItemChanged: function() {
-        this[this.reverse ? 'fromStop' : 'toStop'] = 
-            this.remoteSelectedItem.templateInstance.model;
+      remoteSelectedStopChanged: function() {
+        this[this.reverse ? 'fromStop' : 'toStop'] = this.remoteSelectedStop;
         this.updateFav();
       },
       toggleFromMenu: function() {
@@ -152,9 +139,6 @@
       toggleMenu: function(name) {
         var m = this.$[name + 'StopsMenu'];
         m.toggle();
-        this.asyncMethod(function() {
-          m.selectedItem && m.selectedItem.scrollIntoViewIfNeeded();
-        }, null, 1);
       },
       favoriteChanged: function() {
         if (this.favorite) {
@@ -163,8 +147,8 @@
           this.reverse = this.favorite.reverse;
           this.officeSelected = this.reverse ? t : f;
           this.remoteSelected = this.reverse ? f : t;
-          this.officeSelectedItemChanged();
-          this.remoteSelectedItemChanged();
+          this.officeSelectedStopChanged();
+          this.remoteSelectedStopChanged();
         }
       },
       updateFav: function() {

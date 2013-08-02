@@ -3,7 +3,7 @@
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
 
-<polymer-element name="shuttle-stop-picker" extends="polymer-overlay" attributes="stops selected selectedItem">
+<polymer-element name="shuttle-stop-picker" extends="polymer-overlay" attributes="stops selected selectedStop">
   <template>
     <link rel="stylesheet" href="../../../polymer-elements/polymer-overlay/polymer-overlay.css">
     <style>
@@ -42,6 +42,7 @@
         bottom: 0;
         left: 0;
         overflow: auto;
+        -webkit-overflow-scrolling: touch;
       }
       
       .group {
@@ -82,8 +83,8 @@
     </style>
     
     <polymer-selector id="selector" target="{{$.stops}}" itemsSelector=".stop" 
-        valueattr="index" selected="{{selected}}" selectedItem="{{selectedItem}}" 
-        on-polymer-activate="toggleAction"></polymer-selector>
+        valueattr="index" selected="{{selected}}" selectedItem="{{selectedItem}}"
+        selectedModel="{{selectedStop}}" on-polymer-activate="toggleAction"></polymer-selector>
     
     <div id="searchBox">
       <input id="input" x-webkit-speech placeholder="Search" on-input="asyncSearch">
@@ -107,6 +108,14 @@
     Polymer('shuttle-stop-picker', {
       ready: function() {
         this.target = this;
+      },
+      openedChanged: function() {
+        this.super(arguments);
+        if (this.opened && this.selectedItem) {
+          this.asyncMethod(function() {
+            this.selectedItem.scrollIntoViewIfNeeded();
+            }, null, 1);
+        }
       },
       toggleAction: function() {
         this.async('toggle');
