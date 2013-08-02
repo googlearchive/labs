@@ -85,10 +85,14 @@
 				#contactsheet {
 					position: absolute !important;
 					bottom: 0;
-					width: 100%;
+          left: 0;
+          right: 0;
 					background: #fff;
-					border: 1px solid rgba(221, 221, 221, 0.25);
+					border-top: 1px solid rgba(221, 221, 221, 0.25);
 				}
+        #contactsheet::x-backdrop {
+          top: 60px !important;
+        }
 				contact-photo {
 					background: #666666;
 					padding: 16px;
@@ -169,7 +173,7 @@
 				<polymer-ui-icon-button icon="dots" on-click="openContactSheetAction"></polymer-ui-icon-button>
 			</polymer-ui-toolbar>
 
-			<polymer-ui-overlay id="contactsheet" on-click="openContactSheetAction">
+			<polymer-ui-overlay id="contactsheet" on-click="openContactSheetAction" backdrop="true">
 				<polymer-ui-menu>
 					<polymer-ui-menu-item icon="favorite" label="Favorite"></polymer-ui-menu-item>
 					<polymer-ui-menu-item icon="shortcut" label="Share"></polymer-ui-menu-item>
