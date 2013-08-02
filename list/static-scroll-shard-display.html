@@ -41,9 +41,17 @@
       margin: 0 auto;
     }
     
+    #content {
+      position: relative;
+    }
+    
+    .base {
+      display: none;
+      /*-webkit-transform: translateZ(0);*/
+    }
+    
     /* simple item */
     .item {
-      display: none;
       box-sizing: border-box;
       height: 80px;
       line-height: 80px;
@@ -54,7 +62,6 @@
     
     /* mail (complex) item */
     .medium-item {
-      display: none;
     }
     
     .message {
@@ -106,7 +113,6 @@
     
     /* complex list item*/
     .complex {
-      display: none;
       background: whitesmoke;
       border-radius: 10px;
       -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -150,7 +156,7 @@
 <body>
   <div class="header">
     <button onclick="reset()">reset</button>
-    <label>rows: <input id="rowsInput" value="200"/></label>
+    <label>rows: <input id="rowsInput" value="2000"/></label>
     <label>item: 
       <select id="complexitySelect">
         <option>simple</option>
@@ -236,44 +242,47 @@
       }
       
       content.innerHTML = '';
-      var shardCount = 1e9;
+      var shardCount = 10;
       
       for (var i=0, html='', shard; i<count; i++) {
-        if (!(i % shardCount)) {
+        html += itemFn(i);
+        if (!(i % shardCount) || i == count - 1) {
           if (shard) {
             shard.innerHTML = html;
+            shard.className = 'base';
             content.appendChild(shard);
           } 
           html = '';
           var shard = document.createElement('div');
-          //shard.style.webkitTransform = 'translateZ(0)';
         }
-        html += itemFn(i);
       }
-      content.innerHTML = html;
+      //content.innerHTML = html;
       list.scrollTop = 0;
       
       content.firstChild.style.display = 'block';
-      visible++;
       contentHeight += content.firstChild.offsetHeight;
-      content.style.height = (content.firstChild.offsetHeight * count) + 'px';
+      defaultHeight = content.firstChild.offsetHeight
+      content.style.height = (defaultHeight * (count / shardCount)) + 'px';
       
       scroll();
     }
     
     function scroll() {
       var l = list.scrollTop, h = list.clientHeight;
-      var needed = l + h;
+      var needed = l + h, oh, delta = 0;
       while (contentHeight < needed) {
         var c = content.childNodes[++visible];
         if (c) {
           c.style.display = 'block';
-          contentHeight += c.offsetHeight;
+          oh = c.offsetHeight;
+          delta += oh - defaultHeight;
+          contentHeight += oh;
         } else {
-          return
+          break;
         }
       }
-    }
+      content.style.height = (content.offsetHeight + delta) + 'px';
+   }
     
     list.onscroll = scroll;
     

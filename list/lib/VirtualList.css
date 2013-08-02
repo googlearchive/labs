@@ -16,6 +16,7 @@
   position: absolute;
   left: 0;
   right: 0;
+  -webkit-transform: translateZ(0);
 }
 
 .virtual-list-viewport.horiz > * {

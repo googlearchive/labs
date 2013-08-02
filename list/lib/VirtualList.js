@@ -8,10 +8,12 @@ var VirtualList = function(inNode, inCallback) {
   this.pageSize = 50;  // rows per page
   this.numPages = 2;  // number of pages
   this.count = 0;  // total number of rows
+  this.numInitialPages = 0; // number of pages to render at start
   this.horiz = false;
   this.fixedHeight = false;
   this.keepAllPages = false;
   this.useRaf = false;
+  this.removeUnusedPages = false;
 };
 
 VirtualList.prototype = {
@@ -24,6 +26,9 @@ VirtualList.prototype = {
     this.pages = [];
     this.rowHeight = 0;
     this.pageTops = [];
+    for (var i = 0; i < this.numInitialPages; i++) {
+      this.generatePage(i);
+    }
     this.viewport.classList[this.horiz ? 'add' : 'remove']('horiz');
     if (this.useRaf) {
       this.list.removeEventListener('scroll', this.scroll.bind(this));
@@ -49,9 +54,11 @@ VirtualList.prototype = {
       var p = document.createElement('div');
       p.pageNum = inPageNum;
       p.setAttribute('page', inPageNum);
+      if (!this.removeUnusedPages) {
+        p.style.display = 'none';
+      }
       this.viewport.appendChild(p);
       this.generatePageContent(p);
-      this.measurePage(p);
       return p;
     }
   },
@@ -141,6 +148,10 @@ VirtualList.prototype = {
     for (; k<n; k++) {
       var p = this.findPage(k) || this.generatePage(k);
       if (p) {
+        if (!this.removeUnusedPages) {
+          p.style.display = null;
+        }
+        this.measurePage(p);
         var d = this.positionPage(p);
         this.pages.push(p);
         // adjust scrollTop if centerPage's top has changed
@@ -157,7 +168,11 @@ VirtualList.prototype = {
   cleanupPages: function() {
     for (var c=this.viewport.children, i=c.length-1, p; p=c[i]; i--) {
       if (this.pages.indexOf(p) == -1) {
-        this.viewport.removeChild(p);
+        if (this.removeUnusedPages) {
+          this.viewport.removeChild(p);
+        } else {
+          p.style.display = 'none';
+        }
       }
     }
   }
