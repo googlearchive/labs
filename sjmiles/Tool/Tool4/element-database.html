@@ -20,7 +20,8 @@
       response: function(event, data, sender) {
         sender = event.target;
         if (data.response) {
-          this.items = this.items.concat(data.response.querySelectorAll('polymer-element-meta').array().map(function(e) {
+          var metas = data.response.querySelectorAll('polymer-element-meta');
+          this.items = this.items.concat(metas.array().map(function(e) {
             return {
               folder: sender.getAttribute('folder'),
               name: e.getAttribute('name')
