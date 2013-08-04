@@ -389,6 +389,7 @@ function generateAnimation(element, positionList) {
         newStates.push(newState);
         toCopy = getCopy(element, newState);
         copies.push(toCopy);
+        toCopy.style.opacity = '0';
         showCopy(element, newState);
         par.append(new Animation(fromCopy, [{opacity: fromOpacity + ''}, {opacity: effect.fadeOutParam + ''}],
           {fillMode: 'forwards', iterationDuration: duration * (end - start)}));
@@ -758,7 +759,11 @@ function transitionThis(action) {
   action();
 
   // record positions after action
-  transitionable.map(function(element) { ensureCopy(element, '_transitionAfter'); });
+  transitionable.map(function(element) {
+    ensureCopy(element, '_transitionAfter'); 
+    element.style.opacity = '0';
+    showCopy(element, '_transitionBefore');
+  });
 
   // construct animations
   var parGroup = new ParGroup();
@@ -769,8 +774,6 @@ function transitionThis(action) {
     }
 
     for (var i = 0; i < list.length; i++) {
-      list[i].style.opacity = '0';
-      showCopy(list[i], '_transitionBefore');
 
       var keyframes = layoutKeyframes[list[i]._layout.name];
       var positionList = positionListFromKeyframes(keyframes, list[i]);
