@@ -15,13 +15,13 @@
   <script>
     Polymer('element-database', {
       ready: function() {
-        this.items = [];
+        //this.items = [];
       },
       response: function(event, data, sender) {
         sender = event.target;
         if (data.response) {
           var metas = data.response.querySelectorAll('polymer-element-meta');
-          this.items = this.items.concat(metas.array().map(function(e) {
+          this.items = (this.items || []).concat(metas.array().map(function(e) {
             return {
               folder: sender.getAttribute('folder'),
               name: e.getAttribute('name')

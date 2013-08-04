@@ -1,9 +1,10 @@
-> {
+/*#docsbar, #examplebar, #sourcebar,*/
+#docs, #example, #exampleSource {
   -webkit-transition: top, right, bottom, left;
-  -webkit-transition-duration: 0.2s;
+  -webkit-transition-duration: 0.4s;
   -webkit-transition-timing-function: ease-in;
   transition: top, right, bottom, left;
-  transition-duration: 0.2s;
+  transition-duration: 0.4s;
   transition-timing-function: ease-in;
 }
 
