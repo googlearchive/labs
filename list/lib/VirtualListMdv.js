@@ -161,7 +161,7 @@ VirtualList.prototype = {
         if (!this.removeUnusedPages) {
           p.style.display = null;
         }
-        Platform.flush();
+        //Platform.flush();
         this.measurePage(p);
         var d = this.positionPage(p);
         this.pages.push(p);
