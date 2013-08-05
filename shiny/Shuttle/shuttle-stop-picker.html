@@ -3,7 +3,7 @@
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
 
-<polymer-element name="shuttle-stop-picker" extends="polymer-overlay" attributes="stops selected selectedStop">
+<polymer-element name="shuttle-stop-picker" extends="polymer-overlay" attributes="stops selected selectedStop searchInputLabel">
   <template>
     <link rel="stylesheet" href="../../../polymer-elements/polymer-overlay/polymer-overlay.css">
     <style>
@@ -66,6 +66,7 @@
       .stop-label {
         display: inline-block;
         width: 90%;
+        vertical-align: middle;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -87,7 +88,7 @@
         selectedModel="{{selectedStop}}" on-polymer-activate="toggleAction"></polymer-selector>
     
     <div id="searchBox">
-      <input id="input" x-webkit-speech placeholder="Search" on-input="asyncSearch">
+      <input id="input" x-webkit-speech placeholder="{{searchInputLabel}}" on-input="asyncSearch">
     </div>
     
     <div id="stops">
@@ -106,6 +107,7 @@
   </template>
   <script>
     Polymer('shuttle-stop-picker', {
+      searchInputLabel: 'Search Stops',
       ready: function() {
         this.target = this;
       },

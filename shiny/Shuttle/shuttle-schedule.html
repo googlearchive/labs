@@ -66,22 +66,27 @@
     <polymer-localstorage id="storage" name="shuttle-storage" value="{{favorites}}"></polymer-localstorage>
     
     <polymer-ui-toolbar id="toolbar">
-      <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu" active="{{reverse ? remoteStopsMenuOpened : officeStopsMenuOpened}}">{{fromStop.short_name}}</shuttle-stop-picker-button>
+      <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu" 
+          active="{{reverse ? remoteStopsMenuOpened : officeStopsMenuOpened}}">{{fromStop.short_name}}</shuttle-stop-picker-button>
       <div class="swap-button-container">
         <polymer-ui-icon-button src="assets/ic_swaphoriz_darkreg.png" on-tap="swap"></polymer-ui-icon-button>
       </div>
-      <shuttle-stop-picker-button flex class="to-stop-button" on-tap="toggleToMenu" active="{{reverse ? officeStopsMenuOpened : remoteStopsMenuOpened}}">{{toStop.short_name}}</shuttle-stop-picker-button>
+      <shuttle-stop-picker-button flex class="to-stop-button" on-tap="toggleToMenu" 
+          active="{{reverse ? officeStopsMenuOpened : remoteStopsMenuOpened}}">{{toStop.short_name}}</shuttle-stop-picker-button>
     </polymer-ui-toolbar>
     
-    <shuttle-stop-picker id="officeStopsMenu" selected="{{officeSelected}}" selectedStop="{{officeSelectedStop}}" stops="{{officeStops}}" opened="{{officeStopsMenuOpened}}"></shuttle-stop-picker>
-    <shuttle-stop-picker id="remoteStopsMenu" selected="{{remoteSelected}}" selectedStop="{{remoteSelectedStop}}" stops="{{remoteStops}}" opened="{{remoteStopsMenuOpened}}"></shuttle-stop-picker>
+    <shuttle-stop-picker id="officeStopsMenu" selected="{{officeSelected}}" selectedStop="{{officeSelectedStop}}" 
+        stops="{{officeStops}}" opened="{{officeStopsMenuOpened}}" searchInputLabel="Search Office Stops"></shuttle-stop-picker>
+    <shuttle-stop-picker id="remoteStopsMenu" selected="{{remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
+        stops="{{remoteStops}}" opened="{{remoteStopsMenuOpened}}"></shuttle-stop-picker>
     
     <div id="description">
       {{fromStop.name}} to {{toStop.name}}
       <polymer-ui-ratings count="1" value="{{isFav}}" on-tap="handleFavTap"></polymer-ui-ratings>
     </div>
     
-    <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}" fromStops="{{fromStops}}" toStops="{{toStops}}"></shuttle-timetable>
+    <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}" 
+        fromStops="{{fromStops}}" toStops="{{toStops}}"></shuttle-timetable>
   </template>
   <script>
     Polymer('shuttle-schedule', {
@@ -101,10 +106,9 @@
         
         this.populateStops();
         
-        setTimeout(function() {
-          this.officeSelected = 7;
-          this.remoteSelected = 70;
-        }.bind(this), 0);
+        // initial selections
+        this.officeSelected = Shuttle.isMock ? 1 : 7;
+        this.remoteSelected = Shuttle.isMock ? 0 : 70;
         
         this.favorites = this.favorites || [];
       },
