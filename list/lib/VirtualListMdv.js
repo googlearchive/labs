@@ -1,12 +1,14 @@
-var VirtualList = function(inNode, inCallback) {
+var VirtualList = function(inNode, inTemplate, inCallback) {
   this.list = inNode;
+  this.template = inTemplate;
+  this.syntax = new ExpressionSyntax();
   this.list.classList.add('virtual-list');
   this.viewport = document.createElement('div');
   this.viewport.classList.add('virtual-list-viewport');
   //this.mo = new MutationObserver(this.observe.bind(this));
   //this.mo.observe(this.viewport, {childList: true});
   this.list.appendChild(this.viewport);
-  this.genPageCallback = inCallback;
+  this.pageDataCallback = inCallback;
   this.pageSize = 50;  // rows per page
   this.numPages = 2;  // number of pages
   this.count = 0;  // total number of rows
@@ -49,7 +51,12 @@ VirtualList.prototype = {
   generatePageContent: function(inPage) {
     var i = inPage.pageNum * this.pageSize;
     var j = Math.min(i + this.pageSize, this.count);
-    this.genPageCallback.call(this, inPage, i, j);
+    var data = this.pageDataCallback.call(this, i, j);
+    if (data) {
+      for (var i=0, l=data.length; i<l; i++) {
+        inPage.appendChild(this.template.createInstance(data[i], this.syntax));
+      }
+    }
   },
   generatePage: function(inPageNum) {
     if (inPageNum < this.pageCount) {
@@ -59,13 +66,14 @@ VirtualList.prototype = {
       if (!this.removeUnusedPages) {
         p.style.display = 'none';
       }
-      this.viewport.appendChild(p);
       this.generatePageContent(p);
+      this.viewport.appendChild(p);
       return p;
     }
   },
   measurePage: function(inPage) {
     var ph = inPage[this.horiz ? 'offsetWidth' : 'offsetHeight'], pn = inPage.pageNum;
+    console.log('measurePage', ph);
     if (!this.rowHeight) {
       this.rowHeight = ph/(this.pageSize < this.count ? this.pageSize : this.count);
       this.viewportHeight = this.count * this.rowHeight;
@@ -153,6 +161,7 @@ VirtualList.prototype = {
         if (!this.removeUnusedPages) {
           p.style.display = null;
         }
+        Platform.flush();
         this.measurePage(p);
         var d = this.positionPage(p);
         this.pages.push(p);

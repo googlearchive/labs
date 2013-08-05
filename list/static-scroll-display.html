@@ -41,28 +41,30 @@
       margin: 0 auto;
     }
     
-    .base {
-      display: none;
-      /*-webkit-transform: translateZ(0);*/
+    #content {
+      position: relative;
     }
     
     /* simple item */
     .item {
       box-sizing: border-box;
       height: 80px;
+      width: 100%;
       line-height: 80px;
       padding: 0 20px;
       background-color: #f8f8f8;
       border-bottom: 1px solid #ddd;
     }
     
-    /* mail (complex) item */
     .medium-item {
+      box-sizing: border-box;
+      width: 100%;
+      height: 80px;
     }
     
+    /* mail (complex) item */
     .message {
       box-sizing: border-box;
-      height: 80px;
       padding: 4px;
       padding-left: 77px;
       line-height: 167%;
@@ -108,14 +110,16 @@
     }
     
     /* complex list item*/
-    .complex {
+    .complex-item {
       background: whitesmoke;
+      width: 100%;
+      height: 156px;
       border-radius: 10px;
       -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.5);
       margin: 4px;
     }
     
-    .complex > :last-child {
+    .complex-item > :last-child {
       padding: 10px;
     }
     
@@ -147,12 +151,18 @@
       border-radius: 2px;
       -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.5);
     }
+    
+    .base {
+      display: none;
+      position: absolute;
+      -webkit-transform: translateZ(0);
+    }
   </style>
 </head>
 <body>
   <div class="header">
     <button onclick="reset()">reset</button>
-    <label>rows: <input id="rowsInput" value="200"/></label>
+    <label>rows: <input id="rowsInput" value="5000"/></label>
     <label>item: 
       <select id="complexitySelect">
         <option>simple</option>
@@ -162,7 +172,9 @@
     </label>      
     
   </div>
-  <div id="list"><div id="content"</div></div>
+  <div id="list">
+    <div id="content"></div>
+  </div>
   <script>
     namegen = {
       generateString: function(inLength) {
@@ -183,16 +195,22 @@
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
     ]
     
+    rowHeights = {
+      simple: 80,
+      medium: 80,
+      complex: 164
+    }
+    
     items = {
       // one node, minimal styling
       simple: function(i) {
-        return '<div class="base item">Item ' + i + '</div>';
+        return '<div class="base item" style="top: ' + (i * rowHeights.simple) + 'px;">Item ' + i + '</div>';
       },
       // 5 nodes, image as background, text clipping
       medium: function(i) {
         var a = names[i].charAt(0);
-        var show = a != (names[i-1] || '').charAt(0);
-        return '<div class="base medium-item">' + 
+        var show = false && a != (names[i-1] || '').charAt(0);
+        return '<div class="base medium-item" style="top: ' + (i * rowHeights.medium) + 'px;">' + 
           (show ? '<div class="divider">' + a + '</div>' : '') + 
           '<div class="message" style="background-image: url(images\/' + i%4 + '.png);">' +
           '<span class="from">' + names[i] + '</span>' +
@@ -203,7 +221,7 @@
           '</div></div></div>';
       },
       complex: function(i) {
-        return '<div class="base complex">' +
+        return '<div class="base complex-item" style="top: ' + (i * rowHeights.complex) + 'px;">' +
           '<div class="complex-flex">' +
             '<img src="images/0.png" />' +
             '<select><option>1</option><option>2</option></select>' +
@@ -221,14 +239,11 @@
       }
     }
     
-    var visible, contentHeight;
-    
     reset = function() {
-      visible = 0;
-      contentHeight = 0;
+      visible = [];
+      complexity = complexitySelect.value;
       var count = rowsInput.value;
-      var itemFn = items[complexitySelect.value];
-      
+      var itemFn = items[complexity];
       if (itemFn == items["medium"]) {
         names = [];
         for (var i=0; i<count; i++) {
@@ -236,51 +251,58 @@
         }
         names.sort();
       }
-      
       content.innerHTML = '';
-      var shardCount = 1e9;
-      
-      for (var i=0, html='', shard; i<count; i++) {
-        if (!(i % shardCount)) {
-          if (shard) {
-            shard.innerHTML = html;
-            content.appendChild(shard);
-          } 
-          html = '';
-          var shard = document.createElement('div');
-          //shard.style.webkitTransform = 'translateZ(0)';
-        }
+      for (var i=0, html=''; i<count; i++) {
         html += itemFn(i);
       }
       content.innerHTML = html;
       list.scrollTop = 0;
-      
-      content.firstChild.style.display = 'block';
-      contentHeight += content.firstChild.offsetHeight;
-      defaultHeight = content.firstChild.offsetHeight
-      content.style.height = (defaultHeight * count) + 'px';
-      
+      content.style.height = (rowHeights[complexity] * count) + 'px';
       scroll();
     }
     
     function scroll() {
-      var l = list.scrollTop, h = list.clientHeight;
-      var needed = l + h, oh, delta = 0;
-      while (contentHeight < needed) {
-        var c = content.childNodes[++visible];
-        if (c) {
-          c.style.display = 'block';
-          /*oh = c.offsetHeight;
-          delta += oh - defaultHeight;
-          contentHeight += oh;*/
-        } else {
-          break;
-        }
+      hideVisible();
+      showNeededVisible(list.scrollTop, list.clientHeight);
+    }
+   
+    function hideVisible() {
+      for (var i=0, l=visible.length; i<l; i++) {
+        visible[i].style.display = null;
       }
-      //content.style.height = (content.offsetHeight + delta) + 'px';
-   }
+    }
     
-    list.onscroll = scroll;
+    function showNeededVisible(top, height) {
+      visible = [];
+      var rh = rowHeights[complexity];
+      var s = Math.floor(top / rh);
+      var c = Math.ceil(height / rh);
+      for (var i=s; i<s+c; i++) {
+        content.children[i].style.display = 'block';
+        visible.push(content.children[i]);
+      }
+    }
+    
+    rafing = false;
+    scrollTime = 0;
+    list.onscroll = function() {
+      scrollTime = Date.now();
+      if (!rafing) {
+        raf();
+      }
+    };
+    
+    function raf() {
+      rafing = true;
+      requestAnimationFrame(function() {
+        scroll();
+        if (Date.now() - scrollTime < 10000) {
+          raf();
+        } else {
+          rafing = false;
+        }
+      });
+    }
     
     reset();
   </script>

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>static list</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, 
-          minimum-scale = 1, maximum-scale = 1,user-scalable=no">
+  <title>virtual list</title>
+  <meta name="viewport" content="width=device-width">
+  <script src="../../polymer/polymer.js"></script>
+  <link rel="stylesheet" href="lib/VirtualList.css"></link>
+  <script src="lib/VirtualListMdv.js"></script>
   <style>
     html, body {
       height: 100%;
@@ -18,15 +20,6 @@
       padding: 0 10px;
       border-bottom: 1px solid #ccc;
       box-sizing: border-box;
-      font-size: 10px;
-    }
-    
-    .header  input {
-      width: 30px;
-    }
-    
-    .header  select {
-      width: 60px;
     }
     
     #list {
@@ -35,15 +28,8 @@
       right: 0;
       bottom: 0;
       left: 0;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
       max-width: 960px;
       margin: 0 auto;
-    }
-    
-    .base {
-      display: none;
-      /*-webkit-transform: translateZ(0);*/
     }
     
     /* simple item */
@@ -57,9 +43,6 @@
     }
     
     /* mail (complex) item */
-    .medium-item {
-    }
-    
     .message {
       box-sizing: border-box;
       height: 80px;
@@ -147,22 +130,42 @@
       border-radius: 2px;
       -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.5);
     }
+    
   </style>
 </head>
 <body>
   <div class="header">
-    <button onclick="reset()">reset</button>
-    <label>rows: <input id="rowsInput" value="200"/></label>
-    <label>item: 
+    <label>rows: <input id="rowsInput" value="100000"/></label>
+    <label>item complexity: 
       <select id="complexitySelect">
         <option>simple</option>
         <option selected>medium</option>
-        <option>complex</option>
+        <option >complex</option>
       </select>
     </label>      
-    
+    <button onclick="reset()">reset</button>
   </div>
-  <div id="list"><div id="content"</div></div>
+  <div id="list"></div>
+  
+  <template id="simple">
+    <div class="item">Item {{i}}</div>
+  </template>
+
+  <template id="medium">
+    <div>
+      <template if="{{divider}}">
+        <div class="divider">{{divider}}</div>
+      </template>
+      <div class="message" style="background-image: url(images/{{index % 4}}.png);">
+        <span class="from">{{name}}</span>
+        <span class="timestamp">{{time}}</span>
+        <div class="subject">[Parkour] Infinite List. {{index}}</div>
+        <div class="body">
+          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+        </div>
+      </div>
+    </div>
+  </template>
   <script>
     namegen = {
       generateString: function(inLength) {
@@ -181,18 +184,15 @@
       "PARKOUR!",
       "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-    ]
+    ];
     
     items = {
       // one node, minimal styling
-      simple: function(i) {
-        return '<div class="base item">Item ' + i + '</div>';
-      },
       // 5 nodes, image as background, text clipping
       medium: function(i) {
         var a = names[i].charAt(0);
         var show = a != (names[i-1] || '').charAt(0);
-        return '<div class="base medium-item">' + 
+        return '<div>' + 
           (show ? '<div class="divider">' + a + '</div>' : '') + 
           '<div class="message" style="background-image: url(images\/' + i%4 + '.png);">' +
           '<span class="from">' + names[i] + '</span>' +
@@ -203,7 +203,7 @@
           '</div></div></div>';
       },
       complex: function(i) {
-        return '<div class="base complex">' +
+        return '<div class="complex">' +
           '<div class="complex-flex">' +
             '<img src="images/0.png" />' +
             '<select><option>1</option><option>2</option></select>' +
@@ -217,71 +217,56 @@
           '<div class="complex-stuff"><div>1</div><div>2</div><div>3</div>' +
           '<div>4</div><div>5</div><div>6</div><div>7</div><div>8</div>' + 
           '<div>9</div><div>10</div></div>' +
-        '</div>';
+        '</div>'
       }
-    }
+    };
     
-    var visible, contentHeight;
+    names = [];
     
-    reset = function() {
-      visible = 0;
-      contentHeight = 0;
+    function reset() {
+      var complexity = complexitySelect.value;
+      virtualList.template = document.querySelector('#' + complexity);
+      virtualList.pageDataCallback = callbacks[complexity];
+      virtualList.pageSize = 10;
+      virtualList.numPages = 2;
+      virtualList.numInitialPages = 200;
       var count = rowsInput.value;
-      var itemFn = items[complexitySelect.value];
-      
-      if (itemFn == items["medium"]) {
-        names = [];
-        for (var i=0; i<count; i++) {
-          names.push(namegen.generateName(4, 8));
-        }
-        names.sort();
+      //
+      names = [];
+      for (var i=0; i<count; i++) {
+        names.push(namegen.generateName(4, 8));
       }
-      
-      content.innerHTML = '';
-      var shardCount = 1e9;
-      
-      for (var i=0, html='', shard; i<count; i++) {
-        if (!(i % shardCount)) {
-          if (shard) {
-            shard.innerHTML = html;
-            content.appendChild(shard);
-          } 
-          html = '';
-          var shard = document.createElement('div');
-          //shard.style.webkitTransform = 'translateZ(0)';
-        }
-        html += itemFn(i);
-      }
-      content.innerHTML = html;
-      list.scrollTop = 0;
-      
-      content.firstChild.style.display = 'block';
-      contentHeight += content.firstChild.offsetHeight;
-      defaultHeight = content.firstChild.offsetHeight
-      content.style.height = (defaultHeight * count) + 'px';
-      
-      scroll();
+      names.sort();
+      //
+      virtualList.reset(count);
     }
     
-    function scroll() {
-      var l = list.scrollTop, h = list.clientHeight;
-      var needed = l + h, oh, delta = 0;
-      while (contentHeight < needed) {
-        var c = content.childNodes[++visible];
-        if (c) {
-          c.style.display = 'block';
-          /*oh = c.offsetHeight;
-          delta += oh - defaultHeight;
-          contentHeight += oh;*/
-        } else {
-          break;
+    var callbacks = {
+      simple: function(inStartIndex, inEndIndex) {
+        for (var i=inStartIndex, data=[]; i<inEndIndex; i++) {
+          data.push({i: i});
         }
+        return data;
+      },
+      medium: function(inStartIndex, inEndIndex) {
+        for (var i=inStartIndex, data=[]; i<inEndIndex; i++) {
+          var name = names[i];
+          var divider = name.charAt(0);
+          if (divider === (names[i-1] || '').charAt(0)) {
+            divider = null;
+          }
+          data.push({
+            index: i,
+            name: name,
+            divider: divider,
+            time: '8:29pm'
+          });
+        }
+        return data;
       }
-      //content.style.height = (content.offsetHeight + delta) + 'px';
-   }
+    };
     
-    list.onscroll = scroll;
-    
+    virtualList = new VirtualList(this.list);
     reset();
   </script>
 </body>
