@@ -74,7 +74,7 @@ license that can be found in the LICENSE file.
         style.webkitTransition = 'none';
         drag.drop = this.drop.bind(this);
         this.canvas.appendChild(drag);
-        console.dir(drag);
+        //console.dir(drag);
         this.drag = drag;
       },
       trackEvent: function(event, detail) {
@@ -126,13 +126,15 @@ license that can be found in the LICENSE file.
         }
       },
       drop: function(event, container) {
-        var filter = container.meta && container.meta.childFilter;
-        if (!filter || filter(this.drag)) {
-          container.appendChild(this.drag);
-          var s = this.drag.style;
-          s.left = s.left = s.position = s.pointerEvents = '';
-          this.selected = this.drag;
-          this.drag = null;
+        if (this.drag) {
+          var filter = container.meta && container.meta.childFilter;
+          if (!filter || filter(this.drag)) {
+            container.appendChild(this.drag);
+            var s = this.drag.style;
+            s.left = s.top = s.position = s.pointerEvents = '';
+            this.selected = this.drag;
+            this.drag = null;
+          }
         }
       }
     });
