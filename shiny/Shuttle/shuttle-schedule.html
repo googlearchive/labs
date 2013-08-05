@@ -63,7 +63,7 @@
     </style>
     
     <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
-    <polymer-localstorage id="storage" name="shuttle-storage" value="{{favorites}}"></polymer-localstorage>
+    <polymer-localstorage id="storage" name="shuttle-storage1" value="{{userData}}"></polymer-localstorage>
     
     <polymer-ui-toolbar id="toolbar">
       <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu" 
@@ -105,12 +105,18 @@
         ];
         
         this.populateStops();
-        
-        // initial selections
-        this.officeSelected = Shuttle.isMock ? 1 : 7;
-        this.remoteSelected = Shuttle.isMock ? 0 : 70;
-        
-        this.favorites = this.favorites || [];
+        this.populateUserData();
+      },
+      populateUserData: function() {
+        if (!this.userData) {
+          this.userData = {};
+        }
+        this.favorites = this.userData.favorites = 
+            this.userData.favorites || [];
+        this.officeSelected = Shuttle.isMock ? 1 : 
+            (this.userData.officeSelected || 7);
+        this.remoteSelected = Shuttle.isMock ? 0 : 
+            (this.userData.remoteSelected || 70);
       },
       populateStops: function() {
         Shuttle.stops.forEach(function(s, i) {
@@ -129,10 +135,12 @@
       officeSelectedStopChanged: function() {
         this[this.reverse ? 'toStop' : 'fromStop'] = this.officeSelectedStop;
         this.updateFav();
+        this.saveSelected();
       },
       remoteSelectedStopChanged: function() {
         this[this.reverse ? 'fromStop' : 'toStop'] = this.remoteSelectedStop;
         this.updateFav();
+        this.saveSelected();
       },
       toggleFromMenu: function() {
         this.toggleMenu(this.reverse ? 'remote' : 'office');
@@ -185,6 +193,14 @@
             }
           }, this);
         }
+        this.$.storage.save();
+      },
+      saveSelected: function() {
+        if (Shuttle.isMock) {
+          return;
+        }
+        this.userData.officeSelected = this.officeSelected;
+        this.userData.remoteSelected = this.remoteSelected;
         this.$.storage.save();
       }
     });
