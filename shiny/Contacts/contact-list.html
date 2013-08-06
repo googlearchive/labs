@@ -1,7 +1,8 @@
-﻿<polymer-element name="contact-list" attributes="contacts">
+﻿<link rel="import" href="mock-data.html">
+<polymer-element name="contact-list" attributes="contacts">
   <template>
     <style>
-      contact {
+      .contact {
         display: block;
         padding: 12px;
         font-size: 12px;
@@ -9,15 +10,15 @@
         color: #333;
         border: 1px solid rgba(221, 221, 221, 0.25);
       }
-      contact polymer-ui-icon {
+      .contact polymer-ui-icon {
         margin-right: 18px;
       }
     </style>
-
-    <template repeat="{{contacts}}">
-      <contact on-tap="selectContact">
-        <polymer-ui-icon icon="dialog"></polymer-ui-icon> {{}}
-      </contact>
+    <mock-data id="mock"></mock-data>
+    <template repeat="{{$.mock.contacts}}">
+      <div class="contact" on-tap="contactAction">
+        <polymer-ui-icon icon="contact"></polymer-ui-icon> {{name}}
+      </div>
     </template>
 
   </template>
@@ -25,7 +26,7 @@
     Polymer('contact-list', {
       ready: function() {
       },
-      selectContact: function(event, detail, sender) {
+      contactAction: function(event, detail, sender) {
         this.fire('select-contact', sender);
       }
     });
