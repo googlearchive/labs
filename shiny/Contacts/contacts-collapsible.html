@@ -1,7 +1,7 @@
 <link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
-<link rel="import" href="../../../polymer-ui-elements/polymer-ui-collapsible/polymer-ui-collapsible.html">
+<link rel="import" href="../../../polymer-elements/polymer-collapse/polymer-collapse.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
-<polymer-element name="contacts-collapsible" extends="polymer-ui-collapsible">
+<polymer-element name="contacts-collapsible" attributes="active">
 	<template>
 		<style>
 			@host {
@@ -12,7 +12,7 @@
 					cursor: pointer;
 				}
 			}
-			.polymer-ui-collapsible-header {
+			#header {
 				border-bottom: 1px solid rgba(64, 64, 64, 0.14);
 				background-color: #fff;
 			}
@@ -29,16 +29,30 @@
 				transform: rotate(0deg);
 			}
 		</style>
-		<div class="polymer-ui-collapsible-header" on-tap="headerTap">
+		<div id="header" on-tap="headerTap">
 			<polymer-flex-layout align="center"></polymer-flex-layout>
 			<div flex>
 				<content select=".polymer-ui-collapsible-header"></content>
 			</div>
 			<polymer-ui-icon-button id="collapsedIcon" icon="dropdown" class="{{active: active}}"></polymer-ui-icon-button>
 		</div>
-		<shadow></shadow>
+		<div id="collapsibleBody" on-tap="bodyTap">
+			<content></content>
+		</div>
+		<polymer-collapse targetId="collapsibleBody" closed="{{!active}}"></polymer-collapse>
 	</template>
 	<script>
-		Polymer('contacts-collapsible');
+		Polymer('contacts-collapsible', {
+			active: false,
+			toggle: function() {
+				this.active = !this.active;
+			},
+			headerTap: function() {
+				this.toggle();
+			},
+			bodyTap: function(e) {
+				e.stopPropagation();
+			}
+		});
 	</script>
 </polymer-element>
