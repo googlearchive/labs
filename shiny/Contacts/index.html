@@ -12,6 +12,7 @@
   <link href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
+  <link href="mock-data.html" rel="import">
   <link href="contacts-explore.html" rel="import">
   <link href="contact-list.html" rel="import">
   <link href="contact-detail.html" rel="import">
@@ -76,6 +77,8 @@
         }
       </style>
 
+      <mock-data id="mock"></mock-data>
+
       <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
 
       <polymer-ui-sidebar-menu static id="sidebar" label="Contacts" selected="{{selectedNav}}" theme="polymer-ui-dark-theme">
@@ -103,7 +106,7 @@
 
       <panel id="group">
         <template if="{{grid}}">
-          <polymer-grid style="position: relative; height: 800px;"></polymer-grid>
+        <polymer-grid style="position: relative; height: 800px;" items="{{$.mock.names}}"></polymer-grid>
         </template>
         <template if="{{!grid}}">
           <contact-list on-select-contact="contactAction"></contact-list>

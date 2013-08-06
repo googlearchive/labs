@@ -1,7 +1,7 @@
 <polymer-element name="mock-data">
   <script>
-    Polymer('mock-data', {
-      contacts: [
+    (function() {
+      var contacts = [
         {
           "name": "Hyatt Park",
           "phone": "1-227-926-6642",
@@ -1202,7 +1202,21 @@
           "group": "5",
           "isFavorite": "1"
         }
-      ]
-    });
+      ];
+      var names;
+      Polymer('mock-data', {
+        contacts: contacts,
+        names: null,
+        ready: function() {
+          if (!names) {
+            names = [];
+            for (var i = 0, c; c = contacts[i]; i++) {
+              names.push(c.name);
+            }
+          }
+          this.names = names;
+        }
+      });
+    }());
   </script>
 </polymer-element>

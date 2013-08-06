@@ -53,7 +53,7 @@
             <polymer-ui-icon-button class="{{active: group.active}}" icon="dropdown"></polymer-ui-icon-button>
             <div class="header">{{group.header}}</div>
           </div>
-          <polymer-grid style="position: relative; height: 230px;" on-tap="contactAction"></polymer-grid>
+          <polymer-grid style="position: relative; height: 230px;" items="{{$.mock.names}}" on-tap="contactAction"></polymer-grid>
         </polymer-ui-collapsible>
       </template>
     </polymer-ui-accordion>
