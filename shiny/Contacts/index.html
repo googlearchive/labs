@@ -6,16 +6,15 @@
 
   <link href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
   <link href="../../../polymer-elements/polymer-list/polymer-grid.html" rel="import">
-  <link href="../../../polymer-ui-elements/polymer-ui-field/polymer-ui-field.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-sidebar-menu/polymer-ui-sidebar-menu.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-menu-button/polymer-ui-menu-button.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
   <link href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
-  <link href="../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
   <link href="mock-data.html" rel="import">
   <link href="contacts-explore.html" rel="import">
   <link href="contact-list.html" rel="import">
   <link href="contact-detail.html" rel="import">
+  <link href="new-contact.html" rel="import">
 
   <style>
     html, body {
@@ -72,9 +71,6 @@
           background: #666666 !important;
           border-color: transparent !important;
         }
-        input {
-          font-family: 'Helvetica Neue', Roboto, Arial, Helvetica, sans-serif;
-        }
       </style>
 
       <mock-data id="mock"></mock-data>
@@ -120,53 +116,11 @@
         <span flex>New Contact</span>
       </polymer-ui-toolbar>
 
-      <panel id="newcontact">
-        <contact-photo><div></div></contact-photo>
-        <polymer-ui-field>
-          <polymer-ui-icon icon="contact"></polymer-ui-icon>
-          <input placeholder="First name">
-        </polymer-ui-field>
-        <polymer-ui-field>
-          <polymer-ui-icon icon="contact"></polymer-ui-icon>
-          <input placeholder="Last name">
-        </polymer-ui-field>
-        <polymer-ui-field>
-          <polymer-ui-menu-button icon="contact">
-            <polymer-ui-menu-item label="Home"></polymer-ui-menu-item>
-            <polymer-ui-menu-item label="Mobile"></polymer-ui-menu-item>
-            <polymer-ui-menu-item label="Work"></polymer-ui-menu-item>
-          </polymer-ui-menu-button>
-          <input placeholder="Phone">
-        </polymer-ui-field>
-        <polymer-ui-field>
-          <polymer-ui-menu-button icon="contact">
-            <polymer-ui-menu-item label="Home"></polymer-ui-menu-item>
-            <polymer-ui-menu-item label="Work"></polymer-ui-menu-item>
-          </polymer-ui-menu-button>
-          <input placeholder="Email">
-        </polymer-ui-field>
-        <polymer-ui-field>
-          <polymer-ui-menu-button icon="marker">
-            <polymer-ui-menu-item label="Home"></polymer-ui-menu-item>
-            <polymer-ui-menu-item label="Work"></polymer-ui-menu-item>
-          </polymer-ui-menu-button>
-          <input placeholder="Address">
-        </polymer-ui-field>
-        <polymer-ui-field>
-          <polymer-ui-icon icon="plus"></polymer-ui-icon>
-          <span>Add a field</span>
-        </polymer-ui-field>
-      </panel>
+      <new-contact id="newcontact"></new-contact>
+
     </template>
     <script>
       Polymer('mock-tacts', {
-        myinfo: [
-          {icon: 'contact', value: '(555) 555-5555', label: 'Mobile'},
-          {icon: 'contact', value: 'foo@bar.com', label: 'Personal'},
-          {icon: 'dialoga', value: '@something'},
-          {icon: 'marker', value: 'San Francisco, CA, USA', more: true},
-          {icon: 'marker', value: '345 Spear St, Fl 4'}
-        ],
         newcontact: [
           {icon: 'contact', placeholder: 'First name'},
           {icon: 'contact', placeholder: 'Last name'},
@@ -222,7 +176,7 @@
           [7]
         ], [
           // 10 new contact
-          [9],
+          [8],
           [9],
           [9]
         ]],
