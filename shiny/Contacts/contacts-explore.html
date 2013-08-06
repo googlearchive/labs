@@ -1,0 +1,88 @@
+<link href="../../../polymer-elements/polymer-list/polymer-grid.html" rel="import">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-accordion/polymer-ui-accordion.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-collapsible/polymer-ui-collapsible.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+<link rel="import" href="mock-data.html">
+
+<polymer-element name="contacts-explore" attributes="groups">
+  <template>
+    <style>
+      .polymer-ui-collapsible-header .header {
+        padding: 16px;
+        font-size: 0.8em;
+        font-weight: bold;
+        border-bottom: 1px solid rgba(64, 64, 64, 0.25);
+        background-color: #fff;
+        box-sizing: border-box;
+      }
+      .polymer-ui-collapsible-header polymer-ui-icon-button {
+        float: right;
+        margin: 5px !important;
+        -moz-transform: rotate(270deg);
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+      }
+      .polymer-ui-collapsible-header polymer-ui-icon-button.active {
+        -moz-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      #sheet {
+        position: absolute !important;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      #sheet polymer-ui-menu-item {
+        padding: 15px 15px 15px 20px !important;
+        height: 60px !important;
+        line-height: normal !important;
+        opacity: 1 !important;
+      }
+    </style>
+    <mock-data id="mock"></mock-data>
+    <polymer-ui-accordion id="accordion" multi="true">
+      <template repeat="{{group in groups}}">
+        <polymer-ui-collapsible active="{{group.active}}">
+          <div class="polymer-ui-collapsible-header">
+            <polymer-ui-icon-button class="{{active: group.active}}" icon="dropdown"></polymer-ui-icon-button>
+            <div class="header">{{group.header}}</div>
+          </div>
+          <polymer-grid style="position: relative; height: 230px;" on-tap="contactAction"></polymer-grid>
+        </polymer-ui-collapsible>
+      </template>
+    </polymer-ui-accordion>
+    <polymer-ui-overlay id="sheet" backdrop="true">
+      <polymer-ui-menu>
+        <polymer-ui-menu-item overlay-toggle icon="contact" label="Call"></polymer-ui-menu-item>
+        <polymer-ui-menu-item overlay-toggle icon="dialog" label="Text"></polymer-ui-menu-item>
+        <polymer-ui-menu-item overlay-toggle icon="contact" label="Email"></polymer-ui-menu-item>
+        <polymer-ui-menu-item overlay-toggle icon="contact" label="Edit"></polymer-ui-menu-item>
+      </polymer-ui-menu>
+    </polymer-ui-overlay>
+  </template>
+  <script>
+    Polymer('contacts-explore', {
+      groups: [
+        {header: 'Favorites'},
+        {header: 'Near By'},
+        {header: 'Recent'},
+        {header: 'Groups'},
+        {header: 'All'}
+      ],
+      inserted: function() {
+        this.async(function() {
+          this.$.accordion.selected = [0];
+        });
+      },
+      contactAction: function(e) {
+        if (e.target.templateInstance.model.group.header === 'Groups') {
+          this.fire('view-group');
+        } else {
+          e.stopPropagation();
+          this.$.sheet.active = true;
+        }
+      }
+    });
+  </script>
+</polymer-element>
