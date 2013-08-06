@@ -3,7 +3,9 @@
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html">
+<link rel="import" href="../../../more-elements/google-map/google-map.html">
 <link rel="import" href="contact-detail-item.html">
+<link rel="import" href="contacts-collapsible.html">
 
 <polymer-element name="contact-detail" attributes="contact hasSidebar">
   <template>
@@ -30,6 +32,17 @@
         background-color: #b3b3b3;
         border: 1px solid rgba(221, 221, 221, 0.25);
       }
+			.polymer-ui-collapsible-header {
+				font-size: 12px;
+				padding: 16px;
+				color: #333;
+			}
+			.polymer-ui-collapsible-header polymer-ui-icon {
+				margin-right: 18px;
+			}
+			google-map {
+				display: block;
+			}
       #sheet {
         position: absolute !important;
         left: 0;
@@ -56,7 +69,14 @@
     <contact-detail-item icon="contact" value="{{contact.phone}}" label="Mobile"></contact-detail-item>
     <contact-detail-item icon="contact" value="{{contact.email}}" label="Personal"></contact-detail-item>
     <contact-detail-item icon="dialoga" value="@{{contact.handle}}"></contact-detail-item>
-    <contact-detail-item icon="marker" value="{{contact.city}}, {{contact.country}}" more="true"></contact-detail-item>
+		<contacts-collapsible>
+			<div class="polymer-ui-collapsible-header">
+				<polymer-flex-layout align="center"></polymer-flex-layout>
+				<polymer-ui-icon icon="marker"></polymer-ui-icon>
+				<div flex>{{contact.city}}, {{contact.country}}</div>
+			</div>
+			<google-map style="width: 100%; height: 230px;" latitude="37.789701" longitude="-122.394358" zoom="14"></google-map>
+		</contacts-collapsible>
     <contact-detail-item icon="marker" value="{{contact.street}}"></contact-detail-item>
     <polymer-ui-overlay id="sheet" backdrop="true">
       <polymer-ui-menu>

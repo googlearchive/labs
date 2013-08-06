@@ -1,0 +1,40 @@
+<link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-collapsible/polymer-ui-collapsible.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+<polymer-element name="contacts-collapsible" extends="polymer-ui-collapsible">
+	<template>
+		<style>
+			@host {
+				:scope {
+					display: block;
+					padding: 0;
+					font-weight: bold;
+					cursor: pointer;
+				}
+			}
+			#collapsedIcon {
+				float: right;
+				margin: 5px !important;
+				-moz-transform: rotate(270deg);
+				-webkit-transform: rotate(270deg);
+				transform: rotate(270deg);
+			}
+			#collapsedIcon.active {
+				-moz-transform: rotate(0deg);
+				-webkit-transform: rotate(0deg);
+				transform: rotate(0deg);
+			}
+		</style>
+		<div class="polymer-ui-collapsible-header" on-tap="headerTap">
+			<polymer-flex-layout align="center"></polymer-flex-layout>
+			<div flex>
+				<content select=".polymer-ui-collapsible-header"></content>
+			</div>
+			<polymer-ui-icon-button id="collapsedIcon" icon="dropdown" class="{{active: active}}"></polymer-ui-icon-button>
+		</div>
+		<shadow></shadow>
+	</template>
+	<script>
+		Polymer('contacts-collapsible');
+	</script>
+</polymer-element>
