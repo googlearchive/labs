@@ -3,6 +3,7 @@
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-collapsible/polymer-ui-collapsible.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
 <link rel="import" href="mock-data.html">
+<link rel="import" href="contacts-collapsible.html">
 
 <polymer-element name="contacts-explore" attributes="groups">
   <template>
@@ -12,25 +13,14 @@
           min-width: 320px;
         }
       }
-      .polymer-ui-collapsible-header .header {
+			contacts-collapsible {
+        background-color: #fff;
+        box-sizing: border-box;
+			}
+			.polymer-ui-collapsible-header {
         padding: 16px;
         font-size: 0.8em;
         font-weight: bold;
-        border-bottom: 1px solid rgba(64, 64, 64, 0.25);
-        background-color: #fff;
-        box-sizing: border-box;
-      }
-      .polymer-ui-collapsible-header polymer-ui-icon-button {
-        float: right;
-        margin: 5px !important;
-        -moz-transform: rotate(270deg);
-        -webkit-transform: rotate(270deg);
-        transform: rotate(270deg);
-      }
-      .polymer-ui-collapsible-header polymer-ui-icon-button.active {
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
       }
       #sheet {
         position: absolute !important;
@@ -48,13 +38,12 @@
     <mock-data id="mock"></mock-data>
     <polymer-ui-accordion id="accordion" multi="true">
       <template repeat="{{group in groups}}">
-        <polymer-ui-collapsible active="{{group.active}}">
+        <contacts-collapsible active="{{group.active}}">
           <div class="polymer-ui-collapsible-header">
-            <polymer-ui-icon-button class="{{active: group.active}}" icon="dropdown"></polymer-ui-icon-button>
-            <div class="header">{{group.header}}</div>
+            {{group.header}}
           </div>
           <polymer-grid style="position: relative; height: 230px;" items="{{$.mock.names}}" on-tap="contactAction"></polymer-grid>
-        </polymer-ui-collapsible>
+        </contacts-collapsible>
       </template>
     </polymer-ui-accordion>
     <polymer-ui-overlay id="sheet" backdrop="true">
