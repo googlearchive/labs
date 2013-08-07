@@ -15,6 +15,8 @@
         background: -webkit-linear-gradient(-60deg, #3d3d3d, #353535);
         background: -moz-linear-gradient(-60deg, #3d3d3d, #353535);
         background: -ms-linear-gradient(-60deg, #3d3d3d, #353535);
+        /* TODO(ffu): need this for grid-layout on iOS; need to investigate */
+        bottom: 0;
       }
       
       #tabbar > * {
@@ -93,6 +95,10 @@
         ];
         this.selected = 0;
         this.queryMatchesChanged();
+        
+        window.addEventListener('resize', function() {
+          this.$.map.resize();
+        }.bind(this));
       },
       queryMatchesChanged: function() {
         this.layoutMode = this.queryMatches ? this.mobile : this.desktop;

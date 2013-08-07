@@ -107,6 +107,8 @@
   </template>
   <script>
     Polymer('shuttle-stop-picker', {
+      /* speed up overlay's open/close speed */
+      timeout: 0,
       searchInputLabel: 'Search Stops',
       ready: function() {
         this.target = this;
@@ -115,8 +117,10 @@
         this.super(arguments);
         if (this.opened && this.selectedItem) {
           this.asyncMethod(function() {
-            this.selectedItem.scrollIntoViewIfNeeded();
-            }, null, 1);
+            var s = this.selectedItem;
+            s.scrollIntoViewIfNeeded ? s.scrollIntoViewIfNeeded() : 
+                s.scrollIntoView();
+          }, null, 1);
         }
       },
       toggleAction: function() {

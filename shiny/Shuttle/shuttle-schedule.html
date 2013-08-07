@@ -21,6 +21,12 @@
         position: relative;
       }
       
+      shuttle-stop-picker-button {
+        /* for old flexbox in iOS */
+        display: block;
+        width: 0;
+      }
+      
       .from-stop-button {
         border-right: 1px solid #ccc;
       }
@@ -85,8 +91,7 @@
       <polymer-ui-ratings count="1" value="{{isFav}}" on-tap="handleFavTap"></polymer-ui-ratings>
     </div>
     
-    <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}" 
-        fromStops="{{fromStops}}" toStops="{{toStops}}"></shuttle-timetable>
+    <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
   </template>
   <script>
     Polymer('shuttle-schedule', {
