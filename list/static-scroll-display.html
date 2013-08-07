@@ -176,6 +176,83 @@
     <div id="content"></div>
   </div>
   <script>
+    
+    var list = document.querySelector('#list');
+    var content = document.querySelector('#content');
+    
+    
+    // scrolling
+    function scroll() {
+      var t = list.scrollTop;
+      var h = list.clientHeight;
+      hideLastVisible();
+      showVisible(t, h);
+    }
+    
+    window.doScroll = scroll;
+    
+    function hideLastVisible() {
+      for (var i=0, l=visible.length; i<l; i++) {
+        visible[i].style.display = null;
+      }
+    }
+    
+    function showVisible(top, height) {
+      visible = [];
+      var rh = rowHeights[complexity];
+      var s = Math.floor(top / rh);
+      var c = Math.ceil(height / rh) +1;
+      for (var i=s, n; i<s+c; i++) {
+        n = content.children[i];
+        n.style.display = 'block';
+        visible.push(n);
+      }
+    }
+    
+    rafing = false;
+    scrollTime = 0;
+    list.onscroll = function() {
+      scrollTime = Date.now();
+      if (!rafing) {
+        raf();
+      }
+    };
+    
+    function raf() {
+      rafing = true;
+      requestAnimationFrame(function() {
+        scroll();
+        if (Date.now() - scrollTime < 2000) {
+          raf();
+        } else {
+          rafing = false;
+        }
+      });
+    }
+    
+    // dom generation
+    reset = function() {
+      visible = [];
+      complexity = complexitySelect.value;
+      var count = rowsInput.value;
+      var itemFn = items[complexity];
+      if (itemFn == items["medium"]) {
+        names = [];
+        for (var i=0; i<count; i++) {
+          names.push(namegen.generateName(4, 8));
+        }
+        names.sort();
+      }
+      content.innerHTML = '';
+      for (var i=0, html=''; i<count; i++) {
+        html += itemFn(i);
+      }
+      content.innerHTML = html;
+      list.scrollTop = 0;
+      content.style.height = (rowHeights[complexity] * count) + 'px';
+      scroll();
+    }
+    
     namegen = {
       generateString: function(inLength) {
         var s = '';
@@ -237,71 +314,6 @@
           '<div>9</div><div>10</div></div>' +
         '</div>';
       }
-    }
-    
-    reset = function() {
-      visible = [];
-      complexity = complexitySelect.value;
-      var count = rowsInput.value;
-      var itemFn = items[complexity];
-      if (itemFn == items["medium"]) {
-        names = [];
-        for (var i=0; i<count; i++) {
-          names.push(namegen.generateName(4, 8));
-        }
-        names.sort();
-      }
-      content.innerHTML = '';
-      for (var i=0, html=''; i<count; i++) {
-        html += itemFn(i);
-      }
-      content.innerHTML = html;
-      list.scrollTop = 0;
-      content.style.height = (rowHeights[complexity] * count) + 'px';
-      scroll();
-    }
-    
-    function scroll() {
-      hideVisible();
-      showNeededVisible(list.scrollTop, list.clientHeight);
-    }
-   
-    function hideVisible() {
-      for (var i=0, l=visible.length; i<l; i++) {
-        visible[i].style.display = null;
-      }
-    }
-    
-    function showNeededVisible(top, height) {
-      visible = [];
-      var rh = rowHeights[complexity];
-      var s = Math.floor(top / rh);
-      var c = Math.ceil(height / rh);
-      for (var i=s; i<s+c; i++) {
-        content.children[i].style.display = 'block';
-        visible.push(content.children[i]);
-      }
-    }
-    
-    rafing = false;
-    scrollTime = 0;
-    list.onscroll = function() {
-      scrollTime = Date.now();
-      if (!rafing) {
-        raf();
-      }
-    };
-    
-    function raf() {
-      rafing = true;
-      requestAnimationFrame(function() {
-        scroll();
-        if (Date.now() - scrollTime < 10000) {
-          raf();
-        } else {
-          rafing = false;
-        }
-      });
     }
     
     reset();
