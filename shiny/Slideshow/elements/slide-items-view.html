@@ -5,9 +5,9 @@
  * license that can be found in the LICENSE file.
  */
 -->
-<polymer-element name="items-view" attributes="layout itemsData" extends="polymer-selector">
+<polymer-element name="slide-items-view" attributes="layout itemsData" extends="polymer-selector">
   <template>
-    <link rel="stylesheet" href="items-view.css">
+    <link rel="stylesheet" href="slide-items-view.css">
     <link rel="stylesheet" href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     <div id="container" class="{{layout}} {{view}}">
       <template repeat="{{viewItems}}"><div class="item">
@@ -38,7 +38,7 @@
         return maxX;
       }
       
-      Polymer('items-view', {
+      Polymer('slide-items-view', {
         layout: 'grid',
         pageSize: 24,
         itemsSelector: '.item',
