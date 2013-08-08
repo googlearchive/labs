@@ -14,7 +14,7 @@
   <tracks-app theme="polymer-ui-dark-theme">
     <polymer-ajax url="../../../../polymer-elements/manifest.xml" handleAs="xml" folder="polymer-elements" auto></polymer-ajax>
     <polymer-ajax url="../../../../polymer-ui-elements/manifest.xml" handleAs="xml" folder="polymer-ui-elements" auto></polymer-ajax>
-    <polymer-ajax url="../../../../polymer-more-elements/manifest.xml" handleAs="xml" folder="polymer-more-elements" auto></polymer-ajax>
+    <polymer-ajax url="../../../../more-elements/manifest.xml" handleAs="xml" folder="more-elements" auto></polymer-ajax>
   </tracks-app>
 
   <polymer-element name="tracks-app">
@@ -221,9 +221,10 @@
           this.layoutIndex = 'combo';
         },
         selectedChanged: function() {
+          var item = this.selected && this.selected.item;
           // make sure it's a dictionary item not a heading item
-          if (this.selected.item && this.selected.item.name && this.selected.item.folder) {
-            this.item = this.selected.item;
+          if (item && item.name && item.folder) {
+            this.item = item;
             // auto switch panels on mobile
             if (this.arrangeFor === 'mobile') {
               this.toggleLayout();
@@ -247,7 +248,9 @@
           this.fetchArrangement();
         },
         sourceTextChanged: function() {
-          this.$.exampleSource.innerHTML = '<pre><code>' + this.sourceText.replace(/\</g, '&lt;').replace(/\>/g, '&gt;') + '</code></pre>';
+          this.$.exampleSource.innerHTML = '<pre><code>'
+            + this.sourceText.replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
+            + '</code></pre>';
         }
       });
     </script>
