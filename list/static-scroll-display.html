@@ -200,8 +200,9 @@
     function showVisible(top, height) {
       visible = [];
       var rh = rowHeights[complexity];
-      var s = Math.floor(top / rh);
-      var c = Math.ceil(height / rh) +1;
+      var slop = 0; // 50;
+      var s = Math.max(0, Math.floor(top / rh) - slop);
+      var c = Math.ceil(height / rh) + (slop * 2);
       for (var i=s, n; i<s+c; i++) {
         n = content.children[i];
         n.style.display = 'block';
@@ -211,12 +212,17 @@
     
     rafing = false;
     scrollTime = 0;
+    
     list.onscroll = function() {
       scrollTime = Date.now();
       if (!rafing) {
         raf();
       }
+      //scroll();
     };
+    
+    //list.addEventListener('touchmove', function() {});
+    requestAnimationFrame = window.requestAnimationFrame || webkitRequestAnimationFrame;
     
     function raf() {
       rafing = true;
