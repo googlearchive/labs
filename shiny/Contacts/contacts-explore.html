@@ -37,14 +37,20 @@
     </style>
     <mock-data id="mock"></mock-data>
     <polymer-ui-accordion id="accordion" multi="true">
-      <template repeat="{{group in groups}}">
-        <contacts-collapsible active="{{group.active}}">
+      <template repeat="{{s in sections}}">
+        <contacts-collapsible>
           <div class="polymer-ui-collapsible-header">
-            {{group.header}}
+            {{s.header}}
           </div>
           <polymer-grid style="position: relative; height: 230px;" items="{{$.mock.names}}" on-tap="contactAction"></polymer-grid>
         </contacts-collapsible>
       </template>
+			<contacts-collapsible>
+				<div class="polymer-ui-collapsible-header">
+					Groups
+				</div>
+				<polymer-grid style="position: relative; height: 230px;" items="{{groups}}" on-tap="groupAction"></polymer-grid>
+			</contacts-collapsible>
     </polymer-ui-accordion>
     <polymer-ui-overlay id="sheet" backdrop="true">
       <polymer-ui-menu>
@@ -57,26 +63,24 @@
   </template>
   <script>
     Polymer('contacts-explore', {
-      groups: [
+      sections: [
         {header: 'Favorites'},
         {header: 'Near By'},
-        {header: 'Recent'},
-        {header: 'Groups'},
-        {header: 'All'}
+        {header: 'Recent'}
       ],
+			groups: ['Personal', 'Work', 'Foo', 'Bar', 'Baz', 'Zot', 'Moo'],
       inserted: function() {
         this.async(function() {
           this.$.accordion.selected = [0];
         });
       },
       contactAction: function(e) {
-        if (e.target.templateInstance.model.group.header === 'Groups') {
-          this.fire('view-group');
-        } else {
-          e.stopPropagation();
-          this.$.sheet.active = true;
-        }
-      }
+				e.stopPropagation();
+				this.$.sheet.active = true;
+			},
+			groupAction: function(e) {
+				this.fire('view-group');
+			}
     });
   </script>
 </polymer-element>

@@ -50,6 +50,10 @@
         background-color: transparent !important;
         color: black !important;
       }
+      
+      #groupbar, #slideshowbar {
+        height: 120px !important;
+      }
     </style>
 
     <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
@@ -75,103 +79,163 @@
 
     <panel id="collectionDetail">
       <pi-feed-aggregator id="feeds" feed="{{$.itemsView.selectedModel.feed}}" count="200" entries="{{indie}}"></pi-feed-aggregator>
-      <pi-items-view view="topics" layout="grid" items="{{indie}}"></pi-items-view>
+      <pi-items-view id="items" view="topics" layout="grid" items="{{indie}}" on-select="selectItemAction" selected="{{selectedItem}}"></pi-items-view>
     </panel>
 
     <panel id="slideshow">
       Slideshow
-      <pi-feed-aggregator count="200" feed="[{'feed': 'http://feeds.feedburner.com/hypebeast/feed'}]" entries="{{hypebeast}}"></pi-feed-aggregator>
-      <pi-items-view view="topics" layout="grid" items="{{hypebeast}}"></pi-items-view>
+      {{selectedItem.link}}
     </panel>
+    <polymer-ui-toolbar id="slideshowbar">
+      <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+      <span>Slideshow</span>
+      <polymer-ui-tabs selected="0" flex class="justify-center" on-polymer-activate="tabActivateAction">
+        <span>My Collections</span>
+        <span>Explore</span>
+        <span>Tabs</span>
+        <span>People</span>
+        <span>Favorites</span>
+      </polymer-ui-tabs>
+      <polymer-ui-icon-button icon="grid" on-tap=""></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="search" on-tap=""></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="settings" on-tap=""></polymer-ui-icon-button>
+    </polymer-ui-toolbar>
   </template>
   <script>
-    Polymer('slide-show', {
-      collections: [
-        {title: 'Technology', imgSrc: 'assets/folder.png', feed: [
+    (function() {
+      var collections = [
+        {title: 'Technology',  feed: [
          {title: 'The Verge', feed: 'http://www.theverge.com/rss/index.xml'},
          {title: 'Engadget', feed: 'http://feeds.engadget.com/weblogsinc/engadget'}]},
-        {title: 'Sports', imgSrc: 'assets/folder.png', feed: [
-          {title: 'Deadspin', imgSrc: 'assets/folder.png', feed: 'http://feeds.gawker.com/deadspin/full'}]},
-        {title: 'Music', imgSrc: 'assets/folder.png', feed: [
+        {title: 'Sports',  feed: [
+          {title: 'Deadspin',  feed: 'http://feeds.gawker.com/deadspin/full'}]},
+        {title: 'Music',  feed: [
           {title: 'Indie Shuffle', feed: 'http://feeds.feedburner.com/indieshuffle'},
           {title: 'Create Digital Music', feed: 'http://createdigitalmusic.com/feed/'}]},
-        {title: 'Art', imgSrc: 'assets/folder.png', feed: [
+        {title: 'Art',  feed: [
           {title: 'Wooster Collective', feed: 'http://feeds.feedburner.com/wooster'},
           {title: 'Doodlers Anonymous', feed: 'http://feeds.feedburner.com/DoodlersAnonymous'},
           {title: 'but does it float', feed: 'http://feeds2.feedburner.com/ButDoesItFloat?format=xml'}]},
-        {title: 'Fashion', imgSrc: 'assets/folder.png', feed: [
+        {title: 'Fashion',  feed: [
           {title: 'Hybebeast', feed: 'http://feeds.feedburner.com/hypebeast/feed'}]},
-        {title: 'Architecture', imgSrc: 'assets/folder.png', feed: [
+        {title: 'Architecture',  feed: [
           {title: 'Dezeen', feed: 'http://feeds.feedburner.com/dezeen'},
           {title: 'Design Milk Architecutre', feed: 'http://feeds.feedburner.com/DesignMilkArchitecture'}]},
-        {title: 'Design', imgSrc: 'assets/folder.png', feed: [
+        {title: 'Design',  feed: [
           {title: 'Design Milk', feed: 'http://feeds.feedburner.com/design-milk'},
           {title: 'Yummy Fresh grain', feed: 'http://feeds.feedburner.com/GrainEdit'},
           {title: 'Designspiration', feed: 'http://feeds.feedburner.com/dspn'}]},
-        {title: 'Food', imgSrc: 'assets/folder.png', feed: [
+        {title: 'Food',  feed: [
+          {title: 'The Kitchn', feed: 'http://feeds.thekitchn.com/apartmenttherapy/thekitchn'},
+          {title: 'Scanwiches', feed: 'http://scanwiches.com/rss'}]},
+        {title: 'Technology',  feed: [
+         {title: 'The Verge', feed: 'http://www.theverge.com/rss/index.xml'},
+         {title: 'Engadget', feed: 'http://feeds.engadget.com/weblogsinc/engadget'}]},
+        {title: 'Sports',  feed: [
+          {title: 'Deadspin',  feed: 'http://feeds.gawker.com/deadspin/full'}]},
+        {title: 'Music',  feed: [
+          {title: 'Indie Shuffle', feed: 'http://feeds.feedburner.com/indieshuffle'},
+          {title: 'Create Digital Music', feed: 'http://createdigitalmusic.com/feed/'}]},
+        {title: 'Art',  feed: [
+          {title: 'Wooster Collective', feed: 'http://feeds.feedburner.com/wooster'},
+          {title: 'Doodlers Anonymous', feed: 'http://feeds.feedburner.com/DoodlersAnonymous'},
+          {title: 'but does it float', feed: 'http://feeds2.feedburner.com/ButDoesItFloat?format=xml'}]},
+        {title: 'Fashion',  feed: [
+          {title: 'Hybebeast', feed: 'http://feeds.feedburner.com/hypebeast/feed'}]},
+        {title: 'Architecture',  feed: [
+          {title: 'Dezeen', feed: 'http://feeds.feedburner.com/dezeen'},
+          {title: 'Design Milk Architecutre', feed: 'http://feeds.feedburner.com/DesignMilkArchitecture'}]},
+        {title: 'Design',  feed: [
+          {title: 'Design Milk', feed: 'http://feeds.feedburner.com/design-milk'},
+          {title: 'Yummy Fresh grain', feed: 'http://feeds.feedburner.com/GrainEdit'},
+          {title: 'Designspiration', feed: 'http://feeds.feedburner.com/dspn'}]},
+        {title: 'Food',  feed: [
           {title: 'The Kitchn', feed: 'http://feeds.thekitchn.com/apartmenttherapy/thekitchn'},
           {title: 'Scanwiches', feed: 'http://scanwiches.com/rss'}]}
-      ],
-      pages: [[
-        [1],
-        [2],
-        [2]
-      ], [
-        [1],
-        [3],
-        [3]
-      ], [
-        [1],
-        [4]
-      ]],
-      page: 0,
-      selectedNav: 0,
-      grid: false,
-      ready: function() {
-        this.nodes = [
-          this.$.groupbar, this.$.collections, this.$.collectionDetail,
-          this.$.slideshow
-        ];
-        this.pageChanged();
-      },
-      collectionSelectAction: function(e, detail, sender) {
-        if (detail.isSelected) {
-          this.page = 1;
+      ];
+      
+      var DEFAULT_IMAGE = 'assets/pic.png';
+      var BGCOLOR_COUNT = 5;
+      
+      collections.forEach(function(c, i) {
+        c.image = c.image || DEFAULT_IMAGE;
+        var color = Math.floor(Math.random() * BGCOLOR_COUNT);
+        if (collections[i-1]) {
+          while (color === collections[i-1].color) {
+            color = Math.floor(Math.random() * BGCOLOR_COUNT);
+          }
         }
-      },
-      tabActivateAction: function() {
-        this.page = 0;
-      },
-      gridAction: function() {
-        this.grid = !this.grid;
-        /*
-        var groups = this.groups.slice(0);
-        this.groups = null;
-        this.async(function() {
-          this.groups = groups;
-        });
-        */
-      },
-      pageChanged: function() {
-        this.layout = this.pages[this.page];
-      },
-      sidebarToggleAction: function() {
-        this.page = (this.page + 1) % this.pages.length;
-      },
-      exploreAction: function() {
-        this.page = 1;
-      },
-      meAction: function() {
-        this.selectedNav = 0;
-        this.page = 3;
-      },
-      selectContact: function() {
-        this.selectedNav = 0;
-        this.page = 3;
-      },
-      selectedNavChanged: function() {
-        //this.page = this.selectedNav * 2 + 1;
-      }
-    });
+        c.color = color;
+      });
+
+      Polymer('slide-show', {
+        pages: [[
+          [1],
+          [2],
+          [2]
+        ], [
+          [1],
+          [3],
+          [3]
+        ], [
+          [4],
+          [4],
+          [5]
+        ]],
+        page: 0,
+        selectedNav: 0,
+        grid: false,
+        ready: function() {
+          window.app = this;
+          this.nodes = [
+            this.$.groupbar, this.$.collections, this.$.collectionDetail,
+            this.$.slideshow, this.$.slideshowbar
+          ];
+          this.collections = collections;
+          this.pageChanged();
+        },
+        collectionSelectAction: function(e, detail, sender) {
+          if (detail.isSelected) {
+            this.page = 1;
+          }
+        },
+        tabActivateAction: function() {
+          this.page = 0;
+        },
+        selectItemAction: function() {
+          this.page = 2;
+        },
+        gridAction: function() {
+          this.grid = !this.grid;
+          /*
+          var groups = this.groups.slice(0);
+          this.groups = null;
+          this.async(function() {
+            this.groups = groups;
+          });
+          */
+        },
+        pageChanged: function() {
+          this.layout = this.pages[this.page];
+        },
+        sidebarToggleAction: function() {
+          this.page = (this.page + 1) % this.pages.length;
+        },
+        exploreAction: function() {
+          this.page = 1;
+        },
+        meAction: function() {
+          this.selectedNav = 0;
+          this.page = 3;
+        },
+        selectContact: function() {
+          this.selectedNav = 0;
+          this.page = 3;
+        },
+        selectedNavChanged: function() {
+          //this.page = this.selectedNav * 2 + 1;
+        }
+      });
+    })();
   </script>
 </polymer-element>

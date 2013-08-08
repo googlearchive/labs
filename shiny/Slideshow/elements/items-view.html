@@ -7,10 +7,13 @@
 -->
 <polymer-element name="items-view" attributes="layout itemsData" extends="polymer-selector">
   <template>
-    <link rel="stylesheet" href="items-view.css" />
+    <link rel="stylesheet" href="items-view.css">
+    <link rel="stylesheet" href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     <div id="container" class="{{layout}} {{view}}">
       <template repeat="{{viewItems}}"><div class="item">
-        <div class="image" style="background-image: url({{imgSrc}})"></div>
+        <div class="image flexbox align-center justify-center {{'bgColor' + color}}">
+          <img src="{{image}}">
+        </div>
         <div class="info">
           <div class="title">{{title}}</div>
         </div>

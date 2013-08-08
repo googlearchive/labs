@@ -57,7 +57,7 @@
           background-color: #282828;
           color: #aaa;
         }
-        #sidebar, #explorebar, #group, #groupbar {
+        #sidebar, #otherbar, #explorebar, #group, #groupbar, #explore, #contact[hasSidebar=true] {
           -webkit-transition: left, opacity;
           -webkit-transition-duration: 0.3s;
           -webkit-transition-timing-function: ease-in;
@@ -212,11 +212,10 @@
         contactAction: function(e, detail, sender) {
           this.$.contact.hasSidebar = false;
           this.$.contact.contact = detail.templateInstance.model;
-          this.selectedNav = 0;
           this.page = 9;
         },
         meAction: function() {
-          this.selectedNav = 0;
+          this.selectedNav = 1;
           this.$.contact.hasSidebar = true;
           this.$.contact.contact = {
             name: 'Scott McNulty',
@@ -230,14 +229,7 @@
           this.page = 3;
         },
         addAction: function() {
-          this.selectedNav = 0;
           this.page = 10;
-        },
-        openContactSheetAction: function() {
-          this.$.contactsheet.toggle();
-        },
-        selectedNavChanged: function() {
-          //this.page = this.selectedNav * 2 + 1;
         }
       });
     </script>
