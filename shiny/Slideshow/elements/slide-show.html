@@ -98,7 +98,7 @@
     <polymer-ui-toolbar id="slideshowbar">
       <polymer-ui-icon-button icon="left" on-tap="previewBackAction"></polymer-ui-icon-button>
       <span flex>{{selectedItem.title}}</span>
-      <polymer-ui-menu-button id="previewMenu" selected="0" on-polymer-select="changePreviewAction" valign="right">
+      <polymer-ui-menu-button id="previewMenu" selected="0" on-polymer-select="changePreviewAction" valign="top" align="right">
         <polymer-ui-menu-item cover="phone" previewWidth="320" previewHeight="480">phone</polymer-ui-menu-item>
         <polymer-ui-menu-item cover="tablet" previewWidth="768" previewHeight="1024">tablet</polymer-ui-menu-item>
         <polymer-ui-menu-item cover="tablet" previewWidth="1024" previewHeight="768">custom</polymer-ui-menu-item>
@@ -197,8 +197,6 @@
           ];
           this.collections = collections;
           this.pageChanged();
-          // hack
-          this.$.previewMenu.$.menuOverlay.style.bottom = '50px';
         },
         collectionSelectAction: function(e, detail, sender) {
           if (detail.isSelected) {
