@@ -1,6 +1,8 @@
 <link rel="import" href="../../../more-elements/google-map/google-map.html">
+<link rel="import" href="../../../polymer-elements/polymer-overlay/polymer-overlay.html">
+<link rel="import" href="shuttle-timetable.html">
   
-<polymer-element name="shuttle-map" attributes="stop">
+<polymer-element name="shuttle-map" attributes="stop fromStop toStop filteredStops selectedFilteredStop">
   <template>
     <style>
       @host {
@@ -13,19 +15,37 @@
         display: block;
         height: 100%;
       }
+      
+      #timetable {
+        position: absolute !important;
+        background: white;
+        right: 10px;
+        bottom: 10px;
+        left: 10px;
+        height: 200px;
+        max-width: 600px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
     </style>
-    <google-map id="map" zoom="17" showCenterMarker></google-map>
+    
+    <google-map id="map" zoom="15" showCenterMarker="{{showCenterMarker}}"></google-map>
+    
+    <shuttle-timetable id="timetable" 
+        fromStop="{{fromStop == stop ? (selectedFilteredStop || stop) : fromStop}}" 
+        toStop="{{toStop == stop ? (selectedFilteredStop || stop) : toStop}}"></shuttle-timetable>
+
+    <polymer-overlay target="{{$.timetable}}" opened="{{opened}}" autoCloseDisabled></polymer-overlay>
   </template>
   <script>
     Polymer('shuttle-map', {
+      showCenterMarker: true,
+      opened: false,
       resize: function() {
-        this.asyncMethod(function() {
-          this.$.map.resize();
-          if (!this._initialized) {
-            this._initialized = true;
-            this.openInfoWindow();
-          }
-        }, null, 100);
+        this.resizeJob = this.job(this.resizeJob, this._resize, 100);
+      },
+      _resize: function() {
+        this.$.map.resize();
       },
       stopChanged: function() {
         if (this.stop) {
@@ -39,19 +59,58 @@
           this.infoWindow = new google.maps.InfoWindow();
           google.maps.event.addListener(this.$.map.centerMarker, 'click', 
             function() {
-              this.openInfoWindow();
+              this.openCloseInfoWindow();
+              this.selectStop(this.stop);
             }.bind(this)
           );
         }
         this.infoWindow.setContent(
             '<div style="font-size: 14px; width: 200px;"><h4>' + 
             this.stop.name + '</h4>' + this.stop.description + '</div>');
-        if (!this.infoWindow.getMap()) {
-          this.openInfoWindow();
+        this.openCloseInfoWindow();
+      },
+      openCloseInfoWindow: function(closed) {
+        if (closed) {
+          this.infoWindow.close();
+        } else if (!this.infoWindow.getMap()) {
+          this.infoWindow.open(this.$.map.map, this.$.map.centerMarker);
         }
       },
-      openInfoWindow: function() {
-        this.infoWindow.open(this.$.map.map, this.$.map.centerMarker);
+      filteredStopsChanged: function(old) {
+        this.markers && this.markers.forEach(function(m) {
+          m.setMap(null);
+        });
+        this.markers = [];
+        this.opened = !!this.filteredStops;
+        this.openCloseInfoWindow(this.filteredStops);
+        this.$.map.centerMarker.setZIndex(1000);
+        this.filteredStops && this.filteredStops.forEach(function(s) {
+          if (s.hidden) {
+            return;
+          }
+          var latLng = new google.maps.LatLng(s.in_lat, s.in_lon);
+          if (this.markerExists(latLng)) {
+            return;
+          }
+          var marker = new google.maps.Marker({
+            map: this.$.map.map,
+            position: latLng,
+            icon: 'http://maps.google.com/mapfiles/marker_grey.png'
+          });
+          this.markers.push(marker);
+          google.maps.event.addListener(marker, 'click', 
+              this.selectStop.bind(this, s));
+        }, this);
+      },
+      markerExists: function(latLng) {
+        for (var i = 0, m; m = this.markers[i]; i++) {
+          if (m.getPosition().equals(latLng)) {
+            return true;
+          }
+        }
+      },
+      selectStop: function(stop) {
+        this.selectedFilteredStop = stop;
       }
     });
   </script>

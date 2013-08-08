@@ -46,11 +46,16 @@
     <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
     <polymer-media-query query="max-width: 600px" queryMatches="{{queryMatches}}"></polymer-media-query>
 
-    <shuttle-schedule id="schedule" fromStop="{{fromStop}}" favorites="{{favorites}}" favorite="{{favorite}}"></shuttle-schedule>
+    <shuttle-schedule id="schedule" centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
+        favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
+        selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-schedule>
     
-    <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" on-polymer-activate="favoriteSelect"></shuttle-favorites>
+    <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
+        on-polymer-activate="favoriteSelect"></shuttle-favorites>
     
-    <shuttle-map id="map" stop="{{fromStop}}" class="{{desktop : !queryMatches}}"></shuttle-map>
+    <shuttle-map id="map" class="{{desktop : !queryMatches}}" stop="{{centerStop}}" 
+        fromStop="{{fromStop}}" toStop="{{toStop}}"
+        filteredStops="{{filteredStops}}" selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-map>
     
     <polymer-ui-tabs id="tabbar" theme="polymer-ui-dark-theme" selected="{{selected}}">
       <div flex><polymer-ui-icon icon="time"></polymer-ui-icon></div>
@@ -87,7 +92,6 @@
        [4, 3, 3]
       ]],
       selected: null,
-      fromStop: null,
       queryMatches: false,
       ready: function() {
         this.nodes = [
@@ -103,6 +107,7 @@
       queryMatchesChanged: function() {
         this.layoutMode = this.queryMatches ? this.mobile : this.desktop;
         this.selectedChanged();
+        this.$.map.resize();
       },
       selectedChanged: function() {
         this.layout = this.layoutMode[this.selected];

@@ -8,11 +8,20 @@
         }
       }
       
+      .container {
+        height: 100%;
+      }
+      
       .header {
         height: 40px;
         line-height: 40px;
         font-size: 13px;
         font-weight: bold;
+      }
+      
+      .table {
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
       }
       
       .row > * {
@@ -33,16 +42,20 @@
       }
     </style>
 
-    <div class="header" flexbox>
-       <div flex>Depart</div>
-       <div flex>Arrive</div>
-    </div>
-    <template repeat="{{route in routes}}">
-      <div class="row" flexbox>
-        <div flex avail?="{{route.from.date >= now}}">{{route.from.time}}</div>
-        <div flex avail?="{{route.to.date >= now}}">{{route.to.time}}</div>
+    <div class="container" v-flexbox>
+      <div class="header" flexbox>
+         <div flex>Depart</div>
+         <div flex>Arrive</div>
       </div>
-    </template>
+      <div class="table" flex>
+        <template repeat="{{route in routes}}">
+          <div class="row" flexbox>
+            <div flex avail?="{{route.from.date >= now}}">{{route.from.time}}</div>
+            <div flex avail?="{{route.to.date >= now}}">{{route.to.time}}</div>
+          </div>
+        </template>
+      </div>
+    </div>
   </template>
   <script>
     Polymer('shuttle-timetable', {
@@ -56,6 +69,7 @@
         this.updateJob = this.job(this.updateJob, this.updateTimetable, 1);
       },
       updateTimetable: function() {
+        this.routes = [];
         if (!this.fromStop || !this.toStop) {
           return;
         }
@@ -68,18 +82,17 @@
           }
         }, this);
         // find all the stops in the trip that stop at fromStop/toStop
-        this.routes = [];
+        var ds = (new Date()).toDateString();
         for (var i = 0, trip; trip = Shuttle.trips[trips[i]]; i++) {
           if (this.isOutbound(trip)) {
             var dog = trip.name.search(/dog/i) > -1;
             var route = {};
             for (var j = 0, stop; stop = trip.stops[j]; j++) {
-              var ds = (new Date()).toDateString();
               stop.date = new Date(ds + ' ' + stop.time);
               stop.dog = dog;
-              if (stop.stop == this.fromStop.index) {
+              if (stop.stop === this.fromStop.index) {
                 route.from = stop;
-              } else if (stop.stop == this.toStop.index) {
+              } else if (stop.stop === this.toStop.index) {
                 route.to = stop;
               }
             }

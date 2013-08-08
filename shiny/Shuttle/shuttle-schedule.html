@@ -7,7 +7,7 @@
 <link rel="import" href="shuttle-stop-picker-button.html">
 <link rel="import" href="shuttle-stop-picker.html">
 
-<polymer-element name="shuttle-schedule" attributes="fromStop favorites favorite">
+<polymer-element name="shuttle-schedule" attributes="centerStop fromStop toStop favorites favorite filteredStops selectedFilteredStop">
   <template>
     <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     <style>
@@ -39,7 +39,8 @@
         position: absolute !important;
         top: 60px;
         right: 0;
-        bottom: 0;
+        /* on top of bottom-tabbar */
+        bottom: -45px;
         left: 0;
         font-size: 12px;
       }
@@ -63,8 +64,6 @@
       
       #timetable {
         border-top: 1px solid #ccc;
-        overflow: auto;
-        -webkit-overflow-scrolling: touch;
       }
     </style>
     
@@ -72,19 +71,22 @@
     <polymer-localstorage id="storage" name="shuttle-storage1" value="{{userData}}"></polymer-localstorage>
     
     <polymer-ui-toolbar id="toolbar">
-      <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu" 
+      <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu"
           active="{{reverse ? remoteStopsMenuOpened : officeStopsMenuOpened}}">{{fromStop.short_name}}</shuttle-stop-picker-button>
       <div class="swap-button-container">
         <polymer-ui-icon-button src="assets/ic_swaphoriz_darkreg.png" on-tap="swap"></polymer-ui-icon-button>
       </div>
-      <shuttle-stop-picker-button flex class="to-stop-button" on-tap="toggleToMenu" 
+      <shuttle-stop-picker-button flex class="to-stop-button" on-tap="toggleToMenu"
           active="{{reverse ? officeStopsMenuOpened : remoteStopsMenuOpened}}">{{toStop.short_name}}</shuttle-stop-picker-button>
     </polymer-ui-toolbar>
     
     <shuttle-stop-picker id="officeStopsMenu" selected="{{officeSelected}}" selectedStop="{{officeSelectedStop}}" 
-        stops="{{officeStops}}" opened="{{officeStopsMenuOpened}}" searchInputLabel="Search Office Stops"></shuttle-stop-picker>
+        stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" searchInputLabel="Search Office Stops"
+        opened="{{officeStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
+
     <shuttle-stop-picker id="remoteStopsMenu" selected="{{remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
-        stops="{{remoteStops}}" opened="{{remoteStopsMenuOpened}}"></shuttle-stop-picker>
+        stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" 
+        opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
     
     <div id="description">
       {{fromStop.name}} to {{toStop.name}}
@@ -99,7 +101,6 @@
       remoteSelectedStop: null,
       reverse: false,
       isFav: false,
-      favorite: null,
       ready: function() {
         this.nodes = [this.$.toolbar, this.$.description, this.$.timetable];
         this.layout = [
@@ -118,6 +119,7 @@
         }
         this.favorites = this.userData.favorites = 
             this.userData.favorites || [];
+        this.reverse = !!this.userData.reverse;
         this.officeSelected = Shuttle.isMock ? 1 : 
             (this.userData.officeSelected || 7);
         this.remoteSelected = Shuttle.isMock ? 0 : 
@@ -130,12 +132,20 @@
         this.officeStops = Shuttle.stops.filter(function(s) {
           return s.is_work;
         });
-        this.remoteStops = Shuttle.stops;
+        // office/campus stops
+        this.officeStops = JSON.parse(JSON.stringify(this.officeStops));
+        // all stops
+        this.remoteStops = JSON.parse(JSON.stringify(Shuttle.stops));
       },
       swap: function() {
         this.reverse = !this.reverse;
         this.officeSelectedStopChanged();
         this.remoteSelectedStopChanged();
+      },
+      fromStopChanged: function() {
+        if (this.areMenusClosed()) {
+          this.centerStop = this.fromStop;
+        }
       },
       officeSelectedStopChanged: function() {
         this[this.reverse ? 'toStop' : 'fromStop'] = this.officeSelectedStop;
@@ -156,6 +166,32 @@
       toggleMenu: function(name) {
         var m = this.$[name + 'StopsMenu'];
         m.toggle();
+        if (m.opened) {
+          this.closeOtherMenu(m);
+        }
+      },
+      closeOtherMenu: function(menu) {
+        this.$[menu === this.$.officeStopsMenu ? 
+            'remoteStopsMenu' : 'officeStopsMenu'].opened = false;
+      },
+      areMenusClosed: function() {
+        return !this.$.officeStopsMenu.opened && !this.$.remoteStopsMenu.opened;
+      },
+      menuOpened: function(e, detail, sender) {
+        if (sender.opened) {
+          this.centerStop = sender.selectedStop;
+          this.filteredStops = sender.stops.slice();
+        }
+        if (this.areMenusClosed()) {
+          this.centerStop = this.fromStop;
+          this.filteredStops = null;
+          this.selectedFilteredStop = null;
+        }
+      },
+      stopsSearch: function(e, detail, sender) {
+        if (sender.opened) {
+          this.filteredStops = sender.stops.slice();
+        }
       },
       favoriteChanged: function() {
         if (this.favorite) {
@@ -204,6 +240,7 @@
         if (Shuttle.isMock) {
           return;
         }
+        this.userData.reverse = this.reverse;
         this.userData.officeSelected = this.officeSelected;
         this.userData.remoteSelected = this.remoteSelected;
         this.$.storage.save();
