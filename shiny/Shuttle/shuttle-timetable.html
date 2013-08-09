@@ -2,22 +2,17 @@
   <template>
     <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     <style>
-      @host {
-        * {
-          padding: 0 20px;
-        }
-      }
-      
       .container {
         height: 100%;
         opacity: 0.8;
       }
       
       .header {
-        height: 40px;
-        line-height: 40px;
+        height: 50px;
+        line-height: 50px;
         font-size: 13px;
         font-weight: bold;
+        padding: 0 20px;
       }
       
       .table {
@@ -30,6 +25,7 @@
         line-height: 40px;
         font-size: 14px;
         border-bottom: 1px solid #ddd;
+        margin: 0 20px;
       }
       
       .row:last-child {
@@ -53,8 +49,8 @@
 
     <div class="container" v-flexbox>
       <div class="header" flexbox>
-         <div flex>Depart</div>
-         <div flex>Arrive</div>
+         <div flex>Departure</div>
+         <div flex>Arrival</div>
       </div>
       <div class="table" flex>
         <template repeat="{{route in routes}}">
