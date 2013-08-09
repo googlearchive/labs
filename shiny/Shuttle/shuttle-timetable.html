@@ -4,12 +4,13 @@
     <style>
       @host {
         * {
-          padding-left: 20px;
+          padding: 0 20px;
         }
       }
       
       .container {
         height: 100%;
+        opacity: 0.8;
       }
       
       .header {
@@ -24,10 +25,18 @@
         -webkit-overflow-scrolling: touch;
       }
       
-      .row > * {
+      .row {
         height: 40px;
         line-height: 40px;
         font-size: 14px;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      .row:last-child {
+        border-bottom: none;
+      }
+      
+      .row > * {
         opacity: 0.5;
       }
       
