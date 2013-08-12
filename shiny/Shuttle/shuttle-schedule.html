@@ -1,5 +1,4 @@
 <link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
-<link rel="import" href="../../../polymer-elements/polymer-localstorage/polymer-localstorage.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-ratings/polymer-ui-ratings.html">
@@ -7,9 +6,8 @@
 <link rel="import" href="shuttle-stop-picker-button.html">
 <link rel="import" href="shuttle-stop-picker.html">
 
-<polymer-element name="shuttle-schedule" attributes="centerStop fromStop toStop favorites favorite filteredStops selectedFilteredStop">
+<polymer-element name="shuttle-schedule" attributes="route officeStops remoteStops centerStop fromStop toStop favorites favorite filteredStops selectedFilteredStop">
   <template>
-    <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     <style>
       @host {
         * {
@@ -68,7 +66,6 @@
     </style>
     
     <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
-    <polymer-localstorage id="storage" name="shuttle-storage1" value="{{userData}}"></polymer-localstorage>
     
     <polymer-ui-toolbar id="toolbar">
       <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu"
@@ -80,11 +77,11 @@
           active="{{reverse ? officeStopsMenuOpened : remoteStopsMenuOpened}}">{{toStop.short_name}}</shuttle-stop-picker-button>
     </polymer-ui-toolbar>
     
-    <shuttle-stop-picker id="officeStopsMenu" selected="{{officeSelected}}" selectedStop="{{officeSelectedStop}}" 
+    <shuttle-stop-picker id="officeStopsMenu" selected="{{route.officeSelected}}" selectedStop="{{officeSelectedStop}}" 
         stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" searchInputLabel="Search Office Stops"
         opened="{{officeStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
 
-    <shuttle-stop-picker id="remoteStopsMenu" selected="{{remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
+    <shuttle-stop-picker id="remoteStopsMenu" selected="{{route.remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
         stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" 
         opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
     
@@ -109,36 +106,15 @@
           [3],
           [3]
         ];
-        
-        this.populateStops();
-        this.populateUserData();
       },
-      populateUserData: function() {
-        if (!this.userData) {
-          this.userData = {};
-        }
-        this.favorites = this.userData.favorites = 
-            this.userData.favorites || [];
-        this.reverse = !!this.userData.reverse;
-        this.officeSelected = Shuttle.isMock ? 1 : 
-            (this.userData.officeSelected || 7);
-        this.remoteSelected = Shuttle.isMock ? 0 : 
-            (this.userData.remoteSelected || 70);
-      },
-      populateStops: function() {
-        Shuttle.stops.forEach(function(s, i) {
-          s.index = i;
-        });
-        this.officeStops = Shuttle.stops.filter(function(s) {
-          return s.is_work;
-        });
-        // office/campus stops
-        this.officeStops = JSON.parse(JSON.stringify(this.officeStops));
-        // all stops
-        this.remoteStops = JSON.parse(JSON.stringify(Shuttle.stops));
+      routeChanged: function() {
+        this.reverse = !!this.route.reverse;
       },
       swap: function() {
         this.reverse = !this.reverse;
+        this.updateSelectedStops();
+      },
+      updateSelectedStops: function() {
         this.officeSelectedStopChanged();
         this.remoteSelectedStopChanged();
       },
@@ -150,12 +126,12 @@
       officeSelectedStopChanged: function() {
         this[this.reverse ? 'toStop' : 'fromStop'] = this.officeSelectedStop;
         this.updateFav();
-        this.saveSelected();
+        this.save();
       },
       remoteSelectedStopChanged: function() {
         this[this.reverse ? 'fromStop' : 'toStop'] = this.remoteSelectedStop;
         this.updateFav();
-        this.saveSelected();
+        this.save();
       },
       toggleFromMenu: function() {
         this.toggleMenu(this.reverse ? 'remote' : 'office');
@@ -198,10 +174,9 @@
           var f = this.favorite.fromStop.index;
           var t = this.favorite.toStop.index;
           this.reverse = this.favorite.reverse;
-          this.officeSelected = this.reverse ? t : f;
-          this.remoteSelected = this.reverse ? f : t;
-          this.officeSelectedStopChanged();
-          this.remoteSelectedStopChanged();
+          this.route.officeSelected = this.reverse ? t : f;
+          this.route.remoteSelected = this.reverse ? f : t;
+          this.updateSelectedStops();
         }
       },
       updateFav: function() {
@@ -209,8 +184,7 @@
           return;
         }
         for (var i = 0, f; f = this.favorites[i]; i++) {
-          if (f.fromStop.index === this.fromStop.index && 
-              f.toStop.index === this.toStop.index) {
+          if (this.areSameFavorites(f, this)) {
             this.isFav = true;
             return;
           }
@@ -226,24 +200,23 @@
         if (this.isFav) {
           this.favorites.push(fav);
         } else {
-          this.favorites.forEach(function(f, i) {
-            if (f.fromStop.index === fav.fromStop.index && 
-                f.toStop.index === fav.toStop.index) {
+          for (var i = 0, f; f = this.favorites[i]; i++) {
+            if (this.areSameFavorites(f, fav)) {
               this.favorites.splice(i, 1);
-              return;
+              break;
             }
-          }, this);
+          }
         }
-        this.$.storage.save();
+        this.save();
       },
-      saveSelected: function() {
-        if (Shuttle.isMock) {
-          return;
-        }
-        this.userData.reverse = this.reverse;
-        this.userData.officeSelected = this.officeSelected;
-        this.userData.remoteSelected = this.remoteSelected;
-        this.$.storage.save();
+      areSameFavorites: function(f1, f2) {
+        return f1.fromStop.index === f2.fromStop.index && 
+            f1.toStop.index === f2.toStop.index &&
+            f1.reverse === f2.reverse;
+      },
+      save: function() {
+        this.route.reverse = this.reverse;
+        this.fire('shuttle-data-save');
       }
     });
   </script>

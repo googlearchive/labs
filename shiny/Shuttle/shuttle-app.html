@@ -3,6 +3,7 @@
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-tabs/polymer-ui-tabs.html">
 <link rel="import" href="../../../more-elements/google-map/google-map.html">
+<link rel="import" href="shuttle-data.html">
 <link rel="import" href="shuttle-schedule.html">
 <link rel="import" href="shuttle-favorites.html">
 <link rel="import" href="shuttle-map.html">
@@ -45,10 +46,12 @@
 
     <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
     <polymer-media-query query="max-width: 600px" queryMatches="{{queryMatches}}"></polymer-media-query>
+    <shuttle-data id="data" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" favorites="{{favorites}}"></shuttle-data>
 
-    <shuttle-schedule id="schedule" centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
+    <shuttle-schedule id="schedule" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" 
+        centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
         favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
-        selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-schedule>
+        selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
     
     <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
         on-polymer-activate="favoriteSelect"></shuttle-favorites>
@@ -119,6 +122,9 @@
       },
       favoriteSelect: function() {
         this.selected = 0;
+      },
+      saveData: function() {
+        this.$.data.save();
       }
     });
   </script>
