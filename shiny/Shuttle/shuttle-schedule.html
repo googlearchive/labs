@@ -5,6 +5,7 @@
 <link rel="import" href="shuttle-timetable.html">
 <link rel="import" href="shuttle-stop-picker-button.html">
 <link rel="import" href="shuttle-stop-picker.html">
+<link rel="import" href="shuttle-toggle-icon.html">
 
 <polymer-element name="shuttle-schedule" attributes="route officeStops remoteStops centerStop fromStop toStop favorites favorite filteredStops selectedFilteredStop">
   <template>
@@ -51,13 +52,13 @@
       #description {
         height: 110px;
         font-size: 18px;
-        padding: 10px 35px 0 20px;
+        padding: 20px 50px 0 20px;
       }
       
-      polymer-ui-ratings {
+      shuttle-toggle-icon {
         position: absolute;
-        top: 8px;
-        right: 2px;
+        top: 20px;
+        right: 20px;
       }
       
       #timetable {
@@ -87,7 +88,8 @@
     
     <div id="description">
       {{fromStop.name}} to {{toStop.name}}
-      <polymer-ui-ratings count="1" value="{{isFav}}" on-tap="handleFavTap"></polymer-ui-ratings>
+      <shuttle-toggle-icon active="{{isFav}}" src="assets/ic_star_sm_darkalt.png" 
+          activeSrc="assets/ic_star_sm_darkreg.png" on-tap="handleFavTap"></shuttle-toggle-icon>
     </div>
     
     <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
