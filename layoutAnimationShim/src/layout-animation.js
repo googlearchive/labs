@@ -1,4 +1,5 @@
 var _DEBUG_CONTROL_POSITIONS = false;
+var LOCATE_FOUC = false;
 
 function rectsToTransformValues(desired, current, origin, ignoreScale) {
   var sx = (ignoreScale ? 1 : desired.width / current.width);
@@ -379,7 +380,6 @@ function generateAnimation(element, positionList) {
         var par = new ParGroup([], {fillMode: 'forwards'});
         par.append(group);
         seq.append(par);
-        console.log(start, end);
         if (end == 1) {
           var newState = '_transitionAfter';
         } else {
@@ -659,8 +659,6 @@ function buildTree(list) {
 
 function cleanup() {
   for (var i = 0; i < transitionable.length; i++) {
-    transitionable[i]._transitionBefore = undefined;
-    transitionable[i]._transitionAfter = undefined;
     transitionable[i]._transitionChildren = undefined;
     transitionable[i]._transitionParent = undefined;
   }
@@ -779,8 +777,9 @@ function transitionThis(action) {
       var positionList = positionListFromKeyframes(keyframes, list[i]);
      
       if (list[i]._transitionParent) {
-        positionList = makePositionListRelative(positionList, list[i]._transitionParent._transitionPositionList);
+        //positionList = makePositionListRelative(positionList, list[i]._transitionParent._transitionPositionList);
       }
+      console.log(list[i].id, JSON.stringify(positionList));
 
       list[i]._transitionPositionList = [];
       for (var j = 0; j < positionList.length; j++) {
@@ -812,8 +811,11 @@ function transitionThis(action) {
     }
   };
 
-  document.timeline.play(parGroup);
-  
+  if (LOCATE_FOUC) {
+    //setTimeout(parGroup.onend, 1000);
+  } else {
+    document.timeline.play(parGroup);
+  }
   // get rid of all the junk
   cleanup();
 }
@@ -870,14 +872,14 @@ function generateCopyAtPosition(element, rect, state) {
       parent = parent.parentElement;
     }
    
-    rect.left -= getPosition(element._transitionParent, state).left;
-    rect.top -= getPosition(element._transitionParent, state).top;
   }
 
   
-  setPosition(element, rect, state);
   var fromPosition = boundingRectToContentRect(element, rect);
+  console.log('cloning ' + element.id + ' for state ' + state + ' as rect ' + JSON.stringify(rect));
   var from = cloneElementToSize(element, fromPosition);
+
+  setPosition(element, rect, state);
   from.label = state;
   from.classList.add(state)
   cacheCopy(element, state, from);
