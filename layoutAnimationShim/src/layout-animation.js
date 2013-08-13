@@ -1,6 +1,11 @@
-var _DEBUG_CONTROL_POSITIONS = false;
 var LOCATE_FOUC = false;
 
+/**
+ * Returns a transform value (translation in X and Y plus scale in X and Y) that
+ * converts a rectangle at current (left, top, width, height) with origin at 
+ * origin (x, y) to a rectangle at desired (left, top, width, height). If 
+ * ignoreScale is set, then scale contributions are ignored / not generated.
+ */
 function rectsToTransformValues(desired, current, origin, ignoreScale) {
   var sx = (ignoreScale ? 1 : desired.width / current.width);
   var sy = (ignoreScale ? 1 : desired.height / current.height);
@@ -12,15 +17,28 @@ function rectsToTransformValues(desired, current, origin, ignoreScale) {
   };
 }
 
+/**
+ * Returns a CSS representation of the provided transform value (tx, ty, sx, sy).
+ */
 function transformValuesToCss(values, ignoreScale) {
   return "translate3d(" + values.tx + "px, " + values.ty + "px, 0px)" + (ignoreScale ? "" : 
          " scale(" + values.sx + ", " + values.sy + ")");
 }
 
+/**
+ * Returns a CSS string representing the transform that
+ * converts a rectangle at current (left, top, width, height) with origin at 
+ * origin (x, y) to a rectangle at desired (left, top, width, height). If 
+ * ignoreScale is set, then scale contributions are ignored / not generated.
+ */
 function rectsToCss(desired, current, origin, ignoreScale) {
   return transformValuesToCss(rectsToTransformValues(desired, current, origin, ignoreScale), ignoreScale);
 }
 
+/**
+ * Returns a CSS string representing a clipping rectangle that clips to the
+ * width and height of the provided rect.
+ */
 function rectToClip(rect) {
   return "rect(0px, " + rect.width + "px, " + rect.height + "px, 0px)";
 } 
@@ -29,10 +47,7 @@ function fixTiming(timing) {
   if (typeof timing == "number") {
     timing = {iterationDuration: timing};
   }
-  timing.fillMode = _DEBUG_CONTROL_POSITIONS ? 'both' : 'none';
-  if (_DEBUG_CONTROL_POSITIONS) {
-    timing.startDelay = 2;
-  }
+  timing.fillMode = 'none';
   return timing;
 }
 
