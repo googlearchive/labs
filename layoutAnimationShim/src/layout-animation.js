@@ -43,20 +43,24 @@ function rectToClip(rect) {
   return "rect(0px, " + rect.width + "px, " + rect.height + "px, 0px)";
 } 
 
-function fixTiming(timing) {
-  if (typeof timing == "number") {
-    timing = {iterationDuration: timing};
-  }
-  timing.fillMode = 'none';
-  return timing;
+/**
+ * Constructs a fillMode: 'none' timing object of the requested duration.
+ */
+function timingForDuration(duration) {
+  return {iterationDuration: duration, fillMode: 'none'};
 }
 
-function animationToPositionLayout(target, from, positions, timing) {
-  timing = fixTiming(timing);
+/**
+ * Constructs a layout animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions, continuously
+ * adjusting width and height to force layout changes during the animation.
+ */
+function animationToPositionLayout(target, from, positions, duration) {
+  var timing = timingForDuration(duration);
   
-  var transOrig = origin(from.style.webkitTransformOrigin);
+  var transformOrigin = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, getPosition(target, from.label), transOrig, true);
+    var str = rectsToCss(position, getPosition(target, from.label), transformOrigin, true);
     return { offset: position.offset, value: str};
   });
 
@@ -69,7 +73,8 @@ function animationToPositionLayout(target, from, positions, timing) {
     });
   }
 
-  // copy style from initial state to final state. This tries to capture CSS transitions.
+  // Copy (some) style from initial state to final state. This tries to capture CSS transitions.
+  // TODO: This no longer seems to work. Either get it working again for transitions or remove it.
   sourceStyle = window.getComputedStyle(from);
   targetStyle = window.getComputedStyle(target);
   for (var i = 0; i < targetStyle.length; i++) {
@@ -83,19 +88,26 @@ function animationToPositionLayout(target, from, positions, timing) {
     }
   }
 
-  return new Animation(from, toStinkyAPI({position: ["absolute", "absolute"],
+  return new Animation(from, toOffsetAPI({position: ["absolute", "absolute"],
                                 transform: cssList,
                                 width: mkPosList('width', positions), 
                                 height: mkPosList('height', positions)}), 
                        timing);
 }
 
+/**
+ * Extracts transform origin coordinates from a transform-origin string.
+ */
 function origin(str) {
   var arr = str.split('px');
   return {x: Number(arr[0]), y: Number(arr[1])};
 }
 
-function toStinkyAPI(dict) {
+/**
+ * Converts a set of property-indexed keyframes to a set of offset-indexed
+ * keyframes.
+ */
+function toOffsetAPI(dict) {
   var keyframes = {};
   for (var key in dict) {
     for (var i = 0; i < dict[key].length; i++) {
@@ -122,18 +134,28 @@ function toStinkyAPI(dict) {
   });
 }
 
-function animationToPositionTransform(target, from, positions, timing) {
+/**
+ * Constructs a transform animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions, scaling
+ * such that the provided widths and heights are satisfied.
+ */
+function animationToPositionTransform(target, from, positions, duration) {
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
     var str = rectsToCss(position, getPosition(target, from.label), transOrig);
     return {offset: position.offset, value: str};
   });
 
-  timing = fixTiming(timing);
+  var timing = timingForDuration(duration);
 
-  return new Animation(from, toStinkyAPI({transform: cssList}), timing);
+  return new Animation(from, toOffsetAPI({transform: cssList}), timing);
 }
 
+/**
+ * Constructs a transform animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions. Width and height
+ * are not modified by the animation.
+ */
 function animationToPositionNone(target, from, positions, timing) {
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
@@ -141,15 +163,20 @@ function animationToPositionNone(target, from, positions, timing) {
     return { offset: position.offset, value: str};
   });
 
-  timing = fixTiming(timing);
+  timing = timingForDuration(timing);
   
-  var a = new Animation(from, toStinkyAPI({transform: cssList,
+  var a = new Animation(from, toOffsetAPI({transform: cssList,
                                 position: ["absolute", "absolute"]}), timing);
   return a;
 }
 
+/**
+ * Constructs a clip animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions. Width and height
+ * are enforced via an animating clip value.
+ */
 function animationToPositionClip(target, from, positions, timing) {
-  timing = fixTiming(timing);
+  timing = timingForDuration(timing);
   
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
@@ -162,49 +189,39 @@ function animationToPositionClip(target, from, positions, timing) {
     return { offset: position.offset, value: str };
   });
 
-  return new Animation(from, toStinkyAPI({transform: cssList, clip: clipList, position: ["absolute", "absolute"]}), timing);
-}
-
-function extractContents(container, copyContents) {
-  var fromContents = document.createElement("div");
-  fromContents.style.width = container.style.width;
-  fromContents.style.height = container.style.height;
-  fromContents.style.top = container.style.top;
-  fromContents.style.left = container.style.left;
-  fromContents.style.position = "absolute";
-  fromContents.innerHTML = container.innerHTML;
-  if (!copyContents) {
-    container.innerHTML = "";
-  }
-  var targetStyle = container.style;
-  for (var i = 0; i < targetStyle.length; i++) {
-    var prop = targetStyle[i];
-    if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", 
-            "width", "height"].indexOf(prop) == -1) {
-      if (prop.indexOf("background") == -1) {
-        fromContents.style[prop] = targetStyle[prop];
-      }
-    }
-  }
-  fromContents.style.borderColor = "rgba(0, 0, 0, 0)";
-
-  return fromContents; 
+  return new Animation(from, toOffsetAPI({transform: cssList, clip: clipList, position: ["absolute", "absolute"]}), timing);
 }
 
 var offsetRE = /^[0-9.]*\%?$/
 
+/**
+ * An Effect segment specification. Effects are lists of effect segments
+ * with offsets bounding each segment.
+ */
 function Effect() {
+  // True if this segment is a layout segment.
   this.isLayout = false;
+  // The scale mode of this segment (none | clip | transform)
   this.scaleMode = "none";
+  // The blend mode of this segment (none | fade | fade-in | fade-out | fade-to)
   this.blendMode = "none";
+  // The number of explicit nones encountered. No more than 2 should be present,
+  // or 1 if a scaleMode _or_ blendMode is specified, or 0 if both are specified.
   this.explicitNones = 0;
 }
 
 Effect.prototype = {
+  /**
+   * Sets the layout flag on this segment and asserts that no scaleMode or blendMode have been set.
+   */
   setLayout: function() {
     console.assert(this.scaleMode == "none" && this.blendMode == "none");
     this.isLayout = true;
   },
+  /**
+   * Sets either a blend mode or a scale mode for this segment. Ensures that layout has not been set,
+   * and that there are not too many 'none' values specified to support having an additional mode.
+   */ 
   setMode: function(mode) {
     if (mode == 'layout') {
       this.setLayout();
@@ -234,10 +251,18 @@ Effect.prototype = {
   }
 }
 
+/**
+ * Returns the interpolation of numbers a and b at fraction p.
+ */
 function interp(a, b, p) {
   return a * (1 - p) + b * p;
 }
 
+/**
+ * Interpolates the top, left, width and height values of two positions a and b. 
+ * The interpolation fraction is calculated by determining the relative position of
+ * the input fraction f between the offsets recorded in a and b.
+ */
 function interpPosition(a, b, f) {
   var p = (f - a.offset) / (b.offset - a.offset);
   return {
@@ -249,6 +274,9 @@ function interpPosition(a, b, f) {
   };
 }
 
+/**
+ * Returns a copy of position a.
+ */
 function clone(a) {
   return {
     offset: a.offset,
@@ -827,7 +855,7 @@ function transitionThis(action) {
   };
 
   if (LOCATE_FOUC) {
-    //setTimeout(parGroup.onend, 1000);
+    setTimeout(parGroup.onend, 1000);
   } else {
     document.timeline.play(parGroup);
   }
