@@ -287,6 +287,15 @@ function clone(a) {
   };
 }
 
+/**
+ * Returns a slice of the provided positionList that includes all position
+ * offsets between start and end, inclusive. If no position with an offset
+ * matching the start or the end is found in positionList, then interpolated
+ * positions are constructed.
+ *
+ * Before returning the sublist, the offsets are rescaled such that the first
+ * position lies at offset 0 and the last position lies at offset 1.
+ */
 function positionSubList(start, end, positionList) {
   var sublist = [];
   for (var i = 0; i < positionList.length; i++) {
@@ -310,6 +319,10 @@ function positionSubList(start, end, positionList) {
   return sublist;
 }
 
+/**
+ * Converts an offset string (as a percentage or decimal fraction) to a numeric
+ * decimal fraction.
+ */
 function offsetToNumber(value) {
   if (value.indexOf('%') != -1) {
     return Number(value.slice(0, value.length - 1)) / 100;
@@ -317,60 +330,15 @@ function offsetToNumber(value) {
   return Number(value);
 }
 
-function prettyPrint(anim) {
-  function spaces(d) {
-    var s = '';
-    for (var i = 0; i < d; i++) {
-      s += ' ';
-    }
-    return s;
-  };
-
-  function prettyPrint_(anim, depth) {
-    if (anim instanceof SeqGroup) {
-      name = 'SeqGroup';
-    } else if (anim instanceof ParGroup) {
-      name = 'ParGroup';
-    } else {
-      name = 'Animation';
-    }
-    var arrow = '';
-    switch (anim.specified.fillMode) {
-      case 'forwards':
-        arrow = '->';
-        break;
-      case 'backwards':
-        arrow = '<-';
-        break;
-      case 'both':
-        arrow = '<->';
-        break;
-      case 'none':
-        arrow = '|';
-        break;
-      default:
-        arrow = '?';
-        break;
-    }
-    console.log(spaces(depth) + name + ': ' + anim.activeDuration + 's ' + arrow);
-    if (anim.children) {
-      for (var i = 0; i < anim.children.length; i++) {
-        prettyPrint_(anim.children[i], depth + 2);
-      }
-    }
-  };
-  prettyPrint_(anim, 0);
-}
-    
-
-function generateAnimation(element, positionList) {
-
-  var effect = element._layout.effect;
-  var duration = element._layout.duration;
-    
+/**
+ * Parses an effect string, returning a list of Effects along with the offset
+ * ranges of each Effect.
+ */
+function parseEffect(effect) {
   var effectList = effect.split(' ');
   var effectResult = [];
   var start = 0;
+
   var effect = new Effect();
   for (var i = 0; i < effectList.length; i++) {
     if (offsetRE.exec(effectList[i]) != null) {
@@ -393,9 +361,29 @@ function generateAnimation(element, positionList) {
     effectResult.push({start: start, end: 1, effect: effect});
   }
 
+  return effectResult;
+}
+
+/**
+ * Generates an animation for the provided element. The element will pass
+ * through the positions in positionList at the appropriate offsets in time.
+ * The duration and effect are extracted from the current layout animation
+ * registered for the element.
+ */
+// TODO: This would probably be cleaner as separate layout channel,
+// blend channel, translation channel and scale channel.
+function generateAnimation(element, positionList) {
+
+  var effect = element._layout.effect;
+  var duration = element._layout.duration;
+
+  var effectResult = parseEffect(effect);
+
   var seq = new SeqGroup();
   var lastWasLayout = true;
 
+  // If blending is applied, there are multiple copies of the element that must
+  // all be animated.
   var copies = [getCopy(element, '_transitionBefore')];
   var fromCopy = copies[0];
   var fromOpacity = 1;
@@ -419,6 +407,7 @@ function generateAnimation(element, positionList) {
       lastWasLayout = true;
     } else {
       if (effect.blendMode != 'none') {
+        // Blend modes need a start and end snapshot to blend between.
         var group = new SeqGroup([], {fillMode: 'forwards'});
         var par = new ParGroup([], {fillMode: 'forwards'});
         par.append(group);
@@ -429,6 +418,8 @@ function generateAnimation(element, positionList) {
           var newState = '_at_' + end;
           generateCopyAtPosition(element, sublist[sublist.length - 1], newState);
         }
+        // Record the fact that a new snapshot was used. This will need to be cleaned
+        // up at the end of the animation.
         newStates.push(newState);
         toCopy = getCopy(element, newState);
         copies.push(toCopy);
@@ -443,6 +434,9 @@ function generateAnimation(element, positionList) {
         var group = seq;
       }
       if (!lastWasLayout) {
+        // If neither this segment nor the previous segment was a layout, then we need to
+        // insert a zero-time layout to ensure the current state of the element is
+        // reflected in the animation. We need to do this for all blending snapshots.
         var newList = [clone(sublist[0]), clone(sublist[0])];
         newList[0].offset = 0;
         newList[1].offset = 1;
@@ -453,8 +447,9 @@ function generateAnimation(element, positionList) {
         });
         group.append(new ParGroup(anims, {fillMode: 'forwards'}));
       }
-      // this will pick up either the previous layout or the inserted layout and fix it
-      // with forward fill.
+      // Pick up either the previous layout snapshots or the inserted layout 
+      // snapshots and fix them with forward fill, to ensure the layout
+      // updates to the end of the animation.
       if (anims) {
         anims.forEach(function(anim) { anim.specified.fillMode = 'forwards'; });
         anims = undefined;
@@ -478,7 +473,6 @@ function generateAnimation(element, positionList) {
   }
 
   seq.onend = function(e) {
-    hideCopy(element, '_transitionAfter');
     newStates.forEach(function(state) { 
       hideCopy(element, state);
       removeCopy(element, state);
@@ -487,45 +481,6 @@ function generateAnimation(element, positionList) {
 
   return seq;
 }
-
-function cloneToSize(node, rect, hide) {
-  var div = document.createElement("div");
-  var nodeStyle = window.getComputedStyle(node);
-  div.setAttribute("style", nodeStyle.cssText);
-  if (hide) {
-    div.style.opacity = "0";
-  }
-  div.style.position = "absolute";
-  div.style.left = rect.left + 'px';
-  div.style.top = rect.top + 'px';
-  div.style.width = rect.width + 'px';
-  div.style.height = rect.height + 'px';
-  div.innerHTML = node.innerHTML;
-  if (hide) {
-    // NB: This is a hacky way to put to containers before from contents.
-    node.shadow.parent.insertBefore(div, node.shadow.parent.children[2]);
-  } else {
-    node.shadow.parent.appendChild(div);
-  }
-  return div;
-}
-
-function Cleaner(action) {
-  this.fired = false;
-  this.action = action;
-  this.sample = function(t) {
-    if (t == 1 && !this.fired) {
-      this.action();
-      this.fired = true;
-    }
-  }.bind(this);
-}
-
-function cleaner(action, timing) {
-  return new Animation(null, new Cleaner(action), timing);
-}
-
-//========================
 
 var layoutKeyframes = {};
 
