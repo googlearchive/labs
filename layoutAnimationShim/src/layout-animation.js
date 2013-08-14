@@ -666,6 +666,11 @@ function removeTree() {
   }
 }
 
+/**
+ * Converts a list of keyframe into a position list for an element,
+ * using the recorded _transitionBefore and _transitionAfter states
+ * as reference positions.
+ */
 function positionListFromKeyframes(keyframes, element) {
   var positions = keyframes.slice();
   positions.sort(function(a, b) {
@@ -706,48 +711,10 @@ function positionListFromKeyframes(keyframes, element) {
   return positions;
 }
 
-function makePositionListRelative(list, parentList) {
-  var result = []
-  for (var i = 0; i < list.length; i++) {
-    result.push({
-      top: list[i].top + parentList[i].top,
-      left: list[i].left + parentList[i].left,
-      width: list[i].width,
-      height: list[i].height,
-      offset: list[i].offset});
-  }
-  return result;
-}
-
-// Transition the provided action.
-//
-// Overview:
-// All potentially transitionable content is stored in the transitionable list.
-// Each element in this list has initial position marked and a copy created.
-// Additionally, a shadow DOM tree is created for each container of a transitionable
-// element. Details of this tree are stored on the transitionable elements themselves,
-// in a member variable called shadow:
-// {
-//   root: root of the shadow DOM tree
-//   parent: root of the element's tree
-//   content: root of the element's content exposure
-//   from: initial created copy
-// }
-// The initial position is stored in a member variable called _transitionBefore
-// TODO: Is the initial position needed any more?
-// As part of the process of creating a copy, the content is hidden by setting
-// a wrapping div in the shadow DOM to opacity: 0.
-//
-// The action is then executed. This updates the content to its new position,
-// but the change is not visible on-screen. The new position is captured into
-// element._transitionAfter, and a list of moved elements is generated.
-// Additionally, the content node is removed from the shadow DOM to prevent 
-// further interaction from the actual content.
-//
-// Each different transition type has a different approach to generating the
-// transition effect, but essentially transform, layout and none operate on the
-// created copy, while transfade and crossfade need to create an aditional copy
-// of the to state. This is performed in the animation generation functions directly.
+/**
+ * Run the provided action, capturing transitioning element position before and after,
+ * then generate an animation to smooth the position change for transitioning elements.
+ */
 function transitionThis(action) {
   // construct transition tree  
   var tree = buildTree(transitionable);
@@ -778,9 +745,6 @@ function transitionThis(action) {
       var keyframes = layoutKeyframes[list[i]._layout.keyframesName];
       var positionList = positionListFromKeyframes(keyframes, list[i]);
      
-      if (list[i]._transitionParent) {
-        //positionList = makePositionListRelative(positionList, list[i]._transitionParent._transitionPositionList);
-      }
       console.log(list[i].id, JSON.stringify(positionList));
 
       list[i]._transitionPositionList = [];
@@ -797,14 +761,6 @@ function transitionThis(action) {
   processList(tree);
 
   parGroup.onend = function() {
-    for (var i = 0; i < tree.length; i++) {
-      // workaround because we can't build animations that transition to empty values
-      tree[i].style.left = "";
-      tree[i].style.top = "";
-      tree[i].style.width = "";
-      tree[i].style.height = "";
-      tree[i].style.position = "";
-    }
     for (var i = 0; i < transitionable.length; i++) {
       transitionable[i].style.opacity = "";
       hideCopy(transitionable[i], '_transitionBefore');
