@@ -1,5 +1,5 @@
 
-<polymer-element name="calendar-event-preview" attributes="event" assetpath="elements\calendar-elements\calendar-event-preview">
+<polymer-element name="calendar-event-preview" attributes="event" assetpath="elements/calendar-elements/calendar-event-preview">
 	<template>
 		<style>
 			@host {
@@ -40,7 +40,7 @@
 
 
 
-<polymer-element name="calendar-day" attributes="start events" assetpath="elements\calendar-elements\calendar-day">
+<polymer-element name="calendar-day" attributes="start events" assetpath="elements/calendar-elements/calendar-day">
 	<template>
 		<style>
 			@host {
@@ -107,7 +107,7 @@
 	
 </polymer-element>
 
-<polymer-element name="calendar-hours" assetpath="elements\calendar-elements\calendar-hours">
+<polymer-element name="calendar-hours" assetpath="elements/calendar-elements/calendar-hours">
 	<template>
 		<style>
 			@host {
@@ -171,7 +171,7 @@
 
 
 
-<polymer-element name="calendar-day-view" attributes="events start" assetpath="elements\calendar-elements\calendar-day-view">
+<polymer-element name="calendar-day-view" attributes="events start" assetpath="elements/calendar-elements/calendar-day-view">
 	<template>
 		<style>
 			@host {
@@ -195,7 +195,7 @@ Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<polymer-element name="polymer-ui-theme-aware" attributes="theme" assetpath="elements\polymer-ui-elements\polymer-ui-theme-aware">
+<polymer-element name="polymer-ui-theme-aware" attributes="theme" assetpath="elements/polymer-ui-elements/polymer-ui-theme-aware">
   
 </polymer-element>
 
@@ -234,9 +234,9 @@ license that can be found in the LICENSE file.
 -->
 
 
-<polymer-element name="polymer-ui-icon" extends="polymer-ui-theme-aware" attributes="src size index icon" assetpath="elements\polymer-ui-elements\polymer-ui-icon">
+<polymer-element name="polymer-ui-icon" extends="polymer-ui-theme-aware" attributes="src size index icon" assetpath="elements/polymer-ui-elements/polymer-ui-icon">
   <template>
-    <link rel="stylesheet" href="elements\polymer-ui-elements\polymer-ui-icon\polymer-ui-icon.css">
+    <link rel="stylesheet" href="elements/polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.css">
     <content></content>
   </template>
   
@@ -271,9 +271,9 @@ license that can be found in the LICENSE file.
 
 
 
-<polymer-element name="polymer-ui-icon-button" attributes="src index icon active" assetpath="elements\polymer-ui-elements\polymer-ui-icon-button">
+<polymer-element name="polymer-ui-icon-button" attributes="src index icon active" assetpath="elements/polymer-ui-elements/polymer-ui-icon-button">
   <template>
-    <link rel="stylesheet" href="elements\polymer-ui-elements\polymer-ui-icon-button\polymer-ui-icon-button.css">
+    <link rel="stylesheet" href="elements/polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.css">
     <polymer-ui-icon src="{{src}}" index="{{index}}" icon="{{icon}}"><content></content></polymer-ui-icon>
   </template>
   
@@ -289,7 +289,7 @@ license that can be found in the LICENSE file.
  * @module Polymer Elements
  */
 -->
-<polymer-element name="polymer-media-query" attributes="query queryMatches" assetpath="elements\polymer-elements\polymer-media-query">
+<polymer-element name="polymer-media-query" attributes="query queryMatches" assetpath="elements/polymer-elements/polymer-media-query">
   <template>
     <style>
       @host {
@@ -307,10 +307,10 @@ Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<polymer-element name="polymer-flex-layout" attributes="vertical align justify isContainer" assetpath="elements\polymer-elements\polymer-flex-layout">
+<polymer-element name="polymer-flex-layout" attributes="vertical align justify isContainer" assetpath="elements/polymer-elements/polymer-flex-layout">
   <template>
-    <link rel="stylesheet" polymer-scope="controller" href="elements\polymer-elements\polymer-flex-layout\polymer-flex-layout.css">
-    <link rel="stylesheet" href="elements\polymer-elements\polymer-flex-layout\polymer-flex-layout.css">
+    <link rel="stylesheet" polymer-scope="controller" href="elements/polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
+    <link rel="stylesheet" href="elements/polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     <content></content>
   </template>
   
@@ -361,9 +361,9 @@ license that can be found in the LICENSE file.
 
 
 
-<polymer-element name="polymer-ui-toolbar" extends="polymer-ui-theme-aware" attributes="responsiveWidth" assetpath="elements\polymer-ui-elements\polymer-ui-toolbar">
+<polymer-element name="polymer-ui-toolbar" extends="polymer-ui-theme-aware" attributes="responsiveWidth" assetpath="elements/polymer-ui-elements/polymer-ui-toolbar">
   <template>
-    <link rel="stylesheet" href="elements\polymer-ui-elements\polymer-ui-toolbar\polymer-ui-toolbar.css">
+    <link rel="stylesheet" href="elements/polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.css">
     <polymer-flex-layout align="center"></polymer-flex-layout>
     <polymer-media-query query="max-width: {{responsiveWidth}}" querymatches="{{queryMatches}}"></polymer-media-query>
     <content></content>
@@ -391,9 +391,9 @@ license that can be found in the LICENSE file.
  * @class polymer-ui-toggle-button
  */
 -->
-<polymer-element name="polymer-ui-toggle-button" attributes="value noCaption onCaption offCaption" on-tap="toggle" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd" on-flick="flick" assetpath="elements\polymer-ui-elements\polymer-ui-toggle-button">
+<polymer-element name="polymer-ui-toggle-button" attributes="value noCaption onCaption offCaption" on-tap="toggle" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd" on-flick="flick" assetpath="elements/polymer-ui-elements/polymer-ui-toggle-button">
   <template>
-    <link rel="stylesheet" href="elements\polymer-ui-elements\polymer-ui-toggle-button\polymer-ui-toggle-button.css">
+    <link rel="stylesheet" href="elements/polymer-ui-elements/polymer-ui-toggle-button/polymer-ui-toggle-button.css">
     <div id="toggle" class="toggle">
       <span class="on-label">{{noCaption ? '' : onCaption}}</span>
       <span id="thumb" class="thumb"></span>
@@ -413,7 +413,7 @@ license that can be found in the LICENSE file.
  * @module Polymer Elements
  */
 -->
-<polymer-element name="polymer-selection" attributes="multi" assetpath="elements\polymer-elements\polymer-selector">
+<polymer-element name="polymer-selection" attributes="multi" assetpath="elements/polymer-elements/polymer-selector">
   <template>
     <style>
       @host {
@@ -484,7 +484,7 @@ license that can be found in the LICENSE file.
 -->
 
 
-<polymer-element name="polymer-selector" attributes="selected multi valueattr selectedClass selectedProperty selectedItem selectedModel notap target itemsSelector activateEvent" assetpath="elements\polymer-elements\polymer-selector">
+<polymer-element name="polymer-selector" attributes="selected multi valueattr selectedClass selectedProperty selectedItem selectedModel notap target itemsSelector activateEvent" assetpath="elements/polymer-elements/polymer-selector">
   <template>
     <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="selectionSelect"></polymer-selection>
     <content id="items" select="*"></content>
@@ -524,9 +524,9 @@ license that can be found in the LICENSE file.
 -->
 
 
-<polymer-element name="polymer-ui-tabs" extends="polymer-selector" assetpath="elements\polymer-ui-elements\polymer-ui-tabs">
+<polymer-element name="polymer-ui-tabs" extends="polymer-selector" assetpath="elements/polymer-ui-elements/polymer-ui-tabs">
   <template>
-    <link rel="stylesheet" href="elements\polymer-ui-elements\polymer-ui-tabs\polymer-ui-tabs.css">
+    <link rel="stylesheet" href="elements/polymer-ui-elements/polymer-ui-tabs/polymer-ui-tabs.css">
     <polymer-flex-layout></polymer-flex-layout>
     <shadow></shadow>
   </template>
@@ -535,7 +535,7 @@ license that can be found in the LICENSE file.
 
 
 
-<polymer-element name="calendar-color-button" attributes="value" assetpath="elements\calendar-elements\calendar-color-button">
+<polymer-element name="calendar-color-button" attributes="value" assetpath="elements/calendar-elements/calendar-color-button">
 	<template>
 		<style>
 			@host {
@@ -550,7 +550,7 @@ license that can be found in the LICENSE file.
 
 			input {
 				-webkit-appearance: none;
-				background: url(elements\calendar-elements\assets\color-wheel.png) no-repeat center;
+				background: url(elements/calendar-elements/assets/color-wheel.png) no-repeat center;
 				border: 0;
 				height: 44px;
 				padding: 0;
@@ -578,7 +578,7 @@ license that can be found in the LICENSE file.
 
 
 
-<polymer-element name="calendar-event-details" attributes="event" assetpath="elements\calendar-elements\calendar-event-details">
+<polymer-element name="calendar-event-details" attributes="event" assetpath="elements/calendar-elements/calendar-event-details">
 	<template>
 		<style>
 			@host {
@@ -625,11 +625,11 @@ license that can be found in the LICENSE file.
 		<div class="wrapper">
 			<polymer-ui-toolbar>
 				<div flex="">
-					<polymer-ui-icon-button src="elements\calendar-elements\assets\arrow_left.png" on-click="onBackClick"></polymer-ui-icon-button>
+					<polymer-ui-icon-button src="elements/calendar-elements/assets/arrow_left.png" on-click="onBackClick"></polymer-ui-icon-button>
 				</div>
 				<div>
 					<calendar-color-button value="{{event.color}}"></calendar-color-button>
-					<polymer-ui-icon-button src="elements\calendar-elements\assets\edit.png" on-click="onEditClick"></polymer-ui-icon-button>
+					<polymer-ui-icon-button src="elements/calendar-elements/assets/edit.png" on-click="onEditClick"></polymer-ui-icon-button>
 					<polymer-ui-icon-button icon="trash" on-click="onDeleteClick"></polymer-ui-icon-button>
 				</div>
 			</polymer-ui-toolbar>
@@ -658,7 +658,7 @@ license that can be found in the LICENSE file.
 
 
 
-<polymer-element name="calendar-event-edit" attributes="event" assetpath="elements\calendar-elements\calendar-event-edit">
+<polymer-element name="calendar-event-edit" attributes="event" assetpath="elements/calendar-elements/calendar-event-edit">
 	<template>
 		<style>
 			@host {
@@ -717,7 +717,7 @@ license that can be found in the LICENSE file.
 			<polymer-ui-toolbar>
 				<!--<polymer-ui-icon-button icon="close" on-click="onCancelClick"></polymer-ui-icon-button>-->
 				<div flex=""></div>
-				<polymer-ui-icon-button src="elements\calendar-elements\assets\checkmark.png" on-click="onSaveClick"></polymer-ui-icon-button>
+				<polymer-ui-icon-button src="elements/calendar-elements/assets/checkmark.png" on-click="onSaveClick"></polymer-ui-icon-button>
 			</polymer-ui-toolbar>
 
 			<div class="scrollable">
@@ -748,7 +748,7 @@ license that can be found in the LICENSE file.
 
 
 
-<polymer-element name="calendar-app" assetpath="elements\calendar-elements\calendar-app">
+<polymer-element name="calendar-app" assetpath="elements/calendar-elements/calendar-app">
 	<template>
 		<style>
 			@host {
