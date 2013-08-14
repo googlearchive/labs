@@ -1,0 +1,1 @@
+node ../../vulcanize/vulcan.js --csp -i dev.html -o imports.html
