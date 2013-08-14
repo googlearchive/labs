@@ -589,7 +589,8 @@ function setLayoutEffect(target, effect) {
 }
 
 /** 
- * Calculates and returns the absolute position of the provided target.
+ * Calculates and returns the position of the provided target relative
+ * to the nearest absolute or relatively positioned ancestor.
  */
 function sensePosition(target) {
   var rect = cloneRect(target.getBoundingClientRect());
@@ -778,18 +779,30 @@ function transitionThis(action) {
   removeTree();
 }
 
+/**
+ * Clears a recorded position on target.
+ */
 function clearPosition(target, name) {
   target[name] = undefined;
 }
 
+/**
+ * Records a position rect on target.
+ */
 function setPosition(target, rect, name) {
   target[name] = rect;
 }
 
+/**
+ * Retrieves a position rect on target.
+ */
 function getPosition(target, name) {
   return target[name];
 }
 
+/**
+ * Caches a provided copy of the provided element.
+ */
 function cacheCopy(element, state, copy) {
   if (!(element._copyCache)) {
     element._copyCache = {}
@@ -797,6 +810,9 @@ function cacheCopy(element, state, copy) {
   element._copyCache[state] = copy;
 }
 
+/**
+ * Removes a cached copy of the provided element.
+ */
 function removeCopy(element, state) {
   if (!(element._copyCache)) {
     return;
@@ -805,6 +821,9 @@ function removeCopy(element, state) {
   clearPosition(element, state);
 }
 
+/**
+ * Retrieves a cached copy of the provided element.
+ */
 function getCopy(element, state) {
   if (!(element._copyCache)) {
     return;
@@ -812,14 +831,26 @@ function getCopy(element, state) {
   return element._copyCache[state];
 }
 
+/**
+ * Generates a snapshot and position rect of the provided element as currently rendered,
+ * and caches both under the provided state name.
+ */
 function generateCopy(element, state) {
   var rect = sensePosition(element);
   generateCopyAtPosition(element, rect, state);
 }
 
+/**
+ * Generates a snapshot of the provided element, at the provided position,
+ * and caches both under the provided state name.
+ */
 function generateCopyAtPosition(element, rect, state) {
+  var fromPosition = boundingRectToContentRect(element, rect);
+
+  // Add contribution from nearest relative/absolute ancestor,
+  // if this is a child transition.
+  // TODO: Do we still need this? 
   if (element._transitionParent) {
-    // TODO: Do we still need to do this?
     var parent = element.parentElement;
     while (parent && !parent._layout) {
       var style = getComputedStyle(parent);
@@ -832,9 +863,6 @@ function generateCopyAtPosition(element, rect, state) {
    
   }
 
-  
-  var fromPosition = boundingRectToContentRect(element, rect);
-  console.log('cloning ' + element.id + ' for state ' + state + ' as rect ' + JSON.stringify(rect));
   var from = cloneElementToSize(element, fromPosition);
 
   setPosition(element, rect, state);
@@ -843,6 +871,10 @@ function generateCopyAtPosition(element, rect, state) {
   cacheCopy(element, state, from);
 }
 
+/**
+ * Ensures that a copy of element in the provided state is available,
+ * generating one if required.
+ */
 function ensureCopy(element, state) {
   if (getCopy(element, state)) {
     return;
@@ -850,6 +882,9 @@ function ensureCopy(element, state) {
   generateCopy(element, state);
 }
 
+/**
+ * Makes the element copy tagged by the provided state visible.
+ */
 function showCopy(element, state) {
   var copy = getCopy(element, state);
  
@@ -862,6 +897,9 @@ function showCopy(element, state) {
   return copy;
 }
 
+/**
+ * Hides the element copy tagged by the provided state.
+ */
 function hideCopy(element, state) {
   var copy = getCopy(element, state);
   if (!copy || !copy.parentElement) {
@@ -870,13 +908,14 @@ function hideCopy(element, state) {
   copy.parentElement.removeChild(copy);
 }
 
-function cloneElementToSize(node, rect, hide) {
+/**
+ * Clones the provided node and sizes it according to the provided rectangle
+ */
+function cloneElementToSize(node, rect) {
   var div = document.createElement("div");
   var nodeStyle = window.getComputedStyle(node);
   div.setAttribute("style", nodeStyle.cssText);
-  if (hide) {
-    div.style.opacity = "0";
-  }
+
   div.style.position = "absolute";
   div.style.left = rect.left + 'px';
   div.style.top = rect.top + 'px';
