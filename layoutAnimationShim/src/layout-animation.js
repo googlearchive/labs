@@ -277,7 +277,7 @@ function interpPosition(a, b, f) {
 /**
  * Returns a copy of position a.
  */
-function clone(a) {
+function cloneRect(a) {
   return {
     offset: a.offset,
     top: a.top,
@@ -303,7 +303,7 @@ function positionSubList(start, end, positionList) {
       sublist.push(interpPosition(positionList[i], positionList[i + 1], start));
     } 
     if (positionList[i].offset >= start && positionList[i].offset <= end) {
-      sublist.push(clone(positionList[i]));
+      sublist.push(cloneRect(positionList[i]));
     }
     if (positionList[i].offset < end && positionList[i + 1].offset > end) {
       sublist.push(interpPosition(positionList[i], positionList[i + 1], end));
@@ -437,7 +437,7 @@ function generateAnimation(element, positionList) {
         // If neither this segment nor the previous segment was a layout, then we need to
         // insert a zero-time layout to ensure the current state of the element is
         // reflected in the animation. We need to do this for all blending snapshots.
-        var newList = [clone(sublist[0]), clone(sublist[0])];
+        var newList = [cloneRect(sublist[0]), cloneRect(sublist[0])];
         newList[0].offset = 0;
         newList[1].offset = 1;
         anims = [];
@@ -482,23 +482,36 @@ function generateAnimation(element, positionList) {
   return seq;
 }
 
+/**
+ * Stores keyframe lists, indexed by name.
+ */
 var layoutKeyframes = {};
 
+/**
+ * Stores a list of currently transitionable elements in the document.
+ */
 var transitionable = [];
 
+/**
+ * Registers a keyframe list.
+ */
 function registerLayoutKeyframes(name, keyframes) {
   layoutKeyframes[name] = keyframes;
 }
 
+/**
+ * Stores the details of a transition animation applied to an element.
+ */
 function LayoutTransition() {
-  this.name = undefined;
+  // 
+  this.keyframesName = undefined;
   this.duration = 0;
   this.effect = "layout";
 }
 
 LayoutTransition.prototype = {
-  setName: function(name) {
-    this.name = name;
+  setKeyframes: function(name) {
+    this.keyframesName = name;
   },
   setDuration: function(duration) {
     if (duration) {
@@ -515,6 +528,10 @@ LayoutTransition.prototype = {
   }
 }
 
+/**
+ * Registers a layout transition on target, using the keyframes referenced by name 
+ * and lasting for duration.
+ */
 function setLayoutTransition(target, name, duration) {
   if (target.length !== undefined) {
     for (var i = 0; i < target.length; i++) {
@@ -523,6 +540,9 @@ function setLayoutTransition(target, name, duration) {
     return;
   }
 
+  // Storing temporary snapshots as siblings of transitioning elements makes it easy
+  // to accidentally select the snapshots when updating the set of layout transitions.
+  // This code attempts to detect and warn about doing so.
   if (target.classList.contains("_layoutAnimationContentSnapshot")) {
     console.error("You're attempting to set a layout transition on a content snapshot." +
       " This shim creates content snapshots as divs attached to the same parent as the content" +
@@ -531,6 +551,7 @@ function setLayoutTransition(target, name, duration) {
     return;
   }
 
+  // If name is undefined, then remove the transition from the element.
   if (name == undefined) {
     if (target._layout) {
       target._layout = undefined;
@@ -540,18 +561,20 @@ function setLayoutTransition(target, name, duration) {
     return;
   }
 
-
   target.setAttribute('isTransitionable', 'isTransitionable');
   if (target._layout == undefined) {
     target._layout = new LayoutTransition();
   }
-  target._layout.setName(name);
+  target._layout.setKeyframes(name);
   target._layout.setDuration(duration);
   if (transitionable.indexOf(target) == -1) {
     transitionable.push(target);
   }
 }
 
+/**
+ * Registers a layout effect on target.
+ */
 function setLayoutEffect(target, effect) {
   if (target.length !== undefined) {
     for (var i = 0; i < target.length; i++) {
@@ -565,31 +588,9 @@ function setLayoutEffect(target, effect) {
   target._layout.setEffect(effect);
 }
 
-function cloneRect(rect) {
-  var result = {};
-  result.left = rect.left;
-  result.top = rect.top;
-  result.width = rect.width;
-  result.height = rect.height;
-  return result;
-}
-
-function rectEquals(rectA, rectB) {
-  return rectA.left == rectB.left && rectA.top == rectB.top && rectA.width == rectB.width && rectA.height == rectB.height;
-}
-
-function setPositions(target, name) {
-  if (target.length !== undefined) {
-    for (var i = 0; i < target.length; i++) {
-      setPositions(target[i], name);
-    }
-    return;
-  }
-  
-  var rect = sensePosition(target);
-  setPosition(target, rect, name);
-}
-
+/** 
+ * Calculates and returns the absolute position of the provided target.
+ */
 function sensePosition(target) {
   var rect = cloneRect(target.getBoundingClientRect());
   var parent = target.parentElement;
@@ -609,12 +610,18 @@ function sensePosition(target) {
 }
 
 
-// Convert CSS Strings to numbers.
-// Maybe its time to think about exposing some of the core CSS emulation functionality of Web Animations?
+/*
+ * Converts CSS Strings to numbers, as long as those strings represent pixel values.
+ */
+// TODO: export some of Web Animations core functionality as a separate CSS utility library.
 function v(s) {
   return Number(s.substring(0, s.length - 2));
 }
 
+/**
+ * Converts the sensed bounding rectangle of an element to an internal contect rectangle
+ * by removing the contribution from borders, padding, and margins.
+ */
 function boundingRectToContentRect(element, rect) {
   var style = window.getComputedStyle(element);
   var width = rect.width - v(style.borderLeftWidth) - v(style.borderRightWidth) - v(style.paddingLeft) - v(style.paddingRight);
@@ -624,15 +631,10 @@ function boundingRectToContentRect(element, rect) {
   return {width: width, top: top, left: left, height: height};
 }
 
-function boundingRectToReplacementRect(element, rect) {
-  var style = window.getComputedStyle(element);
-  var width = rect.width + v(style.marginLeft) + v(style.marginRight);
-  var height = rect.height + v(style.marginTop) + v(style.marginBottom);
-  var left = rect.left - v(style.marginLeft);
-  var top = rect.top - v(style.marginTop);
-  return {width: width, top: top, left: left, height: height}; 
-}
-
+/**
+ * Constructs an in-place tree that mirrors DOM order but only includes elements with
+ * layout transitions defined on them.
+ */
 function buildTree(list) {
   var roots = [];
   for (var i = 0; i < list.length; i++) {
@@ -654,8 +656,10 @@ function buildTree(list) {
   return roots;
 }
 
-
-function cleanup() {
+/**
+ * Removes the layout transition tree generated by buildTree.
+ */
+function removeTree() {
   for (var i = 0; i < transitionable.length; i++) {
     transitionable[i]._transitionChildren = undefined;
     transitionable[i]._transitionParent = undefined;
@@ -771,7 +775,7 @@ function transitionThis(action) {
 
     for (var i = 0; i < list.length; i++) {
 
-      var keyframes = layoutKeyframes[list[i]._layout.name];
+      var keyframes = layoutKeyframes[list[i]._layout.keyframesName];
       var positionList = positionListFromKeyframes(keyframes, list[i]);
      
       if (list[i]._transitionParent) {
@@ -814,8 +818,8 @@ function transitionThis(action) {
   } else {
     document.timeline.play(parGroup);
   }
-  // get rid of all the junk
-  cleanup();
+  
+  removeTree();
 }
 
 function clearPosition(target, name) {
