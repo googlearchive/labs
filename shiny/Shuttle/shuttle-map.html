@@ -2,7 +2,7 @@
 <link rel="import" href="../../../polymer-elements/polymer-overlay/polymer-overlay.html">
 <link rel="import" href="shuttle-timetable.html">
   
-<polymer-element name="shuttle-map" attributes="stop fromStop toStop filteredStops selectedFilteredStop">
+<polymer-element name="shuttle-map" attributes="centerStop fromStop toStop filteredStops selectedFilteredStop">
   <template>
     <style>
       @host {
@@ -32,8 +32,8 @@
     <google-map id="map" zoom="15" showCenterMarker="{{showCenterMarker}}"></google-map>
     
     <shuttle-timetable id="timetable" 
-        fromStop="{{fromStop == stop ? (selectedFilteredStop || stop) : fromStop}}" 
-        toStop="{{toStop == stop ? (selectedFilteredStop || stop) : toStop}}"></shuttle-timetable>
+        fromStop="{{fromStop == centerStop ? (selectedFilteredStop || centerStop) : fromStop}}" 
+        toStop="{{toStop == centerStop ? (selectedFilteredStop || centerStop) : toStop}}"></shuttle-timetable>
 
     <polymer-overlay target="{{$.timetable}}" opened="{{opened}}" autoCloseDisabled></polymer-overlay>
   </template>
@@ -47,10 +47,10 @@
       _resize: function() {
         this.$.map.resize();
       },
-      stopChanged: function() {
-        if (this.stop) {
-          this.$.map.latitude = this.stop.in_lat;
-          this.$.map.longitude = this.stop.in_lon;
+      centerStopChanged: function() {
+        if (this.centerStop) {
+          this.$.map.latitude = this.centerStop.in_lat;
+          this.$.map.longitude = this.centerStop.in_lon;
           this.setupInfoWindow();
         }
       },
@@ -60,13 +60,13 @@
           google.maps.event.addListener(this.$.map.centerMarker, 'click', 
             function() {
               this.openCloseInfoWindow();
-              this.selectStop(this.stop);
+              this.selectStop(this.centerStop);
             }.bind(this)
           );
         }
         this.infoWindow.setContent(
             '<div style="font-size: 14px; width: 200px;"><h4>' + 
-            this.stop.name + '</h4>' + this.stop.description + '</div>');
+            this.centerStop.name + '</h4>' + this.centerStop.description + '</div>');
         this.openCloseInfoWindow();
       },
       openCloseInfoWindow: function(closed) {

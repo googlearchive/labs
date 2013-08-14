@@ -26,7 +26,11 @@
         text-align: center;
       }
       
-      #tabbar > *.polymer-selected {
+      #tabbar > [hidden] {
+        display: none !important;
+      }
+      
+      #tabbar > .polymer-selected {
         background-color: #1e1d1d !important;
       }
       
@@ -56,7 +60,7 @@
     <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
         on-polymer-activate="favoriteSelect"></shuttle-favorites>
     
-    <shuttle-map id="map" class="{{desktop : !queryMatches}}" stop="{{centerStop}}" 
+    <shuttle-map id="map" class="{{desktop : !queryMatches}}" centerStop="{{centerStop}}" 
         fromStop="{{fromStop}}" toStop="{{toStop}}"
         filteredStops="{{filteredStops}}" selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-map>
     
@@ -96,7 +100,7 @@
       ]],
       selected: null,
       queryMatches: false,
-      ready: function() {
+      created: function() {
         this.nodes = [
           this.$.schedule, this.$.favorites, this.$.map, this.$.tabbar
         ];
