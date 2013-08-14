@@ -94,7 +94,7 @@
 		Polymer('calendar-event-edit', {
 			event: BLANK_EVENT,
 			get start() {
-				return new Date(this.event.start - new Date().getTimezoneOffset() * 60000).toISOString().split('.')[0];
+				return new Date((this.event.start || 0) - new Date().getTimezoneOffset() * 60000).toISOString().split('.')[0];
 			},
 			set start(newValue) {
 				this.event.start = Date.parse(newValue) + new Date().getTimezoneOffset() * 60000;

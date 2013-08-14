@@ -195,349 +195,6 @@ Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<polymer-element name="polymer-ui-theme-aware" attributes="theme" assetpath="..\..\..\polymer-ui-elements\polymer-ui-theme-aware">
-  
-</polymer-element>
-
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<!--
-/**
-* Polymer-UI Elements
-*
-* @module Polymer-UI Elements
-*/  
-/**
- * polymer-ui-icon is a 24x24 glyph expressed as a background-image.
- *
- * Example:
- *
- *     <polymer-ui-icon src="star.png"></polymer-ui-icon>
- *
- * Optionally can use other size like 32x32 by setting the attribute "size" to "32":
- *
- *     <polymer-ui-icon src="big_star.png" size="32"></polymer-ui-icon>
- *
- * Polymer includes an icon set.  The property "icon" can be used
- * to specify which icon to use.
- *
- * Example:
- *
- *     <polymer-ui-icon icon="menu"></polymer-ui-icon>
- *
- * @class polymer-ui-icon
- */
--->
-
-
-<polymer-element name="polymer-ui-icon" extends="polymer-ui-theme-aware" attributes="src size index icon" assetpath="..\..\..\polymer-ui-elements\polymer-ui-icon">
-  <template>
-    <link rel="stylesheet" href="..\..\..\polymer-ui-elements\polymer-ui-icon\polymer-ui-icon.css">
-    <content></content>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<!--
-/**
- * @module Polymer UI Elements
- */
-/**
- * polymer-ui-icon-button enables you to place an image centered in a button.
- *
- * Example:
- *
- *     <polymer-ui-icon-button src="star.png"></polymer-ui-icon-button>
- *
- * Polymer includes an icon set.  The property "icon" can be used
- * to specify which icon to use.
- *
- * Example:
- *
- *     <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
- *
- * @class polymer-ui-icon-button
- */
--->
-
-
-
-<polymer-element name="polymer-ui-icon-button" extends="polymer-ui-theme-aware" attributes="src index icon active" assetpath="..\..\..\polymer-ui-elements\polymer-ui-icon-button">
-  <template>
-    <link rel="stylesheet" href="..\..\..\polymer-ui-elements\polymer-ui-icon-button\polymer-ui-icon-button.css">
-    <polymer-ui-icon src="{{src}}" index="{{index}}" icon="{{icon}}"><content></content></polymer-ui-icon>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<!--
-/**
- * @module Polymer Elements
- */
--->
-<polymer-element name="polymer-media-query" attributes="query queryMatches" assetpath="..\..\..\polymer-elements\polymer-media-query">
-  <template>
-    <style>
-      @host {
-        * {
-          display: none;
-        }
-      }
-    </style>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<polymer-element name="polymer-flex-layout" attributes="vertical align justify isContainer" assetpath="..\..\..\polymer-elements\polymer-flex-layout">
-  <template>
-    <link rel="stylesheet" polymer-scope="controller" href="..\..\..\polymer-elements\polymer-flex-layout\polymer-flex-layout.css">
-    <link rel="stylesheet" href="..\..\..\polymer-elements\polymer-flex-layout\polymer-flex-layout.css">
-    <content></content>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-
-<!--
-/**
- * @module Polymer UI Elements
- */
-/**
- * polymer-ui-toolbar is a horizontal bar containing elements that can perform actions.
- *
- * Example:
- *
- *     <polymer-ui-toolbar>
- *       <polymer-ui-icon-button src="menu.png" on-click="menuAction"></polymer-ui-icon-button>
- *       <div flex>Title</div>
- *       <polymer-ui-icon-button src="more.png" on-click="moreAction"></polymer-ui-icon-button>
- *     </polymer-ui-toolbar>
- *
- * polymer-ui-toolbar can adopt to smaller screen size.  If the attribute "responsive" is set
- * and the screen size is less than the responsiveWidth (default to 800px), the toolbar will
- * be moved to the bottom of the page.
- *
- * Example:
- *
- *     <polymer-ui-toolbar>
- *       <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
- *       <div flex>Title</div>
- *       <polymer-ui-toolbar responsive>
- *         <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
- *         <polymer-ui-icon-button icon="trash"></polymer-ui-icon-button>
- *         <polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
- *       </polymer-ui-toolbar>
- *     </polymer-ui-toolbar>
- *
- * @class polymer-ui-toolbar
- */
--->
-
-
-
-
-
-<polymer-element name="polymer-ui-toolbar" extends="polymer-ui-theme-aware" attributes="responsiveWidth" assetpath="..\..\..\polymer-ui-elements\polymer-ui-toolbar">
-  <template>
-    <link rel="stylesheet" href="..\..\..\polymer-ui-elements\polymer-ui-toolbar\polymer-ui-toolbar.css">
-    <polymer-flex-layout align="center"></polymer-flex-layout>
-    <polymer-media-query query="max-width: {{responsiveWidth}}" querymatches="{{queryMatches}}"></polymer-media-query>
-    <content></content>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<!--
-/**
- * @module Polymer UI Elements
- */
-/**
- * polymer-ui-toggle-button is a button that has one of two states (ON/OFF).
- * You can tap or drag the button to switch state.
- *
- * Example:
- *
- *     <polymer-ui-toggle-button value="true"></polymer-ui-toggle-button>
- *
- * @class polymer-ui-toggle-button
- */
--->
-<polymer-element name="polymer-ui-toggle-button" attributes="value noCaption onCaption offCaption" on-tap="toggle" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd" on-flick="flick" assetpath="..\..\..\polymer-ui-elements\polymer-ui-toggle-button">
-  <template>
-    <link rel="stylesheet" href="..\..\..\polymer-ui-elements\polymer-ui-toggle-button\polymer-ui-toggle-button.css">
-    <div id="toggle" class="toggle">
-      <span class="on-label">{{noCaption ? '' : onCaption}}</span>
-      <span id="thumb" class="thumb"></span>
-      <span class="off-label">{{noCaption ? '' : offCaption}}</span>
-    </div>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<!--
-/**
- * @module Polymer Elements
- */
--->
-<polymer-element name="polymer-selection" attributes="multi" assetpath="..\..\..\polymer-elements\polymer-selector">
-  <template>
-    <style>
-      @host {
-        * {
-          display: none !important;
-        }
-      }
-    </style>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<!--
-/**
- * @module Polymer Elements
- */
-/**
- * polymer-selector is used to display a list of elements that can be selected.
- * The attribute "selected" indicates which item element is being selected.
- * Tapping on the item element would fire "polymer-activate" event. And use
- * "polymer-select" event to listen for selection changes.
- *
- * Example:
- *
- *     <polymer-selector selected="0">
- *       <div>Item 1</div>
- *       <div>Item 2</div>
- *       <div>Item 3</div>
- *     </polymer-selector>
- *
- * polymer-selector is not styled.  So one needs to use "polymer-selected" CSS
- * class to style the selected element.
- * 
- *     <style>
- *       .item.polymer-selected {
- *         background: #eee;
- *       }
- *     </style>
- *     ...
- *     <polymer-selector>
- *       <div class="item">Item 1</div>
- *       <div class="item">Item 2</div>
- *       <div class="item">Item 3</div>
- *     </polymer-selector>
- *
- * @class polymer-selector
- */
-/**
- * Fired when selection changes.
- * 
- * @event polymer-select
- * @param {Object} detail
- *   @param {boolean} isSelected
- *   @param {Object} detail.item the item element
- */
-/**
- * Fired when an item element is tapped.
- * 
- * @event polymer-activate
- * @param {Object} detail
- *   @param {Object} detail.item the item element
- */
--->
-
-
-<polymer-element name="polymer-selector" attributes="selected multi valueattr selectedClass selectedProperty selectedItem selectedModel notap target itemsSelector activateEvent" assetpath="..\..\..\polymer-elements\polymer-selector">
-  <template>
-    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="selectionSelect"></polymer-selection>
-    <content id="items" select="*"></content>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
-<!--
-/**
- * @module Polymer UI Elements
- */
--->
-
-
-
-<!--
-/**
- * polymer-ui-tabs is a polymer-selector styled to look like a tab menu.
- *
- * Example:
- *
- *     <polymer-ui-tabs selected="0">
- *       <span>One</span>
- *       <span>Two</span>
- *       <span>Three</span>
- *       <span>Four</span>
- *     </polymer-ui-tabs>
- *
- * @class polymer-ui-tabs
- * @extends polymer-selector
- */
--->
-
-
-<polymer-element name="polymer-ui-tabs" extends="polymer-selector" assetpath="..\..\..\polymer-ui-elements\polymer-ui-tabs">
-  <template>
-    <link rel="stylesheet" href="..\..\..\polymer-ui-elements\polymer-ui-tabs\polymer-ui-tabs.css">
-    <polymer-flex-layout></polymer-flex-layout>
-    <shadow></shadow>
-  </template>
-  
-</polymer-element>
-
-<!--
-Copyright 2013 The Polymer Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
--->
 <polymer-element name="polymer-ui-theme-aware" attributes="theme" assetpath="elements\polymer-ui-elements\polymer-ui-theme-aware">
   
 </polymer-element>
@@ -620,126 +277,6 @@ license that can be found in the LICENSE file.
     <polymer-ui-icon src="{{src}}" index="{{index}}" icon="{{icon}}"><content></content></polymer-ui-icon>
   </template>
   
-</polymer-element>
-
-
-
-<polymer-element name="calendar-color-button" attributes="value" assetpath="elements\calendar-elements\calendar-color-button">
-	<template>
-		<style>
-			@host {
-				:scope {
-					display: inline-block;
-				}
-			}
-
-			polymer-ui-icon-button {
-				padding: 0 !important;
-			}
-
-			input {
-				-webkit-appearance: none;
-				background: url(elements\calendar-elements\assets\color-wheel.png) no-repeat center;
-				border: 0;
-				height: 44px;
-				padding: 0;
-				width: 44px;
-			}
-
-			input:focus {
-				outline: 0;
-			}
-
-			::-webkit-color-swatch-wrapper {
-				display: none;
-			}
-		</style>
-		<polymer-ui-icon-button>
-			<input type="color" value="{{value}}">
-		</polymer-ui-icon-button>
-	</template>
-	
-</polymer-element>
-
-
-
-
-
-
-
-<polymer-element name="calendar-event-details" attributes="event" assetpath="elements\calendar-elements\calendar-event-details">
-	<template>
-		<style>
-			@host {
-				:scope {
-					display: block;
-				}
-			}
-
-			h2 {
-				margin-top: 0;
-				margin-bottom: 5px;
-			}
-
-			h3 {
-				margin-top: 0;
-			}
-
-			.wrapper {
-				display: flex;
-				flex-direction: column;
-				height: 100%;
-			}
-
-			.scrollable {
-				flex: 1;
-				font-size: 13px;
-				overflow-y: scroll;
-			}
-
-			.scrollable > div {
-				padding: 10px;
-			}
-
-			.header {
-				color: white;
-				text-align: center;
-			}
-
-		  label * {
-        vertical-align: middle;
-		  }
-		</style>
-
-		<div class="wrapper">
-			<polymer-ui-toolbar>
-				<div flex="">
-					<polymer-ui-icon-button src="elements\calendar-elements\assets\arrow_left.png" on-click="onBackClick"></polymer-ui-icon-button>
-				</div>
-				<div>
-					<calendar-color-button value="{{event.color}}"></calendar-color-button>
-					<polymer-ui-icon-button src="elements\calendar-elements\assets\edit.png" on-click="onEditClick"></polymer-ui-icon-button>
-					<polymer-ui-icon-button icon="trash" on-click="onDeleteClick"></polymer-ui-icon-button>
-				</div>
-			</polymer-ui-toolbar>
-
-			<div class="scrollable">
-				<div class="header" style="background: {{event.color}};">
-					<h2>{{event.name || '(untitled)'}}</h2>
-					<div>{{date}} at {{start}} - {{end}}</div>
-					<div>{{event.location}}</div>
-				</div>
-
-				<div>
-					<h3>Description</h3>
-					<p>{{event.description}}</p>
-					<!--<polymer-ui-toggle-button onCaption="Public" offCaption="Private" value="{{event.isPublic}}"></polymer-ui-toggle-button>-->
-					<label><input type="checkbox" value?="{{event.isPublic}}">&nbsp;<span>Public</span></label>
-				</div>
-			</div>
-		</div>
-	</template>
-	
 </polymer-element>
 
 <!--
@@ -864,6 +401,256 @@ license that can be found in the LICENSE file.
     </div>
   </template>
   
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+-->
+<polymer-element name="polymer-selection" attributes="multi" assetpath="elements\polymer-elements\polymer-selector">
+  <template>
+    <style>
+      @host {
+        * {
+          display: none !important;
+        }
+      }
+    </style>
+  </template>
+  
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-selector is used to display a list of elements that can be selected.
+ * The attribute "selected" indicates which item element is being selected.
+ * Tapping on the item element would fire "polymer-activate" event. And use
+ * "polymer-select" event to listen for selection changes.
+ *
+ * Example:
+ *
+ *     <polymer-selector selected="0">
+ *       <div>Item 1</div>
+ *       <div>Item 2</div>
+ *       <div>Item 3</div>
+ *     </polymer-selector>
+ *
+ * polymer-selector is not styled.  So one needs to use "polymer-selected" CSS
+ * class to style the selected element.
+ * 
+ *     <style>
+ *       .item.polymer-selected {
+ *         background: #eee;
+ *       }
+ *     </style>
+ *     ...
+ *     <polymer-selector>
+ *       <div class="item">Item 1</div>
+ *       <div class="item">Item 2</div>
+ *       <div class="item">Item 3</div>
+ *     </polymer-selector>
+ *
+ * @class polymer-selector
+ */
+/**
+ * Fired when selection changes.
+ * 
+ * @event polymer-select
+ * @param {Object} detail
+ *   @param {boolean} isSelected
+ *   @param {Object} detail.item the item element
+ */
+/**
+ * Fired when an item element is tapped.
+ * 
+ * @event polymer-activate
+ * @param {Object} detail
+ *   @param {Object} detail.item the item element
+ */
+-->
+
+
+<polymer-element name="polymer-selector" attributes="selected multi valueattr selectedClass selectedProperty selectedItem selectedModel notap target itemsSelector activateEvent" assetpath="elements\polymer-elements\polymer-selector">
+  <template>
+    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="selectionSelect"></polymer-selection>
+    <content id="items" select="*"></content>
+  </template>
+  
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+-->
+
+
+
+<!--
+/**
+ * polymer-ui-tabs is a polymer-selector styled to look like a tab menu.
+ *
+ * Example:
+ *
+ *     <polymer-ui-tabs selected="0">
+ *       <span>One</span>
+ *       <span>Two</span>
+ *       <span>Three</span>
+ *       <span>Four</span>
+ *     </polymer-ui-tabs>
+ *
+ * @class polymer-ui-tabs
+ * @extends polymer-selector
+ */
+-->
+
+
+<polymer-element name="polymer-ui-tabs" extends="polymer-selector" assetpath="elements\polymer-ui-elements\polymer-ui-tabs">
+  <template>
+    <link rel="stylesheet" href="elements\polymer-ui-elements\polymer-ui-tabs\polymer-ui-tabs.css">
+    <polymer-flex-layout></polymer-flex-layout>
+    <shadow></shadow>
+  </template>
+  
+</polymer-element>
+
+
+
+<polymer-element name="calendar-color-button" attributes="value" assetpath="elements\calendar-elements\calendar-color-button">
+	<template>
+		<style>
+			@host {
+				:scope {
+					display: inline-block;
+				}
+			}
+
+			polymer-ui-icon-button {
+				padding: 0 !important;
+			}
+
+			input {
+				-webkit-appearance: none;
+				background: url(elements\calendar-elements\assets\color-wheel.png) no-repeat center;
+				border: 0;
+				height: 44px;
+				padding: 0;
+				width: 44px;
+			}
+
+			input:focus {
+				outline: 0;
+			}
+
+			::-webkit-color-swatch-wrapper {
+				display: none;
+			}
+		</style>
+		<polymer-ui-icon-button>
+			<input type="color" value="{{value}}">
+		</polymer-ui-icon-button>
+	</template>
+	
+</polymer-element>
+
+
+
+
+
+
+
+<polymer-element name="calendar-event-details" attributes="event" assetpath="elements\calendar-elements\calendar-event-details">
+	<template>
+		<style>
+			@host {
+				:scope {
+					display: block;
+				}
+			}
+
+			h2 {
+				margin-top: 0;
+				margin-bottom: 5px;
+			}
+
+			h3 {
+				margin-top: 0;
+			}
+
+			.wrapper {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+			}
+
+			.scrollable {
+				flex: 1;
+				font-size: 13px;
+				overflow-y: scroll;
+			}
+
+			.scrollable > div {
+				padding: 10px;
+			}
+
+			.header {
+				color: white;
+				text-align: center;
+			}
+
+		  label * {
+        vertical-align: middle;
+		  }
+		</style>
+
+		<div class="wrapper">
+			<polymer-ui-toolbar>
+				<div flex="">
+					<polymer-ui-icon-button src="elements\calendar-elements\assets\arrow_left.png" on-click="onBackClick"></polymer-ui-icon-button>
+				</div>
+				<div>
+					<calendar-color-button value="{{event.color}}"></calendar-color-button>
+					<polymer-ui-icon-button src="elements\calendar-elements\assets\edit.png" on-click="onEditClick"></polymer-ui-icon-button>
+					<polymer-ui-icon-button icon="trash" on-click="onDeleteClick"></polymer-ui-icon-button>
+				</div>
+			</polymer-ui-toolbar>
+
+			<div class="scrollable">
+				<div class="header" style="background: {{event.color}};">
+					<h2>{{event.name || '(untitled)'}}</h2>
+					<div>{{date}} at {{start}} - {{end}}</div>
+					<div>{{event.location}}</div>
+				</div>
+
+				<div>
+					<h3>Description</h3>
+					<p>{{event.description}}</p>
+					<!--<polymer-ui-toggle-button onCaption="Public" offCaption="Private" value="{{event.isPublic}}"></polymer-ui-toggle-button>-->
+					<label><input type="checkbox" value?="{{event.isPublic}}">&nbsp;<span>Public</span></label>
+				</div>
+			</div>
+		</div>
+	</template>
+	
 </polymer-element>
 
 

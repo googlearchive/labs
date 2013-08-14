@@ -1,1 +1,3 @@
-node ../../vulcanize/vulcan.js --csp -i dev.html -o imports.html
+node ../../vulcanize/vulcan.js --csp -i index.html -o imports.html
+@del app.html
+@ren index-vulcanized.html app.html
