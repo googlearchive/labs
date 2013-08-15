@@ -155,6 +155,9 @@
     .base {
       display: none;
       position: absolute;
+    }
+    
+    .layerize {
       -webkit-transform: translateZ(0);
     }
   </style>
@@ -162,7 +165,9 @@
 <body>
   <div class="header">
     <button onclick="reset()">reset</button>
-    <label>rows: <input id="rowsInput" value="5000"/></label>
+    <label>rows:<input id="rowsInput" value="5000"></label>
+    <label>overdraw:<input id="overDrawInput" value="50"></label>
+    <label>layers:<input id="makeLayersInput" type="checkbox"></label>
     <label>item: 
       <select id="complexitySelect">
         <option>simple</option>
@@ -179,7 +184,11 @@
     
     var list = document.querySelector('#list');
     var content = document.querySelector('#content');
-    
+    var overDraw = 0;
+    var rafing = false;
+    var scrollTime = 0;
+    var layerize = false;
+    var RAF_AFTER_SCROLL_TIME = 3000;
     
     // scrolling
     function scroll() {
@@ -189,20 +198,21 @@
       showVisible(t, h);
     }
     
-    window.doScroll = scroll;
-    
     function hideLastVisible() {
       for (var i=0, l=visible.length; i<l; i++) {
         visible[i].style.display = null;
       }
     }
     
-    function showVisible(top, height) {
+    function showVisible(top, height, up) {
       visible = [];
       var rh = rowHeights[complexity];
-      var slop = 0; // 50;
-      var s = Math.max(0, Math.floor(top / rh) - slop);
-      var c = Math.ceil(height / rh) + (slop * 2);
+      var s = Math.floor(top / rh);
+      var c = Math.ceil(height / rh);
+      if (overDraw) {
+        s = Math.max(0, s - overDraw);
+        c+= 2*overDraw;
+      }
       for (var i=s, n; i<s+c; i++) {
         n = content.children[i];
         n.style.display = 'block';
@@ -210,25 +220,20 @@
       }
     }
     
-    rafing = false;
-    scrollTime = 0;
-    
     list.onscroll = function() {
       scrollTime = Date.now();
       if (!rafing) {
         raf();
       }
-      //scroll();
     };
     
-    //list.addEventListener('touchmove', function() {});
-    requestAnimationFrame = window.requestAnimationFrame || webkitRequestAnimationFrame;
-    
+    requestAnimationFrame = window.requestAnimationFrame ||
+        webkitRequestAnimationFrame;
     function raf() {
       rafing = true;
       requestAnimationFrame(function() {
         scroll();
-        if (Date.now() - scrollTime < 2000) {
+        if (Date.now() - scrollTime < RAF_AFTER_SCROLL_TIME) {
           raf();
         } else {
           rafing = false;
@@ -239,7 +244,11 @@
     // dom generation
     reset = function() {
       visible = [];
+      scrollTime = 0;
+      rafing = false;
       complexity = complexitySelect.value;
+      overDraw = Number(overDrawInput.value);
+      layerize = makeLayersInput.checked;
       var count = rowsInput.value;
       var itemFn = items[complexity];
       if (itemFn == items["medium"]) {
@@ -250,8 +259,9 @@
         names.sort();
       }
       content.innerHTML = '';
+      var classes = 'base' + (layerize ? ' layerize' : '');
       for (var i=0, html=''; i<count; i++) {
-        html += itemFn(i);
+        html += itemFn(i, classes);
       }
       content.innerHTML = html;
       list.scrollTop = 0;
@@ -286,14 +296,14 @@
     
     items = {
       // one node, minimal styling
-      simple: function(i) {
-        return '<div class="base item" style="top: ' + (i * rowHeights.simple) + 'px;">Item ' + i + '</div>';
+      simple: function(i, classes) {
+        return '<div class="item ' + classes + '" style="top: ' + (i * rowHeights.simple) + 'px;">Item ' + i + '</div>';
       },
       // 5 nodes, image as background, text clipping
-      medium: function(i) {
+      medium: function(i, classes) {
         var a = names[i].charAt(0);
         var show = false && a != (names[i-1] || '').charAt(0);
-        return '<div class="base medium-item" style="top: ' + (i * rowHeights.medium) + 'px;">' + 
+        return '<div class="medium-item ' + classes + '" style="top: ' + (i * rowHeights.medium) + 'px;">' + 
           (show ? '<div class="divider">' + a + '</div>' : '') + 
           '<div class="message" style="background-image: url(images\/' + i%4 + '.png);">' +
           '<span class="from">' + names[i] + '</span>' +
@@ -303,8 +313,9 @@
           'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.' +
           '</div></div></div>';
       },
-      complex: function(i) {
-        return '<div class="base complex-item" style="top: ' + (i * rowHeights.complex) + 'px;">' +
+      // kitchensink
+      complex: function(i, classes) {
+        return '<div class="complex-item ' + classes + '" style="top: ' + (i * rowHeights.complex) + 'px;">' +
           '<div class="complex-flex">' +
             '<img src="images/0.png" />' +
             '<select><option>1</option><option>2</option></select>' +
