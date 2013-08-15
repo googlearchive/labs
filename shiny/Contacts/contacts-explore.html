@@ -69,7 +69,7 @@
         {header: 'Recent'}
       ],
 			groups: ['Personal', 'Work', 'Foo', 'Bar', 'Baz', 'Zot', 'Moo'],
-      inserted: function() {
+      enteredDocument: function() {
         this.async(function() {
           this.$.accordion.selected = [0];
         });

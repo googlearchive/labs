@@ -1207,7 +1207,7 @@
       Polymer('mock-data', {
         contacts: contacts,
         names: null,
-        ready: function() {
+        created: function() {
           if (!names) {
             names = [];
             for (var i = 0, c; c = contacts[i]; i++) {
