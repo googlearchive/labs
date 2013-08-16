@@ -1,5 +1,11 @@
-var _DEBUG_CONTROL_POSITIONS = false;
+var LOCATE_FOUC = false;
 
+/**
+ * Returns a transform value (translation in X and Y plus scale in X and Y) that
+ * converts a rectangle at current (left, top, width, height) with origin at 
+ * origin (x, y) to a rectangle at desired (left, top, width, height). If 
+ * ignoreScale is set, then scale contributions are ignored / not generated.
+ */
 function rectsToTransformValues(desired, current, origin, ignoreScale) {
   var sx = (ignoreScale ? 1 : desired.width / current.width);
   var sy = (ignoreScale ? 1 : desired.height / current.height);
@@ -11,112 +17,52 @@ function rectsToTransformValues(desired, current, origin, ignoreScale) {
   };
 }
 
+/**
+ * Returns a CSS representation of the provided transform value (tx, ty, sx, sy).
+ */
 function transformValuesToCss(values, ignoreScale) {
   return "translate3d(" + values.tx + "px, " + values.ty + "px, 0px)" + (ignoreScale ? "" : 
          " scale(" + values.sx + ", " + values.sy + ")");
 }
 
+/**
+ * Returns a CSS string representing the transform that
+ * converts a rectangle at current (left, top, width, height) with origin at 
+ * origin (x, y) to a rectangle at desired (left, top, width, height). If 
+ * ignoreScale is set, then scale contributions are ignored / not generated.
+ */
 function rectsToCss(desired, current, origin, ignoreScale) {
   return transformValuesToCss(rectsToTransformValues(desired, current, origin, ignoreScale), ignoreScale);
 }
 
+/**
+ * Returns a CSS string representing a clipping rectangle that clips to the
+ * width and height of the provided rect.
+ */
 function rectToClip(rect) {
   return "rect(0px, " + rect.width + "px, " + rect.height + "px, 0px)";
 } 
 
-function setPosition(target, rect, name) {
-  target[name] = rect;
+/**
+ * Constructs a fillMode: 'none' timing object of the requested duration.
+ */
+function timingForDuration(duration) {
+  return {iterationDuration: duration, fillMode: 'none'};
 }
 
-function fixTiming(timing) {
-  if (typeof timing == "number") {
-    timing = {iterationDuration: timing};
-  }
-  timing.fillMode = _DEBUG_CONTROL_POSITIONS ? 'both' : 'none';
-  if (_DEBUG_CONTROL_POSITIONS) {
-    timing.startDelay = 2;
-  }
-  return timing;
-}
-
-var classNum=0;
-
-function setupShadowContainer(target, root) {
-  var parent = root.parentElement;
-  var shadowRoot = parent.webkitShadowRoot;
-  if (shadowRoot == null) {
-    shadowRoot = parent.webkitCreateShadowRoot();
-    shadowRoot.applyAuthorStyles = true;
-    for (var i = 0; i < parent.children.length; i++) {
-      var content = document.createElement("content");
-      content.setAttribute("select", ".scflt_" + classNum);
-      content.classList.add("scflt_" + classNum);
-      parent.children[i].classList.add("scflt_" + classNum);
-      var opacDiv = document.createElement("div");
-      opacDiv.appendChild(content);
-      var div = document.createElement("div");
-      div.appendChild(opacDiv);
-      div.classList.add("scflt_" + classNum);
-      shadowRoot.appendChild(div);
-      if (parent.children[i] == target) {
-        var newSel = ".scflt_" + classNum;
-      }
-      classNum ++;
-    }
-  } else {
-    for (var i = 0; i < target.classList.length; i++) {
-      if (target.classList[i].substring(0, 6) == "scflt_") {
-        var newSel = '.' + target.classList[i];
-        break;
-      }
-    }
-  }
-
-  if (target != root) {
-    var newSel = ".scflt_" + classNum;
-    classNum ++;
-
-    var content = document.createElement("div");
-    var contentChild = document.createElement("content");
-    contentChild.setAttribute("select", newSel);
-    contentChild.classList.add(newSel.substring(1));
-    content.appendChild(contentChild);
-    target.classList.add(newSel);
-    var parentDiv = document.createElement("div");
-    parentDiv.appendChild(content);
-    parentDiv.classList.add(newSel.substring(1));
-    shadowRoot.appendChild(parentDiv);
-  } else {
-    content = shadowRoot.querySelector('content' + newSel).parentElement;
-    parentDiv = content.parentElement;
-  }
-
-  target.shadow = {root: shadowRoot, parent: parentDiv, content: content};
-  return target.shadow;
-}
-
-function createShadowPlaceholder(shadow, target, rect) {
-  var style = getComputedStyle(target);
-  if (style.position == 'absolute' || style.position == 'relative') {
-    return undefined;
-  }
-  var div = document.createElement("div");
-  var replacement = boundingRectToReplacementRect(target, rect);
-  div.style.width = replacement.width + 'px';
-  div.style.height = replacement.height + 'px';
-  div.classList.add('placeholder');
-  shadow.parent.appendChild(div);
-  return div;
-}
- 
-function animationToPositionLayout(target, positions, current, timing, isContents) {
-  timing = fixTiming(timing);
+/**
+ * Constructs a layout animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions, continuously
+ * adjusting width and height to force layout changes during the animation.
+ */
+function animationToPositionLayout(target, from, positions, duration) {
+  var timing = timingForDuration(duration);
   
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = target.shadow.from;
-  }
+  var transformOrigin = origin(from.style.webkitTransformOrigin);
+  var cssList = positions.map(function(position) {
+    var str = rectsToCss(position, getPosition(target, from.label), transformOrigin, true);
+    return { offset: position.offset, value: str};
+  });
 
   var mkPosList = function(property, list) {
     return list.map(function(input) {
@@ -127,37 +73,41 @@ function animationToPositionLayout(target, positions, current, timing, isContent
     });
   }
 
-  // copy style from initial state to final state. This tries to capture CSS transitions.
+  // Copy (some) style from initial state to final state. This tries to capture CSS transitions.
+  // TODO: This no longer seems to work. Either get it working again for transitions or remove it.
   sourceStyle = window.getComputedStyle(from);
   targetStyle = window.getComputedStyle(target);
   for (var i = 0; i < targetStyle.length; i++) {
     var prop = targetStyle[i];
     if (sourceStyle[prop] != targetStyle[prop]) {
-      if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", "width", "height"].indexOf(prop) == -1) {
-        if (!isContents || prop.indexOf('background') == -1) {
+      if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", "width", "height", "opacity"].indexOf(prop) == -1) {
+        if (prop.indexOf('background') == -1) {
           from.style[prop] = targetStyle[prop];
         }
       }
     }
   }
-  if (isContents) {
-    from.style.borderColor = "rgba(0, 0, 0, 0)";
-  }
 
-  return new Animation(from, toStinkyAPI({position: ["absolute", "absolute"],
-                                left: mkPosList('left', positions),
-                                top: mkPosList('top', positions),
+  return new Animation(from, toOffsetAPI({position: ["absolute", "absolute"],
+                                transform: cssList,
                                 width: mkPosList('width', positions), 
                                 height: mkPosList('height', positions)}), 
                        timing);
 }
 
+/**
+ * Extracts transform origin coordinates from a transform-origin string.
+ */
 function origin(str) {
   var arr = str.split('px');
   return {x: Number(arr[0]), y: Number(arr[1])};
 }
 
-function toStinkyAPI(dict) {
+/**
+ * Converts a set of property-indexed keyframes to a set of offset-indexed
+ * keyframes.
+ */
+function toOffsetAPI(dict) {
   var keyframes = {};
   for (var key in dict) {
     for (var i = 0; i < dict[key].length; i++) {
@@ -184,57 +134,53 @@ function toStinkyAPI(dict) {
   });
 }
 
-function animationToPositionTransform(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = target.shadow.from;
-  }
-
+/**
+ * Constructs a transform animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions, scaling
+ * such that the provided widths and heights are satisfied.
+ */
+function animationToPositionTransform(target, from, positions, duration) {
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, transOrig);
+    var str = rectsToCss(position, getPosition(target, from.label), transOrig);
     return {offset: position.offset, value: str};
   });
 
-  timing = fixTiming(timing);
+  var timing = timingForDuration(duration);
 
-  console.log(toStinkyAPI({transform: cssList}));
-
-  return new Animation(from, toStinkyAPI({transform: cssList}), timing);
+  return new Animation(from, toOffsetAPI({transform: cssList}), timing);
 }
 
-function animationToPositionNone(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = target.shadow.from;
-  }
-
+/**
+ * Constructs a transform animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions. Width and height
+ * are not modified by the animation.
+ */
+function animationToPositionNone(target, from, positions, timing) {
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, transOrig, true);
+    var str = rectsToCss(position, getPosition(target, from.label), transOrig, true);
     return { offset: position.offset, value: str};
   });
 
-  timing = fixTiming(timing);
+  timing = timingForDuration(timing);
   
-  var a = new Animation(from, toStinkyAPI({transform: cssList,
+  var a = new Animation(from, toOffsetAPI({transform: cssList,
                                 position: ["absolute", "absolute"]}), timing);
   return a;
 }
 
-function animationToPositionClip(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = target.shadow.from
-  }
-  timing = fixTiming(timing);
+/**
+ * Constructs a clip animation for the target, which is currently positioned at
+ * from. The animation will move target through the provided positions. Width and height
+ * are enforced via an animating clip value.
+ */
+function animationToPositionClip(target, from, positions, timing) {
+  timing = timingForDuration(timing);
   
   var transOrig = origin(from.style.webkitTransformOrigin);
   var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, current, transOrig, true);
+    var str = rectsToCss(position, getPosition(target, from.label), transOrig, true);
     return { offset: position.offset, value: str };
   });
 
@@ -243,268 +189,329 @@ function animationToPositionClip(target, positions, current, timing, isContents)
     return { offset: position.offset, value: str };
   });
 
-  return new Animation(from, toStinkyAPI({transform: cssList, clip: clipList, position: ["absolute", "absolute"]}), timing);
+  return new Animation(from, toOffsetAPI({transform: cssList, clip: clipList, position: ["absolute", "absolute"]}), timing);
 }
 
-function animationToPositionFadeOutIn(outTo, inFrom, clip) {
-  return function(target, positions, current, timing, isContents) {
-    if (isContents) {
-      var from = target.shadow.fromContents;
-    } else {
-      var from = target.shadow.from;
-    }
-    timing = fixTiming(timing);
-    var opacityTiming = {};
-    for (d in timing) {
-      opacityTiming[d] = timing[d];
-    }
-    opacityTiming.iterationDuration = timing.iterationDuration * outTo;
-    opacityTiming.fillMode = 'forwards';
+var offsetRE = /^[0-9.]*\%?$/
 
-    var transOrig = origin(from.style.webkitTransformOrigin);
-    var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, positions[0], transOrig, true);
-      return { offset: position.offset, value: str};
-    });
-  
-    if (clip) {
-      var clipList = positions.map(function(position) {
-        var str = rectToClip(position);
-        return { offset: position.offset, value: str};
+/**
+ * An Effect segment specification. Effects are lists of effect segments
+ * with offsets bounding each segment.
+ */
+function Effect() {
+  // True if this segment is a layout segment.
+  this.isLayout = false;
+  // The scale mode of this segment (none | clip | transform)
+  this.scaleMode = "none";
+  // The blend mode of this segment (none | fade | fade-in | fade-out | fade-to)
+  this.blendMode = "none";
+  // The number of explicit nones encountered. No more than 2 should be present,
+  // or 1 if a scaleMode _or_ blendMode is specified, or 0 if both are specified.
+  this.explicitNones = 0;
+}
+
+Effect.prototype = {
+  /**
+   * Sets the layout flag on this segment and asserts that no scaleMode or blendMode have been set.
+   */
+  setLayout: function() {
+    console.assert(this.scaleMode == "none" && this.blendMode == "none");
+    this.isLayout = true;
+  },
+  /**
+   * Sets either a blend mode or a scale mode for this segment. Ensures that layout has not been set,
+   * and that there are not too many 'none' values specified to support having an additional mode.
+   */ 
+  setMode: function(mode) {
+    if (mode == 'layout') {
+      this.setLayout();
+    } else if (mode == 'clip' || mode == 'transform') {
+      console.assert(!this.isLayout);
+      this.scaleMode = mode;
+    } else if (mode.substr(0, 4) == 'fade') {
+      console.assert(!this.isLayout);
+      this.blendMode = 'fade';
+      if (mode == 'fade' || mode == 'fade-in') {
+        this.fadeInParam = 1;
+      }
+      if (mode == 'fade' || mode == 'fade-out') {
+        this.fadeOutParam = 0;
+      }
+      if (mode.substr(0, 7) == 'fade-to') {
+        console.assert(this.fadeInParam === undefined && this.fadeOutParam === undefined);
+        var modes = mode.substr(5).split(',');
+        this.fadeInParam = offsetToNumber(modes[0].trim());
+        this.fadeOutParam = offsetToNumber(modes[1].split(')')[0].trim());
+      }
+    } else if (this.explicitNones == 0) {
+      console.assert(this.scaleMode == 'none' || this.blendMode == 'none');
+    } else {
+      console.assert(this.scaleMode == 'none' && this.blendMode == 'none' && this.explicitNones == 1);
+    }
+  }
+}
+
+/**
+ * Returns the interpolation of numbers a and b at fraction p.
+ */
+function interp(a, b, p) {
+  return a * (1 - p) + b * p;
+}
+
+/**
+ * Interpolates the top, left, width and height values of two positions a and b. 
+ * The interpolation fraction is calculated by determining the relative position of
+ * the input fraction f between the offsets recorded in a and b.
+ */
+function interpPosition(a, b, f) {
+  var p = (f - a.offset) / (b.offset - a.offset);
+  return {
+    offset: f,
+    top: interp(a.top, b.top, p),
+    left: interp(a.left, b.left, p),
+    width: interp(a.width, b.width, p),
+    height: interp(a.height, b.height, p)
+  };
+}
+
+/**
+ * Returns a copy of position a.
+ */
+function cloneRect(a) {
+  return {
+    offset: a.offset,
+    top: a.top,
+    left: a.left,
+    width: a.width,
+    height: a.height
+  };
+}
+
+/**
+ * Returns a slice of the provided positionList that includes all position
+ * offsets between start and end, inclusive. If no position with an offset
+ * matching the start or the end is found in positionList, then interpolated
+ * positions are constructed.
+ *
+ * Before returning the sublist, the offsets are rescaled such that the first
+ * position lies at offset 0 and the last position lies at offset 1.
+ */
+function positionSubList(start, end, positionList) {
+  var sublist = [];
+  for (var i = 0; i < positionList.length; i++) {
+    if (positionList[i].offset < start && positionList[i + 1].offset > start) {
+      sublist.push(interpPosition(positionList[i], positionList[i + 1], start));
+    } 
+    if (positionList[i].offset >= start && positionList[i].offset <= end) {
+      sublist.push(cloneRect(positionList[i]));
+    }
+    if (positionList[i].offset < end && positionList[i + 1].offset > end) {
+      sublist.push(interpPosition(positionList[i], positionList[i + 1], end));
+    }
+    if (positionList[i].offset > end) {
+      break;
+    }
+  }
+
+  for (var i = 0; i < sublist.length; i++) {
+    sublist[i].offset = (sublist[i].offset - start) / (end - start);
+  }
+  return sublist;
+}
+
+/**
+ * Converts an offset string (as a percentage or decimal fraction) to a numeric
+ * decimal fraction.
+ */
+function offsetToNumber(value) {
+  if (value.indexOf('%') != -1) {
+    return Number(value.slice(0, value.length - 1)) / 100;
+  }
+  return Number(value);
+}
+
+/**
+ * Parses an effect string, returning a list of Effects along with the offset
+ * ranges of each Effect.
+ */
+function parseEffect(effect) {
+  var effectList = effect.split(' ');
+  var effectResult = [];
+  var start = 0;
+
+  var effect = new Effect();
+  for (var i = 0; i < effectList.length; i++) {
+    if (offsetRE.exec(effectList[i]) != null) {
+      var stop = offsetToNumber(effectList[i]);
+
+      if (start == stop) {
+        continue;
+      }
+      else {
+        effectResult.push({start: start, end: stop, effect: effect});
+        start = stop;
+        effect = new Effect();
+        continue;
+      }
+    }
+    effect.setMode(effectList[i]);
+  }
+
+  if (start != 1) {
+    effectResult.push({start: start, end: 1, effect: effect});
+  }
+
+  return effectResult;
+}
+
+/**
+ * Generates an animation for the provided element. The element will pass
+ * through the positions in positionList at the appropriate offsets in time.
+ * The duration and effect are extracted from the current layout animation
+ * registered for the element.
+ */
+// TODO: This would probably be cleaner as separate layout channel,
+// blend channel, translation channel and scale channel.
+function generateAnimation(element, positionList) {
+
+  var effect = element._layout.effect;
+  var duration = element._layout.duration;
+
+  var effectResult = parseEffect(effect);
+
+  var seq = new SeqGroup();
+  var lastWasLayout = true;
+
+  // If blending is applied, there are multiple copies of the element that must
+  // all be animated.
+  var copies = [getCopy(element, '_transitionBefore')];
+  var fromCopy = copies[0];
+  var fromOpacity = 1;
+  var toOpacity = 0;
+
+  var newStates = [];
+
+  var anims = undefined;
+  for (var i = 0; i < effectResult.length; i++) {
+    var start = effectResult[i].start;
+    var end = effectResult[i].end;
+    var effect = effectResult[i].effect;
+    var sublist = positionSubList(start, end, positionList);
+    if (effect.isLayout) {
+      anims = [];
+      copies.forEach(function(copy) {
+        var anim = animationToPositionLayout(element, copy, sublist, duration * (end - start));
+        anims.push(anim);
       });
-      var fromAnim = new Animation(from, toStinkyAPI({transform: cssList, clip: clipList,
-            position: ["absolute", "absolute"]}), timing);
-    } else { 
-      var fromAnim = new Animation(from, toStinkyAPI({transform: cssList,
-            position: ["absolute", "absolute"]}), timing);
-    }
-    var fromOpacAnim = new Animation(from, toStinkyAPI({opacity: ["1", "0"]}), opacityTiming);
-
-    opacityTiming.iterationDuration = timing.iterationDuration * (1 - inFrom);
-    if (opacityTiming.startDelay == undefined) {
-      opacityTiming.startDelay = 0;
-    }
-    opacityTiming.startDelay += timing.iterationDuration * inFrom;  
-    opacityTiming.fillMode = 'backwards';
-
-    if (isContents) {
-      if (!target.shadow.toContents) { 
-        var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-        var to = cloneToSize(target, toPosition, true);
-        target.shadow.toContents = extractContents(to);
-        target.shadow.parent.appendChild(target.shadow.toContents);
-        to.parentElement.removeChild(to);
-      }
-      var to = target.shadow.toContents;
+      seq.append(new ParGroup(anims, {fillMode: 'forwards'}));
+      lastWasLayout = true;
     } else {
-      var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-      var to = cloneToSize(target, toPosition, true);
-      target.shadow.to = to;
-    }
+      if (effect.blendMode != 'none') {
+        // Blend modes need a start and end snapshot to blend between.
+        var group = new SeqGroup([], {fillMode: 'forwards'});
+        var par = new ParGroup([], {fillMode: 'forwards'});
+        par.append(group);
+        seq.append(par);
+        if (end == 1) {
+          var newState = '_transitionAfter';
+        } else {
+          var newState = '_at_' + end;
+          generateCopyAtPosition(element, sublist[sublist.length - 1], newState);
+        }
+        // Record the fact that a new snapshot was used. This will need to be cleaned
+        // up at the end of the animation.
+        newStates.push(newState);
+        toCopy = getCopy(element, newState);
+        copies.push(toCopy);
+        toCopy.style.opacity = '0';
+        showCopy(element, newState);
+        par.append(new Animation(fromCopy, [{opacity: fromOpacity + ''}, {opacity: effect.fadeOutParam + ''}],
+          {fillMode: 'forwards', iterationDuration: duration * (end - start)}));
+        par.append(new Animation(toCopy, [{opacity: toOpacity + ''}, {opacity: effect.fadeInParam + ''}],
+          {fillMode: 'forwards', iterationDuration: duration * (end - start)}));
 
-    transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
-    var cssList = positions.map(function(position) {
-      var str = rectsToCss(position, positions[positions.length - 1], transOrig, true);
-      return { offset: position.offset, value: str};
+      } else {
+        var group = seq;
+      }
+      if (!lastWasLayout) {
+        // If neither this segment nor the previous segment was a layout, then we need to
+        // insert a zero-time layout to ensure the current state of the element is
+        // reflected in the animation. We need to do this for all blending snapshots.
+        var newList = [cloneRect(sublist[0]), cloneRect(sublist[0])];
+        newList[0].offset = 0;
+        newList[1].offset = 1;
+        anims = [];
+        copies.forEach(function(copy) {
+          var anim = animationToPositionLayout(element, copy, newList, 0);
+          anims.push(anim);
+        });
+        group.append(new ParGroup(anims, {fillMode: 'forwards'}));
+      }
+      // Pick up either the previous layout snapshots or the inserted layout 
+      // snapshots and fix them with forward fill, to ensure the layout
+      // updates to the end of the animation.
+      if (anims) {
+        anims.forEach(function(anim) { anim.specified.fillMode = 'forwards'; });
+        anims = undefined;
+      }
+      lastWasLayout = false;
+      switch(effect.scaleMode) {
+        case 'none':
+          var f = animationToPositionNone;
+          break;
+        case 'transform':
+          var f = animationToPositionTransform;
+          break;
+        case 'clip':
+          var f = animationToPositionClip;
+          break;
+      }
+      var copyAnims = []
+      copies.forEach(function(copy) { copyAnims.push(f(element, copy, sublist, duration * (end - start))); });
+      group.append(new ParGroup(copyAnims));
+    }
+  }
+
+  seq.onend = function(e) {
+    newStates.forEach(function(state) { 
+      hideCopy(element, state);
+      removeCopy(element, state);
     });
-
-    if (clip) {
-      var toAnim = new Animation(to, toStinkyAPI({transform: cssList, clip: clipList,
-                position: ["absolute", "absolute"]}), timing);
-    } else {
-      var toAnim = new Animation(to, toStinkyAPI({transform: cssList,
-                position: ["absolute", "absolute"]}), timing);
-    }
-    var toOpacAnim = new Animation(to, toStinkyAPI({opacity: ["0", "1"]}), opacityTiming);
-
-    timing.fillMode = 'forwards';
-    var cleanupAnimation = new Animation(null, new Cleaner(function() {
-      to.parentElement.removeChild(to);
-    }), timing);
-    
-    return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
-      new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
   }
+
+  return seq;
 }
 
-function animationToPositionTransfade(target, positions, current, timing, isContents) {
-  if (isContents) {
-    var from = target.shadow.fromContents;
-  } else {
-    var from = target.shadow.from;
-  }
-  timing = fixTiming(timing);
-
-  var transOrig = origin(from.style.webkitTransformOrigin);
-  var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, positions[0], transOrig);
-    return { offset: position.offset, value: str};
-  });
-   
-  var fromAnim = new Animation(from, toStinkyAPI({transform: cssList,
-          position: ["absolute", "absolute"]}), timing);
-  var fromOpacAnim = new Animation(from, toStinkyAPI({opacity: ["1", "0"]}), timing);
-
-  if (isContents) {
-    if (!target.shadow.toContents) { 
-      var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-      var to = cloneToSize(target, toPosition, true);
-      target.shadow.toContents = extractContents(to);
-      target.shadow.parent.appendChild(target.shadow.toContents);
-      to.parentElement.removeChild(to);
-    }
-    var to = target.shadow.toContents;
-  } else {
-    var toPosition = boundingRectToContentRect(target, positions[positions.length - 1]);
-    var to = cloneToSize(target, toPosition, true);
-    target.shadow.to = to;
-  }
-
-  transOrig = origin(getComputedStyle(to).webkitTransformOrigin);
-  var cssList = positions.map(function(position) {
-    var str = rectsToCss(position, positions[positions.length - 1], transOrig);
-    return { offset: position.offset, value: str};
-  });
-
-  var toAnim = new Animation(to, toStinkyAPI({transform: cssList,
-            position: ["absolute", "absolute"]}), timing);
-  var toOpacAnim = new Animation(to, toStinkyAPI({opacity: ["0", "1"]}), timing);
-
-  timing.fillMode = 'forwards';
-  var cleanupAnimation = new Animation(null, new Cleaner(function() {
-    to.parentElement.removeChild(to);
-  }), timing);
-    
-  return new ParGroup([fromAnim, toAnim, cleanupAnimation, 
-    new ParGroup([fromOpacAnim, toOpacAnim], {fillMode: 'none'})]);
-}
-
-function extractContents(container, copyContents) {
-  var fromContents = document.createElement("div");
-  fromContents.style.width = container.style.width;
-  fromContents.style.height = container.style.height;
-  fromContents.style.top = container.style.top;
-  fromContents.style.left = container.style.left;
-  fromContents.style.position = "absolute";
-  fromContents.innerHTML = container.innerHTML;
-  if (!copyContents) {
-    container.innerHTML = "";
-  }
-  var targetStyle = container.style;
-  for (var i = 0; i < targetStyle.length; i++) {
-    var prop = targetStyle[i];
-    if (["-webkit-transform-origin", "-webkit-perspective-origin", "top", "position", "left", 
-            "width", "height"].indexOf(prop) == -1) {
-      if (prop.indexOf("background") == -1) {
-        fromContents.style[prop] = targetStyle[prop];
-      }
-    }
-  }
-  fromContents.style.borderColor = "rgba(0, 0, 0, 0)";
-
-  return fromContents; 
-}
-
-function animationForHybridTransition(container, contents) {
-  return function(target, positions, current, timing) {
-    var fromContents = extractContents(target.shadow.from);
-    target.shadow.parent.appendChild(fromContents);
-    target.shadow.fromContents = fromContents;
-
-    var containerAnimation = animationGenerator(container)(target, positions, current, timing);
-
-    if (target.shadow.to) {
-      var toContents = extractContents(target.shadow.to);
-      target.shadow.parent.appendChild(toContents);
-      target.shadow.toContents = toContents;
-    }
-
-    return new ParGroup([containerAnimation,
-      animationGenerator(contents)(target, positions, current, timing, true)]);
-  }
-}
-
-function animationGenerator(effect) {
-  switch(effect) {
-    case 'transform':
-      return animationToPositionTransform;
-    case 'none':
-      return animationToPositionNone;
-    case 'crossfade':
-      return animationToPositionFadeOutIn(1, 0, false);
-    case 'transfade':
-      return animationToPositionTransfade;
-    case 'clip':
-      return animationToPositionClip;
-    case 'clipfade':
-      return animationToPositionFadeOutIn(1, 0, true);
-    case 'layout':
-      return animationToPositionLayout;
-    default:
-      var result = /fade-out-in\(([0-9.]+)%, ([0-9.]+)%(, (clip))?\)/.exec(effect);
-      if (result != null) {
-        return animationToPositionFadeOutIn(Number(result[1])/100, Number(result[2])/100, result[4] == null ? false : true);
-      } 
-  }
-}
-
-function cloneToSize(node, rect, hide) {
-  var div = document.createElement("div");
-  var nodeStyle = window.getComputedStyle(node);
-  div.setAttribute("style", nodeStyle.cssText);
-  if (hide) {
-    div.style.opacity = "0";
-  }
-  div.style.position = "absolute";
-  div.style.left = rect.left + 'px';
-  div.style.top = rect.top + 'px';
-  div.style.width = rect.width + 'px';
-  div.style.height = rect.height + 'px';
-  div.innerHTML = node.innerHTML;
-  if (hide) {
-    // NB: This is a hacky way to put to containers before from contents.
-    node.shadow.parent.insertBefore(div, node.shadow.parent.children[2]);
-  } else {
-    node.shadow.parent.appendChild(div);
-  }
-  return div;
-}
-
-function Cleaner(action) {
-  this.fired = false;
-  this.action = action;
-  this.sample = function(t) {
-    if (t == 1 && !this.fired) {
-      this.action();
-      this.fired = true;
-    }
-  }.bind(this);
-}
-
-function cleaner(action, timing) {
-  return new Animation(null, new Cleaner(action), timing);
-}
-
-//========================
-
+/**
+ * Stores keyframe lists, indexed by name.
+ */
 var layoutKeyframes = {};
 
+/**
+ * Stores a list of currently transitionable elements in the document.
+ */
 var transitionable = [];
 
+/**
+ * Registers a keyframe list.
+ */
 function registerLayoutKeyframes(name, keyframes) {
   layoutKeyframes[name] = keyframes;
 }
 
+/**
+ * Stores the details of a transition animation applied to an element.
+ */
 function LayoutTransition() {
-  this.name = undefined;
+  // 
+  this.keyframesName = undefined;
   this.duration = 0;
-  this.inner = "none";
-  this.outer = "layout";
+  this.effect = "layout";
 }
 
 LayoutTransition.prototype = {
-  setName: function(name) {
-    this.name = name;
+  setKeyframes: function(name) {
+    this.keyframesName = name;
   },
   setDuration: function(duration) {
     if (duration) {
@@ -513,18 +520,18 @@ LayoutTransition.prototype = {
       this.duration = 0;
     }
   },
-  setLayout: function(outer, inner) {
-    if (outer == undefined) {
-      outer = "layout";
+  setEffect: function(effect) {
+    if (effect == undefined) {
+      effect = "layout";
     }
-    if (inner == undefined) {
-      inner = outer;
-    }
-    this.outer = outer;
-    this.inner = inner;
+    this.effect = effect;
   }
 }
 
+/**
+ * Registers a layout transition on target, using the keyframes referenced by name 
+ * and lasting for duration.
+ */
 function setLayoutTransition(target, name, duration) {
   if (target.length !== undefined) {
     for (var i = 0; i < target.length; i++) {
@@ -532,50 +539,60 @@ function setLayoutTransition(target, name, duration) {
     }
     return;
   }
+
+  // Storing temporary snapshots as siblings of transitioning elements makes it easy
+  // to accidentally select the snapshots when updating the set of layout transitions.
+  // This code attempts to detect and warn about doing so.
+  if (target.classList.contains("_layoutAnimationContentSnapshot")) {
+    console.error("You're attempting to set a layout transition on a content snapshot." +
+      " This shim creates content snapshots as divs attached to the same parent as the content" +
+      " being snapshotted. You're probably using a selector that selects 'div' rather than" +
+      " something more specific.");
+    return;
+  }
+
+  // If name is undefined, then remove the transition from the element.
+  if (name == undefined) {
+    if (target._layout) {
+      target._layout = undefined;
+      transitionable.splice(transitionable.indexOf(target), 1);
+      target.removeAttribute('isTransitionable');
+    }
+    return;
+  }
+
+  target.setAttribute('isTransitionable', 'isTransitionable');
   if (target._layout == undefined) {
     target._layout = new LayoutTransition();
   }
-  target._layout.setName(name);
+  target._layout.setKeyframes(name);
   target._layout.setDuration(duration);
   if (transitionable.indexOf(target) == -1) {
     transitionable.push(target);
   }
 }
 
-function setLayoutEffect(target, outer, inner) {
+/**
+ * Registers a layout effect on target.
+ */
+function setLayoutEffect(target, effect) {
   if (target.length !== undefined) {
     for (var i = 0; i < target.length; i++) {
-      setLayoutEffect(target[i], outer, inner);
+      setLayoutEffect(target[i], effect);
     }
     return;
   }
   if (target._layout == undefined) {
     target._layout = new LayoutTransition();
   }
-  target._layout.setLayout(outer, inner);
+  target._layout.setEffect(effect);
 }
 
-function cloneRect(rect) {
-  var result = {};
-  result.left = rect.left;
-  result.top = rect.top;
-  result.width = rect.width;
-  result.height = rect.height;
-  return result;
-}
-
-function rectEquals(rectA, rectB) {
-  return rectA.left == rectB.left && rectA.top == rectB.top && rectA.width == rectB.width && rectA.height == rectB.height;
-}
-
-function setPositions(target, name) {
-  if (target.length !== undefined) {
-    for (var i = 0; i < target.length; i++) {
-      setPositions(target[i], name);
-    }
-    return;
-  }
-  
+/** 
+ * Calculates and returns the position of the provided target relative
+ * to the nearest absolute or relatively positioned ancestor.
+ */
+function sensePosition(target) {
   var rect = cloneRect(target.getBoundingClientRect());
   var parent = target.parentElement;
   while (parent) {
@@ -590,15 +607,22 @@ function setPositions(target, name) {
     rect.top -= parentRect.top;
     rect.left -= parentRect.left;
   }
-  setPosition(target, rect, name);
+  return rect;
 }
 
-// Convert CSS Strings to numbers.
-// Maybe its time to think about exposing some of the core CSS emulation functionality of Web Animations?
+
+/*
+ * Converts CSS Strings to numbers, as long as those strings represent pixel values.
+ */
+// TODO: export some of Web Animations core functionality as a separate CSS utility library.
 function v(s) {
   return Number(s.substring(0, s.length - 2));
 }
 
+/**
+ * Converts the sensed bounding rectangle of an element to an internal contect rectangle
+ * by removing the contribution from borders, padding, and margins.
+ */
 function boundingRectToContentRect(element, rect) {
   var style = window.getComputedStyle(element);
   var width = rect.width - v(style.borderLeftWidth) - v(style.borderRightWidth) - v(style.paddingLeft) - v(style.paddingRight);
@@ -608,71 +632,10 @@ function boundingRectToContentRect(element, rect) {
   return {width: width, top: top, left: left, height: height};
 }
 
-function boundingRectToReplacementRect(element, rect) {
-  var style = window.getComputedStyle(element);
-  var width = rect.width + v(style.marginLeft) + v(style.marginRight);
-  var height = rect.height + v(style.marginTop) + v(style.marginBottom);
-  var left = rect.left - v(style.marginLeft);
-  var top = rect.top - v(style.marginTop);
-  return {width: width, top: top, left: left, height: height}; 
-}
-
-function findMovedElements(list) {
-  return list.filter(function(listItem) {
-    listItem.shadow.placeholder = createShadowPlaceholder(listItem.shadow, listItem, listItem._transitionAfter);
-    if (listItem.shadow.content.parentElement) {
-      listItem.shadow.parent.removeChild(listItem.shadow.content);
-    }
-    listItem.shadow.content.style.opacity = "1";
-    if (rectEquals(listItem._transitionBefore, listItem._transitionAfter)) {
-      return false;
-    }
-    return true;
-  });
-}
-
-function walkTrees(element, copy, fun) {
-  var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-  var copyWalker = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-
-  while (treeWalker.nextNode()) {
-    copyWalker.nextNode();
-    fun(treeWalker.currentNode, copyWalker.currentNode);
-  }
-}
-
-function createCopy(element, root) {
-  var shadow = setupShadowContainer(element, root);
-  var fromPosition = boundingRectToContentRect(element, element._transitionBefore);
-  if (element != root) {
-    var parent = element.parentElement;
-    while (parent != root.parentElement) {
-      var style = getComputedStyle(parent);
-      if (style.position == "relative" || style.position == "absolute") {
-        fromPosition.left += v(style.left);
-        fromPosition.top += v(style.top);
-      }
-      parent = parent.parentElement;
-    } 
-  }
-  var from = cloneToSize(element, fromPosition);
-  from.classList.add("fromStateCopy");
-  element.shadow.from = from;
-  element.shadow.content.style.opacity = "0";
-} 
-
-function createCopies(tree) {
-  function createCopiesWithRoot(item, root) {
-    createCopy(item, root);
-    if (item._transitionChildren) {
-      item._transitionChildren.forEach(function(child) { createCopiesWithRoot(child, root); });
-    }
-  }
-  tree.forEach(function(root) { createCopiesWithRoot(root, root); });
-}
-
+/**
+ * Constructs an in-place tree that mirrors DOM order but only includes elements with
+ * layout transitions defined on them.
+ */
 function buildTree(list) {
   var roots = [];
   for (var i = 0; i < list.length; i++) {
@@ -694,16 +657,21 @@ function buildTree(list) {
   return roots;
 }
 
-
-function cleanup() {
+/**
+ * Removes the layout transition tree generated by buildTree.
+ */
+function removeTree() {
   for (var i = 0; i < transitionable.length; i++) {
-    transitionable[i]._transitionBefore = undefined;
-    transitionable[i]._transitionAfter = undefined;
     transitionable[i]._transitionChildren = undefined;
     transitionable[i]._transitionParent = undefined;
   }
 }
 
+/**
+ * Converts a list of keyframe into a position list for an element,
+ * using the recorded _transitionBefore and _transitionAfter states
+ * as reference positions.
+ */
 function positionListFromKeyframes(keyframes, element) {
   var positions = keyframes.slice();
   positions.sort(function(a, b) {
@@ -744,187 +712,229 @@ function positionListFromKeyframes(keyframes, element) {
   return positions;
 }
 
-/*
-function walkTrees(element, copy, fun) {
-  var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-  var copyWalker = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT,
-    { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-
-  while (treeWalker.nextNode()) {
-    copyWalker.nextNode();
-    fun(treeWalker.currentNode, copyWalker.currentNode);
-  }
-}
-*/
-
-function updateContentTagOrder(tree) {
-  // The tree is in DOM order, so we shouldn't ever have to revisit a container.
-  var container;
-  for (var i = 0; i < tree.length; i++) {
-    var element = tree[i];
-    if (container == element.shadow.root) {
-      continue;
-    }
-    container = element.shadow.root;
-    var current = undefined;
-    
-    var treeWalker = document.createTreeWalker(tree[i].parentElement, NodeFilter.SHOW_ELEMENT,
-      { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } }, false);
-    
-    while (treeWalker.nextNode()) {
-      var element = treeWalker.currentNode;
-      if (element.shadow != undefined) {
-        if (current == undefined) {
-          if (container.firstChild != element.shadow.parent) {
-            element.shadow.root.insertBefore(element.shadow.parent, container.firstChild);
-          }
-        } else {
-          if (current.nextSibling != element.shadow.parent) {
-            element.shadow.root.insertBefore(element.shadow.parent, current.nextSibling);
-          }
-        }
-        current = element.shadow.parent;
-      }
-    }
-  }
-}
-
-function makePositionListRelative(list, parentList) {
-  var result = []
-  for (var i = 0; i < list.length; i++) {
-    result.push({
-      top: list[i].top + parentList[i].top,
-      left: list[i].left + parentList[i].left,
-      width: list[i].width,
-      height: list[i].height,
-      offset: list[i].offset});
-  }
-  return result;
-}
-
-// Transition the provided action.
-//
-// Overview:
-// All potentially transitionable content is stored in the transitionable list.
-// Each element in this list has initial position marked and a copy created.
-// Additionally, a shadow DOM tree is created for each container of a transitionable
-// element. Details of this tree are stored on the transitionable elements themselves,
-// in a member variable called shadow:
-// {
-//   root: root of the shadow DOM tree
-//   parent: root of the element's tree
-//   content: root of the element's content exposure
-//   from: initial created copy
-// }
-// The initial position is stored in a member variable called _transitionBefore
-// TODO: Is the initial position needed any more?
-// As part of the process of creating a copy, the content is hidden by setting
-// a wrapping div in the shadow DOM to opacity: 0.
-//
-// The action is then executed. This updates the content to its new position,
-// but the change is not visible on-screen. The new position is captured into
-// element._transitionAfter, and a list of moved elements is generated.
-// Additionally, the content node is removed from the shadow DOM to prevent 
-// further interaction from the actual content.
-//
-// Each different transition type has a different approach to generating the
-// transition effect, but essentially transform, layout and none operate on the
-// created copy, while transfade and crossfade need to create an aditional copy
-// of the to state. This is performed in the animation generation functions directly.
+/**
+ * Run the provided action, capturing transitioning element position before and after,
+ * then generate an animation to smooth the position change for transitioning elements.
+ */
 function transitionThis(action) {
-  // record positions before action
-  setPositions(transitionable, '_transitionBefore');
   // construct transition tree  
   var tree = buildTree(transitionable);
-  // duplicate divs before action
-  createCopies(tree);
+  
+  // record positions before action
+  transitionable.map(function(element) { ensureCopy(element, '_transitionBefore'); });
+
   // move to new position
   action();
-  // update content tag order if action() has caused DOM changes
-  updateContentTagOrder(tree);
 
   // record positions after action
-  setPositions(transitionable, '_transitionAfter');
-  // put everything back
-  // note that we don't need to do this for all transition types, but
-  // by doing it here we avoid a layout flicker.
-  movedList = findMovedElements(transitionable);
+  transitionable.map(function(element) {
+    ensureCopy(element, '_transitionAfter'); 
+    element.style.opacity = '0';
+    showCopy(element, '_transitionBefore');
+  });
 
   // construct animations
-
   var parGroup = new ParGroup();
 
   function processList(list) {
     if (!list) {
       return;
     }
+
     for (var i = 0; i < list.length; i++) {
-      var keyframes = layoutKeyframes[list[i]._layout.name];
+
+      var keyframes = layoutKeyframes[list[i]._layout.keyframesName];
       var positionList = positionListFromKeyframes(keyframes, list[i]);
      
-      if (list[i]._transitionParent) {
-        positionList = makePositionListRelative(positionList, list[i]._transitionParent._transitionPositionList);
-      }
+      console.log(list[i].id, JSON.stringify(positionList));
 
       list[i]._transitionPositionList = [];
       for (var j = 0; j < positionList.length; j++) {
         list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
       }
       
-      walkTrees(list[i], list[i].shadow.from, function(child, copy) {
-        if (child._transitionParent == list[i]) {
-          copy.style.opacity = "0";
-        }
-      });
+      parGroup.append(generateAnimation(list[i], positionList)); 
 
-      if (list[i]._layout.outer == list[i]._layout.inner) {
-        generator = animationGenerator(list[i]._layout.outer);
-      } else {
-        generator = animationForHybridTransition(list[i]._layout.outer, list[i]._layout.inner);
-      }
-
-      parGroup.append(
-          generator(list[i], positionList, list[i]._transitionBefore, list[i]._layout.duration));
-      
       processList(list[i]._transitionChildren);
     }
   }
 
   processList(tree);
 
-  document.timeline.play(new SeqGroup([
-    parGroup,
-    new Animation(undefined, new Cleaner(function() {
-      for (var i = 0; i < tree.length; i++) {
-        // workaround because we can't build animations that transition to empty values
-        tree[i].style.left = "";
-        tree[i].style.top = "";
-        tree[i].style.width = "";
-        tree[i].style.height = "";
-        tree[i].style.position = "";
-        // tree[i].shadow.parent.removeChild(tree[i].placeholder);
-        // tree[i].shadow.parent.removeChild(tree[i]._transitionStartCopy);
-        // tree[i].shadow.root.innerHTML = "";
-        tree[i].placeholder = undefined; 
-      }
-      for (var i = 0; i < transitionable.length; i++) {
-        for (var j = transitionable[i].shadow.parent.children.length - 1; j >= 0; j--) {
-          if (transitionable[i].shadow.parent.children[j].tagName != 'CONTENT') {
-            transitionable[i].shadow.parent.removeChild(transitionable[i].shadow.parent.children[j]);
-          } else {
-            var foundContent = true;
-          } 
-        }
-        if (!foundContent) {
-          transitionable[i].shadow.parent.appendChild(transitionable[i].shadow.content);
-        }
-        transitionable[i].style.opacity = "";
-        transitionable[i].shadow = undefined;
-        transitionable[i]._transitionStartCopy = undefined;
-      }
-    }), 0)]));
+  parGroup.onend = function() {
+    for (var i = 0; i < transitionable.length; i++) {
+      transitionable[i].style.opacity = "";
+      hideCopy(transitionable[i], '_transitionBefore');
+      removeCopy(transitionable[i], '_transitionBefore');
+      removeCopy(transitionable[i], '_transitionAfter');
+    }
+  };
 
-  // get rid of all the junk
-  cleanup();
+  if (LOCATE_FOUC) {
+    setTimeout(parGroup.onend, 1000);
+  } else {
+    document.timeline.play(parGroup);
+  }
+  
+  removeTree();
+}
+
+/**
+ * Clears a recorded position on target.
+ */
+function clearPosition(target, name) {
+  target[name] = undefined;
+}
+
+/**
+ * Records a position rect on target.
+ */
+function setPosition(target, rect, name) {
+  target[name] = rect;
+}
+
+/**
+ * Retrieves a position rect on target.
+ */
+function getPosition(target, name) {
+  return target[name];
+}
+
+/**
+ * Caches a provided copy of the provided element.
+ */
+function cacheCopy(element, state, copy) {
+  if (!(element._copyCache)) {
+    element._copyCache = {}
+  }
+  element._copyCache[state] = copy;
+}
+
+/**
+ * Removes a cached copy of the provided element.
+ */
+function removeCopy(element, state) {
+  if (!(element._copyCache)) {
+    return;
+  }
+  element._copyCache[state] = undefined;
+  clearPosition(element, state);
+}
+
+/**
+ * Retrieves a cached copy of the provided element.
+ */
+function getCopy(element, state) {
+  if (!(element._copyCache)) {
+    return;
+  }
+  return element._copyCache[state];
+}
+
+/**
+ * Generates a snapshot and position rect of the provided element as currently rendered,
+ * and caches both under the provided state name.
+ */
+function generateCopy(element, state) {
+  var rect = sensePosition(element);
+  generateCopyAtPosition(element, rect, state);
+}
+
+/**
+ * Generates a snapshot of the provided element, at the provided position,
+ * and caches both under the provided state name.
+ */
+function generateCopyAtPosition(element, rect, state) {
+  var fromPosition = boundingRectToContentRect(element, rect);
+
+  // Add contribution from nearest relative/absolute ancestor,
+  // if this is a child transition.
+  // TODO: Do we still need this? 
+  if (element._transitionParent) {
+    var parent = element.parentElement;
+    while (parent && !parent._layout) {
+      var style = getComputedStyle(parent);
+      if (style.position == "relative" || style.position == "absolute") {
+        fromPosition.left += parent.offsetLeft;
+        fromPosition.top += parent.offsetTop;
+      }
+      parent = parent.parentElement;
+    }
+   
+  }
+
+  var from = cloneElementToSize(element, fromPosition);
+
+  setPosition(element, rect, state);
+  from.label = state;
+  from.classList.add(state)
+  cacheCopy(element, state, from);
+}
+
+/**
+ * Ensures that a copy of element in the provided state is available,
+ * generating one if required.
+ */
+function ensureCopy(element, state) {
+  if (getCopy(element, state)) {
+    return;
+  }
+  generateCopy(element, state);
+}
+
+/**
+ * Makes the element copy tagged by the provided state visible.
+ */
+function showCopy(element, state) {
+  var copy = getCopy(element, state);
+ 
+  var insertion = element;
+  while (insertion._transitionParent) {
+    insertion = insertion._transitionParent;
+  }
+
+  insertion.parentElement.appendChild(copy);
+  return copy;
+}
+
+/**
+ * Hides the element copy tagged by the provided state.
+ */
+function hideCopy(element, state) {
+  var copy = getCopy(element, state);
+  if (!copy || !copy.parentElement) {
+    return;
+  }
+  copy.parentElement.removeChild(copy);
+}
+
+/**
+ * Clones the provided node and sizes it according to the provided rectangle
+ */
+function cloneElementToSize(node, rect) {
+  var div = document.createElement("div");
+  var nodeStyle = window.getComputedStyle(node);
+  div.setAttribute("style", nodeStyle.cssText);
+
+  div.style.position = "absolute";
+  div.style.left = rect.left + 'px';
+  div.style.top = rect.top + 'px';
+  div.style.width = rect.width + 'px';
+  div.style.height = rect.height + 'px';
+  div.innerHTML = node.innerHTML;
+
+  var transitionChildren = node.querySelectorAll("[isTransitionable]");
+  var transitionMirrors = div.querySelectorAll("[isTransitionable]");
+  for (var i = 0; i < transitionChildren.length; i++) {
+    var child = transitionChildren[i];
+    var mirror = transitionMirrors[i];
+    var style = getComputedStyle(child);
+    var newDiv = document.createElement("div");
+    newDiv.setAttribute('style', "top: " + style.top + "; left: " + style.left + "; width: " + style.width + "; height: " + style.height);
+    mirror.parentElement.replaceChild(newDiv, mirror);
+  }
+
+  div.classList.add("_layoutAnimationContentSnapshot");
+
+  return div;
 }
