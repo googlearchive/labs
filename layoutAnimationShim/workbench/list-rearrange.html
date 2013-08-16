@@ -13,13 +13,22 @@ div.item {
   text-align: center;
 }
 
-div {
-  -webkit-transition: font-size 0.5s linear;
-}
-
 div.moved {
   height: 100px;
-  font-size: 60px;
+  -webkit-animation: increaseFontSize 0.5s forwards;
+}
+
+@-webkit-keyframes increaseFontSize {
+  0% {
+    z-index: 1;
+  }
+  99% {
+    z-index: 1;
+  }
+  100% {
+    font-size: 60px;
+    z-index: 0;
+  }
 }
 
 div#container {
@@ -87,7 +96,7 @@ registerLayoutKeyframes("default", [
                             layoutTop: "to()", layoutLeft: "to()" }}]);
 
 setLayoutTransition(document.querySelectorAll(".item"), "default", duration);
-setLayoutEffect(document.querySelectorAll(".item"), "none");
+setLayoutEffect(document.querySelectorAll(".item"), "layout");
 
 button.onclick = function() {
   var to = Math.round((Math.random() * canvas.children.length) - 0.5);
@@ -95,17 +104,12 @@ button.onclick = function() {
     var from = Math.round((Math.random() * canvas.children.length) - 0.5);
   } while (from == to);
   var movedChild = canvas.children[from];
-  movedChild.style.zIndex = 1;
   transitionThis(function() {
-    console.log(canvas.children); 
     canvas.insertBefore(canvas.children[from], canvas.children[to]); 
-    console.log(canvas.children); 
-    getComputedStyle(movedChild).top;
+    console.log(getComputedStyle(movedChild).zIndex);
     movedChild.classList.add("moved");
+    console.log(getComputedStyle(movedChild).zIndex);
   });
-  //canvas.insertBefore(canvas.children[from], canvas.children[to]); getComputedStyle(movedChild).top; movedChild.classList.add("moved"); 
-  setTimeout(function() { movedChild.style.zIndex = 0; }, duration * 1000);
-  //setTimeout(function() { document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = 0; }) }, duration * 500); 
 }
 
 var paused = false;

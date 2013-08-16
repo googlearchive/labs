@@ -15,20 +15,30 @@
   overflow: hidden;
 }
 
+.container > div > div {
+  overflow: hidden;
+}
+
 #crossfader {
   background: red;
 }
 
 </style>
 <div class="container">
-  <div>
+  <div class="panel" id='p1'>
+    <div class="panelText" id='p1t'>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+    </div>
   </div>
-  <div>
+  <div class="panel" id='p2'>
+    <div class="panelText" id='p2t'>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+    </div>
   </div>
-  <div id="crossfader">
+  <div id="crossfader" class="panel" id='p3'>
+    <div class="panelText" id='p3t'>
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum est. Donec mattis porta lorem, et tempus neque gravida vitae. Vivamus vehicula luctus hendrerit. Quisque porta, mi at volutpat mollis, massa arcu vehicula tortor, quis tempus felis leo non velit. Nulla pharetra interdum mauris nec egestas. Praesent quis lacus in est consectetur consectetur facilisis nec ligula. Mauris a quam velit. Suspendisse egestas nisl ac ante mollis malesuada sit amet vitae mi. Duis id placerat nisl. Ut iaculis urna eget tellus sollicitudin ac ornare lorem mollis.
+    </div>
   </div>
   <!--
   <div>
@@ -41,24 +51,34 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel condimentum e
 </div>
 
 <form>
-  <input id="containerEffect" type='text' list='effects' value='none'>
-  <input id="contentsEffect" type='text' list='effects' value='none'>
+  <input id="containerEffect" type='text' list='effects' value='fade 50%'>
+  <input id="contentsEffect" type='text' list='effects' value='fade'>
   <datalist id='effects'>
     <option value="none">none</option>
     <option value="clip">clip</option>
     <option value="transform">transform</option>
     <option value="layout">layout</option>
-    <option value="crossfade">crossfade</option>
-    <option value="clipfade">clipfade</option>
-    <option value="transfade">transfade</option>
+    <option value="fade">crossfade</option>
+    <option value="clip fade">clipfade</option>
+    <option value="transform fade">transfade</option>
   </datalist>
 </form>
 <script src="../../../web-animations-js/web-animations.js"></script>
 <script src="../src/layout-animation.js"></script>
 <script>
 
+var hasContentEffect = false;
+
 function updateEffects() {
-  setLayoutEffect(document.querySelectorAll(".container > div"), containerEffect.value, contentsEffect.value);
+  setLayoutEffect(document.querySelectorAll(".container > div"), containerEffect.value);
+  if (contentsEffect.value == containerEffect.value) {
+    setLayoutTransition(document.querySelectorAll('.panelText'));
+    hasContentEffect = false;
+  } else {
+    setLayoutTransition(document.querySelectorAll('.panelText'), direction, duration);
+    setLayoutEffect(document.querySelectorAll('.panelText'), contentsEffect.value);
+    hasContentEffect = true;
+  }
 }
 
 containerEffect.onchange = updateEffects;
@@ -78,7 +98,7 @@ contentsEffect.onchange = updateEffects;
   }
 }
 */
-var duration = 1;
+var duration = 2;
 
 registerLayoutKeyframes("to", [
   {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",
@@ -107,6 +127,7 @@ registerLayoutKeyframes("from", [
   layout-effect: transform;
 */
 setLayoutTransition(document.querySelectorAll(".container > div"), "to", duration);
+var direction = "to";
 updateEffects();
 
 var isColumn = true;
@@ -119,15 +140,15 @@ document.onkeydown = function(event) {
   var char = String.fromCharCode(event.which);
   if (char == 'S') {
     transitionThis(function() { container.style.webkitFlexFlow = isColumn ? "row" : "column"; });
-    //container.style.webkitFlexFlow = isColumn ? "row" : "column";
-    /*setTimeout(function() {
-    document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = 0; });
-    }, 2000);*/
     isColumn = !isColumn;
     if (isColumn) {
-      setLayoutTransition(document.querySelectorAll(".container > div"), "to", duration);
+      direction = "to"; 
     } else {
-      setLayoutTransition(document.querySelectorAll(".container > div"), "from", duration);
+      direction = "from";
+    }
+    setLayoutTransition(document.querySelectorAll(".container > .panel"), direction, duration);
+    if (hasContentEffect) {
+      setLayoutTransition(document.querySelectorAll(".container .panelText"), direction, duration);
     }
   } else if (char == 'P') {
     document.timeline.getCurrentPlayers().forEach(function(player) { player.playbackRate = (paused ? 1 : 0); });
