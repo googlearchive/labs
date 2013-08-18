@@ -2,14 +2,12 @@
 
 <polymer-element name="shuttle-data" attributes="route officeStops remoteStops favorites">
   <template>
-    <polymer-localstorage id="storage" name="shuttle-storage3" value="{{userData}}"></polymer-localstorage>
+    <polymer-localstorage id="storage" name="shuttle-storage3" value="{{userData}}" on-polymer-localstorage-load="populateUserData"></polymer-localstorage>
   </template>
   <script>
     Polymer('shuttle-data', {
-      userData: null,
-      userDataChanged: function() {
+      created: function() {
         this.populateStops();
-        this.populateUserData();
       },
       populateStops: function() {
         Shuttle.stops.forEach(function(s, i) {
