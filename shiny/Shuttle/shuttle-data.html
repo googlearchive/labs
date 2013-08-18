@@ -6,7 +6,8 @@
   </template>
   <script>
     Polymer('shuttle-data', {
-      created: function() {
+      userData: null,
+      userDataChanged: function() {
         this.populateStops();
         this.populateUserData();
       },
