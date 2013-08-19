@@ -1,3 +1,5 @@
+document.addEventListener('HTMLImportsLoaded', function() {
+
 Polymer.addResolvePath = function (proto, element) {
   // monkey patch addResolvePath to use assetpath attribute
   var assetPath = element.getAttribute('assetpath');
@@ -757,4 +759,4 @@ Polymer.addResolvePath = function (proto, element) {
 				}];
 			}
 		});
-	
+});
