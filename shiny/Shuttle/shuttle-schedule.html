@@ -80,11 +80,11 @@
     
     <shuttle-stop-picker id="officeStopsMenu" selected="{{route.officeSelected}}" selectedStop="{{officeSelectedStop}}" 
         stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" searchInputLabel="Search Office Stops"
-        opened="{{officeStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
+        opened="{{officeStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
 
     <shuttle-stop-picker id="remoteStopsMenu" selected="{{route.remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
         stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" 
-        opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
+        opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
     
     <div id="description">
       {{fromStop.name}} to {{toStop.name}}
@@ -156,6 +156,7 @@
         return !this.$.officeStopsMenu.opened && !this.$.remoteStopsMenu.opened;
       },
       menuOpened: function(e, detail, sender) {
+        console.log('menuOpened', sender.opened)
         if (sender.opened) {
           this.centerStop = sender.selectedStop;
           this.filteredStops = sender.stops.slice();
