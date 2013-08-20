@@ -11,24 +11,26 @@ document.timeline.play = function(anim) {
 function at(time, test, message) {
   // TODO: remove setTimeout. Why do we need this?
   errored = false;
-  setTimeout(
-    function() {
-      for (var i = 0; i < players.length; i++) {
-        players[i].currentTime = time;
-        players[i].playbackRate = 0;
-      }
-      setTimeout(function() {
-        try {
-          test();
-          if (!errored) {
-            log.innerHTML += '<span class="pass">PASS</span>: ' + message + '<br>';
-          }
-        } catch (e) {
-          log.innerHTML += '<span class="error">EXCEPTION</span>: ' + message + ": " + e.toString() + '<br>'
-          + e.stack;
+  
+  setTimeout(function() {
+    for (var i = 0; i < players.length; i++) {
+      players[i].currentTime = time;
+      players[i].playbackRate = 0;
+    }
+    setTimeout(function() {
+      var div = document.createElement('div');
+      try {
+        test();
+        if (!errored) {
+          div.innerHTML = '<span class="pass">PASS</span>: ' + message + '<br>';
         }
-      }, 0);
+      } catch (e) {
+        div.innerHTML = '<span class="error">EXCEPTION</span>: ' + message + ": " + 
+          e.toString() + '<br>' + e.stack;
+      }
+      log.appendChild(div);
     }, 0);
+  }, 0);
 }
 
 var style = document.createElement('style');
@@ -37,12 +39,12 @@ var log = document.createElement('div');
 document.documentElement.appendChild(log);
 
 var _styleText_ = 
-  ".error {" +
-  "  color: red;" +
-  "} " +
-  ".pass {" +
-  "  color: green;" +
-  "}"
+  '.error {' +
+  '  color: red;' +
+  '} ' +
+  '.pass {' +
+  '  color: green;' +
+  '}';
 
 style.innerText = _styleText_;
 
@@ -50,31 +52,35 @@ var errored = false;
 
 function check(cond, message) {
   if (!cond) {
-      log.innerHTML += '<span class="error">FAIL</span>: ' + message + '<br>';
+      var div = document.createElement('div');
+      div.innerHTML = '<span class="error">FAIL</span>: ' + message + '<br>';
       errored = true;
+      log.appendChild(div);
   }
 
   return cond;
 }
 
-function checkEquals(a, b, message) {
-  return check(a == b, message + '. Expected: ' + b + ' got: ' + a);
+function checkEquals(actual, expected, message) {
+  return check(actual == expected, message + '. Expected: ' + expected + ' got: ' + actual);
 }
 
-function checkNotEqual(a, b, message) {
-  return check(a != b, message + '. Expected: !' + b + ' got: ' + a);
+function checkNotEqual(actual, expected, message) {
+  return check(actual != expected, message + '. Expected: !' + expected + ' got: ' + actual);
 }
 
-function checkLarger(a, b, message) {
-  return check (a > b, message + '. ' + a + ' !> ' + b);
+function checkLarger(actual, expected, message) {
+  return check (actual > expected, message + '. ' + actual + ' !> ' + expected);
 }
 
-function checkSmaller(a, b, message) {
-  return check (a < b, message + '. ' + a + ' !< ' + b);
+function checkSmaller(actual, expected, message) {
+  return check (actual < expected, message + '. ' + actual + ' !< ' + expected);
 }
 
 function getCopiesInPlay(element) {
-  return dictFilter(element._copyCache, function(copy) { return copy.parentElement; });
+  return dictFilter(element._copyCache, function(copy) {
+    return copy.parentElement;
+  });
 }
 
 function dictCount(dict) {
@@ -111,7 +117,6 @@ function strToMtrx(str) {
     return matrix.slice(1, 7).map(Number); 
   }
 
-  console.log(str);
   var translateScale = /translate3d\((-?[0-9.]*)px, (-?[0-9.]*)px, 0px\) scale\((-?[0-9.]*), (-?[0-9.]*)\)/.exec(str);  
   if (translateScale) {    
     console.log(translateScale);
@@ -129,21 +134,23 @@ function strToMtrx(str) {
 function forEachVisibleCopy(element, f) {
   var copies = getCopiesInPlay(element);
   var visibleCopies = dictFilter(copies, function(copy) {
-    return copy.style.opacity != "0";
+    return copy.style.opacity != '0';
   });
-  // There should only be at most 2 visible copies
   dictForEach(copies, function(copy, position) {
+    // There should only be at most 2 visible copies
     checkSmaller(position, 2);
     f(copy, position);
   });  
 
 }
 
+// Checks that the provided element is being actively controlled
+// by a layout transition.
 function checkLaidOut(element) {
-  checkEquals(element.style.opacity, "0", "element must be invisible");
-  check(element._copyCache, "element must have copy cache");
+  checkEquals(element.style.opacity, '0', 'element must be invisible');
+  check(element._copyCache, 'element must have copy cache');
   var copies = getCopiesInPlay(element);
-  checkLarger(dictCount(copies), 0, "element must have at least one copy in play");
+  checkLarger(dictCount(copies), 0, 'element must have at least one copy in play');
 }
 
 function checkLayoutPosition(element, x, y) {
@@ -170,7 +177,7 @@ function checkLayoutScale(element, x, y, x2, y2) {
   forEachVisibleCopy(element, function(copy, position) {
     var style = getComputedStyle(copy);
     var matrix = strToMtrx(style.webkitTransform);
-    if (position == 1 && x2) {
+    if (position == 1 && x2 !== undefined) {
       checkEquals(matrix[0], x2, "element doesn't match layout width scale");
       checkEquals(matrix[3], y2, "element doesn't match layout height scale");
     } else {
@@ -188,7 +195,7 @@ function checkLayoutSize(element, x, y, x2, y2) {
     var matrix = strToMtrx(style.webkitTransform);
     width *= matrix[0];
     height *= matrix[3];
-    if (position == 1 && x2) {
+    if (position == 1 && x2 !== undefined) {
       checkEquals(width, x2, "element doesn't match layout width size");
       checkEquals(height, y2, "element doesn't match layout height size");
     } else {
@@ -209,25 +216,25 @@ function checkLayoutOpacity(element) {
     }
   }
 
-  // TODO: sort names
+  // TODO: sort names list according to effect order
 
   checkEquals(copies['_transitionBefore'].style.opacity, opacities[0],
-    "before state opacity mismatch");
+    'before state opacity mismatch');
   for (var i = 1; i < opacities.length - 1; i++) {
     checkEquals(copies[names[i -1]].style.opacity, opacities[i], 
-      "state " + names[i - 1] + " opacity mismatch")
+      'state ' + names[i - 1] + ' opacity mismatch')
   }
   if (opacities.length > 1) {
     checkEquals(copies['_transitionAfter'].style.opacity, opacities[opacities.length - 1],
-      "after state opacity mismatch");
+      'after state opacity mismatch');
   }
 }
 
 function checkLayoutClip(element, x, y) {
   forEachVisibleCopy(element, function(copy) {
     var style = getComputedStyle(copy);
-    if (checkNotEqual(style.clip, 'auto', "no clip data is present")) {
-      var clipData = style.clip.split(" ");
+    if (checkNotEqual(style.clip, 'auto', 'no clip data is present')) {
+      var clipData = style.clip.split(' ');
       checkEquals(pxToNum(clipData[1]), x, "element doesn't match layout clip width");
       checkEquals(pxToNum(clipData[2]), y, "element doesn't match layout clip height");
     }
@@ -237,6 +244,6 @@ function checkLayoutClip(element, x, y) {
 function checkLayoutNoClip(element) {
   forEachVisibleCopy(element, function(copy) {
     var style = getComputedStyle(copy);
-    checkEquals(style.clip, 'auto', "clip data is present")
+    checkEquals(style.clip, 'auto', 'clip data is present')
   });
 }

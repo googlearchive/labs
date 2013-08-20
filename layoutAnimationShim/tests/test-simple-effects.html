@@ -48,73 +48,66 @@ for (var i = 0; i < divs.length; i++) {
 
 transitionThis(function() { container.classList.add('change'); });
 
-at(0.5,
-  function() {
-    checkLaidOut(layout);
-    checkLayoutPosition(layout, 150, 100);
-    checkLayoutScale(layout, 1, 1);
-    checkLayoutSize(layout, 150, 100);
-    checkLayoutNoClip(fade);
-    checkLayoutOpacity(layout, 1);
-  }, "effect: layout");
+at(0.5, function() {
+  checkLaidOut(layout);
+  checkLayoutPosition(layout, 150, 100);
+  checkLayoutScale(layout, 1, 1);
+  checkLayoutSize(layout, 150, 100);
+  checkLayoutNoClip(fade);
+  checkLayoutOpacity(layout, 1);
+}, "effect: layout");
 
-at(0.5,
-  function() {
-    checkLaidOut(none);
-    checkLayoutPosition(none, 150, 200);
-    checkLayoutScale(none, 1, 1);
-    checkLayoutSize(none, 100, 100);
-    checkLayoutNoClip(fade);
-    checkLayoutOpacity(none, 1);
-  }, "effect: none");
+at(0.5, function() {
+  checkLaidOut(none);
+  checkLayoutPosition(none, 150, 200);
+  checkLayoutScale(none, 1, 1);
+  checkLayoutSize(none, 100, 100);
+  checkLayoutNoClip(fade);
+  checkLayoutOpacity(none, 1);
+}, "effect: none");
 
-at(0.5,
-  function() {
-    checkLaidOut(transform);
-    checkLayoutPosition(transform, 150, 300);
-    checkLayoutScale(transform, 1.5, 1);
-    checkLayoutSize(transform, 150, 100);
-    checkLayoutNoClip(transform);
-    checkLayoutOpacity(transform, 1);
-  }, "effect: transform");
+at(0.5, function() {
+  checkLaidOut(transform);
+  checkLayoutPosition(transform, 150, 300);
+  checkLayoutScale(transform, 1.5, 1);
+  checkLayoutSize(transform, 150, 100);
+  checkLayoutNoClip(transform);
+  checkLayoutOpacity(transform, 1);
+}, "effect: transform");
 
-at(0.5,
-  function() {
-    checkLaidOut(clip);
-    checkLayoutPosition(clip, 150, 400);
-    checkLayoutScale(clip, 1, 1);
-    checkLayoutSize(clip, 100, 100);
-    checkLayoutClip(clip, 150, 75);
-    checkLayoutOpacity(clip, 1);
-  }, "effect: clip");
+at(0.5, function() {
+  checkLaidOut(clip);
+  checkLayoutPosition(clip, 150, 400);
+  checkLayoutScale(clip, 1, 1);
+  checkLayoutSize(clip, 100, 100);
+  checkLayoutClip(clip, 150, 75);
+  checkLayoutOpacity(clip, 1);
+}, "effect: clip");
 
-at(0.5,
-  function() {
-    checkLaidOut(fade);
-    checkLayoutPosition(fade, 150, 500);
-    checkLayoutScale(fade, 1, 1);
-    checkLayoutSize(fade, 100, 100, 200, 100);
-    checkLayoutNoClip(fade);
-    checkLayoutOpacity(fade, 0.5, 0.5);
-  }, "effect: fade");
+at(0.5, function() {
+  checkLaidOut(fade);
+  checkLayoutPosition(fade, 150, 500);
+  checkLayoutScale(fade, 1, 1);
+  checkLayoutSize(fade, 100, 100, 200, 100);
+  checkLayoutNoClip(fade);
+  checkLayoutOpacity(fade, 0.5, 0.5);
+}, "effect: fade");
 
-at(0.5,
-  function() {
-    checkLaidOut(transformFade);
-    checkLayoutPosition(transformFade, 150, 600);
-    checkLayoutScale(transformFade, 1.5, 1, 0.75, 1);
-    checkLayoutSize(transformFade, 150, 100);
-    checkLayoutNoClip(transformFade);
-    checkLayoutOpacity(transformFade, 0.5, 0.5);
-  }, "effect: layout fade");
+at(0.5, function() {
+  checkLaidOut(transformFade);
+  checkLayoutPosition(transformFade, 150, 600);
+  checkLayoutScale(transformFade, 1.5, 1, 0.75, 1);
+  checkLayoutSize(transformFade, 150, 100);
+  checkLayoutNoClip(transformFade);
+  checkLayoutOpacity(transformFade, 0.5, 0.5);
+}, "effect: layout fade");
 
-at(0.5,
-  function() {
-    checkLaidOut(clipFade);
-    checkLayoutPosition(clipFade, 150, 700);
-    checkLayoutScale(clipFade, 1, 1);
-    checkLayoutSize(clipFade, 100, 100, 200, 50);
-    checkLayoutClip(clipFade, 150, 75);
-    checkLayoutOpacity(clipFade, 0.5, 0.5);
-  }, "effect: clip fade");
+at(0.5, function() {
+  checkLaidOut(clipFade);
+  checkLayoutPosition(clipFade, 150, 700);
+  checkLayoutScale(clipFade, 1, 1);
+  checkLayoutSize(clipFade, 100, 100, 200, 50);
+  checkLayoutClip(clipFade, 150, 75);
+  checkLayoutOpacity(clipFade, 0.5, 0.5);
+}, "effect: clip fade");
 </script>
