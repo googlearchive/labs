@@ -1,9 +1,9 @@
-var _play = document.timeline.play.bind(document.timeline);
+var realPlayFunction = document.timeline.play.bind(document.timeline);
 
 var players = [];
 
 document.timeline.play = function(anim) {
-  var player = _play(anim);
+  var player = realPlayFunction(anim);
   players.push(player);
   return player;
 }
@@ -38,7 +38,7 @@ document.documentElement.appendChild(style);
 var log = document.createElement('div');
 document.documentElement.appendChild(log);
 
-var _styleText_ = 
+var styleText =
   '.error {' +
   '  color: red;' +
   '} ' +
@@ -46,16 +46,16 @@ var _styleText_ =
   '  color: green;' +
   '}';
 
-style.innerText = _styleText_;
+style.textContent = styleText;
 
 var errored = false;
 
 function check(cond, message) {
   if (!cond) {
-      var div = document.createElement('div');
-      div.innerHTML = '<span class="error">FAIL</span>: ' + message + '<br>';
-      errored = true;
-      log.appendChild(div);
+    var div = document.createElement('div');
+    div.innerHTML = '<span class="error">FAIL</span>: ' + message + '<br>';
+    errored = true;
+    log.appendChild(div);
   }
 
   return cond;
@@ -70,11 +70,11 @@ function checkNotEqual(actual, expected, message) {
 }
 
 function checkLarger(actual, expected, message) {
-  return check (actual > expected, message + '. ' + actual + ' !> ' + expected);
+  return check(actual > expected, message + '. ' + actual + ' !> ' + expected);
 }
 
 function checkSmaller(actual, expected, message) {
-  return check (actual < expected, message + '. ' + actual + ' !< ' + expected);
+  return check(actual < expected, message + '. ' + actual + ' !< ' + expected);
 }
 
 function getCopiesInPlay(element) {
