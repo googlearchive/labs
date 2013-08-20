@@ -68,10 +68,6 @@
         #group {
           background-color: white;
         }
-        #newcontactbar {
-          background: #666666 !important;
-          border-color: transparent !important;
-        }
       </style>
 
       <mock-data id="mock"></mock-data>
@@ -112,12 +108,7 @@
 
       <contact-detail id="contact" on-toggle-sidebar="sidebarToggleAction" on-view-group="groupAction"></contact-detail>
 
-      <polymer-ui-toolbar id="newcontactbar" theme="polymer-ui-dark-theme">
-        <polymer-ui-icon-button icon="close" on-click="exploreAction"></polymer-ui-icon-button>
-        <span flex>New Contact</span>
-      </polymer-ui-toolbar>
-
-      <new-contact id="newcontact"></new-contact>
+      <new-contact id="newcontact" on-new-contact-close="exploreAction"></new-contact>
 
     </template>
     <script>
@@ -178,8 +169,8 @@
         ], [
           // 10 new contact
           [8],
-          [9],
-          [9]
+          [8],
+          [8]
         ]],
         page: 1,
         selectedNav: 0,
@@ -190,7 +181,7 @@
             this.$.explorebar, this.$.explore,
             this.$.groupbar, this.$.group,
             this.$.contact,
-            this.$.newcontactbar, this.$.newcontact
+            this.$.newcontact
           ];
           this.pageChanged();
         },
