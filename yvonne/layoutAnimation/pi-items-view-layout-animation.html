@@ -5,14 +5,14 @@
  * license that can be found in the LICENSE file.
  */
 -->
-<link rel="import" href="../../toolkit-ui/elements/g-icon.html"/>
-<script src="web-animations.js"></script>
-<script src="layout-animation.js"></script>
+<link rel="import" href="../../../toolkit-ui/elements/g-icon.html"/>
+<script src="../../../web-animations-js/web-animations.js"></script>
+<script src="../../layoutAnimationShim/src/layout-animation.js"></script>
 <polymer-element name="pi-items-view" attributes="layout view items selected slow">
   <template>
-    <link rel="stylesheet" href="../../projects/pica/components/css/pi-items-view.css" />
-    <link rel="stylesheet" href="../../projects/pica/components/css/pi-layout-flex.css" />
-    <link rel="stylesheet" href="../../projects/pica/components/css/pi-layout.css" />
+    <link rel="stylesheet" href="../../../projects/pica/components/css/pi-items-view.css" />
+    <link rel="stylesheet" href="../../../projects/pica/components/css/pi-layout-flex.css" />
+    <link rel="stylesheet" href="../../../projects/pica/components/css/pi-layout.css" />
     <div id="container" loaded="{{loaded}}" class="{{view}}">
       <template repeat="{{viewItems}}">
         <div class="item">
