@@ -746,8 +746,6 @@ function transitionThis(action) {
       var keyframes = layoutKeyframes[list[i]._layout.keyframesName];
       var positionList = positionListFromKeyframes(keyframes, list[i]);
      
-      console.log(list[i].id, JSON.stringify(positionList));
-
       list[i]._transitionPositionList = [];
       for (var j = 0; j < positionList.length; j++) {
         list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
