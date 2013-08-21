@@ -25,8 +25,8 @@ function at(time, test, message) {
           div.innerHTML = '<span class="pass">PASS</span>: ' + message + '<br>';
         }
       } catch (e) {
-        div.innerHTML = '<span class="error">EXCEPTION</span>: ' + message + ": " + 
-          e.toString() + '<br>' + e.stack;
+        div.innerHTML = '<span class="error">EXCEPTION</span>: ' + message + ': ' +
+            e.toString() + '<br>' + e.stack;
       }
       log.appendChild(div);
     }, 0);
@@ -103,7 +103,10 @@ function dictFilter(dict, f) {
 
 function dictForEach(dict, f) {
   var p = 0;
-  for (var i in dict) { f(dict[i], p); p++ };
+  for (var i in dict) {
+    f(dict[i], p);
+    p++;
+  }
 }
 
 function pxToNum(px) {
