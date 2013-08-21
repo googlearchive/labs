@@ -1,0 +1,59 @@
+<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<polymer-element name="qp-hangout-item" attributes="name chats">
+	<template>
+		<style>
+			@host {
+				:scope {
+					display: block;
+					padding: 10px;
+					text-align: left;
+					color: dimgrey;
+					font-size: 14px;
+					border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+				}
+			}
+			#icon {
+				background: #cccccc;
+				width: 50px;
+				height: 50px;
+				margin-right: 10px;
+				border-radius: 3px;
+			}
+			#name {
+				font-size: 16px;
+			}
+			#message {
+				max-height: 33px;
+				/* TODO: how do I do a multi-line ellipsis? */;
+				overflow: hidden;
+				text-overflow: clip;
+			}
+			#message.expanded {
+				max-height: none;
+			}
+			#time {
+				font-size: 12px;
+				-moz-align-self: flex-start;
+				-webkit-align-self: flex-start;
+				align-self: flex-start;
+			}
+			[unread=true] #name,
+			#time[unread=true] {
+				font-weight: bold;
+			}
+			[unread=true] {
+				color: black;
+			}
+		</style>
+		<polymer-flex-layout align="center"></polymer-flex-layout>
+		<div id="icon"></div>
+		<div flex unread="{{chats.0.unread}}">
+			<div id="name">{{name}}</div>
+			<div id="message">{{chats.0.message}}</div>
+		</div>
+		<div id="time" unread="{{chats.0.unread}}">{{chats.0.time}}</div>
+	</template>
+	<script>
+		Polymer('qp-hangout-item');
+	</script>
+</polymer-element>

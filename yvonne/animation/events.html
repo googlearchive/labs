@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<script src="../../web-animations-js/web-animations.js"></script>
+		<script src="../../../web-animations-js/web-animations.js"></script>
 		<style>
 			#target {
 				background-color: orange;
@@ -38,7 +38,7 @@
 				var anim = new Animation(target, [
 					{transform: 'translate(0,0)'},
 					{transform: 'translate(300px,0)'}
-				], {iterationDuration: 1, iterationCount: 3, startDelay: 0.5});
+				], {duration: 1, iterationCount: 3, startDelay: 0.5});
 				attachEvents(anim);
 				document.timeline.play(anim);
 			};
@@ -47,12 +47,12 @@
 				var anim = new Animation(target, [
 					{transform: 'translate(0,0)'},
 					{transform: 'translate(300px,0)'}
-				], {iterationDuration: 0.5});
+				], {duration: 0.5});
 				var anim2 = new Animation(target, [
 					{opacity: 1},
 					{opacity: 0.5},
 					{opacity: 1}
-				], {iterationDuration: 0.5});
+				], {duration: 0.5});
 				var group = new SeqGroup([anim, anim2]);
 				attachEvents(anim);
 				attachEvents(anim2);

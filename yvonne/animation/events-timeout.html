@@ -37,7 +37,7 @@
 				var anim = new Animation(target, [
 					{transform: 'translate(0,0)'},
 					{transform: 'translate(300px,0)'}
-				], {iterationDuration: 1, startDelay: delay || 0});
+				], {duration: 1, startDelay: delay || 0});
 				attachEvents(anim);
 				setTimeout(function() {
 					document.timeline.play(anim);
