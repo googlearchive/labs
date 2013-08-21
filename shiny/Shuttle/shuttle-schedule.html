@@ -80,11 +80,11 @@
     
     <shuttle-stop-picker id="officeStopsMenu" selected="{{route.officeSelected}}" selectedStop="{{officeSelectedStop}}" 
         stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" searchInputLabel="Search Office Stops"
-        opened="{{officeStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
+        opened="{{officeStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
 
     <shuttle-stop-picker id="remoteStopsMenu" selected="{{route.remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
         stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" 
-        opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-opened="menuOpened"></shuttle-stop-picker>
+        opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
     
     <div id="description">
       {{fromStop.name}} to {{toStop.name}}
@@ -173,8 +173,8 @@
       },
       favoriteChanged: function() {
         if (this.favorite) {
-          var f = this.favorite.fromStop.index;
-          var t = this.favorite.toStop.index;
+          var f = this.favorite.fromStop.name;
+          var t = this.favorite.toStop.name;
           this.reverse = this.favorite.reverse;
           this.route.officeSelected = this.reverse ? t : f;
           this.route.remoteSelected = this.reverse ? f : t;
@@ -212,8 +212,8 @@
         this.save();
       },
       areSameFavorites: function(f1, f2) {
-        return f1.fromStop.index === f2.fromStop.index && 
-            f1.toStop.index === f2.toStop.index &&
+        return f1.fromStop.name === f2.fromStop.name && 
+            f1.toStop.name === f2.toStop.name &&
             f1.reverse === f2.reverse;
       },
       save: function() {
