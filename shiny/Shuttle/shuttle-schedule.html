@@ -156,7 +156,6 @@
         return !this.$.officeStopsMenu.opened && !this.$.remoteStopsMenu.opened;
       },
       menuOpened: function(e, detail, sender) {
-        console.log('menuOpened', sender.opened)
         if (sender.opened) {
           this.centerStop = sender.selectedStop;
           this.filteredStops = sender.stops.slice();
@@ -174,8 +173,8 @@
       },
       favoriteChanged: function() {
         if (this.favorite) {
-          var f = this.favorite.fromStop.index;
-          var t = this.favorite.toStop.index;
+          var f = this.favorite.fromStop.name;
+          var t = this.favorite.toStop.name;
           this.reverse = this.favorite.reverse;
           this.route.officeSelected = this.reverse ? t : f;
           this.route.remoteSelected = this.reverse ? f : t;
@@ -213,8 +212,8 @@
         this.save();
       },
       areSameFavorites: function(f1, f2) {
-        return f1.fromStop.index === f2.fromStop.index && 
-            f1.toStop.index === f2.toStop.index &&
+        return f1.fromStop.name === f2.fromStop.name && 
+            f1.toStop.name === f2.toStop.name &&
             f1.reverse === f2.reverse;
       },
       save: function() {

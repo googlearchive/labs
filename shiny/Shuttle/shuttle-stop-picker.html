@@ -88,7 +88,7 @@
     </style>
     
     <polymer-selector id="selector" target="{{$.stops}}" itemsSelector=".stop" 
-        valueattr="index" selected="{{selected}}" selectedItem="{{selectedItem}}"
+        valueattr="name" selected="{{selected}}" selectedItem="{{selectedItem}}"
         selectedModel="{{selectedStop}}" on-polymer-activate="toggleAction"></polymer-selector>
     
     <div id="searchBox">
@@ -101,7 +101,7 @@
           <div class="group" hidden?="{{hidden}}">{{name}}</div>
         </template>
         <template repeat="{{stops}}">
-          <div class="stop" index="{{index}}" hidden?="{{hidden}}" focused?="{{focused}}">
+          <div class="stop" name="{{name}}" hidden?="{{hidden}}" focused?="{{focused}}">
             <div class="stop-label">{{name}}</div>
             <polymer-ui-icon class="check-icon" src="assets/ic_check_darkreg.png"></polymer-ui-icon>
           </div>
@@ -154,7 +154,7 @@
         if (this.opened && this.focusedStop) {
           this.focusedStop.focused = true;
           var n = this.$.stops.querySelector(
-              '[index="' + this.focusedStop.index + '"]');
+              '[name="' + this.focusedStop.name + '"]');
           this.scrollToNode(n);
         }
       },
