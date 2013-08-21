@@ -4,6 +4,12 @@
 <polymer-element name="shuttle-favorites" attributes="favorites favorite">
   <template>
     <style>
+      @host {
+        * {
+          background-color: #eee;
+        }
+      }
+      
       .label {
         padding-left: 20px;
       }
@@ -17,6 +23,13 @@
         color: #8f8f8f;
         font-size: 12px;
         font-weight: bold;
+      }
+      
+      .card {
+        background-color: #fff;
+        border-radius: 2px;
+        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+        margin: 10px;
       }
       
       .fav-item {
@@ -46,10 +59,9 @@
     <polymer-ui-toolbar>
       <div class="label">Favorites</div>
     </polymer-ui-toolbar>
-    <div class="group">Routes</div>
     <polymer-selector selected="{{selected}}" selectedModel="{{favorite}}">
       <template repeat="{{favorites}}">
-        <div class="fav-item">{{fromStop.name}} <span class="to">to {{toStop.name}}</span></div>
+        <div class="fav-item card">{{fromStop.name}} <span class="to">to {{toStop.name}}</span></div>
       </template>
     </polymer-selector>
   </template>

@@ -24,14 +24,19 @@
         left: 10px;
         height: 200px;
         max-width: 600px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
+      }
+      
+      .card {
+        background-color: #fff;
+        border-radius: 2px;
+        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+        margin: 10px;
       }
     </style>
     
     <google-map id="map" zoom="15"></google-map>
     
-    <shuttle-timetable id="timetable" 
+    <shuttle-timetable id="timetable" class="card"
         fromStop="{{fromStop == centerStop ? (selectedFilteredStop || centerStop) : fromStop}}" 
         toStop="{{toStop == centerStop ? (selectedFilteredStop || centerStop) : toStop}}"></shuttle-timetable>
 
