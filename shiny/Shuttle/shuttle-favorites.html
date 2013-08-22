@@ -1,5 +1,6 @@
 <link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-card/polymer-ui-card.html">
 
 <polymer-element name="shuttle-favorites" attributes="favorites favorite">
   <template>
@@ -14,38 +15,31 @@
         padding-left: 20px;
       }
       
-      .group {
-        height: 29px;
-        line-height: 29px;
-        padding-left: 20px;
-        border-bottom: 1px solid #eee;
-        background: #eee;
-        color: #8f8f8f;
-        font-size: 12px;
-        font-weight: bold;
-      }
-      
-      .card {
-        background-color: #fff;
-        border-radius: 2px;
-        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
-        margin: 10px;
+      .favorites {
+        display: block;
+        position: absolute;
+        top: 61px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: auto;
       }
       
       .fav-item {
+        display: block;
         height: 59px;
         line-height: 59px;
+        margin: 10px;
         padding: 0 20px;
-        border-bottom: 1px solid #eee;
         font-size: 14px;
         font-weight: bold;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis
+        text-overflow: ellipsis;
       }
       
       .fav-item.polymer-selected {
-        background: #ddd;
+        background: #ddd !important;
       }
       
       .to {
@@ -59,9 +53,11 @@
     <polymer-ui-toolbar>
       <div class="label">Favorites</div>
     </polymer-ui-toolbar>
-    <polymer-selector selected="{{selected}}" selectedModel="{{favorite}}">
+    <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}">
       <template repeat="{{favorites}}">
-        <div class="fav-item card">{{fromStop.name}} <span class="to">to {{toStop.name}}</span></div>
+        <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway">
+          {{fromStop.name}} <span class="to">to {{toStop.name}}</span>
+        </polymer-ui-card>
       </template>
     </polymer-selector>
   </template>
@@ -69,6 +65,14 @@
     Polymer('shuttle-favorites', {
       clearSelection: function() {
         this.selected = null;
+      },
+      swipeAway: function(e, detail, sender) {
+        var f = sender.templateInstance.model;
+        var i = this.favorites.indexOf(f);
+        if (i > -1) {
+          this.favorites.splice(i, 1);
+          this.fire('shuttle-favorites-change');
+        }
       }
     });
   </script>

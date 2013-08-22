@@ -1,5 +1,8 @@
-<polymer-element name="shuttle-timetable" attributes="fromStop toStop">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-card/polymer-ui-card.html">
+
+<polymer-element name="shuttle-timetable" extends="polymer-ui-card" attributes="fromStop toStop">
   <template>
+    <link rel="stylesheet" href="../../../polymer-ui-elements/polymer-ui-card/polymer-ui-card.css">
     <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     <style>
       .container {

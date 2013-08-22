@@ -51,9 +51,11 @@
       }
       
       #description {
+        display: block;
         height: 90px;
         font-size: 18px;
         padding: 20px 50px 0 20px;
+        margin: 10px;
       }
       
       shuttle-toggle-icon {
@@ -62,15 +64,8 @@
         right: 20px;
       }
       
-      .card {
-        background-color: #fff;
-        border-radius: 2px;
-        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
-        margin: 10px;
-      }
-      
       #timetable {
-        margin-top: 20px;
+        margin: 20px 10px 10px;
       }
     </style>
     
@@ -87,20 +82,20 @@
     </polymer-ui-toolbar>
     
     <shuttle-stop-picker id="officeStopsMenu" selected="{{route.officeSelected}}" selectedStop="{{officeSelectedStop}}" 
-        stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" searchInputLabel="Search Stops"
+        stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" searchInputLabel="Search Office Stops"
         opened="{{officeStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
 
     <shuttle-stop-picker id="remoteStopsMenu" selected="{{route.remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
         stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" 
         opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
     
-    <div id="description" class="card">
+    <polymer-ui-card id="description">
       <div>{{fromStop.name}} to {{toStop.name}}</div>
       <shuttle-toggle-icon active="{{isFav}}" src="assets/ic_star_sm_darkalt.png" 
           activeSrc="assets/ic_star_sm_darkreg.png" on-tap="handleFavTap"></shuttle-toggle-icon>
-    </div>
+    </polymer-ui-card>
     
-    <shuttle-timetable id="timetable" class="card" fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
+    <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
   </template>
   <script>
     Polymer('shuttle-schedule', {

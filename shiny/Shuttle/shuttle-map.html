@@ -18,19 +18,11 @@
       
       #timetable {
         position: absolute !important;
-        background: white;
         right: 10px;
         bottom: 10px;
         left: 10px;
         height: 200px;
         max-width: 600px;
-      }
-      
-      .card {
-        background-color: #fff;
-        border-radius: 2px;
-        box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
-        margin: 10px;
       }
     </style>
     
@@ -40,7 +32,7 @@
         fromStop="{{fromStop == centerStop ? (selectedFilteredStop || centerStop) : fromStop}}" 
         toStop="{{toStop == centerStop ? (selectedFilteredStop || centerStop) : toStop}}"></shuttle-timetable>
 
-    <polymer-overlay target="{{$.timetable}}" opened="{{opened}}" autoCloseDisabled></polymer-overlay>
+    <polymer-overlay target="{{$.timetable}}" opened="{{opened}}" autoCloseDisabled timeout="0"></polymer-overlay>
   </template>
   <script>
     Polymer('shuttle-map', {
@@ -62,7 +54,7 @@
           this.infoWindow = new google.maps.InfoWindow();
           google.maps.event.addListener(marker, 'click', 
             function() {
-              this.openCloseInfoWindow(marker);
+              this.openCloseInfoWindow();
               this.selectStop(stop);
             }.bind(this)
           );
@@ -70,13 +62,17 @@
         this.infoWindow.setContent(
             '<div style="font-size: 14px; width: 200px;"><h4>' + 
             stop.name + '</h4>' + stop.description + '</div>');
-        this.openCloseInfoWindow(marker);
+        this.infoWindow.marker = marker;
+        this.openCloseInfoWindow();
       },
-      openCloseInfoWindow: function(marker, closed) {
+      openCloseInfoWindow: function(closed) {
+        if (!this.infoWindow) {
+          return;
+        }
         if (closed) {
           this.infoWindow.close();
         } else if (!this.infoWindow.getMap()) {
-          this.infoWindow.open(this.$.map.map, marker);
+          this.infoWindow.open(this.$.map.map, this.infoWindow.marker);
         }
       },
       filteredStopsChanged: function(old) {
@@ -85,7 +81,7 @@
         });
         this.markers = [];
         this.opened = !!this.filteredStops;
-        this.openCloseInfoWindow(this.fromMarker, !!this.filteredStops);
+        this.openCloseInfoWindow(!!this.filteredStops);
         this.filteredStops && this.filteredStops.forEach(function(s) {
           if (s.hidden) {
             return;

@@ -2,7 +2,7 @@
 
 <polymer-element name="shuttle-data" attributes="route officeStops remoteStops favorites">
   <template>
-    <polymer-localstorage id="storage" name="shuttle-storage4" value="{{userData}}" on-polymer-localstorage-load="populateUserData"></polymer-localstorage>
+    <polymer-localstorage id="storage" name="shuttle-storage5" value="{{userData}}" on-polymer-localstorage-load="populateUserData"></polymer-localstorage>
   </template>
   <script>
     Polymer('shuttle-data', {
@@ -13,11 +13,11 @@
         Shuttle.stops.forEach(function(s, i) {
           s.index = i;
         });
-        /* this.officeStops = Shuttle.stops.filter(function(s) {
+        this.officeStops = Shuttle.stops.filter(function(s) {
           return s.is_work;
-        }); */
+        });
         // office/campus stops
-        this.officeStops = JSON.parse(JSON.stringify(Shuttle.stops));
+        this.officeStops = JSON.parse(JSON.stringify(this.officeStops));
         // all stops
         this.remoteStops = JSON.parse(JSON.stringify(Shuttle.stops));
       },

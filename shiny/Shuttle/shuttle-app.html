@@ -58,7 +58,7 @@
         selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
     
     <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
-        on-polymer-activate="favoriteSelect"></shuttle-favorites>
+        on-polymer-activate="favoriteSelect" on-shuttle-favorites-change="favoritesChange"></shuttle-favorites>
     
     <shuttle-map id="map" class="{{desktop : !queryMatches}}" centerStop="{{centerStop}}" 
         fromStop="{{fromStop}}" toStop="{{toStop}}"
@@ -104,9 +104,8 @@
         this.nodes = [
           this.$.schedule, this.$.favorites, this.$.map, this.$.tabbar
         ];
+        this.layoutMode = this.desktop;
         this.selected = 0;
-        this.queryMatchesChanged();
-        
         window.addEventListener('resize', function() {
           this.$.map.resize();
         }.bind(this));
@@ -126,6 +125,10 @@
       },
       favoriteSelect: function() {
         this.selected = 0;
+      },
+      favoritesChange: function() {
+        this.$.schedule.updateFav();
+        this.saveData();
       },
       saveData: function() {
         this.$.data.save();
