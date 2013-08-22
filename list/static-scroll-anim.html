@@ -28,6 +28,21 @@
     .header  select {
       width: 60px;
     }
+
+    #log {
+      position: fixed;
+      display: none;
+      z-index: 2;
+      box-sizing: border-box;
+      top: 30px;
+      width: 400px;
+      left: calc(50% - 200px);
+      max-height: calc(100% - 30px);
+      overflow: auto;
+      background: white;
+      border: 1px solid gray;
+      padding: 10px;
+    }
     
     #list {
       position: absolute;
@@ -168,7 +183,7 @@
     <label>rows:<input id="rowsInput" value="5000"></label>
     <label>overdraw:<input id="overDrawInput" value="0"></label>
     <label>layers:<input id="makeLayersInput" type="checkbox"></label>
-    <label>delta:<input id="deltaStInput" value="75"></label>
+    <label>delta:<input id="deltaStInput" value="80"></label>
     <button onclick="toggleAnimate()">animate</button>
     <label>item: 
       <select id="complexitySelect">
@@ -177,11 +192,11 @@
         <option>complex</option>
       </select>
     </label>      
-    <span id="log"></span>
   </div>
   <div id="list">
     <div id="content"></div>
   </div>
+  <div id="log"></div>
   <script>
     
     var list = document.querySelector('#list');
@@ -210,7 +225,7 @@
       visible = [];
       var rh = rowHeights[complexity];
       var s = Math.floor(top / rh);
-      var c = Math.ceil(height / rh);
+      var c = Math.ceil(height / rh) + 1;
       if (overDraw) {
         s = Math.max(0, s - overDraw);
         c+= 2*overDraw;
@@ -220,6 +235,8 @@
         n.style.display = 'block';
         visible.push(n);
       }
+      frame.rowStart = s;
+      frame.rowCount = c;
     }
     
     /*
@@ -246,34 +263,70 @@
     }
 
     var animateScrolling = false;
-    var deltaSt = 0, frameTime = 0;
+    var deltaSt = 0;
     // scroll animation
     function toggleAnimate() {
+      deltaSt = Number(deltaStInput.value);
       animateScrolling = !animateScrolling;
       if (animateScrolling) {
-        frameTime = 0;
-      } else {
-        log.textContent = frameTime;
+        startLog();
+        animate();
       }
-      deltaSt = Number(deltaStInput.value);
-      animate();
     }
 
+    var frameData = [], frame = {};
     function animate() {
-      var n = Date.now();
+      frame = {};
+      frameData.push(frame);
+      frame.start = Date.now();
       requestAnimationFrame(function() {
-        frameTime = Math.max(frameTime, Date.now() - n);
+        frame.workStart = Date.now();
         list.scrollTop = list.scrollTop + deltaSt;
         scroll();
+        frame.workEnd = Date.now();
         if (animateScrolling) {
           animate();
+        } else {
+          dumpLog();
         }
       });
     }
-    
+
+    function startLog() {
+      frameData = [];
+      hideLog();
+    }
+
+    function hideLog() {
+      log.style.display = 'none';
+    }
+
+    function dumpLog() {
+      log.style.display = 'block';
+      var html = '', l;
+      var frameCount = 0, framesTime = 0, minTime = 1e9, maxTime = 0;
+      frameData.forEach(function(f, i) {
+        var ft = l ? f.start - l : 0;
+        if (ft > 10) {
+          minTime = Math.min(minTime, ft);
+          maxTime = Math.max(maxTime, ft);
+          framesTime += ft;
+          frameCount++;
+        }
+        html += i + ': rows ' + f.rowStart + ', ' + f.rowCount + 
+            ', time ' + ft + 'ms, work: ' + (f.workEnd - f.workStart) +'ms<br>';
+        l = f.start;
+      });
+      var header = 'FPS: avg: ' + Math.floor(1000 / (framesTime / 
+          frameCount)) + ', max: ' + Math.floor(1000 / minTime) + 
+          ', min: ' + Math.floor(1000 / maxTime) + '<br>';
+      log.innerHTML = header + html;
+    }
+
     // dom generation
     reset = function() {
       visible = [];
+      hideLog();
       animateScrolling = false;
       scrollTime = 0;
       rafing = false;
