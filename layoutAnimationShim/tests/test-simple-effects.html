@@ -1,3 +1,19 @@
+<!--
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+
+limitations under the License.
+--> 
 <!DOCTYPE html>
 <style>
 .layout {
@@ -27,20 +43,20 @@
   <div id='clipFade' class='layout' style='top: 700px;' effect='clip fade'>Clip Fade</div>
 
 </div>
-<div id='padding' style="height: 800px"></div>
-<script src="../../../web-animations-js/web-animations.js"></script>
-<script src="../src/layout-animation.js"></script>
+<div id='padding' style='height: 800px'></div>
+<script src='../../../web-animations-js/web-animations.js'></script>
+<script src='../src/layout-animation.js'></script>
 <script src='test-helper.js' nochecks></script>
 <script>
 
-registerLayoutKeyframes("simple", [
-  {offset: 0, properties: { layoutWidth: "from()", layoutHeight: "from()",
-                            layoutTop: "from()", layoutLeft: "from()" }},
-  {offset: 1, properties: { layoutWidth: "to()", layoutHeight: "to()",
-                            layoutTop: "to()", layoutLeft: "to()" }}]);
+registerLayoutKeyframes('simple', [
+  {offset: 0, properties: { layoutWidth: 'from()', layoutHeight: 'from()',
+                            layoutTop: 'from()', layoutLeft: 'from()' }},
+  {offset: 1, properties: { layoutWidth: 'to()', layoutHeight: 'to()',
+                            layoutTop: 'to()', layoutLeft: 'to()' }}]);
 
-var divs = document.querySelectorAll("#container > div")
-setLayoutTransition(divs, "simple", 1);
+var divs = document.querySelectorAll('#container > div')
+setLayoutTransition(divs, 'simple', 1);
 
 for (var i = 0; i < divs.length; i++) {
   setLayoutEffect(divs[i], divs[i].getAttribute('effect'));
@@ -53,18 +69,18 @@ at(0.5, function() {
   checkLayoutPosition(layout, 150, 100);
   checkLayoutScale(layout, 1, 1);
   checkLayoutSize(layout, 150, 100);
-  checkLayoutNoClip(fade);
+  checkLayoutNoClip(layout);
   checkLayoutOpacity(layout, 1);
-}, "effect: layout");
+}, 'effect: layout');
 
 at(0.5, function() {
   checkLaidOut(none);
   checkLayoutPosition(none, 150, 200);
   checkLayoutScale(none, 1, 1);
   checkLayoutSize(none, 100, 100);
-  checkLayoutNoClip(fade);
+  checkLayoutNoClip(none);
   checkLayoutOpacity(none, 1);
-}, "effect: none");
+}, 'effect: none');
 
 at(0.5, function() {
   checkLaidOut(transform);
@@ -73,7 +89,7 @@ at(0.5, function() {
   checkLayoutSize(transform, 150, 100);
   checkLayoutNoClip(transform);
   checkLayoutOpacity(transform, 1);
-}, "effect: transform");
+}, 'effect: transform');
 
 at(0.5, function() {
   checkLaidOut(clip);
@@ -82,7 +98,7 @@ at(0.5, function() {
   checkLayoutSize(clip, 100, 100);
   checkLayoutClip(clip, 150, 75);
   checkLayoutOpacity(clip, 1);
-}, "effect: clip");
+}, 'effect: clip');
 
 at(0.5, function() {
   checkLaidOut(fade);
@@ -91,7 +107,7 @@ at(0.5, function() {
   checkLayoutSize(fade, 100, 100, 200, 100);
   checkLayoutNoClip(fade);
   checkLayoutOpacity(fade, 0.5, 0.5);
-}, "effect: fade");
+}, 'effect: fade');
 
 at(0.5, function() {
   checkLaidOut(transformFade);
@@ -100,7 +116,7 @@ at(0.5, function() {
   checkLayoutSize(transformFade, 150, 100);
   checkLayoutNoClip(transformFade);
   checkLayoutOpacity(transformFade, 0.5, 0.5);
-}, "effect: layout fade");
+}, 'effect: layout fade');
 
 at(0.5, function() {
   checkLaidOut(clipFade);
@@ -109,5 +125,5 @@ at(0.5, function() {
   checkLayoutSize(clipFade, 100, 100, 200, 50);
   checkLayoutClip(clipFade, 150, 75);
   checkLayoutOpacity(clipFade, 0.5, 0.5);
-}, "effect: clip fade");
+}, 'effect: clip fade');
 </script>
