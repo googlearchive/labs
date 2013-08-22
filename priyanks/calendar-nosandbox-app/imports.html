@@ -1,8 +1,9 @@
+
 <polymer-element name="calendar-event-preview" attributes="event" assetpath="elements/calendar-elements/calendar-event-preview">
 	<template>
 		<style>
 			@host {
-				* {
+				:scope {
 					display: block;
 					position: absolute;
 					width: 100%;
@@ -43,7 +44,7 @@
 	<template>
 		<style>
 			@host {
-				* {
+				:scope {
 					display: inline-block;
 					vertical-align: top;
 				}
@@ -110,7 +111,7 @@
 	<template>
 		<style>
 			@host {
-				* {
+				:scope {
 					display: inline-block;
 					vertical-align: top;
 				}
@@ -174,7 +175,7 @@
 	<template>
 		<style>
 			@host {
-				* {
+				:scope {
 					display: flex;
 				}
 			}
@@ -538,7 +539,7 @@ license that can be found in the LICENSE file.
 	<template>
 		<style>
 			@host {
-				* {
+				:scope {
 					display: inline-block;
 				}
 			}
@@ -581,7 +582,7 @@ license that can be found in the LICENSE file.
 	<template>
 		<style>
 			@host {
-				* {
+				:scope {
 					display: block;
 				}
 			}
@@ -661,7 +662,7 @@ license that can be found in the LICENSE file.
 	<template>
 		<style>
 			@host {
-				* {
+				:scope {
 					display: block;
 				}
 			}
@@ -748,35 +749,32 @@ license that can be found in the LICENSE file.
 
 
 <polymer-element name="calendar-app" assetpath="elements/calendar-elements/calendar-app">
-	<template>
-		<style>
-			@host {
-				* {
-					display: block;
-				}
-			}
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      .hidden {
+        display: none !important;
+      }
+      .wrapper {
+        height: 100%;
+        overflow-y: scroll;
+        width: 100%;
+      }
+      calendar-event-details {
+        height: 100%;
+        width: 100%;
+      }
+    </style>
 
-			.hidden {
-				display: none !important;
-			}
-
-			.wrapper {
-				height: 100%;
-				overflow-y: scroll;
-				width: 100%;
-			}
-
-			calendar-event-details {
-				height: 100%;
-				width: 100%;
-			}
-		</style>
-
-		<div class="wrapper">
-			<calendar-day-view id="calendar-day-view" events="{{events}}" start="{{viewStart}}" on-calendar-event-details="onCalendarEventDetails" on-calendar-event-create="onCalendarEventCreate" class="{{hidden: selectedEvent.color || editingEvent.color}}"></calendar-day-view>
-			<calendar-event-details event="{{selectedEvent}}" on-calendar-event-details-done="onCalendarEventDetailsDone" on-calendar-event-details-edit="onCalendarEventDetailsEdit" on-calendar-event-delete="onCalendarEventDelete" class="{{hidden: !selectedEvent.color}}"></calendar-event-details>
-			<calendar-event-edit event="{{editingEvent}}" on-calendar-event-edit-done="onCalendarEventEditDone" class="{{hidden: !editingEvent.color}}"></calendar-event-edit>
-		</div>
-	</template>
-	
+    <div class="wrapper">
+      <calendar-day-view id="calendar-day-view" events="{{events}}" start="{{viewStart}}" on-calendar-event-details="onCalendarEventDetails" on-calendar-event-create="onCalendarEventCreate" class="{{hidden: selectedEvent.color || editingEvent.color}}"></calendar-day-view>
+      <calendar-event-details event="{{selectedEvent}}" on-calendar-event-details-done="onCalendarEventDetailsDone" on-calendar-event-details-edit="onCalendarEventDetailsEdit" on-calendar-event-delete="onCalendarEventDelete" class="{{hidden: !selectedEvent.color}}"></calendar-event-details>
+      <calendar-event-edit event="{{editingEvent}}" on-calendar-event-edit-done="onCalendarEventEditDone" class="{{hidden: !editingEvent.color}}"></calendar-event-edit>
+    </div>
+  </template>
+  
 </polymer-element>

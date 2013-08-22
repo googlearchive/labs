@@ -1,5 +1,3 @@
-document.addEventListener('HTMLImportsLoaded', function() {
-
 Polymer.addResolvePath = function (proto, element) {
   // monkey patch addResolvePath to use assetpath attribute
   var assetPath = element.getAttribute('assetpath');
@@ -675,88 +673,90 @@ Polymer.addResolvePath = function (proto, element) {
 		});
 	;
 
-		var BLANK_EVENT = {
-			duration: 0,
-			start: 0
-		};
-		Polymer('calendar-app', {
-			editingEvent: BLANK_EVENT,
-			events: [],
-			selectedEvent: BLANK_EVENT,
-			viewStart: 1375660800000,
-			eventsChanged: function() {
-				console.log('=====Here\'s where you should persist this.events to chrome storage=====');
-			},
-			onCalendarEventCreate: function(event) {
-				this.editingEvent = {
-					color: '#000',
-					duration: 30,
-					start: event.detail.start
-				};
-				this.events.push(this.editingEvent);
-			},
-			onCalendarEventDelete: function(event) {
-				this.selectedEvent = BLANK_EVENT;
-				for (var i = this.events.length - 1; i >= 0; --i) {
-					if (this.events[i] == event.detail.event) {
-						this.events.splice(i, 1);
-						return;
-					}
-				}
-			},
-			onCalendarEventDetails: function(event) {
-				this.selectedEvent = event.detail.event;
-			},
-			onCalendarEventDetailsDone: function() {
-				this.selectedEvent = BLANK_EVENT;
-				this.eventsChanged();
-			},
-			onCalendarEventDetailsEdit: function(event) {
-				this.selectedEvent = BLANK_EVENT;
-				this.editingEvent = event.detail.event;
-			},
-			onCalendarEventEditDone: function() {
-				this.selectedEvent = this.editingEvent;
-				this.editingEvent = BLANK_EVENT;
-				this.eventsChanged();
-			},
-			ready: function() {
-				console.log('=====Here\'s where you should load this.events from chrome storage=====');
-				// Remove the rest of this method when you do.
+    var BLANK_EVENT = {
+      duration: 0,
+      start: 0
+    };
+    Polymer('calendar-app', {
+      events: [],
+      editingEvent: BLANK_EVENT,
+      selectedEvent: BLANK_EVENT,
+      viewStart: 1375660800000,
+      created: function() {
+      },
+      eventsChanged: function() {
+        console.log('=====Here\'s where you should persist this.events to chrome storage=====');
+      },
+      onCalendarEventCreate: function(event) {
+        this.editingEvent = {
+          color: '#000',
+          duration: 30,
+          start: event.detail.start
+        };
+        this.events.push(this.editingEvent);
+      },
+      onCalendarEventDelete: function(event) {
+        this.selectedEvent = BLANK_EVENT;
+        for (var i = this.events.length - 1; i >= 0; --i) {
+          if (this.events[i] == event.detail.event) {
+            this.events.splice(i, 1);
+            return;
+          }
+        }
+      },
+      onCalendarEventDetails: function(event) {
+        this.selectedEvent = event.detail.event;
+      },
+      onCalendarEventDetailsDone: function() {
+        this.selectedEvent = BLANK_EVENT;
+        this.eventsChanged();
+      },
+      onCalendarEventDetailsEdit: function(event) {
+        this.selectedEvent = BLANK_EVENT;
+        this.editingEvent = event.detail.event;
+      },
+      onCalendarEventEditDone: function() {
+        this.selectedEvent = this.editingEvent;
+        this.editingEvent = BLANK_EVENT;
+        this.eventsChanged();
+      },
+      ready: function() {
+        console.log('=====Here\'s where you should load this.events from chrome storage=====');
+        // Remove the rest of this method when you do.
 
-				this.events = [{
-					color: '#0066ff',
-					description: 'Test description',
-					duration: 525,
-					isPublic: false,
-					location: 'Test Location 1',
-					name: 'Test Name 1',
-					start: 1375702200000
-				}, {
-					color: '#009900',
-					description: 'Test description',
-					duration: 30,
-					isPublic: true,
-					location: '',
-					name: 'Test Name 2 test test test test test test test test test the end',
-					start: 1375693200000
-				}, {
-					color: '#990000',
-					description: 'Test description',
-					duration: 90,
-					isPublic: false,
-					location: 'Test Location 3 test test test test test test test',
-					name: 'Test Name 3',
-					start: 1375696800000
-				}, {
-					color: '#990099',
-					description: 'Test description',
-					duration: 120,
-					isPublic: true,
-					location: 'Test Location 4',
-					name: 'Test Name 4',
-					start: 1375684200000
-				}];
-			}
-		});
-});
+        this.events = [{
+          color: '#0066ff',
+          description: 'Test description',
+          duration: 525,
+          isPublic: false,
+          location: 'Test Location 1',
+          name: 'Test Name 1',
+          start: 1375702200000
+        }, {
+          color: '#009900',
+          description: 'Test description',
+          duration: 30,
+          isPublic: true,
+          location: '',
+          name: 'Test Name 2 test test test test test test test test test the end',
+          start: 1375693200000
+        }, {
+          color: '#990000',
+          description: 'Test description',
+          duration: 90,
+          isPublic: false,
+          location: 'Test Location 3 test test test test test test test',
+          name: 'Test Name 3',
+          start: 1375696800000
+        }, {
+          color: '#990099',
+          description: 'Test description',
+          duration: 120,
+          isPublic: true,
+          location: 'Test Location 4',
+          name: 'Test Name 4',
+          start: 1375684200000
+        }];
+      }
+    });
+  
