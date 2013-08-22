@@ -44,10 +44,10 @@ function rectToClip(rect) {
 } 
 
 /**
- * Constructs a fillMode: 'none' timing object of the requested duration.
+ * Constructs a fill: 'none' timing object of the requested duration.
  */
 function timingForDuration(duration) {
-  return {iterationDuration: duration, fillMode: 'none'};
+  return {duration: duration, fill: 'forwards'};
 }
 
 /**
@@ -403,13 +403,13 @@ function generateAnimation(element, positionList) {
         var anim = animationToPositionLayout(element, copy, sublist, duration * (end - start));
         anims.push(anim);
       });
-      seq.append(new ParGroup(anims, {fillMode: 'forwards'}));
+      seq.append(new ParGroup(anims, {fill: 'forwards'}));
       lastWasLayout = true;
     } else {
       if (effect.blendMode != 'none') {
         // Blend modes need a start and end snapshot to blend between.
-        var group = new SeqGroup([], {fillMode: 'forwards'});
-        var par = new ParGroup([], {fillMode: 'forwards'});
+        var group = new SeqGroup([], {fill: 'forwards'});
+        var par = new ParGroup([], {fill: 'forwards'});
         par.append(group);
         seq.append(par);
         if (end == 1) {
@@ -426,9 +426,9 @@ function generateAnimation(element, positionList) {
         toCopy.style.opacity = '0';
         showCopy(element, newState);
         par.append(new Animation(fromCopy, [{opacity: fromOpacity + ''}, {opacity: effect.fadeOutParam + ''}],
-          {fillMode: 'forwards', iterationDuration: duration * (end - start)}));
+          {fill: 'forwards', duration: duration * (end - start)}));
         par.append(new Animation(toCopy, [{opacity: toOpacity + ''}, {opacity: effect.fadeInParam + ''}],
-          {fillMode: 'forwards', iterationDuration: duration * (end - start)}));
+          {fill: 'forwards', duration: duration * (end - start)}));
 
       } else {
         var group = seq;
@@ -445,13 +445,13 @@ function generateAnimation(element, positionList) {
           var anim = animationToPositionLayout(element, copy, newList, 0);
           anims.push(anim);
         });
-        group.append(new ParGroup(anims, {fillMode: 'forwards'}));
+        group.append(new ParGroup(anims, {fill: 'forwards'}));
       }
       // Pick up either the previous layout snapshots or the inserted layout 
       // snapshots and fix them with forward fill, to ensure the layout
       // updates to the end of the animation.
       if (anims) {
-        anims.forEach(function(anim) { anim.specified.fillMode = 'forwards'; });
+        anims.forEach(function(anim) { anim.specified.fill = 'forwards'; });
         anims = undefined;
       }
       lastWasLayout = false;
@@ -766,6 +766,7 @@ function transitionThis(action) {
       removeCopy(transitionable[i], '_transitionBefore');
       removeCopy(transitionable[i], '_transitionAfter');
     }
+    parGroup.player.source = null;
   };
 
   if (LOCATE_FOUC) {
