@@ -17,7 +17,6 @@ limitations under the License.
 <!DOCTYPE html>
 <style>
 #outer {
-  @position: absolute;
   width: 200px;
   height: 400px;
   top: 100px;
@@ -63,7 +62,7 @@ limitations under the License.
 <div style='height: 500px;'></div>
 <script src='../../../web-animations-js/web-animations.js'></script>
 <script src='../src/layout-animation.js'></script>
-<script src='test-helper.js' nochecks></script>
+<script src='test-helper.js'></script>
 <script>
 registerLayoutKeyframes('simple', [
   {offset: 0, properties: { layoutWidth: 'from()', layoutHeight: 'from()',
