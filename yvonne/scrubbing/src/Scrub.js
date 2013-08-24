@@ -240,20 +240,20 @@
     playTo: function(inTime, inDuration) {
       this.scrubAnimation();
       var rate = inDuration ? Math.abs(inTime - t) / inDuration : 1;
-      var duration = this.animation.specified.iterationDuration;
+      var duration = this.animation.specified.duration;
       var t = this.currentTime;
       var reversing = (inTime < t);
       if (reversing) {
         this.segment = new SeqGroup([
           new SeqGroup([this.animation], {direction: 'reverse'})
         ], {
-          iterationDuration: (duration - inTime),
+          duration: (duration - inTime),
           playbackRate: rate,
           startDelay: -(duration - t)
         });
       } else {
         this.segment = new SeqGroup([this.animation], {
-          iterationDuration: inTime,
+          duration: inTime,
           playbackRate: rate,
           startDelay: -t
         });
@@ -264,8 +264,8 @@
       if (this.animation.parent) {
         var reversing = this.animation.parent.specified.direction === 'reverse';
         var segmentDuration = reversing ?
-          this.animation.specified.iterationDuration - this.segment.specified.iterationDuration :
-          this.segment.specified.iterationDuration;
+          this.animation.specified.duration - this.segment.specified.duration :
+          this.segment.specified.duration;
         // remove animation from segment
         this.animation.remove();
         this.segment.parent && this.segment.remove();
@@ -313,7 +313,7 @@
         clamp(this.animation.player.currentTime, 0, this.maxTime);
     },
     get duration() {
-      return this.animation.iterationDuration;
+      return this.animation.duration;
     },
     get maxTime() {
       return this.duration - (this.wrap ? 0 : this.nudgeTime);

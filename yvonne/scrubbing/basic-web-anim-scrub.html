@@ -4,9 +4,9 @@
   <title>Simple Scrubbing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, 
           minimum-scale = 1, maximum-scale = 1,user-scalable=no">
-  <script src="../../web-animations-js/web-animations.js"></script>
-  <script src="../../PointerEvents/pointerevents.js"></script>
-  <script src="../../pointergestures/pointergestures.js"></script>
+  <script src="../../../web-animations-js/web-animations.js"></script>
+  <script src="../../../PointerEvents/pointerevents.js"></script>
+  <script src="../../../PointerGestures/pointergestures.js"></script>
   <script src="src/Scrub.js"></script>
   <style>
     body {
@@ -85,7 +85,7 @@
       {transform: 'translate(800px, 0px) rotate(1440deg)', opacity: 1}
     ];
     var anim2 = new Animation(document.querySelector('#c2'), props2, {
-      iterationDuration: 3,
+      duration: 3,
       fillMode: 'both'
     });
       
