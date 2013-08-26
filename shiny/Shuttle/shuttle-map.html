@@ -32,11 +32,15 @@
         fromStop="{{fromStop == centerStop ? (selectedFilteredStop || centerStop) : fromStop}}" 
         toStop="{{toStop == centerStop ? (selectedFilteredStop || centerStop) : toStop}}"></shuttle-timetable>
 
-    <polymer-overlay target="{{$.timetable}}" opened="{{opened}}" autoCloseDisabled timeout="0"></polymer-overlay>
+    <polymer-overlay id="overlay" target="{{$.timetable}}" opened="{{opened}}" autoCloseDisabled timeout="0"></polymer-overlay>
   </template>
   <script>
     Polymer('shuttle-map', {
       opened: false,
+      created: function() {
+        // FIXME(ffu): polymer-overlay should publish timeout
+        this.$.overlay.timeout = 0;
+      },
       resize: function() {
         this.resizeJob = this.job(this.resizeJob, this._resize, 100);
       },

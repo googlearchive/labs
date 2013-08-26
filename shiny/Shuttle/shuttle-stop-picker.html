@@ -120,10 +120,14 @@
       },
       openedChanged: function() {
         this.super(arguments);
-        if (this.opened && this.selectedItem) {
-          this.asyncMethod(function() {
-            this.scrollToNode(this.selectedItem);
-          }, null, 1);
+        if (this.opened) {
+          this.$.input.value = '';
+          this.search();
+          if (this.selectedItem) {
+            this.asyncMethod(function() {
+              this.scrollToNode(this.selectedItem);
+              }, null, 1);
+          }
         }
       },
       scrollToNode: function(node) {
