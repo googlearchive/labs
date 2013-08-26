@@ -1,7 +1,7 @@
 /**
  * TODO:
  *   - add easing to snap
- *   - test startDelay
+ *   - test delay
  *   - multiple iterations for input animation
  *   - test CustomEffect
  */
@@ -249,13 +249,13 @@
         ], {
           duration: (duration - inTime),
           playbackRate: rate,
-          startDelay: -(duration - t)
+          delay: -(duration - t)
         });
       } else {
         this.segment = new SeqGroup([this.animation], {
           duration: inTime,
           playbackRate: rate,
-          startDelay: -t
+          delay: -t
         });
       }
       document.timeline.play(this.segment);
@@ -285,11 +285,11 @@
       var start = inSnaps.start * this.duration, end = inSnaps.end * this.duration;
       this.segment.timing.duration = reversing ? this.currentTime - start :
         end - this.currentTime;
-      // TODO(sorvell): startDelay calculation for reversing must be understood
-      this.animation.timing.startDelay = reversing ? -start : -this.currentTime;
+      // TODO(sorvell): delay calculation for reversing must be understood
+      this.animation.timing.delay = reversing ? -start : -this.currentTime;
       this.segment.currentTime = 0;
       // TODO(sorvell): bug: must play here to ensure the global tick keeps going
-      //console.log('segment duration', this.segment.timing.duration, 'animation delay', this.animation.timing.startDelay);
+      //console.log('segment duration', this.segment.timing.duration, 'animation delay', this.animation.timing.delay);
       document.timeline.play(this.animation);
       this.segment.add(this.animation);
     },
