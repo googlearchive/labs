@@ -76,7 +76,7 @@
 			}],
 			enteredDocument: function() {
 			},
-			reorderAction: function(e) {
+			applyLayoutAnimation: function() {
 				registerLayoutKeyframes('default', [
 					{offset: 0, properties: {
 						layoutWidth: 'from()', layoutHeight: 'from()', layoutTop: 'from()', layoutLeft: 'from()'
@@ -87,13 +87,20 @@
 				]);
 				setLayoutTransition(this.$.hangouts.children, 'default', 1);
 				setLayoutEffect(this.$.hangouts.children, 'layout');
+			},
+			reorderAction: function(e) {
+				this.applyLayoutAnimation();
 				transitionThis(function() {
 					this.$.hangouts.insertBefore(e.target, this.$.hangouts.children[0]);
 				}.bind(this));
 			},
 			archiveAction: function(e, details, sender) {
+				this.applyLayoutAnimation();
+				details.remove();
+				/*
 				this.$.archiveAnimation.target = details;
 				this.$.archiveAnimation.play();
+				*/
 			}
 		});
 	</script>

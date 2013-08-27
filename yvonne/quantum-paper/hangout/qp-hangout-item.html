@@ -1,5 +1,6 @@
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
 <link href="../../../../polymer-elements/polymer-animation/polymer-animation.html" rel="import">
+<link href="../../../../polymer-elements/polymer-animation/polymer-animation-group.html" rel="import">
 <link href="../../../../polymer-elements/polymer-scrub/polymer-scrub.html" rel="import">
 <polymer-element name="qp-hangout-item" attributes="name chats">
 	<template>
@@ -12,7 +13,7 @@
 					font-size: 14px;
 					text-align: left;
 					border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-					overflow-x: hidden;
+					overflow: hidden;
 				}
 			}
 			#buttons {
@@ -103,19 +104,39 @@
 				<button on-tap="archiveAction">Archive</button>
 			</div>
 		</div>
-		<polymer-animation id="slideAnimation" target="{{$.hangout}}" duration="1" easing="ease-in">
-			<polymer-animation-keyframe>
-				<polymer-animation-prop name="transform" value="translate3d(-20%,0,0)"></polymer-animation-prop>
-			</polymer-animation-keyframe>
-			<polymer-animation-keyframe>
-				<polymer-animation-prop name="transform" value="translate3d(65%,0,0)"></polymer-animation-prop>
-			</polymer-animation-keyframe>
-		</polymer-animation>
-		<polymer-scrub target="{{$.hangout}}" animation="{{$.slideAnimation.animation}}" snapPoints="{{snapPoints}}" startSnap="0.42"></polymer-scrub>
+		<polymer-animation-group id="slideAnimation" type="seq" duration="1">
+			<polymer-animation-group type="par">
+				<polymer-animation duration="0.3" target="{{$.hangout}}">
+					<polymer-animation-keyframe>
+						<polymer-animation-prop name="transform" value="translate3d(-20%,0,0)"></polymer-animation-prop>
+					</polymer-animation-keyframe>
+					<polymer-animation-keyframe>
+						<polymer-animation-prop name="transform" value="translate3d(0,0,0)"></polymer-animation-prop>
+					</polymer-animation-keyframe>
+				</polymer-animation>
+				<polymer-animation duration="0.3" target="{{$.time}}">
+					<polymer-animation-keyframe>
+						<polymer-animation-prop name="opacity" value="0"></polymer-animation-prop>
+					</polymer-animation-keyframe>
+					<polymer-animation-keyframe>
+						<polymer-animation-prop name="opacity" value="1"></polymer-animation-prop>
+					</polymer-animation-keyframe>
+				</polymer-animation>
+			</polymer-animation-group>
+			<polymer-animation duration="0.7" target="{{$.hangout}}">
+				<polymer-animation-keyframe>
+					<polymer-animation-prop name="transform" value="translate3d(0,0,0)"></polymer-animation-prop>
+				</polymer-animation-keyframe>
+				<polymer-animation-keyframe>
+					<polymer-animation-prop name="transform" value="translate3d(65%,0,0)"></polymer-animation-prop>
+				</polymer-animation-keyframe>
+			</polymer-animation>
+		</polymer-animation-group>
+		<polymer-scrub target="{{$.hangout}}" animation="{{$.slideAnimation.animation}}" snapPoints="{{snapPoints}}" startSnap="0.3"></polymer-scrub>
 	</template>
 	<script>
 		Polymer('qp-hangout-item', {
-			snapPoints: [0, 0.42, 1],
+			snapPoints: [0, 0.29, 1],
 			archiveAction: function() {
 				this.fire('qp-hangout-archive', this);
 			}
