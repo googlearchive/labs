@@ -3,6 +3,7 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
 
 <link href="../../../../polymer-elements/polymer-animation/web-animations.html" rel="import">
+<link href="../../../../polymer-elements/polymer-animation/polymer-animation.html" rel="import">
 <script src="../../../layoutAnimationShim/src/layout-animation.js"></script>
 
 <link href="qp-hangout-item.html" rel="import">
@@ -25,11 +26,19 @@
 			<span flex>Babel</span>
 			<polymer-ui-icon-button icon="plus"></polymer-ui-icon-button>
 		</polymer-ui-toolbar>
-		<div flex id="hangouts" class="polymer-ui-light-bg scrollable" on-tap="reorderAction">
+		<div flex id="hangouts" class="polymer-ui-light-bg scrollable" xon-tap="reorderAction" on-qp-hangout-archive="archiveAction">
 			<template repeat="{{hangouts}}">
 				<qp-hangout-item name="{{name}}" chats="{{chats}}"></qp-hangout-item>
 			</template>
 		</div>
+ 		<polymer-animation id="archiveAnimation">
+			<polymer-animation-keyframe>
+				<polymer-animation-prop name="transform" value="rotateX(0deg)"></polymer-animation-prop>
+			</polymer-animation-keyframe>
+			<polymer-animation-keyframe>
+				<polymer-animation-prop name="transform" value="rotateX(-30deg)"></polymer-animation-prop>
+			</polymer-animation-keyframe>
+		</polymer-animation>
 	</template>
 	<script>
 		Polymer('qp-hangout-app', {
@@ -81,6 +90,10 @@
 				transitionThis(function() {
 					this.$.hangouts.insertBefore(e.target, this.$.hangouts.children[0]);
 				}.bind(this));
+			},
+			archiveAction: function(e, details, sender) {
+				this.$.archiveAnimation.target = details;
+				this.$.archiveAnimation.play();
 			}
 		});
 	</script>
