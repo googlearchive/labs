@@ -5,13 +5,15 @@ var app = express();
 /*
 app.get('*', function(req, res){
   var body = 'Hello World';
-  res.setHeader('Content-Type', 'text/plain');
+  res.type('test/plain');
+  //res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Content-Length', body.length);
   res.end(body);
 });
 */
 
 app.use(express.bodyParser());
+
 app.post('/project/*', function(req, res) {
   console.log('POST');
   //console.log(req.body.html);
@@ -21,8 +23,19 @@ app.post('/project/*', function(req, res) {
   });
 });
 
+app.get('/project/listing', function(req, res) {
+  fs.readdir('project', function(err, files) {
+    res.send(files);
+    res.end();
+  });
+});
+
+app.use('', express.static(__dirname + '/dev/index.html'));
+
+//app.use('/index.html', express.static(__dirname + '/dev/index.html'));
 app.use('/polymer', express.static(__dirname + '../../../../../'));
 app.use('/project', express.static(__dirname + '/project'));
+//app.use('/', express.static(__dirname + '../../../../'));
 app.use('/', express.static(__dirname + '/dev'));
 
 app.listen(3000);
