@@ -1,4 +1,5 @@
 <link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
+<link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-ratings/polymer-ui-ratings.html">
@@ -52,24 +53,17 @@
       
       #description {
         display: block;
-        height: 90px;
         font-size: 18px;
-        padding: 20px 50px 0 20px;
+        padding: 20px;
         margin: 10px;
       }
       
-      shuttle-toggle-icon {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-      }
-      
       #timetable {
-        margin: 20px 10px 10px;
+        margin: 0 10px 10px;
       }
     </style>
     
-    <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
+    <polymer-flex-layout vertical></polymer-flex-layout>
     
     <polymer-ui-toolbar id="toolbar">
       <shuttle-stop-picker-button flex class="from-stop-button" on-tap="toggleFromMenu"
@@ -90,12 +84,13 @@
         opened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
     
     <polymer-ui-card id="description">
-      <div>{{fromStop.name}} to {{toStop.name}}</div>
+      <polymer-flex-layout align="center"></polymer-flex-layout>
+      <div flex>{{fromStop.name}} to {{toStop.name}}</div>
       <shuttle-toggle-icon active="{{isFav}}" src="assets/ic_star_sm_darkalt.png" 
           activeSrc="assets/ic_star_sm_darkreg.png" on-tap="handleFavTap"></shuttle-toggle-icon>
     </polymer-ui-card>
     
-    <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
+    <shuttle-timetable id="timetable" flex fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
   </template>
   <script>
     Polymer('shuttle-schedule', {
@@ -103,15 +98,6 @@
       remoteSelectedStop: null,
       reverse: false,
       isFav: false,
-      created: function() {
-        this.nodes = [this.$.toolbar, this.$.description, this.$.timetable];
-        this.layout = [
-          [1],
-          [2], 
-          [3],
-          [3]
-        ];
-      },
       routeChanged: function() {
         this.reverse = !!this.route.reverse;
       },
