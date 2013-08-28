@@ -6,8 +6,14 @@ var app = express();
 app.use(express.bodyParser());
 
 app.get('/:name/dev/listing', function(req, res) {
-  var project = req.route.params.name;
-  fs.readdir('projects/' + project, function(err, files) {
+  var project = 'projects/' + req.route.params.name;
+  if (!fs.existsSync(project)) {
+    wrench.copyDirSyncRecursive('dev/default', project);
+    //fs.mkdirSync(project);
+    //fs.closeSync(fs.openSync(project + '/index.html', 'w'));
+    //fs.closeSync(fs.openSync(project + '/elements.html', 'w'));
+  }
+  fs.readdir(project, function(err, files) {
     res.send(files);
     res.end();
   });
