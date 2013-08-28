@@ -64,8 +64,9 @@
           );
         }
         this.infoWindow.setContent(
-            '<div style="font-size: 14px; width: 200px;"><h4>' + 
-            stop.name + '</h4>' + stop.description + '</div>');
+            '<div style="font-size: 14px; width: 200px; padding: 10px;">' + 
+            '<div style="padding-bottom: 10px; font-weight: bold;">' + 
+            stop.name + '</div>' + stop.description + '</div>');
         this.infoWindow.marker = marker;
         this.openCloseInfoWindow();
       },
