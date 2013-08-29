@@ -176,8 +176,8 @@
           files: null,
           text: null,
           selected: -1,
-          selectedPage: 0,
           selectedInfo: 0,
+          selectedPage: 0,
           layout: [
             [1, 4, 3, 3],
             [2, 2, 2, 2],
@@ -185,8 +185,9 @@
           ],
           elements: null,
           created: function() {
-            this.nodes = [this.$.mainTabs, this.$.pages, this.$.docTabs,
-                this.$.buildBar];
+            this.nodes = [
+              this.$.mainTabs, this.$.pages, this.$.docTabs, this.$.buildBar
+            ];
             this.$.code.mirror.on('change', this.codeChange.bind(this));
             // phony
             this.async(function() {
@@ -293,7 +294,7 @@
             this.$.code.mirror.replaceSelection(html.replace(/\\n/g, '\n'));
             // add import dependency
             var elementsDoc = this.shadowRoot.querySelector(
-                'file-document[fileName="elements.html"]');
+                'file-document[fileName="../elements.html"]');
             if (elementsDoc && elementsDoc.text.indexOf(name) < 0) {
               elementsDoc.text += '\n<link rel="import" href="'
                   + folder + '/' + name + '/' + name + '.html">';
