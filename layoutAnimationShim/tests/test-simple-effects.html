@@ -48,7 +48,7 @@ limitations under the License.
 <script src='../src/layout-animation.js'></script>
 <script src='test-helper.js' nochecks></script>
 <script>
-
+onload = function() {
 registerLayoutKeyframes('simple', [
   {offset: 0, properties: { layoutWidth: 'from()', layoutHeight: 'from()',
                             layoutTop: 'from()', layoutLeft: 'from()' }},
@@ -126,4 +126,5 @@ at(0.5, function() {
   checkLayoutClip(clipFade, 150, 75);
   checkLayoutOpacity(clipFade, 0.5, 0.5);
 }, 'effect: clip fade');
+}
 </script>
