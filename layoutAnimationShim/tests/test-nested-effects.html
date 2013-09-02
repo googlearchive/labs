@@ -64,6 +64,7 @@ limitations under the License.
 <script src='../src/layout-animation.js'></script>
 <script src='test-helper.js'></script>
 <script>
+onload = function() {
 registerLayoutKeyframes('simple', [
   {offset: 0, properties: { layoutWidth: 'from()', layoutHeight: 'from()',
                             layoutTop: 'from()', layoutLeft: 'from()' }},
@@ -97,4 +98,5 @@ at(0.5, function() {
   checkLayoutNoClip(inner);
   checkLayoutOpacity(inner, 1);
 }, 'inner transition');
+}
 </script>

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 var LOCATE_FOUC = false;
-
 /**
  * Returns a transform value (translation in X and Y plus scale in X and Y) that
  * converts a rectangle at current (left, top, width, height) with origin at 
@@ -79,6 +78,7 @@ function animationToPositionLayout(target, from, positions, duration) {
     var str = rectsToCss(position, getPosition(target, from.label), transformOrigin, true);
     return { offset: position.offset, value: str};
   });
+
 
   var mkPosList = function(property, list) {
     return list.map(function(input) {
@@ -613,7 +613,7 @@ function sensePosition(target) {
   var parent = target.parentElement;
   while (parent) {
     var style = getComputedStyle(parent);
-    if (style.position == 'absolute' || style.position == 'relative') {
+    if (style.position == 'absolute' || style.position == 'relative' || parent._layout) {
       break;
     }  
     parent = parent.parentElement;
@@ -725,6 +725,17 @@ function positionListFromKeyframes(keyframes, element) {
     }
   }
 
+  // Re-apply parent offsets so that these coordinates are absolute. 
+  if (element._transitionParent) {
+    var parentList = element._transitionParent._transitionPositionList;
+    for (var i = 0; i < parentList.length; i++) {
+      // TODO: deal with mismatched offsets
+      console.assert(parentList[i].offset == positions[i].offset);
+      positions[i].left += parentList[i].left;
+      positions[i].top += parentList[i].top;
+    }
+  }
+  
   return positions;
 }
 
@@ -764,7 +775,10 @@ function transitionThis(action) {
      
       list[i]._transitionPositionList = [];
       for (var j = 0; j < positionList.length; j++) {
-        list[i]._transitionPositionList.push({left: positionList[j].left, top: positionList[j].top});
+        list[i]._transitionPositionList.push({
+            left: positionList[j].left,
+            top: positionList[j].top, 
+            offset: positionList[j].offset});
       }
       
       parGroup.append(generateAnimation(list[i], positionList)); 
