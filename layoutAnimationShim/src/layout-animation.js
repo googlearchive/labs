@@ -938,6 +938,13 @@ function cloneElementToSize(node, rect) {
   div.style.height = rect.height + 'px';
   div.innerHTML = node.innerHTML;
 
+  if (node.shadowRoot) {
+    var root = div.createShadowRoot();
+    for (var i = 0; i < node.shadowRoot.childNodes.length; i++) {
+      root.appendChild(node.shadowRoot.childNodes[i].cloneNode(true));
+    }
+  }
+
   var transitionChildren = node.querySelectorAll("[isTransitionable]");
   var transitionMirrors = div.querySelectorAll("[isTransitionable]");
   for (var i = 0; i < transitionChildren.length; i++) {
