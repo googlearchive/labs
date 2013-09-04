@@ -110,7 +110,7 @@
               </template>
             </polymer-ui-menu>
 
-            <code-mirror id="code" flex></code-mirror>
+            <code-mirrorx id="code" flex></code-mirrorx>
 
             <div id="inspector">
               <polymer-layout vertical></polymer-layout>
@@ -188,7 +188,7 @@
             this.nodes = [
               this.$.mainTabs, this.$.pages, this.$.docTabs, this.$.buildBar
             ];
-            this.$.code.mirror.on('change', this.codeChange.bind(this));
+            //this.$.code.mirror.on('change', this.codeChange.bind(this));
             // phony
             this.async(function() {
               this.selected = 0;
@@ -223,11 +223,11 @@
           selectedChanged: function() {
             this.activeDocument = 
                 this.shadowRoot.querySelectorAll('file-document')[this.selected];
-            this.text =  this.activeDocument.text;
+            //this.text =  this.activeDocument.text;
           },
           enteredDocument: function() {
             // code mirror manages it's size prematurely
-            this.$.code.async('refresh', null, 100);
+            //this.$.code.async('refresh', null, 100);
           },
           textChanged: function() {
             if (this.text !== this.$.code.mirror.getValue()) {
