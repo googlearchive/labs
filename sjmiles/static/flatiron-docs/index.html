@@ -232,7 +232,7 @@
       <script>
         Polymer('x-docs', {
           data: null,
-          route: '',
+          route: null,
           layouts: {
             open: [
               [1, 2, 2]
@@ -243,9 +243,6 @@
           },
           navOpen: true,
           created: function() {
-            //window.addEventListener('hashchange', this.parseLocationHash.bind(this));
-            // TODO(sjmiles): manual because flatiron-director didn't work, find out why
-            //this.parseLocationHash();
             // TODO(sjmiles): improve method of configuring grid
             this.$.grid.nodes = [this.$.navigation, this.$.docs];
             this.$.grid.layout = this.layouts.open;
@@ -281,6 +278,8 @@
             this.docsScroll();
             // discard mutations we generated
             this.docsObserver.takeRecords();
+            // after docsNode populates, scroll to hash
+            this.async('routeChanged');
           },
           docsScroll: function() {
             var t = this.$.docs.scrollTop + 80;
