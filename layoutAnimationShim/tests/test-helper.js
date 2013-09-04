@@ -12,25 +12,23 @@ function at(time, test, message) {
   // TODO: remove setTimeout. Why do we need this?
   errored = false;
   
-  setTimeout(function() {
+  requestAnimationFrame(function() {
     for (var i = 0; i < players.length; i++) {
       players[i].currentTime = time;
       players[i].playbackRate = 0;
     }
-    setTimeout(function() {
-      var div = document.createElement('div');
-      try {
-        test();
-        if (!errored) {
-          div.innerHTML = '<span class="pass">PASS</span>: ' + message + '<br>';
-        }
-      } catch (e) {
-        div.innerHTML = '<span class="error">EXCEPTION</span>: ' + message + ': ' +
-            e.toString() + '<br>' + e.stack;
+    var div = document.createElement('div');
+    try {
+      test();
+      if (!errored) {
+        div.innerHTML = '<span class="pass">PASS</span>: ' + message + '<br>';
       }
-      log.appendChild(div);
-    }, 0);
-  }, 0);
+    } catch (e) {
+      div.innerHTML = '<span class="error">EXCEPTION</span>: ' + message + ': ' +
+          e.toString() + '<br>' + e.stack;
+    }
+    log.appendChild(div);
+  });
 }
 
 var style = document.createElement('style');
@@ -139,9 +137,10 @@ function forEachVisibleCopy(element, f) {
   var visibleCopies = dictFilter(copies, function(copy) {
     return copy.style.opacity != '0';
   });
-  dictForEach(copies, function(copy, position) {
+
+  dictForEach(visibleCopies, function(copy, position) {
     // There should only be at most 2 visible copies
-    checkSmaller(position, 2);
+    checkSmaller(position, 2, 'more than 2 copies visible');
     f(copy, position);
   });  
 
