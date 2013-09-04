@@ -132,7 +132,8 @@
             -webkit-transition-timing-function: ease-out;
           }
         </style>
-
+        
+        <flatiron-director route="{{route}}"></flatiron-director>
         <polymer-ajax url="{{url}}" response="{{data}}" handleAs="json" auto></polymer-ajax>
         <polymer-grid-layout id="grid" on-polymer-grid-layout="gridLayout"></polymer-grid-layout>
         
@@ -242,9 +243,9 @@
           },
           navOpen: true,
           created: function() {
-            window.addEventListener('hashchange', this.parseLocationHash.bind(this));
+            //window.addEventListener('hashchange', this.parseLocationHash.bind(this));
             // TODO(sjmiles): manual because flatiron-director didn't work, find out why
-            this.parseLocationHash();
+            //this.parseLocationHash();
             // TODO(sjmiles): improve method of configuring grid
             this.$.grid.nodes = [this.$.navigation, this.$.docs];
             this.$.grid.layout = this.layouts.open;
