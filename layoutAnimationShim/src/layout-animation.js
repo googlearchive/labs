@@ -224,6 +224,9 @@ function Effect() {
   // The number of explicit nones encountered. No more than 2 should be present,
   // or 1 if a scaleMode _or_ blendMode is specified, or 0 if both are specified.
   this.explicitNones = 0;
+
+  this.fadeInParam = undefined;
+  this.fadeOutParam = undefined;
 }
 
 Effect.prototype = {
@@ -254,8 +257,7 @@ Effect.prototype = {
         this.fadeOutParam = 0;
       }
       if (mode.substr(0, 7) == 'fade-to') {
-        console.assert(this.fadeInParam === undefined && this.fadeOutParam === undefined);
-        var modes = mode.substr(5).split(',');
+        var modes = mode.substr(8).split(',');
         this.fadeInParam = offsetToNumber(modes[0].trim());
         this.fadeOutParam = offsetToNumber(modes[1].split(')')[0].trim());
       }
@@ -370,6 +372,10 @@ function parseEffect(effect) {
         continue;
       }
     }
+    if (effectList[i].indexOf('(') >= 0 && effectList[i].indexOf(')') < 0) {
+      effectList[i + 1] = effectList[i] + effectList[i + 1];
+      continue;
+    }
     effect.setMode(effectList[i]);
   }
 
@@ -441,11 +447,15 @@ function generateAnimation(element, positionList) {
         copies.push(toCopy);
         toCopy.style.opacity = '0';
         showCopy(element, newState);
-        par.append(new Animation(fromCopy, [{opacity: fromOpacity + ''}, {opacity: effect.fadeOutParam + ''}],
+        var fadeOut = effect.fadeOutParam === undefined ? fromOpacity : effect.fadeOutParam;
+        var fadeIn = effect.fadeInParam === undefined ? toOpacity : effect.fadeInParam;
+        par.append(new Animation(fromCopy, [{opacity: fromOpacity + ''}, {opacity: fadeOut + ''}],
           {fill: 'forwards', duration: duration * (end - start)}));
-        par.append(new Animation(toCopy, [{opacity: toOpacity + ''}, {opacity: effect.fadeInParam + ''}],
+        par.append(new Animation(toCopy, [{opacity: toOpacity + ''}, {opacity: fadeIn + ''}],
           {fill: 'forwards', duration: duration * (end - start)}));
-
+        fromOpacity = fadeIn;
+        toOpacity = 0;
+        fromCopy = toCopy;
       } else {
         var group = seq;
       }
@@ -457,7 +467,7 @@ function generateAnimation(element, positionList) {
         newList[0].offset = 0;
         newList[1].offset = 1;
         anims = [];
-        copies.forEach(function(copy) {
+        copies.slice(0, copies.length - 1).forEach(function(copy) {
           var anim = animationToPositionLayout(element, copy, newList, 0);
           anims.push(anim);
         });
