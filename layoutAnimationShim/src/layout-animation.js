@@ -219,13 +219,12 @@ function Effect() {
   this.isLayout = false;
   // The scale mode of this segment (none | clip | transform)
   this.scaleMode = "none";
-  // The blend mode of this segment (none | fade | fade-in | fade-out | fade-to)
-  this.blendMode = "none";
   // The number of explicit nones encountered. No more than 2 should be present,
   // or 1 if a scaleMode _or_ blendMode is specified, or 0 if both are specified.
   this.explicitNones = 0;
-
+  // The segment end offset as a percentage for fading the to-state in.
   this.fadeInParam = undefined;
+  // The segment start offset as a percentage for fading the from-state out.
   this.fadeOutParam = undefined;
 }
 
@@ -234,7 +233,7 @@ Effect.prototype = {
    * Sets the layout flag on this segment and asserts that no scaleMode or blendMode have been set.
    */
   setLayout: function() {
-    console.assert(this.scaleMode == "none" && this.blendMode == "none");
+    console.assert(this.scaleMode == "none");
     this.isLayout = true;
   },
   /**
@@ -247,20 +246,14 @@ Effect.prototype = {
     } else if (mode == 'clip' || mode == 'transform') {
       console.assert(!this.isLayout);
       this.scaleMode = mode;
-    } else if (mode.substr(0, 4) == 'fade') {
+    } else if (mode == 'fade') {
       console.assert(!this.isLayout);
-      this.blendMode = 'fade';
-      if (mode == 'fade' || mode == 'fade-in') {
-        this.fadeInParam = 1;
-      }
-      if (mode == 'fade' || mode == 'fade-out') {
-        this.fadeOutParam = 0;
-      }
-      if (mode.substr(0, 7) == 'fade-to') {
-        var modes = mode.substr(8).split(',');
-        this.fadeInParam = offsetToNumber(modes[0].trim());
-        this.fadeOutParam = offsetToNumber(modes[1].split(')')[0].trim());
-      }
+      this.fadeInParam = 0;
+      this.fadeOutParam = 1;
+    } else if (mode.substr(0, 7) == 'fade-in') {
+      this.fadeInParam = offsetToNumber(mode.substr(8).split(')')[0].trim());
+    } else if (mode.substr(0, 8) == 'fade-out') {
+      this.fadeOutParam = offsetToNumber(mode.substr(9).split(')')[0].trim());
     } else if (this.explicitNones == 0) {
       console.assert(this.scaleMode == 'none' || this.blendMode == 'none');
     } else {
@@ -408,8 +401,6 @@ function generateAnimation(element, positionList) {
   // all be animated.
   var copies = [getCopy(element, '_transitionBefore')];
   var fromCopy = copies[0];
-  var fromOpacity = 1;
-  var toOpacity = 0;
 
   var newStates = [];
 
@@ -447,14 +438,16 @@ function generateAnimation(element, positionList) {
         copies.push(toCopy);
         toCopy.style.opacity = '0';
         showCopy(element, newState);
-        var fadeOut = effect.fadeOutParam === undefined ? fromOpacity : effect.fadeOutParam;
-        var fadeIn = effect.fadeInParam === undefined ? toOpacity : effect.fadeInParam;
-        par.append(new Animation(fromCopy, [{opacity: fromOpacity + ''}, {opacity: fadeOut + ''}],
-          {fill: 'forwards', duration: duration * (end - start)}));
-        par.append(new Animation(toCopy, [{opacity: toOpacity + ''}, {opacity: fadeIn + ''}],
-          {fill: 'forwards', duration: duration * (end - start)}));
-        fromOpacity = fadeIn;
-        toOpacity = 0;
+        if (effect.fadeOutParam !== undefined) {
+          par.append(new Animation(fromCopy, 
+              [{opacity: '1'}, {opacity: '0', offset: effect.fadeOutParam}, {opacity: '0'}],
+              {fill: 'forwards', duration: duration * (end - start)}));
+        }
+        if (effect.fadeInParam !== undefined) {
+          par.append(new Animation(toCopy, 
+              [{opacity: '0'}, {opacity: '0', offset: effect.fadeInParam}, {opacity: '1'}],
+              {fill: 'forwards', duration: duration * (end - start)}));
+        }
         fromCopy = toCopy;
       } else {
         var group = seq;
