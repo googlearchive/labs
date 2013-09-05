@@ -67,14 +67,12 @@
 
         <x-meta id="meta" list="{{elements}}"></x-meta>
 
-        <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
+        <polymer-grid-layout on-polymer-grid-layout="gridLayout" nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
 
         <polymer-ui-tabs id="mainTabs" selected="{{selectedPage}}">
           <span>Build</span>
           <span>Explore</span>
         </polymer-ui-tabs>
-
-        <polymer-ajax id="files" url="listing" response="{{files}}" handleAs="json" auto></polymer-ajax>
 
         <polymer-ui-tabs id="docTabs" selected="{{selected}}">
           <template repeat="{{files}}">
@@ -110,7 +108,7 @@
               </template>
             </polymer-ui-menu>
 
-            <code-mirrorx id="code" flex></code-mirrorx>
+            <code-mirror id="code" flex></code-mirror>
 
             <div id="inspector">
               <polymer-layout vertical></polymer-layout>
@@ -154,22 +152,6 @@
           </page>
         </polymer-ui-pages>
 
-        <polymer-ui-overlay id="dialog">
-          <div class="dialog">
-            <h2>Dialog</h2>
-            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed fringilla sapien sed enim sollicitudin laoreet. Suspendisse suscipit, metus ac volutpat sodales, libero magna semper lacus, molestie fringilla massa orci ut arcu. Nullam sodales urna sit amet odio vehicula mattis.</div><br><br>
-            <div>Ut aliquam vulputate congue. Vestibulum pretium pretium nulla quis sollicitudin. Praesent lacinia congue erat nec mattis. Fusce commodo lacus est. Duis turpis eros, ultrices sed aliquet non, blandit egestas velit. Integer a augue nec lorem tristique hendrerit. Curabitur imperdiet risus id enim bibendum vestibulum. Integer id magna at arcu faucibus fermentum vel a augue. Sed fringilla venenatis dolor, in blandit magna molestie luctus. Vestibulum dignissim posuere ultrices. Aenean urna nisl, tincidunt vitae iaculis ut, pharetra nec eros.</div><br><br>
-            <div>
-              <input placeholder="say something..." autofocus oninput="somethingCheck()"></input><br>
-              I agree with this wholeheartedly.
-              <polymer-ui-overlay id="confirmation" class="dialog">
-                Thank you.
-              </polymer-ui-overlay>
-            </div><br><br>
-            <button overlay-toggle>OK</button>
-          </div>
-        </polymer-ui-overlay>
-
       </template>
       <script>
         Polymer('x-app', {
@@ -188,11 +170,8 @@
             this.nodes = [
               this.$.mainTabs, this.$.pages, this.$.docTabs, this.$.buildBar
             ];
-            //this.$.code.mirror.on('change', this.codeChange.bind(this));
-            // phony
-            this.async(function() {
-              this.selected = 0;
-            }, null, 1000);
+            this.$.code.mirror.on('change', this.codeChange.bind(this));
+            this.selected = 0;
           },
           elementsChanged: function() {
             var catMap = {};
@@ -225,9 +204,8 @@
                 this.shadowRoot.querySelectorAll('file-document')[this.selected];
             //this.text =  this.activeDocument.text;
           },
-          enteredDocument: function() {
-            // code mirror manages it's size prematurely
-            //this.$.code.async('refresh', null, 100);
+          gridLayout: function() {
+            this.$.code.refresh();
           },
           textChanged: function() {
             if (this.text !== this.$.code.mirror.getValue()) {
