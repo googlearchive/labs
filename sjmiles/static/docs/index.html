@@ -144,7 +144,7 @@
           </polymer-ui-menu>
         </div>
         
-        <div id="docs" flex>
+        <div id="docs" flex Xon-dom-mutation="docsNodeChanged" on-marked-js-highlight="hilight">
           <div id="docsInner" flex>
             <div id="fixed">
               <div class="header">
@@ -249,10 +249,17 @@
             this.$.grid.nodes = [this.$.navigation, this.$.docs];
             this.$.grid.layout = this.layouts.open;
             // TODO(sjmiles): factor this into Base?
-            this.docsObserver = new MutationObserver(this.docsNodeChanged.bind(this));
-            this.docsObserver.observe(this.$.docs, {childList: true, subtree: true});
+            //this.docsObserver = new MutationObserver(this.docsNodeChanged.bind(this));
+            //this.docsObserver.observe(this.$.docs, {childList: true, subtree: true});
             // TODO(sjmiles): make onscroll listenable via on-scroll
             this.$.docs.onscroll = this.docsScroll.bind(this);
+          },
+          onMutation: function(node, listener) {
+            var observer = new MutationObserver(function() {
+              listener.call(this, observer);
+              observer.disconnect();
+            }.bind(this));
+            observer.observe(node, {childList: true, subtree: true});
           },
           parseLocationHash: function() {
             this.route = window.location.hash.slice(1);
@@ -261,25 +268,22 @@
             // TODO(sjmiles): the 'fixed' header bar is relative to the screen
             // to position it dynamically we need to know offsetLeft of the
             // docs panel after the first layout.
-            //if (!this.fixedLeft) {
-            //
-            this.fixedLeft = this.$.docs.offsetLeft;
-            this.$.fixed.style.display = 'block';
-            this.effectLayout();
-            //}
+            if (!this.fixedLeft) {
+              this.fixedLeft = this.$.docs.offsetLeft;
+              this.$.fixed.style.display = 'block';
+              this.effectLayout();
+            }
             this.$.docs.classList.add('animate');
             this.$.fixed.classList.add('animate');
           },
-          docsNodeChanged: function() {
-            // mutates docs
-            var code = this.$.docs.querySelectorAll('code');
-            for (var i=0; c=code[i]; i++) {
-              hljs.highlightBlock(c, false, false);
-            }
+          hilight: function(event, detail, sender) {
+            //console.log('highlight', event.target, sender);
+            detail.code = hljs.highlightAuto(detail.code).value;
+          },
+          docsNodeChanged: function(observer) {
             // initialize scrolling side-effects
             this.docsScroll();
-            // discard mutations we generated
-            this.docsObserver.takeRecords();
+            console.log('docsNodeChanged');
           },
           docsScroll: function() {
             var t = this.$.docs.scrollTop + 80;
@@ -315,6 +319,8 @@
             Platform.flush();
           },
           dataChanged: function() {
+            // schedule more work when changes here propagate to DOM
+            this.onMutation(this.$.docs, this.docsNodeChanged);
             // collate raw data for display
             // construct an array from modules map
             this.modules = mapdex(this.data.modules);
