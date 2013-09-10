@@ -28,7 +28,8 @@
 						result.browsers.push({
 							browser: match[1],
 							version: match[2],
-							success: s.results[0] ? false : true
+							success: s.results[0] ? false : true,
+							logs: s.logs[0][1]
 						});
 					}
 					if (s.name === 'test') {
