@@ -4,13 +4,18 @@
 		Polymer('buildbot-ajax', {
 			handleAs: 'json',
 			auto: true,
+			pollInterval: 5 * 60 * 1000,
 			builderChanged: function() {
 				if (this.builder) {
 					this.url = 'http://build.chromium.org/p/client.polymer/json/builders/' + this.builder + '/builds/-1';
 				}
 			},
+			pollIntervalChanged: function() {
+				if (pollInterval != -1) {
+					this.autoGo();
+				}
+			},
 			responseAction: function(e, response) {
-				console.log(response.response);
 				var result = {
 					success: response.response.results ? false : true,
 					pending: response.response.results === null,
@@ -31,7 +36,6 @@
 					}
 				}
 				result.browsers.sort(function(a, b) {
-					console.log(a.browser, b.browser);
 					if (a.browser < b.browser || (a.browser === b.browser && a.version < b.version)) {
 						return -1;
 					} else {
@@ -39,6 +43,9 @@
 					}
 				});
 				this.response = result;
+				if (this.pollInterval != -1) {
+					this.async('autoGo', null, this.pollInterval);
+				}
 			}
 		});
 	</script>
