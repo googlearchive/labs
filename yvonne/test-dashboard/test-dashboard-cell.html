@@ -12,6 +12,9 @@
 			span.passed {
 				background-color: #8d4;
 			}
+			span.pending {
+				background-color: #fd3;
+			}
 		</style>
 		<buildbot-ajax builder="{{builder}}" response="{{response}}"></buildbot-ajax>
 		<template repeat="{{browser in response.browsers}}">
@@ -19,6 +22,9 @@
 		</template>
 		<template if="{{!response.success && response.browsers.length == 0}}">
 			<span>failing :(</span>
+		</template>
+		<template if="{{response.pending && response.browsers.length == 0}}">
+			<span class="pending">running</span>
 		</template>
 	</template>
 	<script>
