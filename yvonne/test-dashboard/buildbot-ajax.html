@@ -1,0 +1,38 @@
+<link href="../../../polymer-elements/polymer-ajax/polymer-ajax.html" rel="import">
+<polymer-element name="buildbot-ajax" extends="polymer-ajax" attributes="response builder" on-polymer-response="responseAction">
+	<script>
+		Polymer('buildbot-ajax', {
+			handleAs: 'json',
+			response: null,
+			builderChanged: function() {
+				if (this.builder) {
+					this.url = 'http://build.chromium.org/p/client.polymer/json/builders/' + this.builder + '/builds/-1';
+					this.go();
+				}
+			},
+			responseAction: function(e, response) {
+				console.log(response.response);
+				var result = {
+					success: response.response.results ? false : true,
+					browsers: []
+				};
+				var foundTest = false;
+				for (var i = 0, s; s = response.response.steps[i]; i++) {
+					if (foundTest) {
+						var match = String(s.text).match(/([a-zA-Z]+) ([0-9]+)/);
+						result.browsers.push({
+							browser: match[1],
+							version: match[2],
+							success: s.results[0] ? false : true
+						});
+					}
+					if (s.name === 'test') {
+						foundTest = true;
+					}
+				}
+				this.response = result;
+				console.log(this.response);
+			}
+		});
+	</script>
+</polymer-element>
