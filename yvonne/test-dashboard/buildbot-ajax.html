@@ -17,7 +17,6 @@
 					pending: response.response.results === null,
 					browsers: []
 				};
-				console.log(response);
 				var foundTest = false;
 				for (var i = 0, s; s = response.response.steps[i]; i++) {
 					if (foundTest) {
@@ -33,7 +32,6 @@
 					}
 				}
 				this.response = result;
-				console.log(this.response);
 			}
 		});
 	</script>
