@@ -3,11 +3,10 @@
 	<script>
 		Polymer('buildbot-ajax', {
 			handleAs: 'json',
-			response: null,
+			auto: true,
 			builderChanged: function() {
 				if (this.builder) {
 					this.url = 'http://build.chromium.org/p/client.polymer/json/builders/' + this.builder + '/builds/-1';
-					this.go();
 				}
 			},
 			responseAction: function(e, response) {
