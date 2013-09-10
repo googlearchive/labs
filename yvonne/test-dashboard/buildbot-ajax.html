@@ -31,6 +31,14 @@
 						foundTest = true;
 					}
 				}
+				result.browsers.sort(function(a, b) {
+					console.log(a.browser, b.browser);
+					if (a.browser < b.browser || (a.browser === b.browser && a.version < b.version)) {
+						return -1;
+					} else {
+						return 1;
+					}
+				});
 				this.response = result;
 			}
 		});
