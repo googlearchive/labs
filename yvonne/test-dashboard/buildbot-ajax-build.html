@@ -1,7 +1,8 @@
 <link href="../../../polymer-elements/polymer-ajax/polymer-ajax.html" rel="import">
-<polymer-element name="buildbot-ajax" extends="polymer-ajax" attributes="response builder" on-polymer-response="responseAction">
+<link href="buildbot-ajax-builder.html" rel="import">
+<polymer-element name="buildbot-ajax-build" extends="polymer-ajax" attributes="response builder" on-polymer-response="responseAction">
 	<script>
-		Polymer('buildbot-ajax', {
+		Polymer('buildbot-ajax-build', {
 			handleAs: 'json',
 			auto: true,
 			pollInterval: 5 * 60 * 1000,
