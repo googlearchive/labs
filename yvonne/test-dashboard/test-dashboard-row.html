@@ -22,7 +22,7 @@
 		<div class="label">{{project}}</div>
 		<template repeat="{{plat in platforms}}">
 			<buildbot-ajax-builder builder="{{project}} {{plat}}" response="{{builderResponse}}"></buildbot-ajax-builder>
-			{{plat}} <test-dashboard-cell class="{{pending: builderResponse.pendingBuilds}}" builder="{{project}} {{plat}}"></test-dashboard-cell>
+			{{plat}} <test-dashboard-cell class="{{pending: builderResponse.pendingBuilds && builderResponse.state !== 'building'}}" builder="{{project}} {{plat}}"></test-dashboard-cell>
 		</template>
 	</template>
 	<script>
