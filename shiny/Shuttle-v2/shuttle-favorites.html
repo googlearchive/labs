@@ -46,7 +46,7 @@
     </polymer-ui-toolbar>
     <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}">
       <template repeat="{{favorites}}">
-        <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway">
+        <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway" noCurve>
           {{fromStop.name}} <span class="to">to {{toStop.name}}</span>
         </polymer-ui-card>
       </template>
