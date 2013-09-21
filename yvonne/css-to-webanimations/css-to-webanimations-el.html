@@ -1,0 +1,72 @@
+<polymer-element name="css-to-webanimations-el">
+	<template>
+		<style>
+			#animated {
+				border: 1px solid black;
+				font-size: 20px;
+				padding: 10px;
+				text-align: center;
+			}
+			@keyframes x-foo {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+		</style>
+		<div id="animated">Polymer</div>
+	</template>
+	<script>
+		(function() {
+
+			var Parser = function(cssText) {
+				this.cssText = cssText;
+				//this.position = 0;
+			}
+
+			Parser.prototype = {
+				match: function(re) {
+					var match = re.exec(this.cssText);
+					if (match) {
+						//this.position = this.cssText.indexOf(match[0]);
+						this.cssText = this.cssText.slice(match[0].length);
+					}
+					return match;
+				},
+				open: function() {
+					this.match(/{/);
+				},
+				parseAtKeyframeRules: function() {
+					var rule;
+					var match = this.match(/@keyframes ([\w-]+)/);
+					if (match) {
+						rule = {
+							name: match[1]
+						};
+					}
+					console.log('cssText', this.cssText);
+					console.log('rule', rule);
+					return rule;
+				}
+			};
+
+			function getStyles(node) {
+				var styles = node.querySelectorAll('style');
+				styles.forEach(function(s) {
+					if (s.textContent) {
+						var parser = new Parser(s.textContent);
+						parser.parseAtKeyframeRules();
+					}
+				})
+			}
+
+			Polymer('css-to-webanimations-el', {
+				ready: function() {
+					getStyles(this.shadowRoot);
+				}
+			});
+		})();
+	</script>
+</polymer-element>
