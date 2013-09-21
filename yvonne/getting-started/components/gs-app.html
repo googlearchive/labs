@@ -1,0 +1,70 @@
+<link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-pages/polymer-ui-pages.html" rel="import">
+<link href="gs-import-selector.html" rel="import">
+<polymer-element name="gs-app" attributes="page imports selectedImportsIndex projectName projectPath">
+	<template>
+		<style>
+			polymer-ui-pages {
+				display: block;
+			}
+			polymer-selector .polymer-selected {
+				color: white;
+				background: black;
+			}
+		</style>
+		<polymer-ui-pages selected="{{page}}">
+			<section>
+				<h1>Getting Started with Polymer</h1>
+				<h2>What's the name of your project?</h2>
+				<input value="{{projectName}}">
+				<h2>Create at:</h2>
+				<input value="{{projectPath}}">/{{projectName}}
+				<button on-click="nextAction">Next!</button>
+			</section>
+			<section>
+				<gs-import-selector imports="{{imports}}"></gs-import-selector>
+				<button on-click="nextAction">Next!</button>
+			</section>
+			<section>
+				<p>
+					Project: {{projectName}} at {{projectPath}}/{{projectName}}
+				</p>
+				<p>
+					Imports:<br>
+					<template repeat="{{projectImports}}">
+						{{}}<br>
+					</template>
+				</p>
+				<button on-click="generateAction">Generate!</button>
+			</section>
+		</polymer-ui-pages>
+	</template>
+	<script>
+		Polymer('gs-app', {
+			page: 0,
+			imports: [
+				'polymer-ui-elements/polymer-ui-accordion/polymer-ui-accordion.html',
+				'polymer-ui-elements/polymer-ui-arrow/polymer-ui-arrow.html',
+				'polymer-ui-elements/polymer-ui-breadcrumbs/polymer-ui-breadcrumbs.html',
+				'polymer-ui-elements/polymer-ui-card/polymer-ui-card.html',
+				'polymer-ui-elements/polymer-ui-collapsible/polymer-ui-collapsible.html',
+			],
+			selectedImportsIndex: [],
+			projectName: '',
+			projectPath: '',
+			projectImports: [],
+			nextAction: function() {
+				this.page += 1;
+				if (this.selectedImportsIndex) {
+					this.projectImports = [];
+					for (var i = 0; i < this.selectedImportsIndex.length; i++) {
+						var idx = this.selectedImportsIndex[i];
+						this.projectImports.push(this.imports[idx]);
+					}
+				}
+			},
+			generateAction: function() {
+			}
+		});
+	</script>
+</polymer-element>

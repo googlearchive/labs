@@ -1,0 +1,47 @@
+<link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
+<polymer-element name="gs-import-selector" attributes="imports selectedIndex results">
+	<template>
+		<style>
+			polymer-selector .polymer-selected {
+				color: white;
+				background: black;
+			}
+		</style>
+		<polymer-selector selected="{{selectedIndex}}" multi on-polymer-activate="activateAction">
+			<template repeat="{{imports}}">
+				<div>{{}}</div>
+			</template>
+		</polymer-selector>
+	</template>
+	<script>
+		Polymer('gs-import-selector', {
+			imports: [],
+			selectedIndex: [],
+			results: [],
+			created: function() {
+				this.selectedIndexChanged();
+			},
+			importsChanged: function() {
+				this.selectedIndex = [];
+				this.results = [];
+			},
+			selectedIndexChanged: function(old) {
+				if (old) {
+					this.observer && this.observer.close();
+				}
+				if (this.selectedIndex) {
+					this.observer = new ArrayObserver(this.selectedIndex, this.selectedIndexMutated.bind(this));
+				}
+			},
+			selectedIndexMutated: function(records) {
+				var record = records[0];
+				if (record.addedCount) {
+					this.results.push(this.imports[this.selectedIndex[record.index]]);
+				}
+				for (var i = 0; i < record.removed.length; i++) {
+					this.results.splice(this.results.indexOf(record.removed[i]));
+				}
+			}
+		});
+	</script>
+</polymer-element>
