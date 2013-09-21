@@ -1,0 +1,108 @@
+<polymer-element name="css-keyframe-parser" attributes="styleRoot">
+	<script>
+		(function() {
+
+			var Parser = function(cssText) {
+				this.cssText = cssText;
+			}
+
+			Parser.prototype = {
+				match: function(re) {
+					var m = re.exec(this.cssText);
+					if (m) {
+						var offset = this.cssText.indexOf(m[0]) + m[0].length;
+						this.cssText = this.cssText.slice(offset);
+					}
+					return m;
+				},
+				open: function() {
+					this.match(/^\s*{\s*/);
+				},
+				close: function() {
+					this.match(/^\s*}\s*/);
+				},
+				parseDeclarations: function() {
+					var declarations = {};
+					var d;
+					do {
+						d = this.match(/^\s*([\w-]+)\s*:\s*(.+);\s*/);
+						if (d) {
+							declarations[d[1]] = d[2];
+						}
+					} while (d);
+					return declarations;
+				},
+				parseKeyframes: function() {
+					var keyframes = [];
+					var m;
+					do {
+						m = this.match(/^\s*(from|to|[0-9]+%)\s*/);
+						if (m) {
+							var offset;
+							if (m[1] === 'from') {
+								offset = 0;
+							} else if (m[1] === 'to') {
+								offset = 1;
+							} else {
+								offset = Math.min(1, parseInt(m) / 100);
+							}
+							this.open();
+							var frame = this.parseDeclarations();
+							frame.offset = offset;
+							keyframes.push(frame);
+							this.close();
+						}
+					} while (m);
+					return keyframes;
+				},
+				parseAtKeyframeRules: function(rules) {
+					rules = rules || [];
+					var rule;
+					do {
+						var rule = this.match(/@keyframes ([\w-]+)/);
+						if (rule) {
+							this.open();
+							rules.push({
+								name: rule[1],
+								keyframes: this.parseKeyframes()
+							});
+							this.close();
+						}
+					} while (rule);
+					return rules;
+				}
+			};
+
+			function getAnimations(node) {
+				var rules = [];
+				var styles = node.localName === 'style' ? [node] : node.querySelectorAll('style');
+				styles.forEach(function(s) {
+					if (s.textContent) {
+						var parser = new Parser(s.textContent);
+						parser.parseAtKeyframeRules(rules);
+					}
+				});
+				return rules;
+			}
+
+			Polymer('css-keyframe-parser', {
+				styleRoot: null,
+				enteredDocument: function() {
+					this.styleRootChanged();
+				},
+				styleRootChanged: function() {
+					if (!this.styleRoot) {
+						var top = this;
+						do {
+							top = top.parentNode;
+						} while (!top.host && top !== document);
+						this.styleRoot = top;
+					}
+				},
+				parse: function() {
+					this.keyframeRules = getAnimations(this.styleRoot);
+				}
+			});
+		})();
+	</script>
+</polymer-element>

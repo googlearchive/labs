@@ -1,0 +1,107 @@
+<link href="../../../polymer-elements/polymer-animation/web-animations.html" rel="import">
+<link href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../more-elements/ace-element/ace-element.html" rel="import">
+<link href="css-keyframe-parser.html" rel="import">
+<polymer-element name="css-to-webanimations-demo" attributes="duration">
+	<template>
+		<style>
+			.ace-container {
+				position: relative;
+				width: 50%;
+				height: 100%;
+			}
+			.right {
+				padding: 10px;
+			}
+			#animated {
+				width: 40px;
+				height: 40px;
+				background: orange;
+			}
+		</style>
+		<style id="style">
+			@keyframes fade-in-out {
+				0% {
+					opacity: 1;
+				}
+				50% {
+					opacity: 0.3;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes move {
+				from {
+					transform: translate3d(0,0,0);
+				}
+				to {
+					transform: translate3d(1200%, 0, 0);
+				}
+			}
+		</style>
+		<css-keyframe-parser id="parser" styleRoot="{{$.style}}"></css-keyframe-parser>
+		<polymer-flex-layout></polymer-flex-layout>
+		<div class="ace-container">
+			<ace-element id="ace" value="{{$.style.textContent}}"></ace-element>
+		</div>
+		<div class="right" flex>
+			<h1>CSS Keyframes to Web Animations</h1>
+			<p>
+				<button on-click="syncAction">Sync</button>
+			</p>
+			<p>
+				<label>
+					Duration: <input value="{{duration}}">
+				</label>
+				<label>
+					Group:
+					<input id="seq" name="group" type="radio" checked> Seq
+					<input id="par" name="group" type="radio"> Par
+				</label>
+				<br>
+				<button on-click="runAction">Run</button>
+			</p>
+			<p>Animations:</p>
+			<p>
+				<template repeat="{{$.parser.keyframeRules}}">
+					<input type="checkbox"> {{name}}<br>
+				</template>
+			</p>
+			<p>Demo:</p>
+			<div id="animated"></div>
+		</div>
+	</template>
+	<script>
+		Polymer('css-to-webanimations-demo', {
+			duration: 1,
+			enteredDocument: function() {
+				this.$.parser.parse();
+			},
+			syncAction: function() {
+				this.$.style.textContent = this.$.ace.editorValue;
+				this.$.parser.parse();
+			},
+			runAction: function() {
+				var checkboxes = this.shadowRoot.querySelectorAll('input[type="checkbox"]');
+				var animations = [];
+				checkboxes.forEach(function(cb) {
+					if (cb.checked) {
+						animations.push(new Animation(this.$.animated,
+								new KeyframeAnimationEffect(cb.templateInstance.model.keyframes),
+								{duration: this.duration}));
+					}
+				}.bind(this));
+				if (animations.length === 1) {
+					document.timeline.play(animations[0]);
+				} else if (animations.length > 1) {
+					if (this.$.seq.checked) {
+						document.timeline.play(new SeqGroup(animations));
+					} else {
+						document.timeline.play(new ParGroup(animations));
+					}
+				}
+			}
+		});
+	</script>
+</polymer-element>
