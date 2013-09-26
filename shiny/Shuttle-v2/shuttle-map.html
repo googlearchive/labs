@@ -26,7 +26,7 @@
       }
     </style>
     
-    <google-map id="map" zoom="15"></google-map>
+    <google-map id="map" zoom="10"></google-map>
     
     <!-- <shuttle-timetable id="timetable" class="card"
         fromStop="{{fromStop == centerStop ? (selectedFilteredStop || centerStop) : fromStop}}" 
@@ -51,10 +51,13 @@
         if (this.centerStop) {
           this.$.map.latitude = this.centerStop.in_lat;
           this.$.map.longitude = this.centerStop.in_lon;
+          /* setTimeout(function() {
+            this.$.map.map.panBy(-100, 0);
+          }.bind(this), 200); */
         }
       },
       setupInfoWindow: function(marker, stop) {
-        if (!this.infoWindow) {
+        /* if (!this.infoWindow) {
           this.infoWindow = new google.maps.InfoWindow();
           google.maps.event.addListener(marker, 'click', 
             function() {
@@ -68,17 +71,17 @@
             '<div style="padding-bottom: 10px; font-weight: bold;">' + 
             stop.name + '</div>' + stop.description + '</div>');
         this.infoWindow.marker = marker;
-        this.openCloseInfoWindow();
+        this.openCloseInfoWindow(); */
       },
       openCloseInfoWindow: function(closed) {
-        if (!this.infoWindow) {
+        /* if (!this.infoWindow) {
           return;
         }
         if (closed) {
           this.infoWindow.close();
         } else if (!this.infoWindow.getMap()) {
           this.infoWindow.open(this.$.map.map, this.infoWindow.marker);
-        }
+        } */
       },
       filteredStopsChanged: function(old) {
         this.markers && this.markers.forEach(function(m) {
@@ -137,10 +140,12 @@
           });
           this.fromMarker = new google.maps.Marker({
             map: this.$.map.map,
+            icon: 'assets/marker_greenA.png',
             zIndex: 1000
           });
           this.toMarker = new google.maps.Marker({
             map: this.$.map.map,
+            icon: 'assets/marker_greenB.png',
             zIndex: 1000
           });
           this.dirDisplay.setMap(this.$.map.map);

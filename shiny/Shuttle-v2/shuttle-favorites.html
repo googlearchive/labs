@@ -11,6 +11,10 @@
         }
       }
       
+      polymer-ui-toolbar {
+        width: 100%;
+      }
+      
       .label {
         padding-left: 20px;
       }
@@ -31,6 +35,10 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        border-bottom: 1px solid #ddd;
+        /* override default styles in polymer-ui-card */
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
       
       .to {
@@ -44,7 +52,7 @@
     <polymer-ui-toolbar>
       <div class="label">Favorites</div>
     </polymer-ui-toolbar>
-    <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}">
+    <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}" on-touchstart="preventDefault">
       <template repeat="{{favorites}}">
         <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway" noCurve>
           {{fromStop.name}} <span class="to">to {{toStop.name}}</span>
@@ -89,6 +97,10 @@
           this.favorites.splice(i, 1);
           this.fire('shuttle-favorites-change');
         }
+      },
+      preventDefault: function(e) {
+        // FIXME(ffu): prevent sending click to input
+        e.preventDefault();
       }
     });
   </script>

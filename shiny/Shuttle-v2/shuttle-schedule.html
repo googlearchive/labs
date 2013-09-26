@@ -28,11 +28,11 @@
       }
       
       .from-stop-button {
-        border-right: 1px solid #ccc;
+        border-right: 1px solid #ddd;
       }
       
       .to-stop-button {
-        border-left: 1px solid #ccc;
+        border-left: 1px solid #ddd;
       }
       
       #officeStopsMenu, #remoteStopsMenu {
@@ -54,29 +54,25 @@
         display: block;
         font-size: 18px;
         padding: 20px;
-        margin: 10px;
       }
       
       shuttle-toggle-icon {
         padding-left: 10px;
       }
       
-      #timetable {
-        margin: 0 10px 10px;
-      }
-      
       polymer-ui-card {
-        margin-bottom: 10px;
+        display: block;
+        box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px !important;
       }
       
       .search-box {
         position: relative;
         height: 40px;
-        border-right: 1px solid #ccc;
+        border-right: 1px solid #ddd;
       }
       
       .search-box.from {
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #ddd;
       }
       
       .search-box > input {
@@ -84,14 +80,36 @@
         box-sizing: border-box;
         -moz-box-sizing: border-box;
         top: 0;
-        left: 0;
-        width: 100%;
+        left: 40px;
+        right: 0;
         height: 100%;
         margin: 0;
         padding: 0 14px;
         border: 0;
-        font-size: 16px;
+        font-size: 14px;
         outline: none;
+      }
+      
+      #scheduleTable {
+        min-height: 200px;
+        overflow: auto;
+        margin-top: 10px;
+      }
+      
+      .input-icon {
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 24px 24px;
+        width: 40px;
+        height: 40px;
+      }
+      
+      .input-icon.from {
+        background-image: url(assets/ic_shuttle_a.png);
+      }
+      
+      .input-icon.to {
+        background-image: url(assets/ic_shuttle_b.png);
       }
     </style>
     
@@ -112,9 +130,11 @@
         <div flex>
           <polymer-flex-layout vertical></polymer-flex-layout>
           <div flex class="search-box from">
+            <div class="input-icon from"></div>
             <input id="fromInput" placeholder="{{reverse ? 'Search Stops' : 'Search Office Stops'}}" value="{{fromQuery}}">
           </div>
           <div flex class="search-box">
+            <div class="input-icon to"></div>
             <input id="toInput" placeholder="{{reverse ? 'Search Office Stops' : 'Search Stops'}}" value="{{toQuery}}">
           </div>
         </div>
@@ -132,12 +152,12 @@
         stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" query="{{reverse ? fromQuery : toQuery}}"
         xopened="{{remoteStopsMenuOpened}}" on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
     
-    <polymer-ui-card id="schedule">
+    <polymer-ui-card id="scheduleTable" flex>
       <div id="description">
         <polymer-flex-layout align="center"></polymer-flex-layout>
         <div flex>{{fromStop.name}} to {{toStop.name}}</div>
-        <shuttle-toggle-icon active="{{isFav}}" src="assets/ic_star_sm_darkalt.png" 
-            activeSrc="assets/ic_star_sm_darkreg.png" on-tap="handleFavTap"></shuttle-toggle-icon>
+        <shuttle-toggle-icon active="{{isFav}}" src="assets/ic_favorite_darkalt.png" 
+            activeSrc="assets/ic_favorite_darkreg.png" on-tap="handleFavTap"></shuttle-toggle-icon>
       </div>
       
       <shuttle-timetable id="timetable" flex fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
@@ -150,13 +170,15 @@
       reverse: false,
       isFav: false,
       enteredDocument: function() {
-        this.$.fromInput.onfocus = this.toggleFromMenu.bind(this, true);
-        this.$.toInput.onfocus = this.toggleToMenu.bind(this, true);
+        this.$.fromInput.onfocus = this.fromInputFocus.bind(this);
+        this.$.toInput.onfocus = this.toInputFocus.bind(this);
       },
       routeChanged: function() {
         this.reverse = !!this.route.reverse;
       },
       swap: function() {
+        this.toggleFromMenu(false);
+        this.toggleToMenu(false);
         this.reverse = !this.reverse;
         this.updateSelectedStops();
       },
@@ -182,6 +204,18 @@
         this[this.reverse ? 'fromStop' : 'toStop'] = this.remoteSelectedStop;
         this.updateFav();
         this.save();
+      },
+      fromInputFocus: function(e) {
+        setTimeout(function() {
+          this.$.fromInput.select();
+        }.bind(this));
+        this.toggleFromMenu(true);
+      },
+      toInputFocus: function(e) {
+        setTimeout(function() {
+          this.$.toInput.select();
+        }.bind(this));
+        this.toggleToMenu(true);
       },
       toggleFromMenu: function(opened) {
         this.toggleMenu(this.reverse ? 'remote' : 'office', opened);
@@ -228,6 +262,8 @@
           this.route.officeSelected = this.reverse ? t : f;
           this.route.remoteSelected = this.reverse ? f : t;
           this.updateSelectedStops();
+          this.toggleFromMenu(false);
+          this.toggleToMenu(false);
         }
       },
       updateFav: function() {

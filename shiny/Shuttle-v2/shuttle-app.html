@@ -16,14 +16,15 @@
     <style>
       #tabbar {
         height: 45px !important;
-        background: -webkit-linear-gradient(-60deg, #3d3d3d, #353535);
+        /* background: -webkit-linear-gradient(-60deg, #3d3d3d, #353535);
         background: -moz-linear-gradient(-60deg, #3d3d3d, #353535);
-        background: -ms-linear-gradient(-60deg, #3d3d3d, #353535);
+        background: -ms-linear-gradient(-60deg, #3d3d3d, #353535); */
         /* TODO(ffu): need this for grid-layout on iOS; need to investigate */
         bottom: 0;
       }
       
       #tabbar > * {
+        display: block;
         height: 45px !important;
         line-height: 45px !important;
         text-align: center;
@@ -34,7 +35,7 @@
       }
       
       #tabbar > .polymer-selected {
-        background-color: #1e1d1d !important;
+        background-color: #ccc !important;
       }
       
       #tabbar > * {
@@ -42,6 +43,8 @@
       }
       
       #main {
+        position: relative;
+        width: 300px;
         margin: 20px;
         max-height: 88%;
         overflow: hidden;
@@ -52,11 +55,16 @@
       }
       
       #favoritesContainer {
-        background: white;
+        display: block;
+        background: transparent !important;
+        box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px !important;
       }
       
-      #schedule, #favorites {
-        width: 320px;
+      @media screen and (max-width: 360px) {
+        #main {
+          width: auto;
+          right: 0;
+        }
       }
     </style>
 
@@ -82,7 +90,7 @@
           fromStop="{{fromStop}}" toStop="{{toStop}}"
           filteredStops="{{filteredStops}}" selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-map>
       
-      <polymer-ui-tabs id="tabbar" theme="polymer-ui-dark-theme" selected="{{selected}}">
+      <polymer-ui-tabs id="tabbar" theme="polymer-ui-light-theme" selected="{{selected}}">
         <div flex><polymer-ui-icon icon="time"></polymer-ui-icon></div>
         <div flex><polymer-ui-icon icon="favorite"></polymer-ui-icon></div>
       </polymer-ui-tabs>
@@ -111,8 +119,13 @@
       selectedChanged: function() {
         this.$.scheduleContainer.style.display = this.selected ? 'none' : '';
         this.$.favoritesContainer.style.display = this.selected ? '' : 'none';
+        if (this.selected) {
+          this.$.favorites.clearSelection();
+        }
       },
-      favoriteSelect: function() {
+      favoriteSelect: function(e) {
+        e.stopPropagation();
+        e.preventDefault();
         this.selected = 0;
       },
       favoritesChange: function() {
@@ -120,6 +133,7 @@
         this.saveData();
       },
       saveData: function() {
+        this.$.favorites.clearSelection();
         this.$.data.save();
       }
     });

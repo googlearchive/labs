@@ -17,7 +17,7 @@
       #searchBox {
         position: relative;
         height: 60px;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #ddd;
       }
       
       #searchBox > input {
@@ -49,7 +49,7 @@
         height: 29px;
         line-height: 29px;
         padding-left: 20px;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #ddd;
         background: #eee;
         color: #8f8f8f;
         font-size: 12px;
@@ -60,7 +60,7 @@
         height: 59px;
         line-height: 59px;
         padding-left: 20px;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #ddd;
       }
       
       .stop[focused] {
@@ -123,6 +123,7 @@
         this.super(arguments);
         if (this.opened) {
           //this.$.input.value = '';
+          this.query = '';
           this.search();
           if (this.selectedItem) {
             this.asyncMethod(function() {

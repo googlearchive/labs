@@ -2,7 +2,8 @@
 
 <polymer-element name="shuttle-data" attributes="route officeStops remoteStops favorites">
   <template>
-    <polymer-localstorage id="storage" name="shuttle-storage5" value="{{userData}}" on-polymer-localstorage-load="populateUserData"></polymer-localstorage>
+    <polymer-localstorage id="storage" name="shuttle-storage6" value="{{userData}}" 
+        autoSaveDisabled on-polymer-localstorage-load="populateUserData"></polymer-localstorage>
   </template>
   <script>
     Polymer('shuttle-data', {
@@ -33,7 +34,7 @@
         this.route.officeSelected = Shuttle.isMock ? 'City Hall, San Francisco' : 
             (this.route.officeSelected || 'Main Campus (B40-43)');
         this.route.remoteSelected = Shuttle.isMock ? 'Kimberly Park, American Canyon' : 
-            (this.route.remoteSelected || 'Civic Center');
+            (this.route.remoteSelected || '18th St @ Castro');
       },
       save: function() {
         if (!Shuttle.isMock) {
