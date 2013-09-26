@@ -101,7 +101,7 @@
           var marker = new google.maps.Marker({
             map: this.$.map.map,
             position: latLng,
-            icon: 'http://maps.google.com/mapfiles/marker_grey.png'
+            icon: 'assets/marker_grey.png'
           });
           this.markers.push(marker);
           google.maps.event.addListener(marker, 'click', 
@@ -145,7 +145,7 @@
           });
           this.toMarker = new google.maps.Marker({
             map: this.$.map.map,
-            icon: 'assets/marker_greenB.png',
+            icon: 'assets/marker_redB.png',
             zIndex: 1000
           });
           this.dirDisplay.setMap(this.$.map.map);
