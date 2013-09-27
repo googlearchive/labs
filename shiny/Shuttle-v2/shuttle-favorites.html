@@ -8,11 +8,10 @@
       @host {
         * {
           display: block;
+          border-radius: 2px;
+          background: transparent;
+          box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
         }
-      }
-      
-      polymer-ui-toolbar {
-        width: 100%;
       }
       
       .label {
@@ -53,6 +52,7 @@
     <polymer-ui-toolbar>
       <div class="label">Favorites</div>
     </polymer-ui-toolbar>
+    
     <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}" on-touchstart="preventDefault">
       <template repeat="{{favorites}}">
         <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway" noCurve>
@@ -80,7 +80,7 @@
         this.selected = null;
       },
       swipeAway: function(e, detail, sender) {
-        this.asyncMethod(function() {
+        this.async(function() {
           this.addListeners(sender);
           sender.style.height = 0;
           sender.style.marginTop = 0;

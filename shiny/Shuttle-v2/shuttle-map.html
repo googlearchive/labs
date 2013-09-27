@@ -1,6 +1,4 @@
 <link rel="import" href="../../../more-elements/google-map/google-map.html">
-<link rel="import" href="../../../polymer-elements/polymer-overlay/polymer-overlay.html">
-<link rel="import" href="shuttle-timetable.html">
   
 <polymer-element name="shuttle-map" attributes="centerStop fromStop toStop filteredStops selectedFilteredStop">
   <template>
@@ -15,32 +13,13 @@
         display: block;
         height: 100%;
       }
-      
-      #timetable {
-        position: absolute !important;
-        right: 10px;
-        bottom: 10px;
-        left: 10px;
-        height: 200px;
-        max-width: 600px;
-      }
     </style>
     
     <google-map id="map" zoom="10"></google-map>
-    
-    <!-- <shuttle-timetable id="timetable" class="card"
-        fromStop="{{fromStop == centerStop ? (selectedFilteredStop || centerStop) : fromStop}}" 
-        toStop="{{toStop == centerStop ? (selectedFilteredStop || centerStop) : toStop}}"></shuttle-timetable> -->
-
-    <!-- <polymer-overlay id="overlay" target="{{$.timetable}}" opened="{{opened}}" autoCloseDisabled timeout="0"></polymer-overlay> -->
   </template>
   <script>
     Polymer('shuttle-map', {
       opened: false,
-      created: function() {
-        // FIXME(ffu): polymer-overlay should publish timeout
-        //this.$.overlay.timeout = 0;
-      },
       resize: function() {
         this.resizeJob = this.job(this.resizeJob, this._resize, 100);
       },

@@ -1,11 +1,8 @@
 <link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
 <link rel="import" href="../../../polymer-elements/polymer-media-query/polymer-media-query.html">
-<link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-tabs/polymer-ui-tabs.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html">
-<link rel="import" href="../../../polymer-ui-elements/polymer-ui-card/polymer-ui-card.html">
-<link rel="import" href="../../../more-elements/google-map/google-map.html">
 <link rel="import" href="shuttle-data.html">
 <link rel="import" href="shuttle-schedule.html">
 <link rel="import" href="shuttle-favorites.html">
@@ -14,13 +11,18 @@
 <polymer-element name="shuttle-app">
   <template>
     <style>
+      @host {
+        * {
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+      }
+      
       #tabbar {
         border-top: 1px solid #bababa;
         height: 46px !important;
-        /* background: -webkit-linear-gradient(-60deg, #3d3d3d, #353535);
-        background: -moz-linear-gradient(-60deg, #3d3d3d, #353535);
-        background: -ms-linear-gradient(-60deg, #3d3d3d, #353535); */
-        /* TODO(ffu): need this for grid-layout on iOS; need to investigate */
         bottom: 0;
       }
       
@@ -29,6 +31,7 @@
         height: 45px !important;
         line-height: 45px !important;
         text-align: center;
+        width: 160px;
       }
       
       #tabbar > [hidden] {
@@ -55,10 +58,8 @@
         background: transparent;
       }
       
-      #favoritesContainer {
-        display: block;
-        background: transparent !important;
-        box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px !important;
+      #schedule.hidden, #favorites.hidden {
+        display: none !important;
       }
       
       @media screen and (max-width: 360px) {
@@ -69,31 +70,26 @@
       }
     </style>
 
-    <polymer-media-query query="max-width: 600px" queryMatches="{{queryMatches}}"></polymer-media-query>
+    <polymer-media-query query="max-width: 800px" queryMatches="{{queryMatches}}"></polymer-media-query>
     <shuttle-data id="data" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" favorites="{{favorites}}"></shuttle-data>
 
     <polymer-ui-overlay id="main" modal active>
-      <div id="scheduleContainer">
-        <shuttle-schedule id="schedule" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" 
-            centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
-            favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
-            selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
-      </div>
-      <polymer-ui-card id="favoritesContainer">
-        <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
-            on-polymer-activate="favoriteSelect" on-shuttle-favorites-change="favoritesChange"></shuttle-favorites>
-      </dipolymer-ui-cardv>
-   </polymer-ui-overlay>
+      <shuttle-schedule id="schedule" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" 
+          centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
+          favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
+          selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
+      <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
+          on-polymer-activate="favoriteSelect" on-shuttle-favorites-change="favoritesChange"></shuttle-favorites>
+    </polymer-ui-overlay>
     
     <div id="basement">
       <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
       <shuttle-map id="map" class="{{desktop : !queryMatches}}" centerStop="{{centerStop}}" 
           fromStop="{{fromStop}}" toStop="{{toStop}}"
           filteredStops="{{filteredStops}}" selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-map>
-      
       <polymer-ui-tabs id="tabbar" theme="polymer-ui-light-theme" selected="{{selected}}">
-        <div flex><polymer-ui-icon icon="time"></polymer-ui-icon></div>
-        <div flex><polymer-ui-icon icon="favorite"></polymer-ui-icon></div>
+        <div flex?="{{queryMatches}}"><polymer-ui-icon icon="time"></polymer-ui-icon></div>
+        <div flex?="{{queryMatches}}"><polymer-ui-icon icon="favorite"></polymer-ui-icon></div>
       </polymer-ui-tabs>
     </div>
   </template>
@@ -118,15 +114,13 @@
       queryMatchesChanged: function() {
       },
       selectedChanged: function() {
-        this.$.scheduleContainer.style.display = this.selected ? 'none' : '';
-        this.$.favoritesContainer.style.display = this.selected ? '' : 'none';
+        this.$.schedule.classList.toggle('hidden', this.selected);
+        this.$.favorites.classList.toggle('hidden', !this.selected);
         if (this.selected) {
           this.$.favorites.clearSelection();
         }
       },
-      favoriteSelect: function(e) {
-        e.stopPropagation();
-        e.preventDefault();
+      favoriteSelect: function() {
         this.selected = 0;
       },
       favoritesChange: function() {

@@ -6,41 +6,48 @@
         autoSaveDisabled on-polymer-localstorage-load="populateUserData"></polymer-localstorage>
   </template>
   <script>
-    Polymer('shuttle-data', {
-      created: function() {
-        this.populateStops();
-      },
-      populateStops: function() {
-        Shuttle.stops.forEach(function(s, i) {
-          s.index = i;
-        });
-        this.officeStops = Shuttle.stops.filter(function(s) {
-          return s.is_work;
-        });
-        // office/campus stops
-        this.officeStops = JSON.parse(JSON.stringify(this.officeStops));
-        // all stops
-        this.remoteStops = JSON.parse(JSON.stringify(Shuttle.stops));
-      },
-      populateUserData: function() {
-        if (!this.userData) {
-          this.userData = {
-            route: {},
-            favorites: []
-          };
+    (function() {
+      var MOCK_OFFICE_SELECTED = 'City Hall, San Francisco';
+      var MOCK_REMOTE_SELECTED = 'Kimberly Park, American Canyon';
+      var OFFICE_SELECTED = 'Main Campus (B40-43)';
+      var REMOTE_SELECTED = '18th St @ Castro';
+      
+      Polymer('shuttle-data', {
+        created: function() {
+          this.populateStops();
+        },
+        populateStops: function() {
+          Shuttle.stops.forEach(function(s, i) {
+            s.index = i;
+          });
+          this.officeStops = Shuttle.stops.filter(function(s) {
+            return s.is_work;
+          });
+          // office/campus stops
+          this.officeStops = JSON.parse(JSON.stringify(this.officeStops));
+          // all stops
+          this.remoteStops = JSON.parse(JSON.stringify(Shuttle.stops));
+        },
+        populateUserData: function() {
+          if (!this.userData) {
+            this.userData = {
+              route: {},
+              favorites: []
+            };
+          }
+          this.favorites = this.userData.favorites;
+          this.route = this.userData.route;
+          this.route.officeSelected = Shuttle.isMock ? MOCK_OFFICE_SELECTED : 
+              (this.route.officeSelected || OFFICE_SELECTED);
+          this.route.remoteSelected = Shuttle.isMock ? MOCK_REMOTE_SELECTED : 
+              (this.route.remoteSelected || REMOTE_SELECTED);
+        },
+        save: function() {
+          if (!Shuttle.isMock) {
+            this.$.storage.save();
+          }
         }
-        this.favorites = this.userData.favorites;
-        this.route = this.userData.route;
-        this.route.officeSelected = Shuttle.isMock ? 'City Hall, San Francisco' : 
-            (this.route.officeSelected || 'Main Campus (B40-43)');
-        this.route.remoteSelected = Shuttle.isMock ? 'Kimberly Park, American Canyon' : 
-            (this.route.remoteSelected || '18th St @ Castro');
-      },
-      save: function() {
-        if (!Shuttle.isMock) {
-          this.$.storage.save();
-        }
-      }
-    });
+      });
+    })();
   </script>
 </polymer-element>
