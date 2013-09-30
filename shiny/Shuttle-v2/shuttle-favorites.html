@@ -8,9 +8,6 @@
       @host {
         * {
           display: block;
-          border-radius: 2px;
-          background: transparent;
-          box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
         }
       }
       
@@ -18,10 +15,8 @@
         padding-left: 20px;
       }
       
-      .favorites {
+      .favorites-list {
         display: block;
-        overflow-y: auto;
-        overflow-x: hidden;
       }
       
       .fav-item {
@@ -49,13 +44,13 @@
       }
     </style>
     
-    <polymer-ui-toolbar>
+    <!-- <polymer-ui-toolbar>
       <div class="label">Favorites</div>
-    </polymer-ui-toolbar>
+    </polymer-ui-toolbar> -->
     
-    <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}" on-touchstart="preventDefault">
+    <polymer-selector class="favorites-list" selected="{{selected}}" selectedModel="{{favorite}}">
       <template repeat="{{favorites}}">
-        <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway" noCurve>
+        <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway" noCurve on-touchend="preventDefault">
           {{fromStop.name}} <span class="to">to {{toStop.name}}</span>
         </polymer-ui-card>
       </template>

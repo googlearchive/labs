@@ -46,47 +46,59 @@
         text-align: center;
       }
       
-      #main {
-        position: relative;
+      #favorites {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 300px;
         margin: 20px;
-        max-height: 88%;
-        overflow: hidden;
+        max-height: -moz-calc(100% - 80px);
+        max-height: calc(100% - 80px);
+        z-index: 1;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        
+        border-radius: 2px;
+        background: #eee;
+        box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
       }
       
-      #main::x-overlay {
-        background: transparent;
+      /* @polyfill-rule #favorites {
+        max-height: -webkit-calc(100% - 80px);
+      } */
+      
+      @media screen and (max-width: 360px) {
+        #favorites {
+          width: auto;
+          right: 0;
+          margin: 10px;
+        }
       }
       
       #schedule.hidden, #favorites.hidden {
         display: none !important;
-      }
-      
-      @media screen and (max-width: 360px) {
-        #main {
-          width: auto;
-          right: 0;
-        }
       }
     </style>
 
     <polymer-media-query query="max-width: 800px" queryMatches="{{queryMatches}}"></polymer-media-query>
     <shuttle-data id="data" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" favorites="{{favorites}}"></shuttle-data>
 
-    <polymer-ui-overlay id="main" modal active>
-      <shuttle-schedule id="schedule" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" 
-          centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
-          favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
-          selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
-      <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
-          on-polymer-activate="favoriteSelect" on-shuttle-favorites-change="favoritesChange"></shuttle-favorites>
-    </polymer-ui-overlay>
-    
+    <div>
+    <shuttle-schedule id="schedule" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" 
+        centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
+        favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
+        selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
+    <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
+        on-polymer-activate="favoriteSelect" on-shuttle-favorites-change="favoritesChange"></shuttle-favorites>
+    </div>
+  
     <div id="basement">
       <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
+      
       <shuttle-map id="map" class="{{desktop : !queryMatches}}" centerStop="{{centerStop}}" 
           fromStop="{{fromStop}}" toStop="{{toStop}}"
           filteredStops="{{filteredStops}}" selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-map>
+          
       <polymer-ui-tabs id="tabbar" theme="polymer-ui-light-theme" selected="{{selected}}">
         <div flex?="{{queryMatches}}"><polymer-ui-icon icon="time"></polymer-ui-icon></div>
         <div flex?="{{queryMatches}}"><polymer-ui-icon icon="favorite"></polymer-ui-icon></div>

@@ -14,18 +14,49 @@
         }
       }
       
-      #officeStopsMenu, #remoteStopsMenu {
-        position: absolute !important;
-        top: 90px;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        font-size: 12px;
+      .card {
+        background-color: #fff;
+        border-radius: 2px;
+        box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
       }
       
-      .swap-button-container {
-        width: 60px;
-        text-align: center;
+      #inputBox {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        margin: 20px;
+        z-index: 1;
+      }
+      
+      #scheduleTable, #officeStopsMenu, #remoteStopsMenu {
+        position: fixed !important;
+        top: 90px;
+        left: 0;
+        width: 300px;
+        margin: 20px;
+        max-height: -moz-calc(100% - 170px);
+        max-height: calc(100% - 170px);
+        z-index: 1;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      #officeStopsMenu, #remoteStopsMenu {
+        max-height: auto;
+        bottom: 0px;
+      }
+      
+      /* @polyfill-rule #scheduleTable {
+        max-height: -webkit-calc(100% - 170px);
+      } */
+      
+      @media screen and (max-width: 360px) {
+        #inputBox, #scheduleTable, #officeStopsMenu, #remoteStopsMenu {
+          width: auto;
+          right: 0;
+          margin: 10px;
+        }
       }
       
       #description {
@@ -34,15 +65,13 @@
         padding: 20px;
       }
       
-      shuttle-toggle-icon {
-        padding-left: 10px;
+      #descText {
+        padding-right: 15px;
       }
       
-      .card {
-        display: block;
-        background-color: #fff;
-        border-radius: 2px;
-        box-shadow: rgba(0, 0, 0, 0.098) 0px 2px 4px, rgba(0, 0, 0, 0.098) 0px 0px 3px;
+      shuttle-toggle-icon {
+        margin: -15px;
+        padding: 15px;
       }
       
       .search-box {
@@ -63,11 +92,12 @@
         left: 40px;
         right: 0;
         height: 100%;
-        margin: 0;
-        padding: 0 14px;
+        margin: 0 4px 0 0;
+        padding: 0;
         border: 0;
         font-size: 14px;
         outline: none;
+        -webkit-appearance: none;
       }
       
       .input-icon {
@@ -86,16 +116,12 @@
         background-image: url(assets/ic_shuttle_b.png);
       }
       
-      #scheduleTable {
-        min-height: 260px;
-        overflow: auto;
-        margin-top: 10px;
+      .swap-button-container {
+        width: 60px;
+        text-align: center;
       }
     </style>
-    <div>
-      <polymer-flex-layout vertical></polymer-flex-layout>
-      
-      <div class="card">
+      <div id="inputBox" class="card">
         <polymer-flex-layout align="center"></polymer-flex-layout>
         <div flex>
           <polymer-flex-layout vertical></polymer-flex-layout>
@@ -113,25 +139,24 @@
         </div>
       </div>
       
-      <shuttle-stop-picker id="officeStopsMenu" selected="{{route.officeSelected}}" selectedStop="{{officeSelectedStop}}" 
+      <shuttle-stop-picker id="officeStopsMenu" class="card" selected="{{route.officeSelected}}" selectedStop="{{officeSelectedStop}}" 
           stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" query="{{reverse ? toQuery : fromQuery}}"
           on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
   
-      <shuttle-stop-picker id="remoteStopsMenu" selected="{{route.remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
+      <shuttle-stop-picker id="remoteStopsMenu" class="card polymer-overlay-scale-slideup" selected="{{route.remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
           stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" query="{{reverse ? fromQuery : toQuery}}"
           on-shuttle-stops-search="stopsSearch" on-polymer-overlay-open="menuOpened"></shuttle-stop-picker>
       
-      <div id="scheduleTable" class="card" flex>
+      <div id="scheduleTable" class="card">
         <div id="description">
           <polymer-flex-layout align="center"></polymer-flex-layout>
-          <div flex>{{fromStop.name}} to {{toStop.name}}</div>
+          <div id="descText" flex>{{fromStop.name}} to {{toStop.name}}</div>
           <shuttle-toggle-icon active="{{isFav}}" src="assets/ic_favorite_darkalt.png" 
               activeSrc="assets/ic_favorite_darkreg.png" on-tap="handleFavTap"></shuttle-toggle-icon>
         </div>
         
         <shuttle-timetable id="timetable" flex fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
       </div>
-    </div>
   </template>
   <script>
     Polymer('shuttle-schedule', {
