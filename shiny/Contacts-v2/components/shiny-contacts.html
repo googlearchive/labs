@@ -5,6 +5,10 @@
 <polymer-element name="shiny-contacts">
 	<template>
 		<style>
+			polymer-ui-toolbar {
+				padding-left: 10px;
+				padding-right: 10px;
+			}
 			.contactContainer {
 				background-color: rgb(242, 242, 242)
 			}
@@ -20,6 +24,10 @@
 				height: 60px;
 				padding: 20px;
 			}
+			.contactItem.header {
+				font-variant: small-caps;
+				color: #9e9e9e;
+			}
 			.contactItem:nth-child(2) {
 				margin-top: 10px;
 				border-top-width: 1px;
@@ -29,9 +37,14 @@
 				background-color: rgb(242, 242, 242);
 				border-radius: 20px;
 				border: 1px solid rgba(0, 0, 0, 0.14902);
-				width: 40px;
-				height: 40px;
 				margin-right: 20px;
+				padding: 8px;
+				min-width: 24px;
+				height: 24px;
+				font-family: 'Open Sans', Open-Sans, sans-serif;
+				font-size: 16px;
+				text-align: center;
+				color: #d3d2d3
 			}
 		</style>
 		<mock-data id="mock"></mock-data>
@@ -43,19 +56,27 @@
 			<polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
 		</polymer-ui-toolbar>
 		<div class="contactContainer" flex>
-			<template repeat="{{name in $.mock.names}}">
-				<div class="contactItem">
-					<polymer-flex-layout align="center"></polymer-flex-layout>
-					<div>
-						<div class="contactIcon"></div>
-					</div>
-					<div>{{name}}</div>
+			<template repeat="{{alpha in $.mock.alphabetized}}">
+				<div class="contactItem header">
+					{{alpha.letter}}
 				</div>
+				<template repeat="{{contact in alpha.contacts}}">
+					<div class="contactItem" on-tap="contactAction">
+						<polymer-flex-layout align="center"></polymer-flex-layout>
+							<div class="contactIcon">
+								{{contact.initials}}
+							</div>
+						<div>{{contact.name}}</div>
+					</div>
+				</template>
 			</template>
 		</div>
 	</template>
 	<script>
 		Polymer('shiny-contacts', {
+			contactAction: function(e, detail, sender) {
+				console.log(e, detail, sender);
+			}
 		})
 	</script>
 </polymer-element>
