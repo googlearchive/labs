@@ -1,0 +1,20 @@
+{
+  "name": "brick+polymer",
+  "version": "0.0.20130912",
+  "homepage": "https://github.com/Polymer/labs",
+  "authors": [
+    "Daniel Freedman <dfreedm@google.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "x-tag-toggle": "~0.2.4"
+  },
+  "private": true
+}
