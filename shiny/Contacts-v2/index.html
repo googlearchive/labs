@@ -1,17 +1,24 @@
 <!doctype html>
 <html>
 <head>
-	<link href="components/shiny-contacts.html" rel="import">
+	<link href="components/contacts-app.html" rel="import">
 	<script src="../../../polymer/polymer.js"></script>
 	<link href="../../../polymer-ui-elements/basic.css" rel="stylesheet">
 	<style>
+		html, body {
+			height: 100%;
+		}
 		body {
 			margin: 0;
 			padding: 0;
 		}
+		contacts-app {
+			display: block;
+			height: 100%;
+		}
 	</style>
 </head>
 <body theme="polymer-ui-light-theme">
-	<shiny-contacts></shiny-contacts>
+	<contacts-app></contacts-app>
 </body>
 </html>

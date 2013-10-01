@@ -1,0 +1,23 @@
+<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<polymer-element name="contacts-detail-item" noscript attributes="label value">
+	<template>
+		<style>
+			:host {
+				font-size: 18px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				box-sizing: border-box;
+				height: 60px;
+				padding: 20px;
+			}
+			.contactsDetailItemLabel {
+				color: #999;
+				font-size: 16px;
+				width: 80px;
+				max-width: 80px;
+			}
+		</style>
+		<polymer-flex-layout align="center"></polymer-flex-layout>
+		<div class="contactsDetailItemLabel">{{label}}</div>
+		<div class="contactsDetailItemValue">{{value}}</div>
+	</template>
+</polymer-element>

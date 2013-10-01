@@ -1,0 +1,69 @@
+<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-pages/polymer-ui-pages.html" rel="import">
+<link href="contacts-detail.html" rel="import">
+<link href="contacts-icon.html" rel="import">
+<link href="contacts-list.html" rel="import">
+<link href="mock-data.html" rel="import">
+<polymer-element name="contacts-app" attribiutes="page selectedContact">
+	<template>
+		<style>
+			polymer-ui-pages {
+				display: block;
+				height: 100%;
+			}
+			.contactItem {
+				margin: 0 10px;
+				background-color: white;
+				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 1px 1px;
+				font-size: 18px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				box-sizing: border-box;
+				height: 60px;
+				padding: 20px;
+			}
+			.contactItem.header {
+				font-variant: small-caps;
+				color: #9e9e9e;
+			}
+			.contactItem:nth-child(2) {
+				margin-top: 10px;
+				border-top-width: 1px;
+				border-radius: 3px 3px 0 0;
+			}
+		</style>
+		<mock-data id="mock"></mock-data>
+		<polymer-ui-pages selected="{{page}}">
+			<contacts-list selectedModel="{{selectedContact}}">
+				<template repeat="{{alpha in $.mock.alphabetized}}">
+					<div class="contactItem header">
+						{{alpha.letter}}
+					</div>
+					<template repeat="{{contact in alpha.contacts}}">
+						<div class="contactItem">
+							<polymer-flex-layout align="center"></polymer-flex-layout>
+								<contacts-icon contact="{{contact}}"></contacts-icon>
+							<div>{{contact.name}}</div>
+						</div>
+					</template>
+				</template>
+			</contacts-list>
+			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="detailShrinkAction">
+			</contacts-detail>
+		</polymer-ui-pages>
+	</template>
+	<script>
+		Polymer('contacts-app', {
+			page: 0,
+			selectedContact: null,
+			selectedContactChanged: function() {
+				console.log('selectedContact', this.selectedContact);
+				this.page = 1;
+			},
+			detailShrinkAction: function() {
+				this.page = 0;
+			}
+		});
+	</script>
+</polymer-element>

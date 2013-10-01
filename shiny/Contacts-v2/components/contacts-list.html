@@ -1,0 +1,33 @@
+<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
+<polymer-element name="contacts-list" extends="polymer-selector">
+	<template>
+		<style>
+			polymer-ui-toolbar {
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+			.listContainer {
+				background-color: rgb(242, 242, 242)
+			}
+		</style>
+		<polymer-flex-layout vertical="true"></polymer-flex-layout>
+		<polymer-ui-toolbar>
+			<polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+			<div flex>Contacts</div>
+			<polymer-ui-icon-button icon="plus" on-tap="addAction"></polymer-ui-icon-button>
+			<polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
+		</polymer-ui-toolbar>
+		<div class="listContainer" flex>
+			<shadow></shadow>
+		</div>
+	</template>
+	<script>
+		Polymer('contacts-list', {
+			addAction: function() {
+			}
+		})
+	</script>
+</polymer-element>
