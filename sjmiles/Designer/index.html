@@ -1,0 +1,69 @@
+﻿<!doctype html>
+<html>
+<head>
+  <title></title>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../../../polymer-elements/elements.html">
+  <link rel="import" href="../x-elements/x-inspector/x-inspector.html">
+  <style>
+    html {
+      position: relative;
+      height: 100%;
+    }
+    body {
+      font-family: Neue Helvetica, Roboto, Arial;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+    x-foo {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <x-foo></x-foo>
+  <polymer-element name="x-foo">
+    <template>
+      <style>
+        frame {
+        }
+        iframe {
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
+        x-inspector {
+          width: 520px;
+        }
+      </style>
+      <polymer-layout></polymer-layout>
+      <div flex>
+        <iframe id="frame" src="designer.html"></iframe>
+      </div>
+      <x-inspector id="inspector"></x-inspector>
+    </template>
+    <script>
+      Polymer('x-foo', {
+        ready: function() {
+          window.designWindow = this.$.frame.contentWindow;
+          designWindow.addEventListener('design-change', function(event) {
+            self.designChange(event.target);
+          });
+          var self = this;
+        },
+        designChange: function(designer) {
+          this.$.inspector.sourceElement = designer.selected;
+          this.$.inspector.update();
+        }
+      });
+    </script>
+  </polymer-element>
+</body>
+</html>

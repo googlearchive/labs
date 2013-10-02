@@ -27,6 +27,7 @@
 	<script>
 		Polymer('contacts-list', {
 			addAction: function() {
+				this.fire('contacts-list-add');
 			}
 		})
 	</script>

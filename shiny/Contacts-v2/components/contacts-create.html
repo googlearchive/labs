@@ -1,0 +1,41 @@
+<link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
+<link href="contacts-create-item.html" rel="import">
+<polymer-element name="contacts-create">
+	<template>
+		<style>
+			polymer-ui-toolbar {
+				background: transparent none !important;
+			}
+			button {
+				background: transparent none;
+				border: 0;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				font-size: 16px;
+				color: #999;
+				padding: 10px;
+				margin: 20px;
+			}
+			button:focus {
+				outline: none;
+			}
+			button:active {
+				outline: none;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+			}
+		</style>
+		<polymer-ui-toolbar>
+			<button on-tap="cancelAction">Cancel</button>
+			<div flex></div>
+			<button on-tap="createAction">✓</button>
+		</polymer-ui-toolbar>
+		<contacts-create-item icon="account" label="Name"></contacts-create-item>
+		<contacts-create-item icon="briefcase" label="Phone"></contacts-create-item>
+		<contacts-create-item icon="gplus" label="Email"></contacts-create-item>
+		<contacts-create-item icon="stream" label="Address"></contacts-create-item>
+		<contacts-create-item icon="dialog" label="Handle"></contacts-create-item>
+	</template>
+	<script>
+		Polymer('contacts-create');
+	</script>
+</polymer-element>

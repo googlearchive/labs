@@ -3,89 +3,205 @@ Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<polymer-element name="x-designable" on-pointerup="drop" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd" attributes="designElement">
+<polymer-element name="x-designable" designer attributes="selected" on-keydown="keydown" on-pointerup="pointerUp" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd">
   <template>
     <style>
       @host {
         * {
           outline: none;
+          background-image: url(grid.png);
+          -webkit-user-select: none
         }
       }
-      #eventer {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background-image: url(grid.png);
-      }
     </style>
-    <div id="eventer" touch-action="none">
-      <content></content>
-    </div>
+    <content></content>
   </template>
   <script>
     Polymer('x-designable', {
       grid: 10,
-      designElement: null,
-      drop: function(e) {
-        if (this.drag) {
-          var container = e.target;
-          //while (container && container !== this) {
-            //if (container.meta && container.meta.isContainer) {
-              this.drag.drop(e, container);
-            //}
-            //return;
+      selected: null,
+      // communication
+      notify: function() {
+        this.fire('design-change', this);
+      },
+      // state
+      selectedChanged: function(old) {
+        this.classFollows(this.selected, old, 'selected-element');
+        this.notify();
+      },
+      // commands
+      deleteElement: function() {
+        var e = this.selected;
+        if (e) {
+          //if (e === this.$.designElement) {
+          //  this.clearElement();
+          //} else {
+            e.parentNode.removeChild(e);
+            this.selected = null;
           //}
-          //container = container.parentNode;
         }
+      },
+      selectParentElement: function() {
+        var e = this.selected;
+        if (e && e.parentNode) {
+          e = e.parentNode;
+          if (e === this) {
+            e = null;
+          }
+          this.selected = e;
+        }
+      },
+      drag: function(dragInfo) {
+        this.dragInfo = dragInfo;
+        //
+        this.appendChild(dragInfo.element);
+        //
+        var origin = dragInfo.origin || dragInfo.element.getBoundingClientRect();
+        var local = this.getBoundingClientRect();
+        dragInfo.start = {x: origin.left - local.left, y: origin.top - local.top};
+        //
+        dragInfo.drag = function(event) {
+          var p = this.snap(
+            this.dragInfo.start.x + event.dx,
+            this.dragInfo.start.y + event.dy
+          );
+          this.dragInfo.element.style.left = p.x + 'px';
+          this.dragInfo.element.style.top = p.y + 'px';
+        }.bind(this);
+      },
+      drop: function(element, event) {
+        var container = this.findContainer(element, event.target);
+        if (container && this.canContain(container, element)) {
+          // don't manipulate parentNode if not necessary
+          var sameParent = (container === element.parentNode);
+          if (!sameParent) {
+            // install element in container
+            container.appendChild(element);
+          }
+          var s = element.style;
+          s.pointerEvents = '';
+          // designer is absolutely positioned, ad-hoc
+          if (container !== this) {
+            s.left = s.top = s.position = '';
+          }
+          // ideally we only notify one change on drop
+          // the selection changing will cause a notify
+          // if the selection is not changing, but we
+          // did change the hierarchy, notify manually
+          if (!sameParent && this.selected === element) {
+            this.notify();
+          }
+          this.selected = element;
+          return true;
+        }
+      },
+      // events
+      keydown: function(event) {
+        switch(event.keyCode) {
+          case 27:
+            this.selectParentElement();
+            break;
+          case 8:
+          case 46:
+            if (!nodeIsEditor(event.target)) {
+              this.deleteElement();
+              event.preventDefault();
+            }
+            break;
+        }
+      },
+      pointerUp: function(e) {
+        if (this.dragInfo && !this.dragInfo.dropped) {
+          this.dragInfo.dropped = this.drop(this.dragInfo.element, e);
+        } else {
+          this.selected = e.target;
+        }
+        this.dragInfo = null;
         //var focusNode = nodeIsEditor(this.selected) ? this.selected : this;
         //focusNode.focus();
+      },
+      trackStart: function(event) {
+        // it's nobody else's event
+        event.stopPropagation();
+        // acquire target
+        var elt = this.findTrackableElement(event.target);
+        if (elt) {
+          this.drag(this.createDragObject(elt));
+          this.selected = elt;
+          Platform.flush();
+        }
+      },
+      track: function(event) {
+        if (this.dragInfo && this.dragInfo.drag) {
+          this.dragInfo.drag(event);
+        }
+      },
+      trackEnd: function(event) {
+        if (this.dragInfo) {
+          event.stopPropagation();
+          this.drop(this.dragInfo, event);
+          this.dragInfo = null;
+        }
+      },
+      // utility
+      findContainer: function(element, container) {
+        while (container) {
+          if (container === this || element !== container && container.meta && container.meta.isContainer) {
+            return container;
+          }
+          container = container.parentNode;
+        }
+      },
+      canContain: function(container, element) {
+        var filter = container.meta && container.meta.childFilter;
+        return (!filter || filter(elt));
+      },
+      findTrackableElement: function(target) {
+        // nominal target
+        var elt = target;
+        // try to match selection on drag
+        if (this.selected) {
+          while (elt && elt !== this && elt !== this.selected) {
+            elt = elt.parentNode;
+          }
+        }
+        // when no selection match, auto-select top-level element
+        if (elt !== this.selected) {
+          // nominal target
+          elt = target;
+          // find top level parent
+          while (elt && elt.parentNode !== this) {
+            elt = elt.parentNode;
+          }
+        }
+        // don't drag designer itself
+        if (elt === this) {
+          elt = null;
+        }
+        // return result
+        return elt;
+      },
+      createDragObject: function(elt) {
+        var rect = elt.getBoundingClientRect();
+        var style = elt.style;
+        style.position = 'absolute';
+        style.pointerEvents = 'none';
+        style.transition = 'none';
+        style.webkitTransition = 'none';
+        return {
+          origin: rect,
+          element: elt
+        };
       },
       snap: function(inX, inY) {
         return {
           x: Math.round(inX / this.grid) * this.grid,
           y: Math.round(inY / this.grid) * this.grid
-        };
-      },
-      trackStart: function(event) {
-        var elt = event.target;
-        /*
-        while (elt != this && elt.parentNode != this) {
-          elt = elt.parentNode;
-        }
-        while (elt && elt.parentNode && elt.parentNode !== this.designElement && elt !== this.designElement) {
-          elt = elt.parentNode;
-        }
-        if (elt === this.designElement) {
-          elt = null;
-        }
-        */
-        if (elt === this) {
-          elt = null;
-        }
-        this.tracking = elt;
-        if (elt) {
-          event.trackInfo.start = {x: elt.offsetLeft, y: elt.offsetTop};
-        }
-        event.stopPropagation();
-      },
-      track: function(event) {
-        if (this.tracking) {
-          var p = {
-            x: event.trackInfo.start.x + event.dx,
-            y: event.trackInfo.start.y + event.dy
-          };
-          p = this.snap(p.x, p.y);
-          this.tracking.style.left = p.x + 'px';
-          this.tracking.style.top = p.y + 'px';
-          event.stopPropagation();
         }
       },
-      trackEnd: function(event) {
-        this.tracking = null;
-        event.stopPropagation();
-        this.fire('design-changed');
+      editorElements: {input:1, select: 1, textarea: 1},
+      nodeIsEditor: function(node) {
+        return node.isEditor || this.editorElements[node.localName];
       }
     });
   </script>

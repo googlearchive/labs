@@ -1,0 +1,31 @@
+<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
+<polymer-element name="contacts-create-item" noscript attributes="icon label value">
+	<template>
+		<style>
+			/* @polyfill @host */
+			:host {
+				padding: 0 20px;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 1px 1px;
+				border-style: solid;
+			}
+			input {
+				margin-left: 20px;
+				border: none;
+				font-size: 18px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				box-sizing: border-box;
+				height: 60px;
+			}
+			input:focus {
+				outline: none;
+			}
+		</style>
+		<polymer-flex-layout align="center"></polymer-flex-layout>
+		<polymer-ui-icon-button icon="{{icon}}"></polymer-ui-icon-button>
+		<div flex>
+			<input value="{{value}}" placeholder="{{label}}">
+		</div>
+	</template>
+</polymer-element>
