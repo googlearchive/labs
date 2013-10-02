@@ -3,12 +3,16 @@ Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<polymer-element name="x-meta" attributes="label isContainer isHidden list map shouldPrepend hideSubtree">
+<polymer-element name="x-meta" attributes="label isContainer isHidden list map categories shouldPrepend hideSubtree">
   <script>
     (function() {
-      // shared private data
-      var metaData = {}, metaArray = [];
       Polymer('x-meta', {
+        // shared data
+        list: [],
+        map: {},
+        categories: [],
+        pathMap: {},
+        // instance properties
         alwaysPrepare: true,
         isContainer: false,
         isHidden: false,
@@ -16,43 +20,65 @@ license that can be found in the LICENSE file.
         shouldPrepend: false,
         hideSubtree: false,
         ready: function() {
-          this.observeProperty('id');
-          this.idChanged();
+          if (this.id && this.id !== 'meta') {
+            this.resolveImportPath();
+            this.idChanged();
+          }
           this.updateProperties();
-          this.importPath = (this.ownerDocument._URL || '').split('/').slice(0,-1).join('/');
+          this.observeProperty('id');
         },
         enteredDocument: function() {
           this.updateProperties();
         },
+        resolveImportPath: function() {
+          this.importPath = (this.ownerDocument._URL || '').split('/').slice(0,-1).join('/');
+          this.category = this.importPath.split('/').slice(0, -1).join('/');
+          // add to path category collation as needed
+          var pm = this.pathMap[this.category];
+          if (!pm) {
+            pm = this.pathMap[this.category] = {
+              name: this.category.split('/').pop(),
+              list: []
+            }
+            //console.log(pm.name, this.importPath);
+            this.categories.push(pm);
+          }
+        },
         idChanged: function(inOld) {
+          this.unregister(this, inOld);
           if (this.id && this.id !== 'meta') {
-            this.unregister(this, inOld);
             this.register(this);
           }
         },
         register: function(meta) {
-          metaData[meta.id] = meta;
+          // add to id map
+          this.map[meta.id] = meta;
+          // pre|append to id list
           if (meta.shouldPrepend) {
-            metaArray.unshift(meta);
+            this.list.unshift(meta);
           } else {
-            metaArray.push(meta);
+            this.list.push(meta);
           }
+          // add to path category collation
+          this.pathMap[this.category].list.push(meta);
         },
         unregister: function(meta, id) {
-          delete metaData[id || meta.id];
-          var i = metaArray.indexOf(meta);
-          if (i >= 0) {
-            metaArray.splice(i, 1);
+          if (id) {
+            delete this.map[id || meta.id];
+            var i = this.list.indexOf(meta);
+            if (i >= 0) {
+              this.list.splice(i, 1);
+            }
           }
         },
-        get list() {
-          return metaArray;
+        /*get list() {
+          return this.list;
         },
         get map() {
-          return metaData;
-        },
+          return this.map;
+        },*/
         byId: function(id) {
-          return metaData[id];
+          return this.map[id];
         },
         updateProperties: function() {
           var props = {};
@@ -92,14 +118,15 @@ license that can be found in the LICENSE file.
         loadImports: function() {
           var t = this.querySelector('#imports');
           if (t) {
-            var links = t.content.querySelectorAll('link');
-            Array.prototype.forEach.call(links, function(link) {
-              if (!link.content) {
-                // FIXME(ffu): HTMLImports should provide an API to parse link directly
-                HTMLImports.importer.load(t.content, function() {
+            console.log('loading meta-imports');
+            // FIXME(ffu): HTMLImports should provide an API to parse link directly
+            HTMLImports.importer.load(t.content, function() {
+              t.content.querySelectorAll('link').array().forEach(
+                function(link) {
+                  HTMLImports.parser.parse(link.content);
                   CustomElements.parser.parse(link.content);
-                });
-              }
+                }
+              );
             });
           }
         }
