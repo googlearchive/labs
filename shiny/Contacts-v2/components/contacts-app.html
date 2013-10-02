@@ -1,5 +1,6 @@
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-pages/polymer-ui-pages.html" rel="import">
+<link href="contacts-create.html" rel="import">
 <link href="contacts-detail.html" rel="import">
 <link href="contacts-icon.html" rel="import">
 <link href="contacts-list.html" rel="import">
@@ -36,7 +37,7 @@
 		</style>
 		<mock-data id="mock"></mock-data>
 		<polymer-ui-pages selected="{{page}}">
-			<contacts-list selectedModel="{{selectedContact}}">
+			<contacts-list selectedModel="{{selectedContact}}" on-contacts-list-add="addContactAction">
 				<template repeat="{{alpha in $.mock.alphabetized}}">
 					<div class="contactItem header">
 						{{alpha.letter}}
@@ -52,6 +53,8 @@
 			</contacts-list>
 			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="detailShrinkAction">
 			</contacts-detail>
+			<contacts-create>
+			</contacts-create>
 		</polymer-ui-pages>
 	</template>
 	<script>
@@ -61,6 +64,9 @@
 			selectedContactChanged: function() {
 				console.log('selectedContact', this.selectedContact);
 				this.page = 1;
+			},
+			addContactAction: function() {
+				this.page = 2;
 			},
 			detailShrinkAction: function() {
 				this.page = 0;
