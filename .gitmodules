@@ -1,0 +1,6 @@
+[submodule "x-tags/core"]
+	path = x-tags/core
+	url = https://github.com/x-tag/core.git
+[submodule "x-tags/spinner"]
+	path = x-tags/spinner
+	url = https://github.com/x-tag/spinner.git
