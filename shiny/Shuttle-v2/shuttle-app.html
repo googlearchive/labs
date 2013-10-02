@@ -2,7 +2,6 @@
 <link rel="import" href="../../../polymer-elements/polymer-media-query/polymer-media-query.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-tabs/polymer-ui-tabs.html">
-<link rel="import" href="../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html">
 <link rel="import" href="shuttle-data.html">
 <link rel="import" href="shuttle-schedule.html">
 <link rel="import" href="shuttle-favorites.html">
@@ -13,6 +12,7 @@
     <style>
       @host {
         * {
+          color: #333;
           -webkit-user-select: none;
           -moz-user-select: none;
           -ms-user-select: none;
@@ -42,8 +42,12 @@
         background-color: #ccc !important;
       }
       
-      #tabbar > * {
-        text-align: center;
+      #schedule, #favorites {
+        display: none;
+      }
+      
+      #schedule.selected-view, #favorites.selected-view {
+        display: block;
       }
       
       #favorites {
@@ -57,7 +61,6 @@
         z-index: 1;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
-        
         border-radius: 2px;
         background: #eee;
         box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
@@ -74,66 +77,61 @@
           margin: 10px;
         }
       }
-      
-      #schedule.hidden, #favorites.hidden {
-        display: none !important;
-      }
     </style>
 
     <polymer-media-query query="max-width: 800px" queryMatches="{{queryMatches}}"></polymer-media-query>
     <shuttle-data id="data" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" favorites="{{favorites}}"></shuttle-data>
 
-    <div>
     <shuttle-schedule id="schedule" route="{{route}}" officeStops="{{officeStops}}" remoteStops="{{remoteStops}}" 
         centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}" 
         favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
         selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
+
     <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
         on-polymer-activate="favoriteSelect" on-shuttle-favorites-change="favoritesChange"></shuttle-favorites>
-    </div>
   
     <div id="basement">
-      <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
+      <polymer-grid-layout layout="{{layout}}"></polymer-grid-layout>
       
-      <shuttle-map id="map" class="{{desktop : !queryMatches}}" centerStop="{{centerStop}}" 
+      <shuttle-map id="map" centerStop="{{centerStop}}" 
           fromStop="{{fromStop}}" toStop="{{toStop}}"
           filteredStops="{{filteredStops}}" selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-map>
           
-      <polymer-ui-tabs id="tabbar" theme="polymer-ui-light-theme" selected="{{selected}}">
-        <div flex?="{{queryMatches}}"><polymer-ui-icon icon="time"></polymer-ui-icon></div>
-        <div flex?="{{queryMatches}}"><polymer-ui-icon icon="favorite"></polymer-ui-icon></div>
+      <polymer-ui-tabs id="tabbar" theme="polymer-ui-light-theme" selected="{{tabSelected}}">
+        <div name="schedule" flex?="{{queryMatches}}"><polymer-ui-icon icon="time"></polymer-ui-icon></div>
+        <div name="favorites" flex?="{{queryMatches}}"><polymer-ui-icon icon="favorite"></polymer-ui-icon></div>
       </polymer-ui-tabs>
     </div>
   </template>
   <script>
     Polymer('shuttle-app', {
-      selected: null,
+      tabSelected: null,
       queryMatches: false,
       created: function() {
-        this.nodes = [
-          this.$.map, this.$.tabbar
-        ];
         this.layout = [
           [1],
           [1], 
           [2]
         ];
-        this.selected = 0;
+        this.tabSelected = 'schedule';
         window.addEventListener('resize', function() {
           this.$.map.resize();
         }.bind(this));
       },
-      queryMatchesChanged: function() {
+      enteredView: function() {
+        setTimeout(function() {
+          this.$.map.resize();
+        }.bind(this));
       },
-      selectedChanged: function() {
-        this.$.schedule.classList.toggle('hidden', this.selected);
-        this.$.favorites.classList.toggle('hidden', !this.selected);
-        if (this.selected) {
+      tabSelectedChanged: function(old) {
+        this.classFollows(this.$[this.tabSelected], this.$[old], 
+            'selected-view');
+        if (this.tabSelected === 'favorites') {
           this.$.favorites.clearSelection();
         }
       },
       favoriteSelect: function() {
-        this.selected = 0;
+        this.tabSelected = 'schedule';
       },
       favoritesChange: function() {
         this.$.schedule.updateFav();

@@ -2,17 +2,18 @@
 
 <polymer-element name="shuttle-data" attributes="route officeStops remoteStops favorites">
   <template>
-    <polymer-localstorage id="storage" name="shuttle-storage6" value="{{userData}}" 
+    <polymer-localstorage id="storage" name="{{isMock ? shuttle-mock-storage : shuttle-storage6}}" value="{{userData}}" 
         autoSaveDisabled on-polymer-localstorage-load="populateUserData"></polymer-localstorage>
   </template>
   <script>
     (function() {
-      var MOCK_OFFICE_SELECTED = 'City Hall, San Francisco';
+      var MOCK_OFFICE_SELECTED = 'San Francisco City Hall';
       var MOCK_REMOTE_SELECTED = 'Kimberly Park, American Canyon';
       var OFFICE_SELECTED = 'Main Campus (B40-43)';
       var REMOTE_SELECTED = '18th St @ Castro';
       
       Polymer('shuttle-data', {
+        isMock: Shuttle.isMock,
         created: function() {
           this.populateStops();
         },

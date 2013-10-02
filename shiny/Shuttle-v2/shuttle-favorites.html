@@ -1,21 +1,10 @@
 <link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
-<link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-card/polymer-ui-card.html">
 
 <polymer-element name="shuttle-favorites" attributes="favorites favorite">
   <template>
     <style>
-      @host {
-        * {
-          display: block;
-        }
-      }
-      
-      .label {
-        padding-left: 20px;
-      }
-      
-      .favorites-list {
+      .favorites {
         display: block;
       }
       
@@ -44,11 +33,7 @@
       }
     </style>
     
-    <!-- <polymer-ui-toolbar>
-      <div class="label">Favorites</div>
-    </polymer-ui-toolbar> -->
-    
-    <polymer-selector class="favorites-list" selected="{{selected}}" selectedModel="{{favorite}}">
+    <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}">
       <template repeat="{{favorites}}">
         <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway" noCurve on-touchend="preventDefault">
           {{fromStop.name}} <span class="to">to {{toStop.name}}</span>
@@ -87,8 +72,7 @@
         this.removeFav(fav);
       },
       removeFav: function(fav) {
-        var f = fav;
-        var i = this.favorites.indexOf(f);
+        var i = this.favorites.indexOf(fav);
         if (i > -1) {
           this.favorites.splice(i, 1);
           this.fire('shuttle-favorites-change');

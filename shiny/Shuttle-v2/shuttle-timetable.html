@@ -53,7 +53,7 @@
          <div flex>Departure</div>
          <div flex>Arrival</div>
       </div>
-      <div class="table" flex>
+      <div class="table">
         <template repeat="{{route in routes}}">
           <div class="row" flexbox>
             <div flex avail?="{{route.from.date >= now}}">{{route.from.time}}</div>
