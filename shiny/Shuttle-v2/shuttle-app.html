@@ -1,3 +1,11 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+
 <link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
 <link rel="import" href="../../../polymer-elements/polymer-media-query/polymer-media-query.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
@@ -119,9 +127,7 @@
         }.bind(this));
       },
       enteredView: function() {
-        setTimeout(function() {
-          this.$.map.resize();
-        }.bind(this));
+        this.$.map.resize();
       },
       tabSelectedChanged: function(old) {
         this.classFollows(this.$[this.tabSelected], this.$[old], 

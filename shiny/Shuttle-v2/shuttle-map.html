@@ -1,3 +1,11 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+
 <link rel="import" href="../../../more-elements/google-map/google-map.html">
   
 <polymer-element name="shuttle-map" attributes="centerStop fromStop toStop filteredStops selectedFilteredStop">
@@ -24,7 +32,9 @@
         this.resizeJob = this.job(this.resizeJob, this._resize, 100);
       },
       _resize: function() {
-        this.$.map.resize();
+        requestAnimationFrame(function() {
+          this.$.map.resize();
+        }.bind(this));
       },
       centerStopChanged: function() {
         if (this.centerStop) {
