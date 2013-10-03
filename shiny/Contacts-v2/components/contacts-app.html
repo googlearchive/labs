@@ -22,11 +22,12 @@
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
 				box-sizing: border-box;
 				height: 60px;
-				padding: 20px;
+				padding: 0 20px;
 			}
 			.contactItem.header {
 				font-variant: small-caps;
 				color: #9e9e9e;
+				padding: 20px;
 			}
 			/* @polyfill .contactItem:nth-child(3) */
 			.contactItem:nth-child(2) {
@@ -51,9 +52,9 @@
 					</template>
 				</template>
 			</contacts-list>
-			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="detailShrinkAction">
+			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="shrinkAction">
 			</contacts-detail>
-			<contacts-create>
+			<contacts-create on-contacts-create-cancel="shrinkAction" on-contacts-create="contactCreateAction">
 			</contacts-create>
 		</polymer-ui-pages>
 	</template>
@@ -68,8 +69,11 @@
 			addContactAction: function() {
 				this.page = 2;
 			},
-			detailShrinkAction: function() {
+			shrinkAction: function() {
 				this.page = 0;
+			},
+			contactCreateAction: function(e, detail, sender) {
+				this.selectedContact = detail;
 			}
 		});
 	</script>

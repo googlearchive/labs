@@ -1,8 +1,9 @@
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
-<polymer-element name="contacts-create-item" attributes="icon activeicon label value active overlayActive" on-focus="focusAction" on-blur="blurAction">
+<polymer-element name="contacts-create-item" attributes="icon activeIcon label value selectedType active overlayActive" on-focus="focusAction" on-blur="blurAction">
 	<template>
 		<style>
 			/* @polyfill @host */
@@ -28,15 +29,23 @@
 				display: none !important;
 			}
 			#overlay {
-				left: 5%;
-				width: 90%;
-				padding: 20px;
+				left: 0;
+				padding: 10px;
 			}
 			#overlay input {
 				margin-left: 0px;
 				height: auto;
 			}
-			#overlay polymer-ui-menu-item,
+			#overlay polymer-ui-menu-item {
+				font-size: 18px;
+				height: 61px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				padding: 10px 20px;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 1px 1px;
+				border-style: solid;
+			}
+			/* FIXME: Safari drops the whole rule if it doesn't recognize the selector. */
 			#overlay content::-webkit-distributed(polymer-ui-menu-item) {
 				font-size: 18px;
 				height: 61px;
@@ -48,17 +57,19 @@
 			}
 		</style>
 		<polymer-flex-layout align="center"></polymer-flex-layout>
-		<polymer-ui-icon-button icon="{{icon}}" class="{{hidden: active || overlayActive || value}}"></polymer-ui-icon-button>
-		<polymer-ui-icon-button id="activeIcon" icon="{{activeicon}}" class="{{hidden: !value && !active && !overlayActive}}" on-tap="overlayAction"></polymer-ui-icon-button>
+		<polymer-ui-icon-button icon="{{icon}}" class="{{hidden: active || overlayActive || value || selectedType !== -1}}"></polymer-ui-icon-button>
+		<polymer-ui-icon-button id="activeIcon" icon="{{activeIcon}}" class="{{hidden: !value && selectedType === -1 && !active && !overlayActive}}" on-tap="overlayAction"></polymer-ui-icon-button>
 		<div flex>
 			<input value="{{value}}" placeholder="{{label}}">
 		</div>
-		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive}}"></polymer-ui-icon-button>
-		<polymer-ui-overlay id="overlay" active="{{overlayActive}}" modal backdrop on-tap="overlayTapAction">
-			<polymer-ui-menu-item icon="shrink">
+		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive}}" on-tap="cancelAction"></polymer-ui-icon-button>
+		<polymer-ui-overlay id="overlay" active="{{overlayActive}}" modal backdrop on-polymer-overlay-open="overlayOpenAction">
+			<polymer-ui-menu-item icon="shrink" on-tap="overlayShrinkAction">
 				<input id="overlayInput" value="{{value}}" placeholder="{{label}}">
 			</polymer-ui-menu-item>
-			<content></content>
+			<polymer-selector selected="{{selectedType}}" on-polymer-activate="overlaySelectAction">
+				<content></content>
+			</polymer-selector>
 		</polymer-ui-overlay>
 	</template>
 	<script>
@@ -66,9 +77,16 @@
 			active: false,
 			overlayActive: false,
 			icon: 'plus',
-			overlayActiveChanged: function() {
+			selectedType: -1,
+			enteredDocument: function() {
+				this.$.overlay.style.width = (window.innerWidth - 20) + 'px';
+				this.$.overlay.style.top = ((window.innerHeight - this.$.overlay.getBoundingClientRect().height) / 2) + 'px';
+			},
+			overlayOpenAction: function() {
 				if (this.overlayActive) {
-					this.$.overlayInput.focus();
+					setTimeout(function() {
+						this.$.overlayInput.focus();
+					}.bind(this), 10);
 				}
 			},
 			focusAction: function() {
@@ -77,12 +95,20 @@
 			blurAction: function() {
 				this.active = false;
 			},
+			cancelAction: function() {
+				this.value = '';
+				this.selectedType = -1;
+			},
 			overlayAction: function() {
 				this.$.overlay.toggle();
 			},
-			overlayTapAction: function(e, detail, sender) {
-				if (e.srcElement !== this.$.overlayInput) {
-					this.activeicon = e.srcElement.icon;
+			overlaySelectAction: function(e, detail, sender) {
+				this.activeIcon = detail.item.icon;
+				this.$.overlay.toggle();
+			},
+			overlayShrinkAction: function(e, detail, sender) {
+				var src = window.ShadowDOMPolyfill ? wrap(e.srcElement) : e.srcElement;
+				if (src !== this.$.overlayInput) {
 					this.$.overlay.toggle();
 				}
 			}

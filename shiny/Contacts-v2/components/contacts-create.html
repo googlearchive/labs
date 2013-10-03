@@ -1,10 +1,11 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
 <link href="contacts-create-item.html" rel="import">
-<polymer-element name="contacts-create">
+<polymer-element name="contacts-create" attributes="contact">
 	<template>
 		<style>
 			polymer-ui-toolbar {
 				background: transparent none !important;
+				padding: 0;
 			}
 			button {
 				background: transparent none;
@@ -13,7 +14,7 @@
 				font-size: 16px;
 				color: #999;
 				padding: 10px;
-				margin: 20px;
+				margin: 0 20px;
 			}
 			button:focus {
 				outline: none;
@@ -29,16 +30,24 @@
 			<div flex></div>
 			<button on-tap="createAction">✓</button>
 		</polymer-ui-toolbar>
-		<contacts-create-item icon="account" activeicon="account" label="Name"></contacts-create-item>
-		<contacts-create-item activeicon="dialoga" label="Add a phone">
+		<contacts-create-item icon="account" activeicon="account" label="Name" value="{{contact.name}}"></contacts-create-item>
+		<contacts-create-item activeicon="dialoga" label="Add a phone" value="{{contact.phone}}">
 			<polymer-ui-menu-item icon="dialoga" label="Home"></polymer-ui-menu-item>
 			<polymer-ui-menu-item icon="filter" label="Mobile"></polymer-ui-menu-item>
 			<polymer-ui-menu-item icon="briefcase" label="Work"></polymer-ui-menu-item>
 		</contacts-create-item>
-		<contacts-create-item activeicon="stream" label="Add an email"></contacts-create-item>
-		<contacts-create-item activeicon="marker" label="Add an address"></contacts-create-item>
+		<contacts-create-item activeicon="stream" label="Add an email" value="{{contact.email}}"></contacts-create-item>
+		<contacts-create-item activeicon="marker" label="Add an address" value="{{contact.street}}"></contacts-create-item>
 	</template>
 	<script>
-		Polymer('contacts-create');
+		Polymer('contacts-create', {
+			contact: {},
+			cancelAction: function() {
+				this.fire('contacts-create-cancel');
+			},
+			createAction: function() {
+				this.fire('contacts-create', {contact: this.contact});
+			}
+		});
 	</script>
 </polymer-element>
