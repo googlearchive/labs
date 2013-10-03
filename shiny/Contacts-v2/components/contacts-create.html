@@ -29,11 +29,14 @@
 			<div flex></div>
 			<button on-tap="createAction">✓</button>
 		</polymer-ui-toolbar>
-		<contacts-create-item icon="account" label="Name"></contacts-create-item>
-		<contacts-create-item icon="briefcase" label="Phone"></contacts-create-item>
-		<contacts-create-item icon="gplus" label="Email"></contacts-create-item>
-		<contacts-create-item icon="stream" label="Address"></contacts-create-item>
-		<contacts-create-item icon="dialog" label="Handle"></contacts-create-item>
+		<contacts-create-item icon="account" activeicon="account" label="Name"></contacts-create-item>
+		<contacts-create-item activeicon="dialoga" label="Add a phone">
+			<polymer-ui-menu-item icon="dialoga" label="Home"></polymer-ui-menu-item>
+			<polymer-ui-menu-item icon="filter" label="Mobile"></polymer-ui-menu-item>
+			<polymer-ui-menu-item icon="briefcase" label="Work"></polymer-ui-menu-item>
+		</contacts-create-item>
+		<contacts-create-item activeicon="stream" label="Add an email"></contacts-create-item>
+		<contacts-create-item activeicon="marker" label="Add an address"></contacts-create-item>
 	</template>
 	<script>
 		Polymer('contacts-create');

@@ -1,6 +1,8 @@
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
-<polymer-element name="contacts-create-item" noscript attributes="icon label value">
+<link href="../../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
+<polymer-element name="contacts-create-item" attributes="icon activeicon label value active overlayActive" on-focus="focusAction" on-blur="blurAction">
 	<template>
 		<style>
 			/* @polyfill @host */
@@ -21,11 +23,69 @@
 			input:focus {
 				outline: none;
 			}
+			.hidden {
+				/* FIXME: outside should win */
+				display: none !important;
+			}
+			#overlay {
+				left: 5%;
+				width: 90%;
+				padding: 20px;
+			}
+			#overlay input {
+				margin-left: 0px;
+				height: auto;
+			}
+			#overlay polymer-ui-menu-item,
+			#overlay content::-webkit-distributed(polymer-ui-menu-item) {
+				font-size: 18px;
+				height: 61px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				padding: 10px 20px;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 1px 1px;
+				border-style: solid;
+			}
 		</style>
 		<polymer-flex-layout align="center"></polymer-flex-layout>
-		<polymer-ui-icon-button icon="{{icon}}"></polymer-ui-icon-button>
+		<polymer-ui-icon-button icon="{{icon}}" class="{{hidden: active || overlayActive || value}}"></polymer-ui-icon-button>
+		<polymer-ui-icon-button id="activeIcon" icon="{{activeicon}}" class="{{hidden: !value && !active && !overlayActive}}" on-tap="overlayAction"></polymer-ui-icon-button>
 		<div flex>
 			<input value="{{value}}" placeholder="{{label}}">
 		</div>
+		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive}}"></polymer-ui-icon-button>
+		<polymer-ui-overlay id="overlay" active="{{overlayActive}}" modal backdrop on-tap="overlayTapAction">
+			<polymer-ui-menu-item icon="shrink">
+				<input id="overlayInput" value="{{value}}" placeholder="{{label}}">
+			</polymer-ui-menu-item>
+			<content></content>
+		</polymer-ui-overlay>
 	</template>
+	<script>
+		Polymer('contacts-create-item', {
+			active: false,
+			overlayActive: false,
+			icon: 'plus',
+			overlayActiveChanged: function() {
+				if (this.overlayActive) {
+					this.$.overlayInput.focus();
+				}
+			},
+			focusAction: function() {
+				this.active = true;
+			},
+			blurAction: function() {
+				this.active = false;
+			},
+			overlayAction: function() {
+				this.$.overlay.toggle();
+			},
+			overlayTapAction: function(e, detail, sender) {
+				if (e.srcElement !== this.$.overlayInput) {
+					this.activeicon = e.srcElement.icon;
+					this.$.overlay.toggle();
+				}
+			}
+		});
+		</script>
 </polymer-element>
