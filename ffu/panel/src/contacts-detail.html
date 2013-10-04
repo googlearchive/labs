@@ -1,0 +1,104 @@
+<link rel="import" href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
+<link rel="import" href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+<link rel="import" href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+
+<polymer-element name="contacts-detail" attributes="contact">
+  <template>
+    <style>
+      .detailName {
+        z-index: 1;
+      }
+      #detailHeaderToolbar {
+        background: transparent none !important;
+        border: 0 !important;
+      }
+      .detailHeader {
+        height: 240px;
+        background-color: #bbb;
+      }
+      .detailIconContainer {
+        padding: 40px 20px;
+      }
+      .contactIcon {
+        background-color: rgb(242, 242, 242);
+        border-radius: 60px;
+        margin-right: 20px;
+        padding: 24px;
+        width: 64px;
+        height: 64px;
+        line-height: 64px;
+        font-size: 42px;
+        text-align: center;
+        color: #d3d2d3;
+      }
+      .contactIcon[favorite] {
+        background-color: #4d90fe;
+      }
+      .detail-item {
+        border-color: rgba(0, 0, 0, 0.14902);
+        border-width: 0 1px 1px;
+        border-style: solid;
+        font-size: 18px;
+        box-sizing: border-box;
+        height: 60px;
+        padding: 20px;
+      }
+      .contactsDetailItemLabel {
+        color: #999;
+        font-size: 16px;
+        width: 80px;
+      }
+      .contactsDetailItemValue {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
+    <polymer-ui-toolbar class="detailName" theme="polymer-ui-light-theme">
+      <polymer-ui-icon-button id="shinkIcon" icon="shrink" on-tap="shrinkAction"></polymer-ui-icon-button>
+      {{contact.name}}
+    </polymer-ui-toolbar>
+    <div class="detailHeader">
+      <polymer-flex-layout vertical="true"></polymer-flex-layout>
+      <polymer-ui-toolbar id="detailHeaderToolbar" theme="polymer-ui-dark-theme">
+        <div flex></div>
+        <!-- <polymer-ui-icon-button icon="edit"></polymer-ui-icon-button> no such icon -->
+        <polymer-ui-icon-button icon="shortcut"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="favorite"></polymer-ui-icon-button>
+      </polymer-ui-toolbar>
+      <div flex></div>
+      <div class="detailIconContainer">
+        <div class="contactIcon" favorite?="{{contact.isFavorite == 1}}">
+          {{contact.initials}}
+        </div>
+      </div>
+    </div>
+    <div class="detail-item">
+      <polymer-flex-layout align="center"></polymer-flex-layout>
+      <div class="contactsDetailItemLabel">Phone</div>
+      <div class="contactsDetailItemValue" flex>{{contact.phone}}</div>
+    </div>
+    <div class="detail-item">
+      <polymer-flex-layout align="center"></polymer-flex-layout>
+      <div class="contactsDetailItemLabel">Email</div>
+      <div class="contactsDetailItemValue" flex>{{contact.email}}</div>
+    </div>
+    <div class="detail-item">
+      <polymer-flex-layout align="center"></polymer-flex-layout>
+      <div class="contactsDetailItemLabel">Address</div>
+      <div class="contactsDetailItemValue" flex>{{contact.street}}</div>
+    </div>
+    <div class="detail-item">
+      <polymer-flex-layout align="center"></polymer-flex-layout>
+      <div class="contactsDetailItemLabel">Handle</div>
+      <div class="contactsDetailItemValue" flex>{{contact.handle}}</div>
+    </div>
+  </template>
+  <script>
+    Polymer('contacts-detail', {
+      shrinkAction: function() {
+        this.fire('contacts-detail-shrink');
+      }
+    });
+  </script>
+</polymer-element>

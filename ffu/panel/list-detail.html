@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>list-detail</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width">
+  <script src="../../../polymer/polymer.js"></script>
+  <script src="src/contacts-data.js"></script>
+  <link rel="import" href="src/contacts-detail.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      background: #000;
+    }
+    x-list-detail {
+      height: 100%;
+      max-width: 400px;
+      max-height: 540px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+<polymer-element name="x-list-detail">
+  <template>
+    <style>
+      @host {
+        * {
+          position: relative;
+          display: block;
+          font: 14px 'Helvetica Neue', Helvetica, Roboto, Arial;
+          background: white;
+        }
+      }
+      #list {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      #detail {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: white;
+        visibility: hidden;
+        opacity: 0.9;
+
+        transition: opacity 0.1s linear;
+      }
+      #cards {
+        background: #eee;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        position: absolute;
+        top: 61px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        transition: top 0.2s linear, opacity 0.2s linear;
+      }
+      .alpha-header {
+        height: 60px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        color: #aaa;
+        padding: 20px 20px 20px 26px;
+        font-size: 20px;
+      }
+      .card {
+        background-color: #fff;
+        border-radius: 2px;
+        box-shadow: rgba(0, 0, 0, 0.098) 0px 2px 4px, rgba(0, 0, 0, 0.098) 0px 0px 3px;
+      }
+      .item {
+        height: 80px;
+        position: relative;
+        border-bottom: 1px solid #eee;
+
+        transition: margin 0.2s linear;
+      }
+      .avatar-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 60px;
+        padding: 15px 0 15px 15px;
+      }
+      #avatar {
+        width: 50px;
+        height: 50px;
+        background: #cdcdcd;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 50px;
+        color: white;
+        font-size: 20px;
+      }
+      #avatar.favorite {
+        background: #4d90fe;
+      }
+      .summary {
+        position: absolute;
+        top: 0;
+        left: 80px;
+        right: 0;
+        bottom: 0;
+        padding: 12px 5px;
+      }
+      .name {
+        color: #333;
+        font-size: 21px;
+        padding-top: 15px;
+      }
+    </style>
+
+    <div id="list">
+      <polymer-ui-toolbar theme="polymer-ui-light-theme" style="z-index: 1;">
+        <polymer-ui-icon-button icon="shrink"></polymer-ui-icon-button>
+        My Contacts
+      </polymer-ui-toolbar>
+      <div id="cards">
+        <template repeat="{{alphaContacts}}">
+          <div class="alpha-header">{{title}}</div>
+          <div class="card">
+            <template repeat="{{contacts}}">
+              <div class="item" on-tap="itemTap">
+                <div class="avatar-container">
+                  <div id="avatar" class="{{favorite: isFavorite == 1}}">{{initials}}</div>
+                </div>
+                <div class="summary">
+                  <div class="name">{{name}}</div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+    <contacts-detail id="detail" contact="{{contact}}" on-contacts-detail-shrink="detailShrinkAction">
+  </template>
+  <script>
+    Polymer('x-list-detail', {
+      margin: 400,
+      contact: null,
+      created: function() {
+        this.alphaContacts = alphaContacts();
+        this.expandTransitionEndListener = this.exapndTransitionEnd.bind(this);
+        this.detailShrinkTransitionEndListener = this.detailShrinkTransitionEnd.bind(this);
+      },
+      itemTap: function(e, detail, sender) {
+        this.expandAction(sender);
+      },
+      expandAction: function(item) {
+        this.selected = item;
+        this.contact = item.templateInstance.model;
+        this.selected.addEventListener('transitionend', this.expandTransitionEndListener);
+        this.$.cards.style.top = 61 - this.margin/2 + 'px';
+        this.$.cards.style.opacity = 0.3;
+        this.selected.style.marginBottom = this.margin + 'px';
+      },
+      exapndTransitionEnd: function() {
+        this.selected.removeEventListener('transitionend', this.expandTransitionEndListener);
+        this.$.list.style.visibility = 'hidden';
+        this.$.detail.style.visibility = 'visible';
+        this.$.detail.style.opacity = 1;
+      },
+      detailShrinkAction: function() {
+        this.$.detail.addEventListener('transitionend', this.detailShrinkTransitionEndListener);
+        this.$.detail.style.opacity = 0.9;
+      },
+      detailShrinkTransitionEnd: function() {
+        this.$.detail.removeEventListener('transitionend', this.detailShrinkTransitionEndListener);
+        this.$.list.style.visibility = 'visible';
+        this.$.detail.style.visibility = 'hidden';
+        this.$.cards.style.top = '61px';
+        this.$.cards.style.opacity = 1;
+        this.selected.style.marginBottom = 0;
+      }
+    });
+  </script>
+</polymer-element>
+
+<x-list-detail></x-list-detail>
+
+</body>
+</html>
