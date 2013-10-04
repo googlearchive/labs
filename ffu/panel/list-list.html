@@ -55,6 +55,7 @@
         visibility: hidden;
         opacity: 0.9;
 
+        -webkit-transition: opacity 0.1s linear;
         transition: opacity 0.1s linear;
       }
       #cards, #folders {
@@ -68,6 +69,7 @@
         bottom: 0;
         left: 0;
 
+        -webkit-transition: top 0.2s linear, opacity 0.2s linear;
         transition: top 0.2s linear, opacity 0.2s linear;
       }
       #folders {
@@ -91,6 +93,7 @@
         position: relative;
         border-bottom: 1px solid #eee;
 
+        -webkit-transition: margin 0.2s linear;
         transition: margin 0.2s linear;
       }
       .folder {
@@ -187,22 +190,26 @@
       expandAction: function(item) {
         this.selected = item;
         this.folder = item.templateInstance.model.name;
+        this.selected.addEventListener('webkitTransitionEnd', this.expandTransitionEndListener);
         this.selected.addEventListener('transitionend', this.expandTransitionEndListener);
         this.$.folders.style.top = 61 - this.margin/2 + 'px';
         this.$.folders.style.opacity = 0.3;
         this.selected.style.marginBottom = this.margin + 'px';
       },
       exapndTransitionEnd: function() {
+        this.selected.removeEventListener('webkitTransitionEnd', this.expandTransitionEndListener);
         this.selected.removeEventListener('transitionend', this.expandTransitionEndListener);
         this.$.home.style.visibility = 'hidden';
         this.$.list.style.visibility = 'visible';
         this.$.list.style.opacity = 1;
       },
       shrinkAction: function() {
+        this.$.list.addEventListener('webkitTransitionEnd', this.shrinkTransitionEndListener);
         this.$.list.addEventListener('transitionend', this.shrinkTransitionEndListener);
         this.$.list.style.opacity = 0.9;
       },
       shrinkTransitionEnd: function() {
+        this.$.list.removeEventListener('webkitTransitionEnd', this.shrinkTransitionEndListener);
         this.$.list.removeEventListener('transitionend', this.shrinkTransitionEndListener);
         this.$.home.style.visibility = 'visible';
         this.$.list.style.visibility = 'hidden';
