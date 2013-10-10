@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>polymer::lightdom</title>
+  <meta charset="utf-8">
+  <script src="../../../polymer/polymer.js"></script>
+</head>
+<body>
+  <!-- <x-lightdom twang="twang"></x-lightdom> -->
+  <x-compose></x-compose>
+  
+  <polymer-element name="x-obj" attributes="employee" noscript>
+    <template>
+      <div>manager: {{employee.manager}}</div>
+      <div>name: {{employee.name}}</div>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-lightdom" lightdom attributes="twang">
+    <template>
+      <x-obj employee="{{employee}}"></x-obj>
+      <div>Twang: {{twang}}</div>
+      <template repeat="{{stuff}}">
+        <div>{{thing}}</div>
+      </template>
+    </template>
+    <script>
+      Polymer('x-lightdom', {
+        ready: function() {
+          this.employee = {
+            name: 'joe',
+            manager: 'bob'
+          };
+          this.stuff = [
+            {thing: 1},
+            {thing: 2},
+            {thing: 3}
+          ]
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="x-compose">
+    <template>
+      <div>
+        <x-obj employee="{{employee}}"></x-obj>
+      </div>
+      <hr>
+      <x-lightdom id="ld" twang="c.twang"></x-lightdom>
+    </template>
+    <script>
+      Polymer('x-compose', {
+        ready: function() {
+          this.employee = {
+            name: 'c.joe',
+            manager: 'c.bob'
+          }
+          this.stuff = [
+            {thing: 7},
+            {thing: 8},
+            {thing: 9}
+          ]
+        }
+      });
+    </script>
+  </polymer-element>
+  </body>
+</html>
