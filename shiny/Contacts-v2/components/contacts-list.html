@@ -1,8 +1,10 @@
-<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
+<link href="../../../../polymer-elements/polymer-media-query/polymer-media-query.html" rel="import">
 <link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
-<polymer-element name="contacts-list" extends="polymer-selector">
+<link href="contacts-detail.html" rel="import">
+<polymer-element name="contacts-list" extends="polymer-selector" on-polymer-activate="activateAction">
 	<template>
 		<style>
 			polymer-ui-toolbar {
@@ -10,27 +12,80 @@
 				padding-right: 10px;
 			}
 			.listContainer {
-				background-color: rgb(242, 242, 242)
+				background-color: rgb(242, 242, 242),
+				min-width: 320px;
+			}
+			#overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
+			#overlay::x-overlay {
+				height: 100%;
+			}
+			contacts-detail {
+				min-width: 65%;
 			}
 		</style>
-		<polymer-flex-layout vertical="true"></polymer-flex-layout>
+		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
+		<polymer-grid-layout id="grid"></polymer-grid-layout>
 		<polymer-ui-toolbar>
 			<polymer-ui-icon-button icon="menu" on-tap="menuAction"></polymer-ui-icon-button>
 			<div flex>Contacts</div>
 			<polymer-ui-icon-button icon="plus" on-tap="addAction"></polymer-ui-icon-button>
 			<polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
+			<template if="{{wideLayout}}">
+				<polymer-ui-icon-button icon="shortcut"></polymer-ui-icon-button>
+				<polymer-ui-icon-button icon="favorite"></polymer-ui-icon-button>
+			</template>
 		</polymer-ui-toolbar>
 		<div class="listContainer" flex>
 			<shadow></shadow>
+			<polymer-ui-overlay id="overlay">
+				<contacts-detail contact="{{selectedModel.contact}}" on-contacts-detail-shrink="overlayCloseAction">
+				</contacts-detail>
+			</polymer-ui-overlay>
 		</div>
+		<contacts-detail contact="{{selectedModel.contact}}" on-contacts-detail-shrink="overlayCloseAction">
+		</contacts-detail>
 	</template>
 	<script>
 		Polymer('contacts-list', {
+			selected: 1,
+			wideLayout: true,
+			ready: function() {
+				this.wideLayoutChanged();
+			},
+			wideLayoutChanged: function() {
+				if (this.wideLayout) {
+					this.$.grid.layout = [
+						[2, 2],
+						[3, 4],
+						[3, 4],
+					];
+				} else {
+					this.$.grid.layout = [
+						[2, 2],
+						[3, 3],
+						[3, 3],
+					];
+				}
+			},
 			addAction: function() {
 				this.fire('contacts-list-add');
 			},
 			menuAction: function() {
 				this.fire('contacts-menu-open');
+			},
+			overlayCloseAction: function() {
+				this.$.overlay.active = false;
+			},
+			activateAction: function() {
+				if (!this.wideLayout) {
+					this.$.overlay.active = true;
+				}
 			}
 		})
 	</script>

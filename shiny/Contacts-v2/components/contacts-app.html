@@ -9,7 +9,7 @@
 <link href="contacts-icon.html" rel="import">
 <link href="contacts-list.html" rel="import">
 <link href="mock-data.html" rel="import">
-<polymer-element name="contacts-app" attribiutes="page selectedContact">
+<polymer-element name="contacts-app" attribiutes="page">
 	<template>
 		<style>
 			polymer-ui-menu {
@@ -88,7 +88,7 @@
 			</polymer-ui-menu>
 		</polymer-ui-overlay>
 		<polymer-ui-pages selected="{{page}}">
-			<contacts-list selectedModel="{{selectedContact}}" on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction">
+			<contacts-list on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction">
 				<template repeat="{{alpha in $.mock.alphabetized}}">
 					<div class="contactItem header">
 						{{alpha.letter}}
@@ -104,22 +104,17 @@
 			</contacts-list>
 			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="shrinkAction">
 			</contacts-detail>
-			<contacts-create on-contacts-create-cancel="shrinkAction" on-contacts-create="contactCreateAction">
+			<contacts-create on-contacts-create-cancel="shrinkAction">
 			</contacts-create>
 		</polymer-ui-pages>
 	</template>
 	<script>
 		Polymer('contacts-app', {
 			page: 0,
-			selectedContact: null,
 			ready: function() {
 				// this.$.grid.layout = [
 				// 	[2, 3, 3]
 				// ]
-			},
-			selectedContactChanged: function() {
-				console.log('selectedContact', this.selectedContact);
-				this.page = 1;
 			},
 			addContactAction: function() {
 				this.page = 2;
@@ -132,9 +127,6 @@
 			},
 			sidebarCloseAction: function() {
 				this.$.sidebar.active = false;
-			},
-			contactCreateAction: function(e, detail, sender) {
-				this.selectedContact = detail;
 			}
 		});
 	</script>
