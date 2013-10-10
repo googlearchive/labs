@@ -60,6 +60,7 @@
 			},
 			wideLayoutChanged: function() {
 				if (this.wideLayout) {
+					this.$.overlay.active && (this.$.overlay.active = false);
 					this.$.grid.layout = [
 						[2, 2],
 						[3, 4],
