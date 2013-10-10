@@ -1,4 +1,8 @@
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-pages/polymer-ui-pages.html" rel="import">
 <link href="contacts-create.html" rel="import">
 <link href="contacts-detail.html" rel="import">
@@ -8,9 +12,38 @@
 <polymer-element name="contacts-app" attribiutes="page selectedContact">
 	<template>
 		<style>
+			polymer-ui-menu {
+				padding: 0 !important;
+			}
+			.sidebar {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				background-color: white;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				width: 80%;
+				max-width: 300px;
+				box-shadow: 5px 0px 5px rgba(50, 50, 50, 0.6);
+			}
+			.sidebar .header {
+				box-sizing: border-box;
+				height: 240px;
+				background: url('http://lorempixel.com/g/500/240/nature') repeat-x;
+				padding: 20px 20px 10px;
+				color: white;
+			}
+			.sidebar::x-overlay {
+				height: 100%;
+			}
+			.sidebar polymer-ui-menu-item {
+				margin: 10px;
+				color: black;
+			}
 			polymer-ui-pages {
 				display: block;
 				height: 100%;
+				z-index: 0;
 			}
 			.contactItem {
 				margin: 0 10px;
@@ -37,8 +70,25 @@
 			}
 		</style>
 		<mock-data id="mock"></mock-data>
+		<polymer-grid-layout id="grid"></polymer-grid-layout>
+		<polymer-ui-overlay id="sidebar" class="sidebar" backdrop modal>
+			<polymer-ui-menu valueattr="label" on-polymer-select="sidebarCloseAction">
+				<div class="header">
+					<polymer-flex-layout vertical></polymer-flex-layout>
+					<contacts-icon contact="{{me}}" large></contacts-icon>
+					<div flex></div>
+					<p>ykyyip@google.com</p>
+				</div>
+				<polymer-ui-menu-item label="Contacts" icon="contact"></polymer-ui-menu-item>
+				<polymer-ui-menu-item label="Groups" icon="stream"></polymer-ui-menu-item>
+				<polymer-ui-menu-item label="Favorites" icon="favorite"></polymer-ui-menu-item>
+				<polymer-ui-menu-item label="Settings" icon="settings"></polymer-ui-menu-item>
+				<polymer-ui-menu-item label="Import &amp; Export" icon="shortcut"></polymer-ui-menu-item>
+				<polymer-ui-menu-item label="Help" icon="dialog"></polymer-ui-menu-item>
+			</polymer-ui-menu>
+		</polymer-ui-overlay>
 		<polymer-ui-pages selected="{{page}}">
-			<contacts-list selectedModel="{{selectedContact}}" on-contacts-list-add="addContactAction">
+			<contacts-list selectedModel="{{selectedContact}}" on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction">
 				<template repeat="{{alpha in $.mock.alphabetized}}">
 					<div class="contactItem header">
 						{{alpha.letter}}
@@ -62,6 +112,11 @@
 		Polymer('contacts-app', {
 			page: 0,
 			selectedContact: null,
+			ready: function() {
+				// this.$.grid.layout = [
+				// 	[2, 3, 3]
+				// ]
+			},
 			selectedContactChanged: function() {
 				console.log('selectedContact', this.selectedContact);
 				this.page = 1;
@@ -71,6 +126,12 @@
 			},
 			shrinkAction: function() {
 				this.page = 0;
+			},
+			sidebarOpenAction: function() {
+				this.$.sidebar.active = true;
+			},
+			sidebarCloseAction: function() {
+				this.$.sidebar.active = false;
 			},
 			contactCreateAction: function(e, detail, sender) {
 				this.selectedContact = detail;
