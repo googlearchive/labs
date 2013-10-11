@@ -21,6 +21,8 @@
       max-width: 400px;
       max-height: 540px;
       margin: 0 auto;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      -webkit-touch-callout: none;
     }
   </style>
 </head>
@@ -43,7 +45,6 @@
         right: 0;
         bottom: 0;
         left: 0;
-        z-index: 1;
       }
       #list {
         position: absolute;
@@ -56,6 +57,9 @@
 
         -webkit-transition: opacity 0.3s ease-in;
         transition: opacity 0.3s ease-in;
+      }
+      .panel-selected {
+        z-index: 1;
       }
       #cards, #folders {
         overflow: auto;
@@ -193,6 +197,7 @@
         this.alphaContacts = alphaContacts();
         this.expandTransitionEndListener = this.exapndTransitionEnd.bind(this);
         this.shrinkTransitionEndListener = this.shrinkTransitionEnd.bind(this);
+        this.listShowingChanged();
       },
       folderTap: function(e, detail, sender) {
         this.expandAction(sender);
@@ -234,7 +239,10 @@
         this.$.list.removeEventListener('transitionend', this.shrinkTransitionEndListener);
         this.$.home.style.visibility = 'visible';
         this.$.list.style.visibility = 'hidden';
-
+      },
+      listShowingChanged: function() {
+        this.$.home.classList.toggle('panel-selected', !this.listShowing);
+        this.$.list.classList.toggle('panel-selected', this.listShowing);
       }
     });
   </script>
