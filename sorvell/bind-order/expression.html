@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>min-max</title>
+  <meta charset="utf-8">
+  <script src="../../../polymer/polymer.js"></script>
+</head>
+<body>
+  <x-test></x-test>
+  
+  <polymer-element name="x-test">
+    <template>
+      <div>Data</div>
+      <ul>
+        <li>min: {{min}}</li>
+        <li>max: {{max}}</li>
+        <li>a: <input type="number" value="{{a}}">, b: <input type="number" value="{{b}}"></li>
+      </ul>
+      <hr><br>
+      <div>Bound to a range input with attribute order: value, min, max</div>
+      <input id="range1" type="range" value="{{an + bn}}" min="{{min}}" max="{{max}}">
+      <div>range value: {{$.range1.value}}</div>
+      <br><hr><br>
+      <div>Bound to a range input with attribute order: min, max, value</div>
+      <input id="range2" type="range" min="{{min}}" max="{{max}}" value="{{an + bn}}">
+      <div>range value: {{$.range2.value}}</div>
+    </template>
+    <script>
+      Polymer('x-test', {
+        min: 200,
+        max: 300,
+        a: 100,
+        b: 150,
+        ready: function() {
+          this.validate();
+        },
+        aChanged: function() {
+          this.validate();
+        },
+        bChanged: function() {
+          this.validate();
+        },
+        validate: function() {
+          this.an = Number(this.a);
+          this.bn = Number(this.b);
+        }
+      });
+    </script>
+  </polymer-element>
+  </body>
+</html>

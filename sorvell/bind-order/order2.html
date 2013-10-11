@@ -17,23 +17,25 @@ license that can be found in the LICENSE file.
     <template>
       <div>Data</div>
       <ul>
-        <li>min: {{min}}</li>
-        <li>max: {{max}}</li>
+        <li>mina: {{mina}}, minb: {{minb}}</li>
+        <li>maxa: {{maxa}}, maxb: {{maxb}}, </li>
         <li>value: {{value}}</li>
       </ul>
       <hr><br>
       <div>Bound to a range input with attribute order: value, min, max</div>
-      <input id="range1" type="range" value="{{value}}" min="{{min}}" max="{{max}}">
+      <input id="range1" type="range" value="{{value}}" min="{{mina + minb}}" max="{{maxa + maxb}}">
       <div>range value: {{$.range1.value}}</div>
       <br><hr><br>
       <div>Bound to a range input with attribute order: min, max, value</div>
-      <input id="range2" type="range" min="{{min}}" max="{{max}}" value="{{value}}">
+      <input id="range2" type="range" min="{{mina + minb}}" max="{{maxa + maxb}}" value="{{value}}">
       <div>range value: {{$.range2.value}}</div>
     </template>
     <script>
       Polymer('x-test', {
-        min: 200,
-        max: 300,
+        mina: 50,
+        minb: 150,
+        maxa: 100,
+        maxb: 200,
         value: 250
       });
     </script>
