@@ -64,7 +64,7 @@
         valueattr="name" selected="{{selected}}" selectedItem="{{selectedItem}}"
         selectedModel="{{selectedStop}}" on-polymer-activate="toggleAction"></polymer-selector>
     
-    <div id="stops">
+    <div id="stops" touch-action="pan-y" on-pointerdown="hideKeyboard">
       <template repeat="{{groups}}">
         <template if="{{stops}}">
           <div class="group" hidden?="{{hidden}}">{{name}}</div>
@@ -151,6 +151,9 @@
           g.hidden = !t;
         });
         this.fire('shuttle-stops-search');
+      },
+      hideKeyboard: function() {
+        document.activeElement.blur();
       }
     });
   </script>
