@@ -1,0 +1,27 @@
+<polymer-element name="polymer-ui-form" attributes="label">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      #label {
+        color: #999;
+        font-size: 18px;
+        font-weight: bold;
+        display: block;
+      }
+      #label[filled] {
+        padding: 14px 8px;
+      }
+    </style>
+    <span id="label" filled?="{{label}}">{{label}}</span>
+    <content></content>
+  </template>
+  <script>
+    Polymer('polymer-ui-form', {
+      label: ''
+    });
+  </script>
+</polymer-element>
