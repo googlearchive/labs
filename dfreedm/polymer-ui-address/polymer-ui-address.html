@@ -1,0 +1,49 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<polymer-element name="polymer-ui-address" attributes="first last">
+  <template>
+    <style>
+      /* Copied from polymer-ui-card */
+      @host {
+        * {
+          display: inline-block;
+          background-color: #fff;
+          border-radius: 2px;
+          box-shadow: rgba(0, 0, 0, 0.098) 0 2px 4px, rgba(0, 0, 0, 0.098) 0 0 3px;
+          height: 48px;
+          width: 152px;
+        }
+      }
+
+      /* @polyfill > img */
+      #pic::content img {
+        display: inline-block;
+        border-radius: 100%;
+        height: 40px;
+        margin: 4px;
+      }
+
+      #name {
+        font-family: 'Helvetica Neue', 'Roboto', 'Arial';
+        height: 48px;
+        line-height: 48px;
+        margin-left: 8px;
+        overflow: hidden;
+        position: absolute;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 88px;
+      }
+    </style>
+    <content id="pic" select="img"></content>
+    <span id="name">{{first}} {{last}}</span>
+  </template>
+  <script>
+    Polymer('polymer-ui-address', {
+    });
+  </script>
+</polymer-element>
