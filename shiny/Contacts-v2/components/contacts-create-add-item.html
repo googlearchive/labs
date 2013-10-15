@@ -1,0 +1,24 @@
+<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html" rel="import">
+<polymer-element name="contacts-create-add-item" attributes="label" noscript>
+	<template>
+		<style>
+			/* @polyfill @host */
+			:host {
+				padding: 18px 20px;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 1px 1px;
+				border-style: solid;
+				color: #a9a9a9;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				font-size: 18px;
+			}
+			polymer-ui-icon {
+				margin: 0 30px 0 10px;
+			}
+		</style>
+		<polymer-flex-layout align="center"></polymer-flex-layout>
+		<polymer-ui-icon icon="add"></polymer-ui-icon>
+		<div flex>{{label}}</div>
+	</template>
+</polymer-element>
