@@ -23,13 +23,15 @@
 				height: 64px;
 				line-height: 64px;
 			}
-			.contactIcon.large.noinitials {
-				background-image: url(http://placekitten.com/g/160/160);
-			}
 		</style>
-		<div class="contactIcon {{large: large; noinitials: !contact.initials}}">
-			{{contact.initials}}
-		</div>
+		<template if="{{large}}">
+			<div class="contactIcon large" style="background-image: url('{{contact.picture}}');"></div>
+		</template>
+		<template if="{{!large}}">
+			<div class="contactIcon">
+				{{contact.initials}}
+			</div>
+		</template>
 	</template>
 	<script>
 		Polymer('contacts-icon', {

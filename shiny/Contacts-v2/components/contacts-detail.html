@@ -12,7 +12,6 @@
 			}
 			.detailHeader {
 				height: 240px;
-				background: url('http://placebacn.com/600/240') repeat-x;
 			}
 			.detailIconContainer {
 				padding: 40px 20px;
@@ -32,7 +31,7 @@
 				border-style: solid;
 			}
 		</style>
-		<div class="detailHeader">
+		<div class="detailHeader" style="background: url('{{contact.background}}') repeat-x;">
 			<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
 			<polymer-flex-layout vertical="true"></polymer-flex-layout>
 			<template if="{{!wideLayout}}">
@@ -52,9 +51,15 @@
 		<div class="detailName">
 			{{contact.name}}
 		</div>
-		<contacts-detail-item label="Phone" value="{{contact.phone}}"></contacts-detail-item>
-		<contacts-detail-item label="Email" value="{{contact.email}}"></contacts-detail-item>
-		<contacts-detail-item label="Address" value="{{contact.street}}"></contacts-detail-item>
+		<template repeat="{{contact.phone}}">
+			<contacts-detail-item label="Phone" value="{{value}}"></contacts-detail-item>
+		</template>
+		<template repeat="{{contact.email}}">
+			<contacts-detail-item label="Email" value="{{value}}"></contacts-detail-item>
+		</template>
+		<template repeat="{{contact.address}}">
+			<contacts-detail-item label="Address" value="{{value}}"></contacts-detail-item>
+		</template>
 		<contacts-detail-item label="Handle" value="{{contact.handle}}"></contacts-detail-item>
 	</template>
 	<script>
