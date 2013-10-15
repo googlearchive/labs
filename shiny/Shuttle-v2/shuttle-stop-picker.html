@@ -9,26 +9,72 @@
 <link rel="import" href="../../../polymer-elements/polymer-overlay/polymer-overlay.html">
 <link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-collapsible/polymer-ui-collapsible.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-pages/polymer-ui-pages.html">
 
 <polymer-element name="shuttle-stop-picker" extends="polymer-overlay" attributes="query stops selected selectedStop focusedStop">
   <template>
     <link rel="stylesheet" href="../../../polymer-elements/polymer-overlay/polymer-overlay.css">
     <style>
-      .group {
-        height: 29px;
-        line-height: 29px;
-        padding-left: 20px;
-        border-bottom: 1px solid #ddd;
-        background: #eee;
-        color: #8f8f8f;
+      polymer-ui-pages#stops {
+        display: block;
+      }
+      
+      polymer-ui-pages#stops > * {
+        display: none;
+      }
+      
+      polymer-ui-pages#stops > .polymer-selected {
+        display: block;
+      }
+      
+      .folder {
+        height: 50px;
+        line-height: 50px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        padding-left: 16px;
         font-size: 12px;
+        color: #999;
         font-weight: bold;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      .group-header {
+        height: 50px;
+        line-height: 50px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        padding-left: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      polymer-ui-icon-button[icon=dropdown]:not(.active) {
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
       }
       
       .stop {
-        height: 59px;
-        line-height: 59px;
-        padding-left: 20px;
+        position: relative;
+        height: 40px;
+        line-height: 40px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        padding-left: 48px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+      
+      .stop:last-child {
+        border-bottom: 1px solid #ddd;
+      }
+      
+      .stop.filtered {
+        height: 50px;
+        line-height: 50px;
+        padding-left: 18px;
         border-bottom: 1px solid #ddd;
       }
       
@@ -38,20 +84,21 @@
       
       .stop-label {
         display: inline-block;
-        width: 85%;
+        width: 95%;
         vertical-align: middle;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 14px;
-        font-weight: bold;
       }
       
       .check-icon {
         visibility: hidden;
+        position: absolute;
+        top: 8px;
+        left: 14px;
       }
       
-      .polymer-selected .check-icon {
+      .polymer-selected > .check-icon {
         visibility: visible;
       }
       
@@ -64,19 +111,39 @@
         valueattr="name" selected="{{selected}}" selectedItem="{{selectedItem}}"
         selectedModel="{{selectedStop}}" on-polymer-activate="toggleAction"></polymer-selector>
     
-    <div id="stops" touch-action="pan-y" on-pointerdown="hideKeyboard">
-      <template repeat="{{groups}}">
-        <template if="{{stops}}">
-          <div class="group" hidden?="{{hidden}}">{{name}}</div>
+    <polymer-ui-pages id="stops" selected="{{mode}}" touch-action="pan-y" on-pointerdown="hideKeyboard">
+      <div>
+        <template repeat="{{folders}}">
+          <template if="{{groups.length}}">
+            <div class="folder">{{name}}</div>
+          </template>
+          <template repeat="{{groups}}">
+            <polymer-ui-collapsible active="{{active}}" class="group">
+              <div class="polymer-ui-collapsible-header group-header">
+                <polymer-ui-icon-button icon="dropdown" class="{{active: active}}"></polymer-ui-icon-button>
+                {{name}}
+              </div>
+              <template repeat="{{stops}}">
+                <div class="stop" name="{{name}}" focused?="{{focused}}">
+                  <polymer-ui-icon class="check-icon" src="assets/ic_check_darkreg.png"></polymer-ui-icon>
+                  <div class="stop-label">{{name}}</div>
+                </div>
+              </template>
+            </polymer-ui-collapsible>
+          </template>
         </template>
-        <template repeat="{{stops}}">
-          <div class="stop" name="{{name}}" hidden?="{{hidden}}" focused?="{{focused}}">
-            <div class="stop-label">{{name}}</div>
-            <polymer-ui-icon class="check-icon" src="assets/ic_check_darkreg.png"></polymer-ui-icon>
-          </div>
+      </div>
+      <div>
+        <template repeat="{{groups}}">
+          <template repeat="{{stops}}">
+            <div class="stop filtered" name="{{name}}" hidden?="{{hidden}}" focused?="{{focused}}">
+              <polymer-ui-icon class="check-icon" src="assets/ic_check_darkreg.png"></polymer-ui-icon>
+              <div class="stop-label">{{name}}</div>
+            </div>
+          </template>
         </template>
-      </template>
-    </div>
+      </div>
+    </polymer-ui-pages>
   </template>
   <script>
     Polymer('shuttle-stop-picker', {
@@ -84,6 +151,7 @@
       timeout: 0,
       autoCloseDisabled: true,
       query: '',
+      mode: 0,
       created: function() {
         this.target = this;
       },
@@ -93,31 +161,38 @@
           this.query = '';
           this.search();
           if (this.selectedItem) {
-            this.async(function() {
-              this.scrollToNode(this.selectedItem);
-              }, null, 1);
+            this.scrollToStop(this.selectedItem);
           }
         }
       },
-      scrollToNode: function(node) {
-        node.scrollIntoViewIfNeeded ? node.scrollIntoViewIfNeeded() : 
-            node.scrollIntoView();
+      scrollToStop: function(stop) {
+        stop.parentNode.active = true;
+        this.async(function() {
+          stop.scrollIntoViewIfNeeded ? stop.scrollIntoViewIfNeeded() : 
+              stop.scrollIntoView();
+        }, null, 500);
       },
       toggleAction: function() {
         this.async('toggle');
       },
       stopsChanged: function() {
-        this.groups = [];
+        var remote = [], office = [];
         this.stops.forEach(function(s) {
-          var g = this.groups[s.group];
+          var groups = s.is_work ? office : remote; 
+          var g = groups[s.group];
           if (!g) {
-            g = this.groups[s.group] = {
-              name: Shuttle.groups[s.group].name, 
+            g = groups[s.group] = {
+              name: Shuttle.groups[s.group].name,
               stops: []
             };
           }
           g.stops.push(s);
         }, this);
+        this.folders = [
+          {name: Shuttle.officeLabel || 'Google', groups: office}, 
+          {name: 'Remote', groups: remote}
+        ];
+        this.groups = office.concat(remote);
         this.search();
       },
       focusedStopChanged: function(old) {
@@ -128,10 +203,11 @@
           this.focusedStop.focused = true;
           var n = this.$.stops.querySelector(
               '[name="' + this.focusedStop.name + '"]');
-          this.scrollToNode(n);
+          this.scrollToStop(n);
         }
       },
       queryChanged: function() {
+        this.mode = this.query ? 1 : 0;
         this.asyncSearch();
       },
       asyncSearch: function() {
@@ -144,11 +220,7 @@
           var gh = g.name.toLowerCase().indexOf(q) < 0;
           g.stops.forEach(function(s) {
             s.hidden = s.name.toLowerCase().indexOf(q) < 0 && gh;
-            if (s.hidden) {
-              t--;
-            }
           });
-          g.hidden = !t;
         });
         this.fire('shuttle-stops-search');
       },

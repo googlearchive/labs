@@ -29,11 +29,11 @@
           Shuttle.stops.forEach(function(s, i) {
             s.index = i;
           });
-          this.officeStops = Shuttle.stops.filter(function(s) {
+          /* this.officeStops = Shuttle.stops.filter(function(s) {
             return s.is_work;
-          });
+          }); */
           // office/campus stops
-          this.officeStops = JSON.parse(JSON.stringify(this.officeStops));
+          this.officeStops = JSON.parse(JSON.stringify(Shuttle.stops));
           // all stops
           this.remoteStops = JSON.parse(JSON.stringify(Shuttle.stops));
         },

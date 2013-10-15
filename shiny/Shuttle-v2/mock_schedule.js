@@ -9,12 +9,16 @@
 if (!window.Shuttle || Polymer.flags.mock) {
   window.Shuttle = {
     isMock: true,
+    officeLabel: 'Office',
     groups: [
       {
-        name: 'Remote'
+        name: 'Park'
       },
       {
-        name: 'Office'
+        name: 'City Hall'
+      },
+      {
+        name: 'BART'
       }
     ],
     stops: [
@@ -68,10 +72,10 @@ if (!window.Shuttle || Polymer.flags.mock) {
       },
       {
         description: '',
-        group: 0,
+        group: 2,
         in_lat: 37.60001,
         in_lon: -122.38656,
-        is_work: true,
+        is_work: false,
         name: 'Millbrae BART',
         out_lat: 37.60001,
         out_lon: -122.38656,
