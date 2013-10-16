@@ -6,10 +6,9 @@
 	<template>
 		<link href="../../../../polymer-ui-elements/basic.css" rel="stylesheet">
 		<style>
-			@host {
-				* {
-					position: relative;
-				}
+			/* @polyfill @host */
+			:host {
+				position: relative;
 			}
 			#errorOverlay {
 				position: absolute !important;
