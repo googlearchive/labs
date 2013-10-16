@@ -65,9 +65,6 @@
 		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive || error}}" on-tap="cancelAction"></polymer-ui-icon-button>
 		<polymer-ui-icon-button src="error.png" class="{{hidden: !error}}" on-tap="errorAction"></polymer-ui-icon-button>
 		<polymer-ui-overlay id="typeOverlay" active="{{overlayActive}}" modal backdrop on-polymer-overlay-open="overlayOpenAction">
-			<polymer-ui-menu-item icon="shrink" on-tap="overlayShrinkAction">
-				<input id="overlayInput" value="{{value}}" placeholder="{{label}}">
-			</polymer-ui-menu-item>
 			<polymer-selector selected="{{selectedType}}" on-polymer-activate="overlaySelectAction">
 				<content></content>
 			</polymer-selector>
@@ -83,13 +80,6 @@
 			enteredDocument: function() {
 				this.$.typeOverlay.style.width = (window.innerWidth - 20) + 'px';
 				this.$.typeOverlay.style.top = ((window.innerHeight - this.$.typeOverlay.getBoundingClientRect().height) / 2) + 'px';
-			},
-			overlayOpenAction: function() {
-				if (this.overlayActive) {
-					setTimeout(function() {
-						this.$.overlayInput.focus();
-					}.bind(this), 10);
-				}
 			},
 			focusAction: function() {
 				this.active = true;
@@ -118,12 +108,6 @@
 			overlaySelectAction: function(e, detail, sender) {
 				this.activeIcon = detail.item.icon;
 				this.$.typeOverlay.toggle();
-			},
-			overlayShrinkAction: function(e, detail, sender) {
-				var src = window.ShadowDOMPolyfill ? wrap(e.srcElement) : e.srcElement;
-				if (src !== this.$.overlayInput) {
-					this.$.overlay.toggle();
-				}
 			},
 			focus: function() {
 				this.$.input.focus();
