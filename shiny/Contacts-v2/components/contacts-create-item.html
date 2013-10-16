@@ -29,31 +29,34 @@
 				display: none !important;
 			}
 			#typeOverlay {
-				left: 0;
-				padding: 10px;
+				left: 10px;
+				box-shadow: 5px 5px 5px rgba(50, 50, 50, 0.6);
+			}
+			#typeOverlay:not(.measured) {
+				visibility: hidden !important;
 			}
 			#typeOverlay input {
 				margin-left: 0px;
 				height: auto;
 			}
 			#typeOverlay polymer-ui-menu-item {
-				font-size: 18px;
-				height: 61px;
+				font-size: 18px !important;
+				height: 61px !important;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				padding: 10px 20px;
-				border-color: rgba(0, 0, 0, 0.14902);
-				border-width: 0 1px 1px;
-				border-style: solid;
+				padding: 10px 20px !important;
+				border-color: rgba(0, 0, 0, 0.14902) !important;
+				border-width: 0 1px 1px !important;
+				border-style: solid !important;
 			}
 			/* FIXME: Safari drops the whole rule if it doesn't recognize the selector. */
 			#typeOverlay content::-webkit-distributed(polymer-ui-menu-item) {
-				font-size: 18px;
-				height: 61px;
+				font-size: 18px !important;
+				height: 61px !important;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				padding: 10px 20px;
-				border-color: rgba(0, 0, 0, 0.14902);
-				border-width: 0 1px 1px;
-				border-style: solid;
+				padding: 10px 20px !important;
+				border-color: rgba(0, 0, 0, 0.14902) !important;
+				border-width: 0 1px 1px !important;
+				border-style: solid !important;
 			}
 		</style>
 		<polymer-flex-layout align="center"></polymer-flex-layout>
@@ -77,10 +80,6 @@
 			error: false,
 			icon: 'plus',
 			selectedType: -1,
-			enteredDocument: function() {
-				this.$.typeOverlay.style.width = (window.innerWidth - 20) + 'px';
-				this.$.typeOverlay.style.top = ((window.innerHeight - this.$.typeOverlay.getBoundingClientRect().height) / 2) + 'px';
-			},
 			focusAction: function() {
 				this.active = true;
 			},
@@ -104,6 +103,9 @@
 			},
 			overlayAction: function() {
 				this.$.typeOverlay.toggle();
+				if (this.$.typeOverlay.active && !this.$.typeOverlay.classList.contains('measured')) {
+					this.async(this.measureOverlay);
+				}
 			},
 			overlaySelectAction: function(e, detail, sender) {
 				this.activeIcon = detail.item.icon;
@@ -111,6 +113,11 @@
 			},
 			focus: function() {
 				this.$.input.focus();
+			},
+			measureOverlay: function() {
+				this.$.typeOverlay.style.width = (window.innerWidth - 20) + 'px';
+				this.$.typeOverlay.style.top = ((window.innerHeight - this.$.typeOverlay.getBoundingClientRect().height) / 2) + 'px';
+				this.$.typeOverlay.classList.add('measured');
 			}
 		});
 		</script>
