@@ -3,7 +3,7 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
-<polymer-element name="contacts-create-item" attributes="autofocus icon activeIcon label value selectedType active overlayActive" on-focus="focusAction" on-blur="blurAction" on-mouseover="focusAction" on-mouseout="blurAction">
+<polymer-element name="contacts-create-item" attributes="icon activeIcon label value error selectedType active overlayActive" on-focus="focusAction" on-blur="blurAction" on-mouseover="focusAction" on-mouseout="blurAction">
 	<template>
 		<style>
 			/* @polyfill @host */
@@ -60,9 +60,10 @@
 		<polymer-ui-icon-button icon="{{icon}}" class="{{hidden: active || overlayActive || value || selectedType !== -1}}"></polymer-ui-icon-button>
 		<polymer-ui-icon-button id="activeIcon" icon="{{activeIcon}}" class="{{hidden: !value && selectedType === -1 && !active && !overlayActive}}" on-tap="overlayAction"></polymer-ui-icon-button>
 		<div flex>
-			<input id="input" value="{{value}}" placeholder="{{label}}" autofocus?="{{autofocus}}">
+			<input id="input" value="{{value}}" placeholder="{{label}}">
 		</div>
-		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive}}" on-tap="cancelAction"></polymer-ui-icon-button>
+		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive || error}}" on-tap="cancelAction"></polymer-ui-icon-button>
+		<polymer-ui-icon-button src="error.png" class="{{hidden: !error}}" on-tap="errorAction"></polymer-ui-icon-button>
 		<polymer-ui-overlay id="overlay" active="{{overlayActive}}" modal backdrop on-polymer-overlay-open="overlayOpenAction">
 			<polymer-ui-menu-item icon="shrink" on-tap="overlayShrinkAction">
 				<input id="overlayInput" value="{{value}}" placeholder="{{label}}">
@@ -74,9 +75,9 @@
 	</template>
 	<script>
 		Polymer('contacts-create-item', {
-			autofocus: false,
 			active: false,
 			overlayActive: false,
+			error: false,
 			icon: 'plus',
 			selectedType: -1,
 			enteredDocument: function() {
@@ -101,11 +102,15 @@
 						this.cancelAction();
 					}
 				}, null, 100);
+				this.$.input.blur();
 			},
 			cancelAction: function() {
 				this.value = '';
 				this.selectedType = -1;
 				this.fire('contacts-create-item-cancel');
+			},
+			errorAction: function() {
+				this.fire('contacts-create-item-error');
 			},
 			overlayAction: function() {
 				this.$.overlay.toggle();

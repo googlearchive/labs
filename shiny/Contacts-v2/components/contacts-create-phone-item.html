@@ -1,0 +1,59 @@
+<link href="../../../../more-elements/libphonenumber.js/libphonenumber-js.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-arrow/polymer-ui-arrow.html" rel="import">
+<link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
+<link href="contacts-create-item.html" rel="import">
+<polymer-element name="contacts-create-phone-item" extends="contacts-create-item" on-contacts-create-item-error="errorAction">
+	<template>
+		<link href="../../../../polymer-ui-elements/basic.css" rel="stylesheet">
+		<style>
+			@host {
+				* {
+					position: relative;
+				}
+			}
+			#errorOverlay {
+				position: absolute !important;
+				left: 10px;
+				top: 38px !important;
+				right: 10px;
+				box-sizing: border-box;
+			}
+			#errorOverlay::x-overlay {
+				background: transparent;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+			}
+			#errorOverlay polymer-ui-arrow {
+				position: absolute !important;
+				right: 21px;
+				top: 0px;
+			}
+			#errorOverlay .overlayBody {
+				padding: 25px;
+				border-radius: 3px;
+			}
+			#errorOverlay .overlayLabel {
+				color: #b6b6b6;
+			}
+		</style>
+		<libphonenumber-js phone="{{value}}" valid="{{valid}}" formatted="{{value}}"></libphonenumber-js>
+		<shadow></shadow>
+		<polymer-ui-overlay id="errorOverlay">
+			<polymer-ui-arrow color="#2b2b2b" borderColor="#2b2b2b"></polymer-ui-arrow>
+			<br>
+			<div class="overlayBody polymer-ui-dark-bg" overlay-toggle>
+				<span class="overlayLabel">Error:</span> Invalid phone number
+			</div>
+		</polymer-ui-overlay>
+	</template>
+	<script>
+		Polymer('contacts-create-phone-item', {
+			blurAction: function() {
+				this.super();
+				this.error = this.value && !this.valid;
+			},
+			errorAction: function() {
+				this.$.errorOverlay.active = true;
+			}
+		});
+	</script>
+</polymer-element>

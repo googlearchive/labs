@@ -1,6 +1,7 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
 <link href="contacts-create-item.html" rel="import">
 <link href="contacts-create-add-item.html" rel="import">
+<link href="contacts-create-phone-item.html" rel="import">
 <polymer-element name="contacts-create" attributes="contact">
 	<template>
 		<style>
@@ -34,11 +35,11 @@
 		<!-- FIXME: autofocus name input when switching to this page -->
 		<contacts-create-item icon="account" activeicon="account" label="Name" value="{{contact.name}}" autofocus></contacts-create-item>
 		<template repeat="{{phone in contact.phone}}">
-	 		<contacts-create-item activeicon="{{phone.icon}}" value="{{phone.value}}" on-contacts-create-item-cancel="itemCancelAction">
+	 		<contacts-create-phone-item activeicon="{{phone.icon}}" value="{{phone.value}}" on-contacts-create-item-cancel="itemCancelAction">
 				<polymer-ui-menu-item icon="dialoga" label="Home"></polymer-ui-menu-item>
 				<polymer-ui-menu-item icon="filter" label="Mobile"></polymer-ui-menu-item>
 				<polymer-ui-menu-item icon="briefcase" label="Work"></polymer-ui-menu-item>
-			</contacts-create-item>
+			</contacts-create-phone-item>
 		</template>
 		<contacts-create-add-item label="Add a phone" on-tap="addPhoneAction" on-contacts-create-item-cancel="itemCancelAction"></contacts-create-add-item>
 		<template repeat="{{email in contact.email}}">
@@ -70,13 +71,14 @@
 				this.observer = new MutationObserver(function(mutations) {
 					mutations.forEach(function(m) {
 						Array.prototype.forEach.call(m.addedNodes, function(n) {
-							if (n.localName === 'contacts-create-item') {
+							if (n.localName === 'contacts-create-item' ||
+									n.localName === 'contacts-create-phone-item') {
 								n.focus();
 							}
 						});
 					});
 				});
-				this.observer.observe(this.shadowRoot, {childList: true});
+				this.observer.observe(window.ShadowDOMPolyfill ? this : this.shadowRoot, {childList: true});
 			},
 			leftDocument: function() {
 				this.observer.disconnect();
