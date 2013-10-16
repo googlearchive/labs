@@ -28,15 +28,15 @@
 				/* FIXME: outside should win */
 				display: none !important;
 			}
-			#overlay {
+			#typeOverlay {
 				left: 0;
 				padding: 10px;
 			}
-			#overlay input {
+			#typeOverlay input {
 				margin-left: 0px;
 				height: auto;
 			}
-			#overlay polymer-ui-menu-item {
+			#typeOverlay polymer-ui-menu-item {
 				font-size: 18px;
 				height: 61px;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
@@ -46,7 +46,7 @@
 				border-style: solid;
 			}
 			/* FIXME: Safari drops the whole rule if it doesn't recognize the selector. */
-			#overlay content::-webkit-distributed(polymer-ui-menu-item) {
+			#typeOverlay content::-webkit-distributed(polymer-ui-menu-item) {
 				font-size: 18px;
 				height: 61px;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
@@ -64,7 +64,7 @@
 		</div>
 		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive || error}}" on-tap="cancelAction"></polymer-ui-icon-button>
 		<polymer-ui-icon-button src="error.png" class="{{hidden: !error}}" on-tap="errorAction"></polymer-ui-icon-button>
-		<polymer-ui-overlay id="overlay" active="{{overlayActive}}" modal backdrop on-polymer-overlay-open="overlayOpenAction">
+		<polymer-ui-overlay id="typeOverlay" active="{{overlayActive}}" modal backdrop on-polymer-overlay-open="overlayOpenAction">
 			<polymer-ui-menu-item icon="shrink" on-tap="overlayShrinkAction">
 				<input id="overlayInput" value="{{value}}" placeholder="{{label}}">
 			</polymer-ui-menu-item>
@@ -81,8 +81,8 @@
 			icon: 'plus',
 			selectedType: -1,
 			enteredDocument: function() {
-				this.$.overlay.style.width = (window.innerWidth - 20) + 'px';
-				this.$.overlay.style.top = ((window.innerHeight - this.$.overlay.getBoundingClientRect().height) / 2) + 'px';
+				this.$.typeOverlay.style.width = (window.innerWidth - 20) + 'px';
+				this.$.typeOverlay.style.top = ((window.innerHeight - this.$.typeOverlay.getBoundingClientRect().height) / 2) + 'px';
 			},
 			overlayOpenAction: function() {
 				if (this.overlayActive) {
@@ -113,11 +113,11 @@
 				this.fire('contacts-create-item-error');
 			},
 			overlayAction: function() {
-				this.$.overlay.toggle();
+				this.$.typeOverlay.toggle();
 			},
 			overlaySelectAction: function(e, detail, sender) {
 				this.activeIcon = detail.item.icon;
-				this.$.overlay.toggle();
+				this.$.typeOverlay.toggle();
 			},
 			overlayShrinkAction: function(e, detail, sender) {
 				var src = window.ShadowDOMPolyfill ? wrap(e.srcElement) : e.srcElement;
