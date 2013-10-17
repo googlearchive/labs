@@ -33,9 +33,6 @@
 				left: 10px;
 				box-shadow: 5px 5px 5px rgba(50, 50, 50, 0.6);
 			}
-			#typeOverlay:not(.measured) {
-				visibility: hidden !important;
-			}
 			#typeOverlay input {
 				margin-left: 0px;
 				height: auto;
@@ -81,6 +78,9 @@
 			error: false,
 			icon: 'plus',
 			selectedType: -1,
+			enteredDocument: function() {
+				this.$.typeOverlay.style.width = (window.innerWidth - 20) + 'px';
+			},
 			focusAction: function() {
 				this.active = true;
 			},
@@ -104,9 +104,6 @@
 			},
 			overlayAction: function() {
 				this.$.typeOverlay.toggle();
-				if (this.$.typeOverlay.active && !this.$.typeOverlay.classList.contains('measured')) {
-					this.async(this.measureOverlay);
-				}
 			},
 			overlaySelectAction: function(e, detail, sender) {
 				this.activeIcon = detail.item.icon;
@@ -114,11 +111,6 @@
 			},
 			focus: function() {
 				this.$.input.focus();
-			},
-			measureOverlay: function() {
-				this.$.typeOverlay.style.width = (window.innerWidth - 20) + 'px';
-				this.$.typeOverlay.style.top = ((window.innerHeight - this.$.typeOverlay.getBoundingClientRect().height) / 2) + 'px';
-				this.$.typeOverlay.classList.add('measured');
 			}
 		});
 		</script>
