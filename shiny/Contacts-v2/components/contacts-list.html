@@ -7,13 +7,31 @@
 <polymer-element name="contacts-list" extends="polymer-selector" on-polymer-activate="activateAction">
 	<template>
 		<style>
+			/* @polyfill @host */
+			:host {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
 			polymer-ui-toolbar {
 				padding-left: 10px;
 				padding-right: 10px;
 			}
-			.listContainer {
+			.clip {
+				overflow: hidden;
+				position: relative;
+			}
+			#listContainer {
+				position: absolute;
+				top: 0;
+				right: 0;
+				left: 0;
+				bottom: 0;
 				background-color: rgb(242, 242, 242),
 				min-width: 320px;
+				overflow-y: scroll;
 			}
 			#overlay {
 				position: fixed;
@@ -28,6 +46,14 @@
 			contacts-detail {
 				min-width: 65%;
 			}
+			/* @polyfill .sticky */
+			content::-webkit-distributed(.sticky) {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 10;
+			}
 		</style>
 		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
 		<polymer-grid-layout id="grid"></polymer-grid-layout>
@@ -41,12 +67,15 @@
 				<polymer-ui-icon-button icon="favorite"></polymer-ui-icon-button>
 			</template>
 		</polymer-ui-toolbar>
-		<div class="listContainer" flex>
-			<shadow></shadow>
-			<polymer-ui-overlay id="overlay">
-				<contacts-detail contact="{{selectedModel.contact}}" on-contacts-detail-shrink="overlayCloseAction">
-				</contacts-detail>
-			</polymer-ui-overlay>
+		<div class="clip" flex>
+			<content select=".sticky"></content>
+			<div id="listContainer">
+				<shadow></shadow>
+				<polymer-ui-overlay id="overlay">
+					<contacts-detail contact="{{selectedModel.contact}}" on-contacts-detail-shrink="overlayCloseAction">
+					</contacts-detail>
+				</polymer-ui-overlay>
+			</div>
 		</div>
 		<contacts-detail contact="{{selectedModel.contact}}" on-contacts-detail-shrink="overlayCloseAction">
 		</contacts-detail>
@@ -57,6 +86,9 @@
 			selected: -1,
 			wideLayout: true,
 			ready: function() {
+				this.$.listContainer.onscroll = function(e) {
+					this.fire('contacts-list-scroll', this.$.listContainer.scrollTop);
+				}.bind(this);
 				this.wideLayoutChanged();
 			},
 			wideLayoutChanged: function() {

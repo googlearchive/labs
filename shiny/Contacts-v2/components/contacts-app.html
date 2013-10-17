@@ -90,7 +90,10 @@
 			</polymer-ui-menu>
 		</polymer-ui-overlay>
 		<polymer-ui-pages selected="{{page}}">
-			<contacts-list on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction">
+			<contacts-list id="listView" on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction" on-contacts-list-scroll="scrollAction">
+				<div id="sticky" class="contactItem header sticky">
+					{{stickyContent}}
+				</div>
 				<template repeat="{{alpha in $.mock.alphabetized}}">
 					<div class="contactItem header">
 						{{alpha.letter}}
@@ -113,6 +116,7 @@
 	<script>
 		Polymer('contacts-app', {
 			page: 0,
+			stickyContent: 'A',
 			ready: function() {
 				// this.$.grid.layout = [
 				// 	[2, 3, 3]
@@ -129,6 +133,30 @@
 			},
 			sidebarCloseAction: function() {
 				this.$.sidebar.active = false;
+			},
+			scrollAction: function(e, detail, sender) {
+				var items = this.$.listView.querySelectorAll('.contactItem:not(.sticky)');
+				var scrollTop = detail;
+				var offset = 0;
+				var header;
+				for (var i = 0, item; item = items[i]; i++) {
+					if (item.classList.contains('header')) {
+						header = item;
+						offset += 60;
+					} else {
+						offset += 80;
+					}
+					if (offset > scrollTop) {
+						this.stickyContent = header.textContent;
+						var transY = offset - scrollTop - 60;
+						if (transY < 0 && items[i + 1] && items[i + 1].classList.contains('header')) {
+							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
+						} else {
+							this.$.sticky.style['-webkit-transform'] = null;
+						}
+						break;
+					}
+				}
 			}
 		});
 	</script>
