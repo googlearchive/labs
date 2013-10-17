@@ -46,27 +46,24 @@
 				z-index: 0;
 			}
 			.contactItem {
-				margin: 0 10px;
 				background-color: white;
 				border-style: solid;
-				border-color: rgba(0, 0, 0, 0.14902);
+				border-color: rgba(0, 0, 0, 0.1);
 				border-width: 0 1px 1px;
 				font-size: 18px;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
 				box-sizing: border-box;
-				height: 60px;
+				height: 80px;
 				padding: 0 20px;
 			}
 			.contactItem.header {
+		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    color: #9f9f9f;
 				font-variant: small-caps;
-				color: #9e9e9e;
+				height: 60px;
 				padding: 20px;
-			}
-			/* @polyfill .contactItem:nth-child(3) */
-			.contactItem:nth-child(2) {
-				margin-top: 10px;
-				border-top-width: 1px;
-				border-radius: 3px 3px 0 0;
 			}
 		</style>
 		<mock-data id="mock"></mock-data>
