@@ -1,5 +1,6 @@
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
 <link href="../../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
+<link href="../../../../polymer-elements/polymer-media-query/polymer-media-query.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
@@ -65,13 +66,14 @@
 				height: 60px;
 				padding: 20px;
 			}
-			.contactItem.polymer-selected {
+			[wideLayout] .contactItem.polymer-selected {
 		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
 		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
 		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-			}
+		  }
 		</style>
 		<mock-data id="mock"></mock-data>
+		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
 		<polymer-grid-layout id="grid"></polymer-grid-layout>
 		<polymer-ui-overlay id="sidebar" class="sidebar" backdrop modal>
 			<polymer-ui-menu valueattr="label" on-polymer-select="sidebarCloseAction">
@@ -89,7 +91,7 @@
 				<polymer-ui-menu-item label="Help" icon="dialog"></polymer-ui-menu-item>
 			</polymer-ui-menu>
 		</polymer-ui-overlay>
-		<polymer-ui-pages selected="{{page}}">
+		<polymer-ui-pages selected="{{page}}" wideLayout?="{{wideLayout}}">
 			<contacts-list id="listView" on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction" on-contacts-list-scroll="scrollAction">
 				<div id="sticky" class="contactItem header sticky">
 					{{stickyContent}}
@@ -117,6 +119,7 @@
 		Polymer('contacts-app', {
 			page: 0,
 			stickyContent: 'A',
+			wideLayout: false,
 			ready: function() {
 				// this.$.grid.layout = [
 				// 	[2, 3, 3]
