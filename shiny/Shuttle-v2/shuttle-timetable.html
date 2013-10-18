@@ -16,7 +16,7 @@
         }
       }
       
-      .container {
+      .timetable {
         height: 100%;
       }
       
@@ -38,12 +38,8 @@
       .row {
         height: 40px;
         line-height: 40px;
-        font-size: 18px;
-        margin: 0 18px;
-      }
-      
-      .row:last-child {
-        border-bottom: none;
+        font-size: 16px;
+        margin: 0 16px;
       }
       
       .row > * {
@@ -52,7 +48,7 @@
       
       .row > [avail] {
         opacity: 1;
-        font-weight: bold;
+        font-weight: 500;
       }
       
       .header > .to, .row > .to {
@@ -65,7 +61,7 @@
       }
     </style>
 
-    <div class="container" v-flexbox>
+    <div class="timetable" v-flexbox>
       <div class="header" flexbox>
          <div flex>Depart</div>
          <div class="to">Arrive</div>

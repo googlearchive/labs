@@ -31,9 +31,8 @@
       }
       
       #tabbar {
-        border-top: 1px solid #bababa;
         height: 46px !important;
-        bottom: 0;
+        border-top: 1px solid #bababa;
       }
       
       #tabbar > * {
@@ -61,20 +60,22 @@
         visibility: visible;
       }
       
+      .card {
+        background-color: #fff;
+        border-radius: 2px;
+        box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
+      }
+      
       #favorites {
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 300px;
         margin: 20px;
-        max-height: -moz-calc(100% - 80px);
         max-height: calc(100% - 80px);
         z-index: 1;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
-        border-radius: 2px;
-        background: #eee;
-        box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
       }
       
       /* @polyfill-unscoped-rule #favorites {
@@ -98,14 +99,13 @@
         favorites="{{favorites}}" favorite="{{favorite}}" filteredStops="{{filteredStops}}" 
         selectedFilteredStop="{{selectedFilteredStop}}" on-shuttle-data-save="saveData"></shuttle-schedule>
 
-    <shuttle-favorites id="favorites" favorites="{{favorites}}" favorite="{{favorite}}" 
+    <shuttle-favorites id="favorites" class="card" favorites="{{favorites}}" favorite="{{favorite}}" 
         on-polymer-activate="favoriteSelect" on-shuttle-favorites-change="favoritesChange"></shuttle-favorites>
   
     <div id="basement">
       <polymer-grid-layout layout="{{layout}}"></polymer-grid-layout>
       
-      <shuttle-map id="map" centerStop="{{centerStop}}" 
-          fromStop="{{fromStop}}" toStop="{{toStop}}"
+      <shuttle-map id="map" centerStop="{{centerStop}}" fromStop="{{fromStop}}" toStop="{{toStop}}"
           filteredStops="{{filteredStops}}" selectedFilteredStop="{{selectedFilteredStop}}"></shuttle-map>
           
       <polymer-ui-tabs id="tabbar" theme="polymer-ui-light-theme" selected="{{tabSelected}}">

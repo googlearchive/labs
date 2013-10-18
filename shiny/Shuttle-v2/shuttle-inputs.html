@@ -1,0 +1,108 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+
+<polymer-element name="shuttle-inputs" attributes="fromQuery toQuery">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      
+      .search-box {
+        position: relative;
+        height: 40px;
+        border-right: 1px solid #ddd;
+      }
+      
+      .search-box.from {
+        border-bottom: 1px solid #ddd;
+      }
+      
+      .search-box > input {
+        position: absolute;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        top: 0;
+        left: 40px;
+        right: 0;
+        height: 100%;
+        margin: 0 4px 0 0;
+        padding: 0;
+        border: 0;
+        font-size: 14px;
+        outline: none;
+        -webkit-appearance: none;
+      }
+      
+      .input-icon {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 24px 24px;
+      }
+      
+      .input-icon.from {
+        background-image: url(assets/ic_shuttle_a.png);
+      }
+      
+      .input-icon.to {
+        background-image: url(assets/ic_shuttle_b.png);
+      }
+      
+      .swap-button-container {
+        width: 42px;
+        line-height: 81px;
+        text-align: center;
+      }
+    </style>
+
+    <polymer-flex-layout></polymer-flex-layout>
+    <div flex>
+      <polymer-flex-layout vertical></polymer-flex-layout>
+      <div flex class="search-box from">
+        <div class="input-icon from"></div>
+        <input id="fromInput" placeholder="Start" value="{{fromQuery}}">
+      </div>
+      <div flex class="search-box">
+        <div class="input-icon to"></div>
+        <input id="toInput" placeholder="Stop" value="{{toQuery}}">
+      </div>
+    </div>
+    <div class="swap-button-container">
+      <polymer-ui-icon-button src="assets/ic_swapvert_darkreg.png" on-tap="swap"></polymer-ui-icon-button>
+    </div>
+  </template>
+  <script>
+    Polymer('shuttle-inputs', {
+      enteredView: function() {
+        this.$.fromInput.onfocus = this.fromInputFocus.bind(this);
+        this.$.toInput.onfocus = this.toInputFocus.bind(this);
+      },
+      fromInputFocus: function(e) {
+        this.inputSelect(e.target);
+        this.fire('shuttle-from-input-focus');
+      },
+      toInputFocus: function(e) {
+        this.inputSelect(e.target);
+        this.fire('shuttle-to-input-focus');
+      },
+      inputSelect: function(input) {
+        setTimeout(function() {
+          input.select();
+        }, 100);
+      },
+      swap: function() {
+        this.fire('shuttle-inputs-swap')
+      }
+    });
+  </script>
+</polymer-element>
