@@ -18,23 +18,24 @@
       
       .container {
         height: 100%;
-        opacity: 0.8;
       }
       
       .header {
-        height: 50px;
-        line-height: 50px;
+        height: 40px;
+        line-height: 40px;
         font-size: 13px;
         font-weight: bold;
-        padding: 0 20px;
+        padding: 0 16px;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        opacity: 0.6;
       }
       
       .row {
         height: 40px;
         line-height: 40px;
-        font-size: 14px;
-        border-bottom: 1px solid #ddd;
-        margin: 0 20px;
+        font-size: 16px;
+        margin: 0 16px;
       }
       
       .row:last-child {
@@ -42,12 +43,16 @@
       }
       
       .row > * {
-        opacity: 0.5;
+        opacity: 0.3;
       }
       
       .row > [avail] {
         opacity: 1;
         font-weight: bold;
+      }
+      
+      .header > .to, .row > .to {
+        width: 120px;
       }
       
       .row > [dog]:after {
@@ -59,13 +64,13 @@
     <div class="container" v-flexbox>
       <div class="header" flexbox>
          <div flex>Depart</div>
-         <div flex>Arrive</div>
+         <div class="to">Arrive</div>
       </div>
       <div class="table">
         <template repeat="{{route in routes}}">
           <div class="row" flexbox>
             <div flex avail?="{{route.from.date >= now}}">{{route.from.time}}</div>
-            <div flex avail?="{{route.to.date >= now}}">{{route.to.time}}</div>
+            <div class="to" avail?="{{route.to.date >= now}}">{{route.to.time}}</div>
           </div>
         </template>
       </div>
