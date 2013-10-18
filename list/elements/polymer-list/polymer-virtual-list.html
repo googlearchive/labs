@@ -1,0 +1,215 @@
+<polymer-element name="polymer-virtual-list" attributes="count pageSize numPages">
+  <template>
+    <link rel="stylesheet" href="../../lib/VirtualList.css">
+    <style>
+      @host {
+        :scope {
+          display: block;
+        }
+      }
+      
+      #list {
+        height: 100%;
+      }
+      
+      .item {
+        box-sizing: border-box;
+        height: 80px;
+        line-height: 80px;
+        padding: 0 20px;
+        background-color: #f8f8f8;
+        border-bottom: 1px solid #ddd;
+      }
+    </style>
+    <div id="list" class="virtual-list">
+      <div id="viewport" class="virtual-list-viewport"></div>
+    </div>
+  </template>
+  <script>
+    Polymer('polymer-virtual-list', {
+      // rows per page
+      pageSize: 20,
+      // number of pages 
+      numPages: 2,
+      // total number of rows
+      count: 0,
+      // number of pages to render at start
+      numInitialPages: 0, 
+      horiz: false,
+      fixedHeight: false,
+      keepAllPages: false,
+      useRaf: false,
+      removeUnusedPages: false,
+      observe: {
+        count: 'reset',
+        pageSize: 'reset',
+        numPages: 'reset'
+      },
+      ready: function() {
+        this.reset();
+      },
+      reset: function(count) {
+        this.count = count || this.count;
+        this.scrollOffset = 0;
+        this.$.viewport.innerText = '';
+        this.pageCount = Math.ceil(this.count/this.pageSize);
+        this.pageHeights = [];
+        this.pages = [];
+        this.rowHeight = 0;
+        this.pageTops = [];
+        for (var i = 0; i < this.numInitialPages; i++) {
+          this.generatePage(i);
+        }
+        this.$.viewport.classList[this.horiz ? 'add' : 'remove']('horiz');
+        // TODO(sorvell): remove when event system is updated
+        if (this.useRaf) {
+          this.$.list.removeEventListener('scroll', this.scroll.bind(this));
+          this.rafUpdate();
+        } else {
+          this.$.list.addEventListener('scroll', this.scroll.bind(this));
+          this.scroll();
+        }
+      },
+      get scrollOffset() {
+        return this.$.list[this.horiz ? 'scrollLeft' : 'scrollTop'];
+      },
+      set scrollOffset(top) {
+        this.$.list[this.horiz ? 'scrollLeft' : 'scrollTop'] = top;
+      },
+      generatePageContent: function(page, start, end) {
+        this.fire('polymer-list-generate-page', 
+            {page: page, start: start, end: end});
+      },
+      generatePage: function(pageNum) {
+        if (pageNum < this.pageCount) {
+          var p = document.createElement('div');
+          p.pageNum = pageNum;
+          p.setAttribute('page', pageNum);
+          if (!this.removeUnusedPages) {
+            p.style.display = 'none';
+          }
+          var start = p.pageNum * this.pageSize;
+          var end = Math.min(start + this.pageSize, this.count);
+          this.generatePageContent(p, start, end);
+          this.$.viewport.appendChild(p);
+          return p;
+        }
+      },
+      measurePage: function(page) {
+        var ph = page[this.horiz ? 'offsetWidth' : 'offsetHeight'], pn = page.pageNum;
+        if (!this.rowHeight) {
+          this.rowHeight = ph/(this.pageSize < this.count ? this.pageSize : this.count);
+          this.viewportHeight = this.count * this.rowHeight;
+          this.$.viewport.style[this.horiz ? 'width' : 'height'] = this.viewportHeight + 'px';
+        }
+        var ph0 = this.getPageHeight(pn);
+        this.pageHeights[pn] = ph;
+        if (ph0 != ph) {
+          // since page height has changed, invalidate all the pageTops after this page
+          this.pageTops.splice(pn+1, this.pageTops.length);
+          // also adjust the viewport's height
+          this.viewportHeight += ph - ph0;
+          this.$.viewport.style[this.horiz ? 'width' : 'height'] = this.viewportHeight + 'px';
+        }
+      },
+      getPageHeight: function(pageNum) {
+        return this.pageHeights[pageNum] || this.pageSize * (this.rowHeight || 100);
+      },
+      locatePage: function(pos) {
+        var n = pos/this.getPageHeight(0);
+        if (this.fixedHeight) {
+          return n;
+        }
+        n = Math.floor(n);
+        while (n && !this.pageTops[n] || (this.pageTops[n] > pos)) {
+          n--;
+        }
+        var p = this.pageTops[n] || 0;
+        while (pos >= p) {
+          p += this.getPageHeight(n++);
+          this.pageTops[n] = p;
+        }
+        n--;
+        var ph = this.getPageHeight(n);
+        return n + (pos-p+ph)/ph;
+      },
+      positionPage: function(page) {
+        var pn = page.pageNum;
+        if (this.fixedHeight) {
+          t = pn * this.rowHeight * this.pageSize;
+        } else {
+          if (this.pageTops[pn]) {
+            t = this.pageTops[pn];
+          } else {
+            var n = 0, t = 0; 
+            while (n < pn) {
+              t += this.getPageHeight(n);
+              n++;
+            }
+          }
+        }
+        var t0 = page.style[this.horiz ? 'left' : 'top'].slice(0, -2);
+        // update pageTops cache
+        this.pageTops[pn] = t;
+        this.pageTops[pn+1] = t + this.getPageHeight(pn);
+        // set the page's top
+        page.style[this.horiz ? 'left' : 'top'] = t + 'px';
+        if (t0) {
+          return t0 - t;
+        }
+      },
+      findPage: function(pageNum) {
+        return this.$.viewport.querySelector('[page="' + pageNum + '"]');
+      },
+      scroll: function() {
+        var c = Math.floor(this.locatePage(this.scrollOffset + 
+              this.$.list[this.horiz ? 'offsetWidth' : 'offsetHeight']/2) + 0.5);
+        var k = c - Math.floor(this.numPages/2);
+        k = Math.max(0, k);
+        if (!this.pages[0] || this.pages[0].pageNum != k) {
+          this.update(k, c);
+        }
+      },
+      rafUpdate: function() {
+        requestAnimationFrame(function() {
+          this.scroll();
+          this.rafUpdate();
+        }.bind(this));
+      },
+      update: function(startPageNum, centerPageNum) {
+        var k = startPageNum, n = k+this.numPages, c = centerPageNum;
+        this.pages = [];
+        for (; k<n; k++) {
+          var p = this.findPage(k) || this.generatePage(k);
+          if (p) {
+            if (!this.removeUnusedPages) {
+              p.style.display = null;
+            }
+            this.measurePage(p);
+            var d = this.positionPage(p);
+            this.pages.push(p);
+            // adjust scrollTop if centerPage's top has changed
+            if (d && k == c) {
+              this.scrollOffset -= d;
+            }
+          }
+        }
+        if (!this.keepAllPages) {
+          // remove out-of-bounds pages
+          this.cleanupPages();
+        }
+      },
+      cleanupPages: function() {
+        for (var c=this.$.viewport.children, i=c.length-1, p; p=c[i]; i--) {
+          if (this.pages.indexOf(p) == -1) {
+            if (this.removeUnusedPages) {
+              this.$.viewport.removeChild(p);
+            } else {
+              p.style.display = 'none';
+            }
+          }
+        }
+      }
+    });
+  </script>
+</polymer-element>

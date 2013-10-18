@@ -1,0 +1,54 @@
+<link rel="import" href="polymer-virtual-list.html">
+
+<polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data">
+  <template>
+    <content id="content"></content>
+    <shadow></shadow>
+  </template>
+  <script>
+    Polymer('polymer-list', {
+      observe: {
+        data: 'reset'
+      },
+      createdCallback: function() {
+        this.data = [];
+        this.super();
+      },
+      ready: function() {
+        this.updateTemplate();
+        this.super();
+      },
+      reset: function() {
+        if (this.data) {
+          this.super([this.data.length]);
+        }
+      },
+      updateTemplate: function() {
+        var template = this.findTemplate();
+        if (template != this.template) {
+          this.template = template;
+          this.reset();
+        }
+        this.onMutation(this, this.updateTemplate);
+      },
+      findTemplate: function() {
+        var $n = this.$.content.getDistributedNodes();
+        for (var i=0, l=$n.length, n; (i<l) && (n=$n[i]); i++) {
+          if (n.localName == 'template') {
+            return n;
+          }
+        }
+      },
+      generatePageContent: function(page, start, end) {
+        this.super();
+        var data = this.data.slice(start, end);
+        if (data.length && this.template) {
+          var template = this.template.ref || this.template;
+          for (var i=0, l=data.length; i<l; i++) {
+            page.appendChild(template.createInstance(data[i], this.syntax));
+          }
+        }
+      }
+    })
+  </script>
+</polymer-element>

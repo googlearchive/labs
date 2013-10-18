@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>virtual-list</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="../../../../polymer/polymer.js"></script>
+    <link rel="import" href="polymer-virtual-list.html">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      
+      polymer-virtual-list {
+        max-width: 600px;
+        height: 100%;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <polymer-virtual-list count="1000" pageSize="50" numPages="2"></polymer-virtual-list>
+    
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+        var list = document.querySelector('polymer-virtual-list');
+        list.addEventListener('polymer-list-generate-page', function(e) {
+          var d = e.detail;
+          for (var i = d.start, html=''; i < d.end; i++) {
+            html += '<div class="item">Item ' + i + '</div>';
+          }
+          d.page.innerHTML = html;
+        });
+        list.reset();
+      });
+    </script>
+  </body>
+</html>
