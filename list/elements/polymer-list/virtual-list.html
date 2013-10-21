@@ -32,7 +32,7 @@ license that can be found in the LICENSE file.
         list.addEventListener('polymer-list-generate-page', function(e) {
           var d = e.detail;
           for (var i = d.start, html=''; i < d.end; i++) {
-            html += '<div class="item">Item ' + i + '</div>';
+            html += '<div class="polymer-list-item">Item ' + i + '</div>';
           }
           d.page.innerHTML = html;
         });

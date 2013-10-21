@@ -39,21 +39,45 @@ license that can be found in the LICENSE file.
           polymer-list {
             height: 100%;
           }
+
+          .header {
+            background: gray;
+            text: black;
+            font-weight: bold;
+          }
+
+          [page] > .polymer-list-item {
+            background: #333;
+            color: white;
+          }
         </style>
-        <polymer-list id="list" data="{{data}}">
-          <template>
-            <div class="item">Index: {{index}}</div>
-          </template>
+        <polymer-list id="list" data="{{data}}" template="{{$.listTemplate}}">
+          <!-- <template>
+            <div class="polymer-list-item" on-tap="tapAction">Index: {{index}}</div>
+          </template> -->
         </polymer-list>
+        <template id="listTemplate">
+          <template if="{{header}}">
+            <div class="header">{{header}}: {{index}}</div>
+          </template>
+          <div class="polymer-list-item" on-tap="tapAction">Index: {{index}}</div>
+        </template>
       </template>
       <script>
         Polymer('list-test', {
           ready: function() {
             var data = [];
-            for (var i=0; i< 10000; i++) {
-              data.push({index: i});
+            for (var i=0, o; i< 50000; i++) {
+              o = {index: i};
+              if (i % 10 === 0) {
+                o.header = 'Header';
+              }
+              data.push(o);
             }
             this.data = data;
+          },
+          tapAction: function(e) {
+            console.log('tap', e);
           }
         })
       </script>
