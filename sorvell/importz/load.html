@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load</title>
+  <script>
+    new MutationObserver(function() {
+      var i$ = document.querySelectorAll('link[rel=import]');
+      for (var i=0, p; i< i$.length; i++) {
+        p = i$[i];
+        console.log('added', p);
+        if (p.import) {
+          console.log('import already loaded!', p.import);
+        } else {
+          p.addEventListener('load', function() {
+            console.log('import load event fired!');
+          })
+        }
+      }
+    }).observe(document, {childList: true, subtree: true});    
+  </script>
+  <link rel="import" href="import1.html">
+  <link rel="import" href="import2.html">
+</head>
+
+</html>
