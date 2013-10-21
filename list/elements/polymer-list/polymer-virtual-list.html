@@ -1,26 +1,6 @@
 <polymer-element name="polymer-virtual-list" attributes="count pageSize numPages">
   <template>
-    <link rel="stylesheet" href="../../lib/VirtualList.css">
-    <style>
-      @host {
-        :scope {
-          display: block;
-        }
-      }
-      
-      #list {
-        height: 100%;
-      }
-      
-      .item {
-        box-sizing: border-box;
-        height: 80px;
-        line-height: 80px;
-        padding: 0 20px;
-        background-color: #f8f8f8;
-        border-bottom: 1px solid #ddd;
-      }
-    </style>
+    <link rel="stylesheet" href="polymer-virtual-list.css">
     <div id="list" class="virtual-list">
       <div id="viewport" class="virtual-list-viewport"></div>
     </div>
@@ -35,9 +15,8 @@
       count: 0,
       // number of pages to render at start
       numInitialPages: 0, 
-      horiz: false,
+      horizontal: false,
       fixedHeight: false,
-      keepAllPages: false,
       useRaf: false,
       removeUnusedPages: false,
       observe: {
@@ -45,10 +24,16 @@
         pageSize: 'reset',
         numPages: 'reset'
       },
+      createdCallback: function() {
+        this.updateMetrics();
+        this.super();
+      },
       ready: function() {
         this.reset();
       },
+      // re-render at the top
       reset: function(count) {
+        this.updateMetrics();
         this.count = count || this.count;
         this.scrollOffset = 0;
         this.$.viewport.innerText = '';
@@ -60,7 +45,7 @@
         for (var i = 0; i < this.numInitialPages; i++) {
           this.generatePage(i);
         }
-        this.$.viewport.classList[this.horiz ? 'add' : 'remove']('horiz');
+        this.$.viewport.classList.toggle('horizontal', this.horizontal);
         // TODO(sorvell): remove when event system is updated
         if (this.useRaf) {
           this.$.list.removeEventListener('scroll', this.scroll.bind(this));
@@ -70,11 +55,20 @@
           this.scroll();
         }
       },
-      get scrollOffset() {
-        return this.$.list[this.horiz ? 'scrollLeft' : 'scrollTop'];
+      updateMetrics: function() {
+        var h = this.horizontal;
+        this.metrics = {
+          scrollOffset: h ? 'scrollLeft' : 'scrollTop',
+          offsetExtent: h ? 'offsetWidth' : 'offsetHeight',
+          extent: h ? 'width' : 'height',
+          position: h ? 'left' : 'top'
+        };
       },
-      set scrollOffset(top) {
-        this.$.list[this.horiz ? 'scrollLeft' : 'scrollTop'] = top;
+      get scrollOffset() {
+        return this.$.list[this.metrics.scrollOffset];
+      },
+      set scrollOffset(offset) {
+        this.$.list[this.metrics.scrollOffset] = offset;
       },
       generatePageContent: function(page, start, end) {
         this.fire('polymer-list-generate-page', 
@@ -96,11 +90,14 @@
         }
       },
       measurePage: function(page) {
-        var ph = page[this.horiz ? 'offsetWidth' : 'offsetHeight'], pn = page.pageNum;
+        var ph = page[this.metrics.offsetExtent];
+        var pn = page.pageNum;
         if (!this.rowHeight) {
-          this.rowHeight = ph/(this.pageSize < this.count ? this.pageSize : this.count);
+          this.rowHeight = ph/(this.pageSize < this.count ? this.pageSize : 
+              this.count);
           this.viewportHeight = this.count * this.rowHeight;
-          this.$.viewport.style[this.horiz ? 'width' : 'height'] = this.viewportHeight + 'px';
+          this.$.viewport.style[this.metrics.extent] = 
+              this.viewportHeight + 'px';
         }
         var ph0 = this.getPageHeight(pn);
         this.pageHeights[pn] = ph;
@@ -109,7 +106,8 @@
           this.pageTops.splice(pn+1, this.pageTops.length);
           // also adjust the viewport's height
           this.viewportHeight += ph - ph0;
-          this.$.viewport.style[this.horiz ? 'width' : 'height'] = this.viewportHeight + 'px';
+          this.$.viewport.style[this.metrics.extent] = 
+              this.viewportHeight + 'px';
         }
       },
       getPageHeight: function(pageNum) {
@@ -148,12 +146,12 @@
             }
           }
         }
-        var t0 = page.style[this.horiz ? 'left' : 'top'].slice(0, -2);
+        var t0 = page.style[this.metrics.position].slice(0, -2);
         // update pageTops cache
         this.pageTops[pn] = t;
         this.pageTops[pn+1] = t + this.getPageHeight(pn);
         // set the page's top
-        page.style[this.horiz ? 'left' : 'top'] = t + 'px';
+        page.style[this.metrics.position] = t + 'px';
         if (t0) {
           return t0 - t;
         }
@@ -163,7 +161,7 @@
       },
       scroll: function() {
         var c = Math.floor(this.locatePage(this.scrollOffset + 
-              this.$.list[this.horiz ? 'offsetWidth' : 'offsetHeight']/2) + 0.5);
+              this.$.list[this.metrics.offsetExtent]/2) + 0.5);
         var k = c - Math.floor(this.numPages/2);
         k = Math.max(0, k);
         if (!this.pages[0] || this.pages[0].pageNum != k) {
@@ -194,10 +192,8 @@
             }
           }
         }
-        if (!this.keepAllPages) {
-          // remove out-of-bounds pages
-          this.cleanupPages();
-        }
+        // remove out-of-bounds pages
+        this.cleanupPages();
       },
       cleanupPages: function() {
         for (var c=this.$.viewport.children, i=c.length-1, p; p=c[i]; i--) {

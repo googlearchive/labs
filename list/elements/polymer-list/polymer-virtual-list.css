@@ -1,0 +1,46 @@
+ @host {
+  :scope {
+    display: block;
+  }
+}
+  
+#list {
+  height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#viewport {
+  position: relative;
+}
+
+#viewport.horizontal {
+  height: 100%;
+  white-space: nowrap;
+}
+
+#viewport > * {
+  position: absolute;
+  /* pages are layers */ 
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+#viewport:not(.horizontal) > * {
+  left: 0;
+  right: 0;
+}
+
+#viewport.horizontal > * {
+  top: 0;
+  bottom: 0;
+}
+
+[part=polymer-list-item] {
+  box-sizing: border-box;
+  height: 80px;
+  line-height: 80px;
+  padding: 0 20px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
