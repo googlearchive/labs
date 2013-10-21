@@ -6,6 +6,10 @@
  */
 -->
 
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-field/polymer-ui-field.html">
+
 <polymer-element name="shuttle-inputs" attributes="fromQuery toQuery">
   <template>
     <style>
@@ -15,47 +19,12 @@
         }
       }
       
-      .search-box {
-        position: relative;
-        height: 40px;
+      .inputs-box {
         border-right: 1px solid #ddd;
       }
       
-      .search-box.from {
+      polymer-ui-field.from {
         border-bottom: 1px solid #ddd;
-      }
-      
-      .search-box > input {
-        position: absolute;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        top: 0;
-        left: 40px;
-        right: 0;
-        height: 100%;
-        margin: 0 4px 0 0;
-        padding: 0;
-        border: 0;
-        font-size: 14px;
-        outline: none;
-        -webkit-appearance: none;
-      }
-      
-      .input-icon {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-size: 24px 24px;
-      }
-      
-      .input-icon.from {
-        background-image: url(assets/ic_shuttle_a.png);
-      }
-      
-      .input-icon.to {
-        background-image: url(assets/ic_shuttle_b.png);
       }
       
       .swap-button-container {
@@ -66,16 +35,16 @@
     </style>
 
     <polymer-flex-layout></polymer-flex-layout>
-    <div flex>
+    <div flex class="inputs-box">
       <polymer-flex-layout vertical></polymer-flex-layout>
-      <div flex class="search-box from">
-        <div class="input-icon from"></div>
-        <input id="fromInput" placeholder="Start" value="{{fromQuery}}">
-      </div>
-      <div flex class="search-box">
-        <div class="input-icon to"></div>
-        <input id="toInput" placeholder="Stop" value="{{toQuery}}">
-      </div>
+      <polymer-ui-field class="from">
+        <polymer-ui-icon src="assets/ic_start_a_green.png"></polymer-ui-icon>
+        <input id="fromInput" flex placeholder="Start" value="{{fromQuery}}">
+      </polymer-ui-field>
+      <polymer-ui-field>
+        <polymer-ui-icon src="assets/ic_stop_b_red.png"></polymer-ui-icon>
+        <input id="toInput" flex placeholder="Stop" value="{{toQuery}}">
+      </polymer-ui-field>
     </div>
     <div class="swap-button-container">
       <polymer-ui-icon-button src="assets/ic_swapvert_darkreg.png" on-tap="swap"></polymer-ui-icon-button>
