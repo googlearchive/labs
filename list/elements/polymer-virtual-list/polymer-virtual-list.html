@@ -8,7 +8,7 @@
   <script>
     Polymer('polymer-virtual-list', {
       // rows per page
-      pageSize: 50,
+      pageSize: 20,
       // number of pages 
       numPages: 2,
       // total number of rows
@@ -112,10 +112,16 @@
         }
       },
       getPageHeight: function(pageNum) {
-        //return this.pageHeights[pageNum] || this.pageSize * (this.rowHeight || 100);
         return this.pageHeights[pageNum] !== undefined ? 
             this.pageHeights[pageNum] : 
             this.pageSize * (this.rowHeight || 100);
+      },
+      getViewportPageInfo: function() {
+        var c = Math.floor(this.locatePage(this.scrollOffset + 
+              this.$.list[this.metrics.offsetExtent]/2) + 0.5);
+        var k = c - Math.floor(this.numPages/2);
+        k = Math.max(0, k);
+        return {start: k, center: c, end: k+this.numPages};
       },
       locatePage: function(pos) {
         var n = pos/this.getPageHeight(0);
@@ -164,12 +170,10 @@
         return this.$.viewport.querySelector('[page="' + pageNum + '"]');
       },
       scroll: function() {
-        var c = Math.floor(this.locatePage(this.scrollOffset + 
-              this.$.list[this.metrics.offsetExtent]/2) + 0.5);
-        var k = c - Math.floor(this.numPages/2);
-        k = Math.max(0, k);
-        if (!this.pages[0] || this.pages[0].pageNum != k) {
-          this.update(k, c);
+        var info = this.getViewportPageInfo();
+        if (!this.pages[0] || this.pages[0].pageNum != info.start) {
+          this.prepareUpdate(info);
+          this.update(info);
         }
       },
       rafUpdate: function() {
@@ -178,17 +182,8 @@
           this.rafUpdate();
         }.bind(this));
       },
-      forceUpdate: function() {
-        var c = Math.floor(this.locatePage(this.scrollOffset + 
-              this.$.list[this.metrics.offsetExtent]/2) + 0.5);
-        var k = c - Math.floor(this.numPages/2);
-        k = Math.max(0, k);
-        //console.log('forceUpdate', k, c);
-        this.update(k, c);
-      },
-      update: function(startPageNum, centerPageNum) {
-        var k = startPageNum, n = k+this.numPages, c = centerPageNum,
-            self = this;
+      update: function(pageInfo) {
+        var k = pageInfo.start, n = pageInfo.end, c = pageInfo.center;
         this.pages = [];
         for (; k<n; k++) {
           var p = this.findPage(k) || this.generatePage(k);
@@ -205,13 +200,23 @@
             }
             // account for async mutation, aka template if and the like.
             Platform.flush();
+            // TODO(sorvell): this makes SD polyfill blow up
+            /*
+            var self = this;
             this.onMutation(p, function() {
-              //self.update(startPageNum, centerPageNum);
+              self.update(startPageNum, centerPageNum);
             });
+            */
           }
         }
         // remove out-of-bounds pages
         this.cleanupPages();
+      },
+      // extension point for customizing data
+      prepareUpdate: function(pageInfo) {},
+      forceUpdate: function() {
+        var info = this.getViewportPageInfo();
+        this.update(info);
       },
       cleanupPages: function() {
         for (var c=this.$.viewport.children, i=c.length-1, p; p=c[i]; i--) {

@@ -1,4 +1,4 @@
-<link rel="import" href="polymer-virtual-list.html">
+<link rel="import" href="../polymer-virtual-list/polymer-virtual-list.html">
 
 <polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data listData">
   <script>
@@ -36,9 +36,9 @@
         c.select = '.' + pageClass;
         page.appendChild(c);
       },
-      update: function(startPageNum, centerPageNum) {
+      prepareUpdate: function(pageInfo) {
         // generate list data
-        var start = startPageNum * this.pageSize;
+        var start = pageInfo.start * this.pageSize;
         var end = Math.min(start + this.pageSize * this.numPages, this.count);
         this.fire('polymer-list-generate-data', {start: start, end: end});
         this.listData = [];
@@ -47,7 +47,8 @@
           d.page = 'page' + Math.floor((start+i) / this.pageSize);
         }
         this.super(arguments);
+        this.onMutation(this, this.forceUpdate);
       }
-    })
+    });
   </script>
 </polymer-element>
