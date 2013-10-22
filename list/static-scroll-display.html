@@ -221,10 +221,11 @@
     }
     
     list.onscroll = function() {
-      scrollTime = Date.now();
+      /*scrollTime = Date.now();
       if (!rafing) {
         raf();
-      }
+      }*/
+      scroll();
     };
     
     requestAnimationFrame = window.requestAnimationFrame ||
