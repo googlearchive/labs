@@ -1,0 +1,14 @@
+<link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="contacts-icon.html" rel="import">
+<polymer-element name="contacts-list-item" attributes="contact" noscript>
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<polymer-flex-layout align="center"></polymer-flex-layout>
+		<contacts-icon contact="{{contact}}"></contacts-icon>
+		<div>{{contact.name}}</div>
+	</template>
+</polymer-element>

@@ -93,7 +93,7 @@
 		</polymer-ui-overlay>
 		<polymer-ui-pages selected="{{page}}" wideLayout?="{{wideLayout}}">
 			<contacts-list id="listView" on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction" on-contacts-list-scroll="scrollAction">
-				<div id="sticky" class="contactItem header sticky">
+<!-- 				<div id="sticky" class="contactItem header sticky">
 					{{stickyContent}}
 				</div>
 				<template repeat="{{alpha in $.mock.alphabetized}}">
@@ -108,6 +108,7 @@
 						</div>
 					</template>
 				</template>
+ -->				
 			</contacts-list>
 			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="shrinkAction">
 			</contacts-detail>
@@ -137,7 +138,7 @@
 			sidebarCloseAction: function() {
 				this.$.sidebar.active = false;
 			},
-			scrollAction: function(e, detail, sender) {
+			xscrollAction: function(e, detail, sender) {
 				var items = this.$.listView.querySelectorAll('.contactItem:not(.sticky)');
 				var scrollTop = detail;
 				var offset = 0;
