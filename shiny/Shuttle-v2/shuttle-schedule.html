@@ -100,7 +100,7 @@
           stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" query="{{reverse ? fromQuery : toQuery}}"
           on-shuttle-stops-search="stopsSearch" on-shuttle-picker-close="hidePicker"></shuttle-stop-picker>
       
-      <polymer-ui-card id="scheduleView" class="dark-shadow" swipeable noCurve>
+      <polymer-ui-card id="scheduleView" class="dark-shadow">
         <div id="description">
           <polymer-flex-layout></polymer-flex-layout>
           <div class="description-text" flex>{{fromStop.name}} to {{toStop.name}}</div>
