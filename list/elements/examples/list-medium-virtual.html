@@ -36,11 +36,11 @@ license that can be found in the LICENSE file.
     <polymer-element name="list-test">
       <template>
         <style>
-          polymer-list {
+          polymer-virtual-list {
             height: 100%;
           }
 
-          .message {
+          ::part(message) {
             box-sizing: border-box;
             height: 80px;
             padding: 4px;
@@ -56,29 +56,29 @@ license that can be found in the LICENSE file.
             border-bottom: 1px solid #ddd;
           }
           
-          .from {
+          ::part(from) {
             display: inline;
             font-weight: bold;
           }
           
-          .timestamp {
+          ::part(timestamp) {
             margin-left: 10px;
             font-size: 12px;
             opacity: 0.8;
           }
           
-          .body {
+          ::part(body) {
             font-size: 12px;
             opacity: 0.8;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            /*overflow: hidden;
+            text-overflow: ellipsis;*/
           }
           
-          .subject {
+          ::part(subject) {
           }
           
-          .divider {
+          ::part(divider) {
             background: grey;
             color: white;
             height: 30px;
@@ -87,21 +87,20 @@ license that can be found in the LICENSE file.
             text-transform: uppercase;
           }
         </style>
-        <polymer-list id="list" data="{{data}}" listData="{{listData}}">
-          <template repeat="{{listData}}">
-            <div class="{{page}}">
-              <template if="{{divider}}">
-                <div class="divider">{{divider}}</div>
-              </template>
-              <div class="message" style="background-image: url(images/{{index % 4}}.png);">
-                <span class="from">{{name}}</span>
-                <span class="timestamp">{{time}}</span>
-                <div class="subject">Infinite List. {{index}}</div>
-                <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-              </div>
+        <polymer-virtual-list id="list" on-polymer-list-generate-page="generateListPage" count="{{count}}">
+        </polymer-virtual-list>
+
+        <template id="listItem">
+          <div>
+            <div part="divider"></div>
+            <div part="message">
+              <span part="from"></span>
+              <span part="timestamp"></span>
+              <div part="subject"></div>
+              <div part="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
             </div>
-          </template>
-        </polymer-list>
+          </div>
+        </template>
 
       </template>
       <script>
@@ -154,6 +153,23 @@ license that can be found in the LICENSE file.
           },
           tapAction: function(e) {
             console.log('tap', e);
+          },
+          generateListPage: function(e, detail) {
+            var dom = document.createDocumentFragment();
+            for (var i = detail.start, l=detail.end, d, r; (i<l) && (d=this.data[i]); i++) {
+              r = this.$.listItem.ref.content.cloneNode(true);
+              var divider = r.querySelector('[part=divider]');
+              divider.style.display = d.divider ? null : 'none';
+              divider.textContent = d.divider;
+              var message = r.querySelector('[part=message]');
+              //message.style.backgroundImage = 'url(images/' + d.index % 4 + '.png)';
+              r.querySelector('[part=from]').textContent = d.name;
+              r.querySelector('[part=timestamp]').textContent = d.time;
+              r.querySelector('[part=subject]').textContent = 'Infinite List. ' + d.index;
+              r.querySelector('[part=body]').textContent = d.details;
+              dom.appendChild(r);
+            }
+            detail.page.appendChild(dom);
           }
         });
       })();  

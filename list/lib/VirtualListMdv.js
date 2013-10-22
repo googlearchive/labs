@@ -1,7 +1,7 @@
 var VirtualList = function(inNode, inTemplate, inCallback) {
   this.list = inNode;
   this.template = inTemplate;
-  this.syntax = new ExpressionSyntax();
+  this.syntax = new PolymerExpressions();
   this.list.classList.add('virtual-list');
   this.viewport = document.createElement('div');
   this.viewport.classList.add('virtual-list-viewport');
