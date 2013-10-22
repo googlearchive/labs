@@ -7,7 +7,9 @@
 -->
 
 <link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
+<link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-card/polymer-ui-card.html">
 <link rel="import" href="shuttle-timetable.html">
 <link rel="import" href="shuttle-stop-picker.html">
 <link rel="import" href="shuttle-toggle-icon.html">
@@ -98,7 +100,7 @@
           stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" query="{{reverse ? fromQuery : toQuery}}"
           on-shuttle-stops-search="stopsSearch" on-shuttle-picker-close="hidePicker"></shuttle-stop-picker>
       
-      <div id="scheduleView" class="card">
+      <polymer-ui-card id="scheduleView" class="dark-shadow" swipeable noCurve>
         <div id="description">
           <polymer-flex-layout></polymer-flex-layout>
           <div class="description-text" flex>{{fromStop.name}} to {{toStop.name}}</div>
@@ -108,7 +110,7 @@
         <div class="route-name">Route name</div>
         
         <shuttle-timetable id="timetable" fromStop="{{fromStop}}" toStop="{{toStop}}"></shuttle-timetable>
-      </div>
+      </polymer-ui-card>
     </polymer-selector>
   </template>
   <script>
@@ -141,7 +143,7 @@
       },
       showSchedule: function() {
         if (this.fromStop && this.toStop) {
-          this.panelSelected = 'scheduleView'
+          this.panelSelected = 'scheduleView';
         }
       },
       officeSelectedStopChanged: function() {
