@@ -9,7 +9,7 @@ license that can be found in the LICENSE file.
     <title>list</title>
     <meta name="viewport" content="width=device-width">
     <script src="../../../../polymer/polymer.js"></script>
-    <link rel="import" href="polymer-list.html">
+    <link rel="import" href="polymer-template-list.html">
     <style>
       html, body {
         height: 100%;
@@ -36,32 +36,33 @@ license that can be found in the LICENSE file.
     <polymer-element name="list-test">
       <template>
         <style>
-          polymer-list {
+          polymer-template-list {
             height: 100%;
           }
 
-          .header {
+          ::part(header) {
             background: gray;
             text: black;
             font-weight: bold;
           }
 
-          .polymer-list-item {
-            background: #333 !important;
+          ::part(polymer-list-item) {
+            background: #333;
             color: white;
+            box-sizing: border-box;
+            height: 80px;
+            line-height: 80px;
+            padding: 0 20px;
+            border-bottom: 1px solid #ddd;
           }
         </style>
-        <polymer-list id="list" data="{{data}}" listData="{{listData}}">
-          <template repeat="{{listData}}">
-            <div class="{{page}}">
-              <template if="{{header}}">
-                <div class="header">{{header}}: {{index}}</div>
-              </template>
-              <div class="polymer-list-item" on-tap="tapAction">Index: {{index}}</div>
-            </div>
+        <polymer-template-list id="list" data="{{data}}" template="{{$.listTemplate}}"></polymer-template-list>
+        <template id="listTemplate">
+            <template if="{{header}}">
+              <div part="header">{{header}}: {{index}}</div>
+            </template>
+            <div part="polymer-list-item" on-tap="tapAction">Index: {{index}}</div>
           </template>
-        </polymer-list2>
-
       </template>
       <script>
         Polymer('list-test', {
@@ -69,7 +70,7 @@ license that can be found in the LICENSE file.
             var data = [];
             for (var i=0, o; i< 50000; i++) {
               o = {index: i};
-              if ((i+1) % 10 === 0) {
+              if (i % 10 === 0) {
                 o.header = 'Header';
               }
               data.push(o);

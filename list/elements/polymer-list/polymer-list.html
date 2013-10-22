@@ -1,23 +1,10 @@
 <link rel="import" href="polymer-virtual-list.html">
 
-<polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data template">
-  <!-- if list uses ShadowDOM -->
-  <!-- <template>
-    <content id="content"></content>
-    <shadow></shadow>
-  </template> -->
+<polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data listData">
   <script>
     Polymer('polymer-list', {
-      observe: {
-        data: 'reset',
-        template: 'updateTemplate'
-      },
       createdCallback: function() {
-        this.data = [];
-        this.super();
-      },
-      ready: function() {
-        this.updateTemplate();
+        this.listData = [];
         this.super();
       },
       reset: function() {
@@ -25,36 +12,41 @@
           this.super([this.data.length]);
         }
       },
-      updateTemplate: function() {
-        var template = this.template || this.findTemplate();
-        if (template != this._template) {
-          this._template = template;
-          this.reset();
-        }
-        if (!this.template) {
-          this.onMutation(this, this.updateTemplate);
-        }
-      },
-      findTemplate: function() {
-        return this.querySelector('template');
-        /*
-        var $n = this.$.content.getDistributedNodes();
-        for (var i=0, l=$n.length, n; (i<l) && (n=$n[i]); i++) {
-          if (n.localName == 'template') {
-            return n;
-          }
-        }
-        */
+      dataChanged: function() {
+        this.reset();
       },
       generatePageContent: function(page, start, end) {
         this.super();
-        var data = this.data.slice(start, end);
-        if (data.length && this._template) {
-          var template = this._template.ref || this._template;
-          for (var i=0, l=data.length; i<l; i++) {
-            page.appendChild(template.createInstance(data[i], this.syntax));
-          }
+        var pageClass = 'page' + page.pageNum;
+        // mdv is very unhappy if our array is sparse!
+        var start = Math.min(this.listData.length, start);
+        
+        // NOTE: allowing this array to simply grow destroys perf.
+        // add this page of data to our data window; insert page class
+        /*
+        for (var i=start, l=end, d; i<l; i++) {
+          // TODO(sorvell): copying like this probably isn't kosher
+          // but we want to add the page class 
+          d = this.listData[i] = Object.create(this.data[i]);
+          d.page = pageClass;
         }
+        */
+        // add a content w/select into this page
+        var c = document.createElement('content');
+        c.select = '.' + pageClass;
+        page.appendChild(c);
+      },
+      update: function(startPageNum, centerPageNum) {
+        // generate list data
+        var start = startPageNum * this.pageSize;
+        var end = Math.min(start + this.pageSize * this.numPages, this.count);
+        this.fire('polymer-list-generate-data', {start: start, end: end});
+        this.listData = [];
+        for (var i=0, l=end-start, d, pageClass; i<l; i++) {
+          d = this.listData[i] = Object.create(this.data[start+i]);
+          d.page = 'page' + Math.floor((start+i) / this.pageSize);
+        }
+        this.super(arguments);
       }
     })
   </script>

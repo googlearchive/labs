@@ -1,4 +1,4 @@
-<polymer-element name="polymer-virtual-list" attributes="count pageSize numPages" lightdom>
+<polymer-element name="polymer-virtual-list" attributes="count pageSize numPages">
   <template>
     <link rel="stylesheet" href="polymer-virtual-list.css">
     <div id="list" class="polymer-list-list">
@@ -8,7 +8,7 @@
   <script>
     Polymer('polymer-virtual-list', {
       // rows per page
-      pageSize: 20,
+      pageSize: 50,
       // number of pages 
       numPages: 2,
       // total number of rows
@@ -18,7 +18,7 @@
       horizontal: false,
       fixedHeight: false,
       useRaf: false,
-      removeUnusedPages: false,
+      retainPages: false,
       observe: {
         count: 'reset',
         pageSize: 'reset',
@@ -79,7 +79,7 @@
           var p = document.createElement('div');
           p.pageNum = pageNum;
           p.setAttribute('page', pageNum);
-          if (!this.removeUnusedPages) {
+          if (this.retainPages) {
             p.style.display = 'none';
           }
           var start = p.pageNum * this.pageSize;
@@ -100,18 +100,22 @@
               this.viewportHeight + 'px';
         }
         var ph0 = this.getPageHeight(pn);
-        this.pageHeights[pn] = ph;
-        if (ph0 != ph) {
+        if (ph && ph0 != ph) {
+          this.pageHeights[pn] = ph;
           // since page height has changed, invalidate all the pageTops after this page
           this.pageTops.splice(pn+1, this.pageTops.length);
           // also adjust the viewport's height
           this.viewportHeight += ph - ph0;
+          //console.log('measurePage #', pn, 'height', ph, 'viewport', this.viewportHeight);
           this.$.viewport.style[this.metrics.extent] = 
               this.viewportHeight + 'px';
         }
       },
       getPageHeight: function(pageNum) {
-        return this.pageHeights[pageNum] || this.pageSize * (this.rowHeight || 100);
+        //return this.pageHeights[pageNum] || this.pageSize * (this.rowHeight || 100);
+        return this.pageHeights[pageNum] !== undefined ? 
+            this.pageHeights[pageNum] : 
+            this.pageSize * (this.rowHeight || 100);
       },
       locatePage: function(pos) {
         var n = pos/this.getPageHeight(0);
@@ -174,13 +178,22 @@
           this.rafUpdate();
         }.bind(this));
       },
+      forceUpdate: function() {
+        var c = Math.floor(this.locatePage(this.scrollOffset + 
+              this.$.list[this.metrics.offsetExtent]/2) + 0.5);
+        var k = c - Math.floor(this.numPages/2);
+        k = Math.max(0, k);
+        //console.log('forceUpdate', k, c);
+        this.update(k, c);
+      },
       update: function(startPageNum, centerPageNum) {
-        var k = startPageNum, n = k+this.numPages, c = centerPageNum;
+        var k = startPageNum, n = k+this.numPages, c = centerPageNum,
+            self = this;
         this.pages = [];
         for (; k<n; k++) {
           var p = this.findPage(k) || this.generatePage(k);
           if (p) {
-            if (!this.removeUnusedPages) {
+            if (this.retainPages) {
               p.style.display = null;
             }
             this.measurePage(p);
@@ -190,6 +203,11 @@
             if (d && k == c) {
               this.scrollOffset -= d;
             }
+            // account for async mutation, aka template if and the like.
+            Platform.flush();
+            this.onMutation(p, function() {
+              //self.update(startPageNum, centerPageNum);
+            });
           }
         }
         // remove out-of-bounds pages
@@ -198,10 +216,10 @@
       cleanupPages: function() {
         for (var c=this.$.viewport.children, i=c.length-1, p; p=c[i]; i--) {
           if (this.pages.indexOf(p) == -1) {
-            if (this.removeUnusedPages) {
-              this.$.viewport.removeChild(p);
-            } else {
+            if (this.retainPages) {
               p.style.display = 'none';
+            } else {
+              this.$.viewport.removeChild(p);
             }
           }
         }
