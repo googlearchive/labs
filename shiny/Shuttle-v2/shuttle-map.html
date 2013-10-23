@@ -7,6 +7,7 @@
 -->
 
 <link rel="import" href="../../../more-elements/google-map/google-map.html">
+<link rel="import" href="../../../more-elements/google-map/google-map-directions.html">
   
 <polymer-element name="shuttle-map" attributes="centerStop fromStop toStop filteredStops selectedFilteredStop">
   <template>
@@ -23,11 +24,16 @@
       }
     </style>
     
-    <google-map id="map" latitude="37.77493" longitude="-122.41942" zoom="10"></google-map>
+    <google-map id="map" map="{{map}}"></google-map>
+    <google-map-directions id="directions" map="{{map}}"></google-map-directions>
   </template>
   <script>
     Polymer('shuttle-map', {
       opened: false,
+      observe: {
+        fromStop: 'route',
+        toStop: 'route'
+      },
       resize: function() {
         this.resizeJob = this.job(this.resizeJob, this._resize, 100);
       },
@@ -57,9 +63,10 @@
             return;
           }
           var marker = new google.maps.Marker({
-            map: this.$.map.map,
+            map: this.map,
             position: latLng,
-            icon: 'assets/marker_grey.png'
+            icon: 'assets/marker_grey.png',
+            zIndex: 0
           });
           this.markers.push(marker);
           google.maps.event.addListener(marker, 'click', 
@@ -76,54 +83,14 @@
       selectStop: function(stop) {
         this.selectedFilteredStop = stop;
       },
-      fromStopChanged: function() {
-        this.asyncPlotRoute();
-      },
-      toStopChanged: function() {
-        this.asyncPlotRoute();
-      },
-      asyncPlotRoute: function() {
-        this.plotRouteJob = this.job(this.plotRouteJob, this.plotRoute, 1);
-      },
-      plotRoute: function() {
+      route: function() {
         if (!this.fromStop || !this.toStop) {
           return;
         }
-        if (!this.dirService) {
-          this.dirService = new google.maps.DirectionsService();
-          this.dirDisplay = new google.maps.DirectionsRenderer({
-            suppressInfoWindows: true,
-            suppressMarkers: true,
-            preserveViewport: true
-          });
-          this.fromMarker = new google.maps.Marker({
-            map: this.$.map.map,
-            icon: 'assets/marker_greenA.png',
-            zIndex: 1000
-          });
-          this.toMarker = new google.maps.Marker({
-            map: this.$.map.map,
-            icon: 'assets/marker_redB.png',
-            zIndex: 1000
-          });
-          this.dirDisplay.setMap(this.$.map.map);
-        }
-        var request = {
-            origin: new google.maps.LatLng(
-                this.fromStop.in_lat, this.fromStop.in_lon),
-            destination: new google.maps.LatLng(
-                this.toStop.in_lat, this.toStop.in_lon),
-            optimizeWaypoints: true,
-            travelMode: google.maps.TravelMode.DRIVING
-        };
-        this.dirService.route(request, function(response, status) {
-          if (status == google.maps.DirectionsStatus.OK) {
-            this.dirDisplay.setDirections(response);
-            var leg = response.routes[0].legs[0];
-            this.fromMarker.setPosition(leg.start_location);
-            this.toMarker.setPosition(leg.end_location);
-          }
-        }.bind(this));
+        this.$.directions.startLocation = new google.maps.LatLng(
+            this.fromStop.in_lat, this.fromStop.in_lon);
+        this.$.directions.endLocation = new google.maps.LatLng(
+            this.toStop.in_lat, this.toStop.in_lon);
       }
     });
   </script>
