@@ -19,11 +19,11 @@
 				<input value="{{projectName}}">
 				<h2>Create at:</h2>
 				<input value="{{projectPath}}">/{{projectName}}
-				<button on-click="nextAction">Next!</button>
+				<button on-click="{{nextAction}}">Next!</button>
 			</section>
 			<section>
 				<gs-import-selector imports="{{imports}}"></gs-import-selector>
-				<button on-click="nextAction">Next!</button>
+				<button on-click="{{nextAction}}">Next!</button>
 			</section>
 			<section>
 				<p>
@@ -35,7 +35,7 @@
 						{{}}<br>
 					</template>
 				</p>
-				<button on-click="generateAction">Generate!</button>
+				<button on-click="{{generateAction}}">Generate!</button>
 			</section>
 		</polymer-ui-pages>
 	</template>

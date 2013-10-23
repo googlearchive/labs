@@ -26,7 +26,7 @@
     <template repeat="{{viewItems}}">
       <div class="item">{{label}}</div>
     </template>
-    <div id="more" on-tap="loadMore" hidden?="{{viewItems.length >= items.length}}">Load more items</div>
+    <div id="more" on-tap="{{loadMore}}" hidden?="{{viewItems.length >= items.length}}">Load more items</div>
   </template>
   <script>
     Polymer('more-list', {

@@ -135,7 +135,7 @@
         
         <flatiron-director route="{{route}}"></flatiron-director>
         <polymer-ajax url="{{url}}" response="{{data}}" handleAs="json" auto></polymer-ajax>
-        <polymer-grid-layout id="grid" on-polymer-grid-layout="gridLayout"></polymer-grid-layout>
+        <polymer-grid-layout id="grid" on-polymer-grid-layout="{{gridLayout}}"></polymer-grid-layout>
         
         <div id="navigation" offscreen="basement" style="overflow-y: scroll;">
           <polymer-ui-menu selected="0" id="menu">
@@ -149,7 +149,7 @@
           <div id="docsInner" flex>
             <div id="fixed">
               <div class="header">
-                <polymer-ui-icon-button icon="menu" on-tap="toggleNav" active="{{navOpen}}"></polymer-ui-icon-button>
+                <polymer-ui-icon-button icon="menu" on-tap="{{toggleNav}}" active="{{navOpen}}"></polymer-ui-icon-button>
                 &nbsp;<span id="fixedTopic" class="element"></span>
               </div>
             </div>
@@ -157,7 +157,7 @@
             <template repeat="{{class in classes}}">
               <a id="{{class.name}}" class="element"></a>
               <div class="header topic">
-                <polymer-ui-icon-button on-tap="toggleLayout" icon="menu" style="visibility: hidden;"></polymer-ui-icon-button>
+                <polymer-ui-icon-button on-tap="{{toggleLayout}}" icon="menu" style="visibility: hidden;"></polymer-ui-icon-button>
                 &nbsp;<span class="element">{{class.name}}</span>
               </div>
   

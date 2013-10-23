@@ -30,7 +30,7 @@ license that can be found in the LICENSE file.
  * Example:
  *
  *     <g-jsonp url="https://clients1.google.com/finance/info?q=GOOG&client=ig&callback="
- *         on-response="handleResponse"></g-jsonp>
+ *         on-response="{{handleResponse}}"></g-jsonp>
  *
  * @class g-jsonp
  */
@@ -189,12 +189,12 @@ license that can be found in the LICENSE file.
 <element name="g-menu-button" attributes="src selected opened responsive valign">
   <link rel="stylesheet" href="css/g-menu-button.css" />
   <template>
-    <g-icon-button id="button" touch-action="none" on-tap="toggle" src="{{src}}" active="{{opened}}"></g-icon-button>
+    <g-icon-button id="button" touch-action="none" on-tap="{{toggle}}" src="{{src}}" active="{{opened}}"></g-icon-button>
     <div responsive="{{responsive}}" valign="{{valign}}">
       <g-overlay id="overlay" class="slideup" opened="{{opened}}" modal>
         <div class="arrow"></div>
         <div class="arrow arrow-inner"></div>
-        <g-menu id="menu" selected="{{selected}}" on-activate="toggle">
+        <g-menu id="menu" selected="{{selected}}" on-activate="{{toggle}}">
           <content select="*"></content>
         </g-menu>
       </g-overlay>
@@ -234,9 +234,9 @@ license that can be found in the LICENSE file.
  * Example:
  *
  *     <g-toolbar>
- *       <g-icon-button src="menu.png" on-click="menuAction"></g-icon-button>
+ *       <g-icon-button src="menu.png" on-click="{{menuAction}}"></g-icon-button>
  *       <div class="flex">Title</div>
- *       <g-icon-button src="more.png" on-click="moreAction"></g-icon-button>
+ *       <g-icon-button src="more.png" on-click="{{moreAction}}"></g-icon-button>
  *     </g-toolbar>
  *
  * @class g-toolbar
@@ -477,7 +477,7 @@ license that can be found in the LICENSE file.
  *
  * Example:
  *
- *     <g-selector selected="0" on-activate="activateHandler">
+ *     <g-selector selected="0" on-activate="{{activateHandler}}">
  *       <div>Item 1</div>
  *       <div>Item 2</div>
  *       <div>Item 3</div>
@@ -509,9 +509,9 @@ license that can be found in the LICENSE file.
  */
 -->
 <link rel="import" href="g-selection.html">
-<element name="g-selector" on-tap="activateHandler" attributes="selected selectedClass selectedModel multi valueattr notap">
+<element name="g-selector" on-tap="{{activateHandler}}" attributes="selected selectedClass selectedModel multi valueattr notap">
   <template>
-    <g-selection id="selection" multi="{{multi}}" on-select="selectionSelect"></g-selection>
+    <g-selection id="selection" multi="{{multi}}" on-select="{{selectionSelect}}"></g-selection>
     <content id="items" select="*"></content>
   </template>
   <script>
@@ -929,7 +929,7 @@ license that can be found in the LICENSE file.
  *             background: tomato;
  *           }
  *         </style>
- *         <header on-click="headerCkick">My App</header>
+ *         <header on-click="{{headerCkick}}">My App</header>
  *         <section class="content flex">Content</section>
  *         <footer>more...</footer>
  *       </template>
@@ -1055,7 +1055,7 @@ license that can be found in the LICENSE file.
       }
     </style>
     <g-toolbar>
-      <g-icon-button src="{{navIconSrc}}" on-tap="navClick"></g-icon-button>
+      <g-icon-button src="{{navIconSrc}}" on-tap="{{navClick}}"></g-icon-button>
       <div class="toolbar-label flex">{{label}}</div>
       <g-toolbar id="actionbar" responsive="true">
         <content></content>
@@ -1139,7 +1139,7 @@ license that can be found in the LICENSE file.
         }
       }
     </style>
-    <div class="card" on-tap="itemClick">
+    <div class="card" on-tap="{{itemClick}}">
       <div class="image" style="background-image: url({{story.imgSrc}});" showing="{{story.imageShowing}}"></div>
       <div class="info">
         <div class="title">{{story.title}}
@@ -1190,7 +1190,7 @@ license that can be found in the LICENSE file.
       <template repeat="{{viewItems}}">
         <pica-story story="{{}}"></pica-story>
       </template>
-      <div id="more" touch-action="user" on-tap="loadMore">
+      <div id="more" touch-action="user" on-tap="{{loadMore}}">
         <g-icon src="../images/refresh_lightreg.png"></g-icon>
         Load more articles
       </div>
@@ -1266,7 +1266,7 @@ license that can be found in the LICENSE file.
     </style>
     <div id="view">
       <template repeat="{{topics}}">
-        <pica-topic touch-action="user" on-tap="selectTopic" topic="{{}}"></pica-topic>
+        <pica-topic touch-action="user" on-tap="{{selectTopic}}" topic="{{}}"></pica-topic>
       </template>
     </div>
   </template>
@@ -1304,7 +1304,7 @@ license that can be found in the LICENSE file.
     <pica-panels selected="{{selected}}" zindex="100">
       <pica-topics-view id="topics" view="topics" layout="{{topicslayout}}" topics="{{topics}}" selected="{{topic}}"></pica-topics-view>
       <pica-stories-view id="stories" view="flex" layout="{{layout}}" stories="{{stories}}" selected="{{story}}"></pica-stories-view>
-<!--      <pica-story id="story" story="{{story}}" on-flick="storyFlick" on-keydown="storyKeydown"></pica-story>-->
+<!--      <pica-story id="story" story="{{story}}" on-flick="{{storyFlick}}" on-keydown="{{storyKeydown}}"></pica-story>-->
     </pica-panels>
   </template>
   <script>
@@ -1398,11 +1398,11 @@ license that can be found in the LICENSE file.
 <element name="pica-main" attributes="hideActionBar panel">
   <link rel="stylesheet" href="css/pica-main.css">
   <template>
-    <pi-toolbar label="{{toolbarLabel}}" nav="{{nav}}" hideactionbar="{{hideActionbar}}" on-back="backAction">
+    <pi-toolbar label="{{toolbarLabel}}" nav="{{nav}}" hideactionbar="{{hideActionbar}}" on-back="{{backAction}}">
       <pi-link-button id="linkButton" link="{{story.link}}"></pi-link-button>
       <pi-view-button id="viewButton" layout="{{selectedLayout}}"></pi-view-button>
       <pi-action-button></pi-action-button>
-      <g-icon-button src="../images/refresh.png" on-tap="reloadAction"></g-icon-button>
+      <g-icon-button src="../images/refresh.png" on-tap="{{reloadAction}}"></g-icon-button>
     </pi-toolbar>
     <pica-panels id="panels" selected="{{panel}}" zindex="200">
       <pica-home id="home"></pica-home>
@@ -1440,13 +1440,13 @@ license that can be found in the LICENSE file.
 <element name="pica-view" extends="g-app">
   <link rel="stylesheet" href="css/pica-view.css" />
   <template>
-    <g-ribbon id="ribbon" class="custom-panel" label="Pica" selected="{{selected}}" valueattr="label" on-activate="hideRibbon">
+    <g-ribbon id="ribbon" class="custom-panel" label="Pica" selected="{{selected}}" valueattr="label" on-activate="{{hideRibbon}}">
       <g-menu-item label="Home" src="../images/ribbon_home_lightreg.png" iconsize="32"></g-menu-item>
       <g-menu-item label="Topics" src="../images/ribbon_topics_lightreg.png" iconsize="32"></g-menu-item>
       <g-menu-item label="Explore" src="../images/ribbon_explore_lightreg.png" iconsize="32"></g-menu-item>
       <g-menu-item label="Accounts" src="../images/ribbon_accounts_lightreg.png" iconsize="32"></g-menu-item>
     </g-ribbon>
-    <pica-main id="main" touch-action="user" on-tap="hideRibbon" on-back="backAction" panel="{{selected}}" hideactionbar="{{hideActionbar}}"></pica-main>
+    <pica-main id="main" touch-action="user" on-tap="{{hideRibbon}}" on-back="{{backAction}}" panel="{{selected}}" hideactionbar="{{hideActionbar}}"></pica-main>
   </template>
   <script>
     Polymer.register(this, {

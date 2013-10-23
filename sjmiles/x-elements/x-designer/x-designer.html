@@ -90,8 +90,8 @@ license that can be found in the LICENSE file.
     <x-meta id="meta" categories="{{elements}}"></x-meta>
 
     <polymer-layout></polymer-layout>
-    <x-palette id="palette" elements="{{elements}}" canvas="{{$.canvas}}" on-palette-drag="paletteDrag"></x-palette>
-    <x-designable flex id="canvas" tabIndex="-1" selected="{{selected}}" on-design-change="designChange"></x-designable>
+    <x-palette id="palette" elements="{{elements}}" canvas="{{$.canvas}}" on-palette-drag="{{paletteDrag}}"></x-palette>
+    <x-designable flex id="canvas" tabIndex="-1" selected="{{selected}}" on-design-change="{{designChange}}"></x-designable>
     <x-tree id="tree" canvas="{{$.canvas}}" selected="{{selected}}"></x-tree>
 
   </template>

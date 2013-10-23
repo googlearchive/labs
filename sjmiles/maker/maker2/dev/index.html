@@ -87,13 +87,13 @@
         </template>
 
         <polymer-ui-toolbar id="buildBar">
-          <polymer-ui-icon-button icon="refresh" on-tap="refresh" title="Refresh"></polymer-ui-icon-button>
-          <polymer-ui-icon-button icon="shortcut" on-tap="link" title="Preview"></polymer-ui-icon-button>
-          <polymer-ui-icon-button icon="up" on-tap="save" title="Save"></polymer-ui-icon-button>
-          <polymer-ui-icon-button icon="left" on-tap="undo" title="Undo"></polymer-ui-icon-button>
-          <polymer-ui-icon-button icon="right" on-tap="redo" title="Redo"></polymer-ui-icon-button>
-          <polymer-ui-icon-button icon="list" on-tap="inspect" title="Inspect"></polymer-ui-icon-button>
-          <polymer-ui-icon-button icon="add" on-tap="project" title="New Project"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="refresh" on-tap="{{refresh}}" title="Refresh"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="shortcut" on-tap="{{link}}" title="Preview"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="up" on-tap="{{save}}" title="Save"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="left" on-tap="{{undo}}" title="Undo"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="right" on-tap="{{redo}}" title="Redo"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="list" on-tap="{{inspect}}" title="Inspect"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="add" on-tap="{{project}}" title="New Project"></polymer-ui-icon-button>
         </polymer-ui-toolbar>
 
         <polymer-ui-pages id="pages" flex selected="{{selectedPage}}">
@@ -104,7 +104,7 @@
               <template repeat="{{categories}}">
                 <polymer-ui-submenu-item label="{{name}}">
                   <template repeat="{{list}}">
-                    <polymer-ui-menu-item on-tap="itemTap" on-dblclick="itemDblClick" item="{{id}}">{{label}}</polymer-ui-menu-item>
+                    <polymer-ui-menu-item on-tap="{{itemTap}}" on-dblclick="{{itemDblClick}}" item="{{id}}">{{label}}</polymer-ui-menu-item>
                   </template>
                 </polymer-ui-submenu-item>
               </template>
@@ -122,7 +122,7 @@
                 <page>
                   <polymer-layout vertical></polymer-layout>
                   <polymer-ui-field theme="poymer-ui-light-theme">
-                    <polymer-ui-icon-button on-tap="searchHelpAction" icon="search"></polymer-ui-icon-button>
+                    <polymer-ui-icon-button on-tap="{{searchHelpAction}}" icon="search"></polymer-ui-icon-button>
                     <input value="{{searchText}}" placeholder="">
                   </polymer-ui-field>
                   <div flex>
@@ -132,10 +132,10 @@
                   </div>
                   <polymer-ui-menu id="topicMenu">
                     <polymer-ui-submenu-item active label="Other Topics">
-                      <polymer-ui-menu-item on-tap="topicTap" item="http://polymer-project.org">Polymer Home</polymer-ui-menu-item>
-                      <polymer-ui-menu-item on-tap="topicTap" item="/polymer/CustomElements/docs/classes/Document.html">Custom Elements</polymer-ui-menu-item>
-                      <polymer-ui-menu-item on-tap="topicTap" item="/polymer/polymer/docs/">Polymer API Docs</polymer-ui-menu-item>
-                      <polymer-ui-menu-item on-tap="topicTap" item="/polymer/platform/docs/">Platform API Docs</polymer-ui-menu-item>
+                      <polymer-ui-menu-item on-tap="{{topicTap}}" item="http://polymer-project.org">Polymer Home</polymer-ui-menu-item>
+                      <polymer-ui-menu-item on-tap="{{topicTap}}" item="/polymer/CustomElements/docs/classes/Document.html">Custom Elements</polymer-ui-menu-item>
+                      <polymer-ui-menu-item on-tap="{{topicTap}}" item="/polymer/polymer/docs/">Polymer API Docs</polymer-ui-menu-item>
+                      <polymer-ui-menu-item on-tap="{{topicTap}}" item="/polymer/platform/docs/">Platform API Docs</polymer-ui-menu-item>
                     </polymer-ui-submenu-item>
                   </polymer-ui-menu>
                 </page>

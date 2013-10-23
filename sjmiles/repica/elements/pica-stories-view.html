@@ -27,7 +27,7 @@ license that can be found in the LICENSE file.
       <template repeat="{{viewItems}}">
         <pica-story story="{{}}"></pica-story>
       </template>
-      <div id="more" touch-action="user" on-tap="loadMore">
+      <div id="more" touch-action="user" on-tap="{{loadMore}}">
         <g-icon src="../images/refresh_lightreg.png"></g-icon>
         Load more articles
       </div>

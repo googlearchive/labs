@@ -65,7 +65,7 @@
       <polymer-ui-toolbar theme="polymer-ui-light-theme">
         <polymer-ui-icon-button src="../../projects/Sandbox/lib/assets/menu.png"></polymer-ui-icon-button>
         <div class="flex"></div>
-        <polymer-ui-icon-button src="../../projects/Sandbox/lib/assets/ic_refresh_darkreg.png" on-click="go"></polymer-ui-icon-button>
+        <polymer-ui-icon-button src="../../projects/Sandbox/lib/assets/ic_refresh_darkreg.png" on-click="{{go}}"></polymer-ui-icon-button>
         <polymer-ui-icon-button src="../../projects/Sandbox/lib/assets/fullscreen.png"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
       <div id="tiles" class="{{state}}">
@@ -78,7 +78,7 @@
       </div>
     </div>
     <polymer-animation-group id="animation" type="seq">
-      <polymer-animation-group easing="ease-in" on-complete="onTilesShow">
+      <polymer-animation-group easing="ease-in" on-complete="{{onTilesShow}}">
         <template repeat="{{inData}}">
           <polymer-translate target="{{tile}}" duration="{{duration}}" startDelay="{{startDelay}}" fromX="{{fromX}}" fromY="{{fromY}}" toX="0px" toY="0px"></polymer-translate>
         </template>

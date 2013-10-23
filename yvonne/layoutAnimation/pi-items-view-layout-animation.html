@@ -16,7 +16,7 @@
     <div id="container" loaded="{{loaded}}" class="{{view}}">
       <template repeat="{{viewItems}}">
         <div class="item">
-          <div class="card" on-tap="selectItem">
+          <div class="card" on-tap="{{selectItem}}">
             <div class="image" style="background-image: url({{imgSrc}});" showing="{{imageShowing}}"></div>
             <div class="info">
               <div class="title">{{title}}
@@ -34,7 +34,7 @@
           </div>
         </div>
       </template>
-      <div id="more" on-tap="loadMore">
+      <div id="more" on-tap="{{loadMore}}">
         <g-icon src="../../projects/pica/images/refresh_lightreg.png"></g-icon>
           Load more articles
       </div>

@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="../../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
     
     <polymer-ui-toolbar>
-      <button class="toolbar-button" on-tap="run">Run</button>
+      <button class="toolbar-button" on-tap="{{run}}">Run</button>
       <div hidden?="{{hideTitle}}">{{meta.label}}</div>
       <content></content>
     </polymer-ui-toolbar>
@@ -32,12 +32,12 @@
       <!--<code-mirror id="liveEditor"></code-mirror>-->
       
       <polymer-ui-splitter direction="{{vertical ? 'up' : 'left'}}" locked="{{maximized}}" 
-          on-pointerdown="disableOutputMouseEvents" on-pointerup="enableOutputMouseEvents" 
-          on-trackend="splitterDragEnd"></polymer-ui-splitter>
+          on-pointerdown="{{disableOutputMouseEvents}}" on-pointerup="{{enableOutputMouseEvents}}" 
+          on-trackend="{{splitterDragEnd}}"></polymer-ui-splitter>
           
       <div v-flex flex>
         <polymer-ui-toolbar theme="polymer-ui-light-theme">
-          <polymer-ui-icon-button src="{{arrowImageSrc}}" on-tap="toggleMaximized"></polymer-ui-icon-button>
+          <polymer-ui-icon-button src="{{arrowImageSrc}}" on-tap="{{toggleMaximized}}"></polymer-ui-icon-button>
           <div>Output</div>
         </polymer-ui-toolbar>
         <x-output id="output" flex html="{{source}}"></x-output>

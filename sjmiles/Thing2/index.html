@@ -31,7 +31,7 @@
       <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
 
       <polymer-ui-toolbar id="toolbar">
-        <polymer-ui-icon-button icon="menu" on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="menu" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
         <polymer-selector selected="{{layoutIndex}}">
           <polymer-ui-icon-button>Lrn</polymer-ui-icon-button>
           <polymer-ui-icon-button>Cde</polymer-ui-icon-button>
@@ -43,7 +43,7 @@
       <polymer-ui-toolbar id="learnbar">
         <span>Learn</span>
         <span flex></span>
-        <polymer-ui-icon-button icon="settings" on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="settings" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
       
       <polymer-ui-sidebar-menu v-flex id="sidebar" selected="{{selected}}" label="Elements">
@@ -57,14 +57,14 @@
       <polymer-ui-toolbar id="codebar">
         <span>Code</span>
         <span flex></span>
-        <polymer-ui-icon-button icon="settings" on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="settings" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
       <code-page flex id="code""></code-page>
 
       <polymer-ui-toolbar id="dobar">
         <span>Do</span>
         <span flex></span>
-        <polymer-ui-icon-button icon="settings" on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="settings" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>      <do-page flex id="do"></do-page>
 
       <element-database items="{{items}}"></element-database>

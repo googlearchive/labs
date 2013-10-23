@@ -1,6 +1,6 @@
 <script src="../../../polymer/platform/WebAnimations/web-animations.js"></script>
 <link rel="component" href="x-animation.html">
-<element name="x-animation-group" extends="x-animation" on-animationchange="onAnimationChange">
+<element name="x-animation-group" extends="x-animation" on-animationchange="{{onAnimationChange}}">
   <script>
     var ANIMATION_GROUPS = {
       'par': ParGroup,

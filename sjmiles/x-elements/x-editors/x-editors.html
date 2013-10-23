@@ -61,7 +61,7 @@ license that can be found in the LICENSE file.
       }
     </style>
     <input id="input" type="{{type}}" value="{{workingValue}}" autocapitalize="off"
-      autocorrect="off" on-change="commit">
+      autocorrect="off" on-change="{{commit}}">
   </template>
   <script>
     Polymer('x-string-editor', {
@@ -118,7 +118,7 @@ license that can be found in the LICENSE file.
         font: inherit;
       }
     </style>
-    <input id="input" type="checkbox" checked="{{workingValue}}" on-change="inputChange">
+    <input id="input" type="checkbox" checked="{{workingValue}}" on-change="{{inputChange}}">
   </template>
   <script>
     Polymer('x-boolean-editor', {
@@ -150,7 +150,7 @@ license that can be found in the LICENSE file.
         user-select: all;
       }
     </style>
-    <select id="select" on-change="selectChange"></select>
+    <select id="select" on-change="{{selectChange}}"></select>
   </template>
   <script>
     // TODO(sorvell): Template repeat functions specially inside a select
@@ -207,7 +207,7 @@ license that can be found in the LICENSE file.
         vertical-align: middle;
       }
     </style>
-    <textarea id="input" on-change="commit" rows="10"></textarea>
+    <textarea id="input" on-change="{{commit}}" rows="10"></textarea>
   </template>
   <script>
     Polymer('x-text-editor', {
@@ -259,7 +259,7 @@ license that can be found in the LICENSE file.
         user-select: all;
       }
     </style>
-    <input id="input" type="range" value="{{workingValue}}" min="{{min}}" max="{{max}}" step="{{step}}" on-change="commit">
+    <input id="input" type="range" value="{{workingValue}}" min="{{min}}" max="{{max}}" step="{{step}}" on-change="{{commit}}">
   </template>
   <script>
     Polymer('x-range-editor', {

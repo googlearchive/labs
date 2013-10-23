@@ -94,7 +94,7 @@ license that can be found in the LICENSE file.
     </script>
   </polymer-element>
   <!-- -->
-  <polymer-element name="x-menu" on-track="track" on-trackEnd="trackEnd" touch-action="none">
+  <polymer-element name="x-menu" on-track="{{track}}" on-trackEnd="{{trackEnd}}" touch-action="none">
     <template>
       <style>
         @host{*{
@@ -105,7 +105,7 @@ license that can be found in the LICENSE file.
           width: 900px;
         }}
       </style>
-      <button on-tap="spin">Spin Down</button><button id="up" on-tap="spin">Spin Up</button>
+      <button on-tap="{{spin}}">Spin Down</button><button id="up" on-tap="{{spin}}">Spin Up</button>
       <polymer-ajax url="snap/s.txt" handleAs="text" response="{{raw}}" auto></polymer-ajax>
       <x-spiral id="spiral" off="{{off}}">
         <template repeat="{{covers}}">

@@ -19,7 +19,7 @@ license that can be found in the LICENSE file.
  */
 -->
 <polymer-element name="polymer-ui-toggle-button" attributes="value noCaption onCaption offCaption"
-    on-tap="toggle" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd" on-flick="flick">
+    on-tap="{{toggle}}" on-trackstart="{{trackStart}}" on-track="{{track}}" on-trackend="{{trackEnd}}" on-flick="{{flick}}">
   <template>
     <link rel="stylesheet" href="polymer-ui-toggle-button.css" />
     <div id="toggle" class="toggle">

@@ -12,7 +12,7 @@
     <template>
       <link href="tracks-app.css" rel="stylesheet">
 
-      <polymer-media-query query="min-width: 800px" on-polymer-mediachange="mediaChange"></polymer-media-query>
+      <polymer-media-query query="min-width: 800px" on-polymer-mediachange="{{mediaChange}}"></polymer-media-query>
       <polymer-grid-layout id="layout" nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
 
       <polymer-ui-toolbar id="toolbar">
@@ -21,15 +21,15 @@
           <span>Code</span>
           <span>Design</span>
         </polymer-ui-tabs>
-        <polymer-ui-icon-button icon="settings" on-tap="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="settings" on-tap="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <polymer-ui-toolbar id="minibar">
         <polymer-ui-tabs selected="{{selectedTab}}">
           <span>Learn</span>
-          <span on-tap="toggleLayout">Lucky</span>
+          <span on-tap="{{toggleLayout}}">Lucky</span>
         </polymer-ui-tabs>
-        <polymer-ui-icon-button icon="settings" on-tap="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="settings" on-tap="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <element-database items="{{itemsBase}}">
@@ -57,9 +57,9 @@
       </polymer-ui-toolbar>
 
       <polymer-ui-toolbar h-flex id="docsbar">
-        <polymer-ui-icon-button icon="drawer" on-tap="enlargeDocs"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="drawer" on-tap="{{enlargeDocs}}"></polymer-ui-icon-button>
         <span flex>Documentation</span>
-        <polymer-ui-icon-button icon="search"on-tap="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="search"on-tap="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <div id="docs" v-flex>
@@ -67,9 +67,9 @@
       </div>
 
       <polymer-ui-toolbar h-flex id="exampleBar">
-        <polymer-ui-icon-button icon="drawer" on-tap="enlargeExample"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="drawer" on-tap="{{enlargeExample}}"></polymer-ui-icon-button>
         <span flex>Example</span>
-        <polymer-ui-icon-button icon="search"on-tap="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="search"on-tap="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <div id="example">
@@ -77,7 +77,7 @@
       </div>
 
       <polymer-ui-toolbar h-flex id="sourcebar">
-        <polymer-ui-icon-button icon="drawer" on-tap="enlargeSource"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="drawer" on-tap="{{enlargeSource}}"></polymer-ui-icon-button>
         <span flex>Example Source</span>
       </polymer-ui-toolbar>
 
@@ -86,7 +86,7 @@
       <div id="exampleSource"></div>
 
       <polymer-ui-toolbar h-flex id="codebar">
-        <polymer-ui-icon-button icon="search"on-tap="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="search"on-tap="{{toggleLayout}}"></polymer-ui-icon-button>
         <span flex>Code</span>
       </polymer-ui-toolbar>
 
@@ -98,7 +98,7 @@
       </div>
 
       <polymer-ui-toolbar h-flex id="dobar">
-        <polymer-ui-icon-button icon="search"on-tap="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="search"on-tap="{{toggleLayout}}"></polymer-ui-icon-button>
         <span flex>Do</span>
       </polymer-ui-toolbar>
 

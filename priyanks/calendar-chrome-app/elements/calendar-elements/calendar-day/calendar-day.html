@@ -33,7 +33,7 @@
 			}
 		</style>
 		<div class="wrapper">
-			<ul on-click="onBackgroundClick">
+			<ul on-click="{{onBackgroundClick}}">
 				<li></li>
 				<li></li>
 				<li></li>
@@ -60,7 +60,7 @@
 				<li></li>
 			</ul>
 			<template repeat="{{events as event}}">
-				<calendar-event-preview style="top: {{(event.start - start) * 5 / 360000}}px;" event="{{event}}" on-click="onEventDetailsClick"></calendar-event-preview>
+				<calendar-event-preview style="top: {{(event.start - start) * 5 / 360000}}px;" event="{{event}}" on-click="{{onEventDetailsClick}}"></calendar-event-preview>
 			</template>
 		</div>
 	</template>

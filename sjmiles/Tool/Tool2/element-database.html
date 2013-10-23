@@ -7,8 +7,8 @@
         }
       }
     </style>
-    <polymer-ajax url="../../../../polymer-elements/manifest.xml" handleAs="xml" folder="polymer-elements" auto on-polymer-response="response"></polymer-ajax>
-    <polymer-ajax url="../../../../polymer-ui-elements/manifest.xml" handleAs="xml" folder="polymer-ui-elements" auto on-polymer-response="response"></polymer-ajax>
+    <polymer-ajax url="../../../../polymer-elements/manifest.xml" handleAs="xml" folder="polymer-elements" auto on-polymer-response="{{response}}"></polymer-ajax>
+    <polymer-ajax url="../../../../polymer-ui-elements/manifest.xml" handleAs="xml" folder="polymer-ui-elements" auto on-polymer-response="{{response}}"></polymer-ajax>
   </template>
   <script>
     Polymer('element-database', {

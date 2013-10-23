@@ -101,7 +101,7 @@ license that can be found in the LICENSE file.
     </script>
   </polymer-element>
   <!-- -->
-  <polymer-element name="x-menu" attributes="xml" on-track="track" on-trackEnd="trackEnd" touch-action="none">
+  <polymer-element name="x-menu" attributes="xml" on-track="{{track}}" on-trackEnd="{{trackEnd}}" touch-action="none">
     <template>
       <style>
         @host{*{
@@ -119,14 +119,14 @@ license that can be found in the LICENSE file.
       
       <polymer-ajax url="snap/s.txt" handleAs="text" response="{{raw}}" auto></polymer-ajax>
       
-      <button on-tap="spin">Spin Down</button><button id="up" on-tap="spin">Spin Up</button>
+      <button on-tap="{{spin}}">Spin Down</button><button id="up" on-tap="{{spin}}">Spin Up</button>
       <x-spiral id="spiral" off="{{off}}">
         <template repeat="{{games}}">
           <x-cover><img draggable="false" src="http://itch.selfip.net/hyper/Media/MAME/snaps160/{{name}}.png" width="160px" height="120px">
           <div style="text-align:center; padding: 4px 8px 8px;">{{description}} ({{year}})</div></x-cover>
         </template>
       </x-spiral>
-      <button on-tap="spin">Spin Down</button><button id="up" on-tap="spin">Spin Up</button>
+      <button on-tap="{{spin}}">Spin Down</button><button id="up" on-tap="{{spin}}">Spin Up</button>
       
     </template>
     <script>

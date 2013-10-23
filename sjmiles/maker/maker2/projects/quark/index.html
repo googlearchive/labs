@@ -35,9 +35,9 @@
         <polymer-layout vertical></polymer-layout>
         <polymer-ui-toolbar>
           <span flex></span>
-          <polymer-ui-icon-button icon="left" on-tap="prevAction"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="left" on-tap="{{prevAction}}"></polymer-ui-icon-button>
           <span style="color:lightblue;">{{current.name}}</span>&nbsp;<span>({{index + 1}} / {{count}})</span>
-          <polymer-ui-icon-button icon="right" on-tap="nextAction"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="right" on-tap="{{nextAction}}"></polymer-ui-icon-button>
           <span flex></span>
         </polymer-ui-toolbar>  
         <div theme="polymer-ui-light-theme" flex>

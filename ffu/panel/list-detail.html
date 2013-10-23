@@ -139,7 +139,7 @@
           <div class="alpha-header">{{title}}</div>
           <div class="card">
             <template repeat="{{contacts}}">
-              <div class="item" on-tap="itemTap">
+              <div class="item" on-tap="{{itemTap}}">
                 <div class="avatar-container">
                   <div id="avatar" class="{{favorite: isFavorite == 1}}">{{initials}}</div>
                 </div>
@@ -152,7 +152,7 @@
         </template>
       </div>
     </div>
-    <contacts-detail id="detail" contact="{{contact}}" on-contacts-detail-shrink="detailShrinkAction">
+    <contacts-detail id="detail" contact="{{contact}}" on-contacts-detail-shrink="{{detailShrinkAction}}">
   </template>
   <script>
     Polymer('x-list-detail', {

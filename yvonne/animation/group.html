@@ -16,7 +16,7 @@
             <option value="{{}}">{{}}</option>
           </template>
         </select>
-        <button on-click="onClick">play!</button>
+        <button on-click="{{onClick}}">play!</button>
       </template>
       <script>
         Polymer.register(this, {
@@ -36,7 +36,7 @@
             width: 200px;
           }
         </style>
-        <x-header ids="{{ids}}" on-play="onPlay"></x-header>
+        <x-header ids="{{ids}}" on-play="{{onPlay}}"></x-header>
         <div id="d"></div>
         <g-animation-group id="pargroup" type="par">
           <g-animation-group id="seqgroup" type="seq">
