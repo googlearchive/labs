@@ -72,7 +72,7 @@
 				'address': [],
 				'group': 0
 			},
-			enteredDocument: function() {
+			enteredView: function() {
 				this.observer = new MutationObserver(function(mutations) {
 					mutations.forEach(function(m) {
 						Array.prototype.forEach.call(m.addedNodes, function(n) {
@@ -85,7 +85,7 @@
 				});
 				this.observer.observe(window.ShadowDOMPolyfill ? this : this.shadowRoot, {childList: true});
 			},
-			leftDocument: function() {
+			leftView: function() {
 				this.observer.disconnect();
 			},
 			addPhoneAction: function() {

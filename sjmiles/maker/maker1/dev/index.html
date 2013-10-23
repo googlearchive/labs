@@ -200,7 +200,7 @@
               this.shadowRoot.querySelectorAll('file-document')[this.selected];
           this.text =  this.activeDocument.text;
         },
-        enteredDocument: function() {
+        enteredView: function() {
           // code mirror manages it's size prematurely
           this.$.code.async('refresh', null, 100);
         },
