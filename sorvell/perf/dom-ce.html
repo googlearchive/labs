@@ -1,0 +1,10 @@
+<script src="../../../polymer/polymer.js"></script>
+<script src="test.js"></script>
+<script>
+  var proto = Object.create(HTMLElement.prototype);
+  proto.createdCallback = function() {};
+  proto.enteredViewCallback = function() {};
+  document.register('x-test', {prototype: proto});
+  //
+  test('x-test');
+</script>
