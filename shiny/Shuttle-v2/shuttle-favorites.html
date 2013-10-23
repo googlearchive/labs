@@ -43,7 +43,7 @@
     
     <polymer-selector class="favorites" selected="{{selected}}" selectedModel="{{favorite}}">
       <template repeat="{{favorites}}">
-        <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="swipeAway" noCurve on-touchend="preventDefault">
+        <polymer-ui-card class="fav-item" swipeable on-polymer-card-swipe-away="{{swipeAway}}" noCurve on-touchend="{{preventDefault}}">
           {{fromStop.name}} <span class="to">to {{toStop.name}}</span>
         </polymer-ui-card>
       </template>

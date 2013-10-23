@@ -76,7 +76,7 @@
 		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
 		<polymer-grid-layout id="grid"></polymer-grid-layout>
 		<polymer-ui-overlay id="sidebar" class="sidebar" backdrop modal>
-			<polymer-ui-menu valueattr="label" on-polymer-select="sidebarCloseAction">
+			<polymer-ui-menu valueattr="label" on-polymer-select="{{sidebarCloseAction}}">
 				<div class="header">
 					<polymer-flex-layout vertical></polymer-flex-layout>
 					<contacts-icon contact="{{me}}" large></contacts-icon>
@@ -92,7 +92,7 @@
 			</polymer-ui-menu>
 		</polymer-ui-overlay>
 		<polymer-ui-pages selected="{{page}}" wideLayout?="{{wideLayout}}">
-			<contacts-list id="listView" on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction" on-contacts-list-scroll="scrollAction">
+			<contacts-list id="listView" on-contacts-list-add="{{addContactAction}}" on-contacts-menu-open="{{sidebarOpenAction}}" on-contacts-list-scroll="{{scrollAction}}">
 				<div id="sticky" class="contactItem header sticky">
 					{{stickyContent}}
 				</div>
@@ -109,9 +109,9 @@
 					</template>
 				</template>
 			</contacts-list>
-			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="shrinkAction">
+			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{shrinkAction}}">
 			</contacts-detail>
-			<contacts-create on-contacts-create-cancel="shrinkAction">
+			<contacts-create on-contacts-create-cancel="{{shrinkAction}}">
 			</contacts-create>
 		</polymer-ui-pages>
 	</template>

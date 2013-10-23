@@ -109,9 +109,9 @@
     
     <polymer-selector id="selector" target="{{$.stops}}" itemsSelector=".stop" 
         valueattr="name" selected="{{selected}}" selectedItem="{{selectedItem}}"
-        selectedModel="{{selectedStop}}" on-polymer-activate="closeAction"></polymer-selector>
+        selectedModel="{{selectedStop}}" on-polymer-activate="{{closeAction}}"></polymer-selector>
     
-    <polymer-selector id="stops" selected="{{mode}}" touch-action="pan-y" on-pointerdown="hideKeyboard">
+    <polymer-selector id="stops" selected="{{mode}}" touch-action="pan-y" on-pointerdown="{{hideKeyboard}}">
       <div class="stops-list">
         <template repeat="{{folders}}">
           <template if="{{groups.length}}">

@@ -3,7 +3,7 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
-<polymer-element name="contacts-create-item" attributes="icon activeIcon label value error selectedType active overlayActive" on-focus="focusAction" on-blur="blurAction">
+<polymer-element name="contacts-create-item" attributes="icon activeIcon label value error selectedType active overlayActive" on-focus="{{focusAction}}" on-blur="{{blurAction}}">
 	<template>
 		<style>
 			/* @polyfill @host */
@@ -59,14 +59,14 @@
 		</style>
 		<polymer-flex-layout align="center"></polymer-flex-layout>
 		<polymer-ui-icon-button icon="{{icon}}" class="{{hidden: active || overlayActive || value || selectedType !== -1}}"></polymer-ui-icon-button>
-		<polymer-ui-icon-button id="activeIcon" icon="{{activeIcon}}" class="{{hidden: !value && selectedType === -1 && !active && !overlayActive}}" on-tap="overlayAction"></polymer-ui-icon-button>
+		<polymer-ui-icon-button id="activeIcon" icon="{{activeIcon}}" class="{{hidden: !value && selectedType === -1 && !active && !overlayActive}}" on-tap="{{overlayAction}}"></polymer-ui-icon-button>
 		<div flex>
 			<input id="input" value="{{value}}" placeholder="{{label}}">
 		</div>
-		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive}}" on-tap="cancelAction"></polymer-ui-icon-button>
-		<polymer-ui-icon-button src="error.png" class="{{hidden: !error || active}}" on-tap="errorAction"></polymer-ui-icon-button>
-		<polymer-ui-overlay id="typeOverlay" active="{{overlayActive}}" modal backdrop on-polymer-overlay-open="overlayOpenAction">
-			<polymer-selector selected="{{selectedType}}" on-polymer-activate="overlaySelectAction">
+		<polymer-ui-icon-button icon="close" class="{{hidden: !active && !overlayActive}}" on-tap="{{cancelAction}}"></polymer-ui-icon-button>
+		<polymer-ui-icon-button src="error.png" class="{{hidden: !error || active}}" on-tap="{{errorAction}}"></polymer-ui-icon-button>
+		<polymer-ui-overlay id="typeOverlay" active="{{overlayActive}}" modal backdrop on-polymer-overlay-open="{{overlayOpenAction}}">
+			<polymer-selector selected="{{selectedType}}" on-polymer-activate="{{overlaySelectAction}}">
 				<content></content>
 			</polymer-selector>
 		</polymer-ui-overlay>
