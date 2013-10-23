@@ -58,17 +58,6 @@
 			polymer-list {
 				height: 100%;
 			}
-			.contactItem {
-				background-color: white;
-				border-style: solid;
-				border-color: rgba(0, 0, 0, 0.1);
-				border-width: 0 1px 1px;
-				font-size: 18px;
-				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				box-sizing: border-box;
-				height: 80px;
-				padding: 0 20px;
-			}
 			.contactItem.header {
 		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
 		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
@@ -101,7 +90,7 @@
 
 			<polymer-list data="{{$.mock.contacts}}" listData="{{listData}}">
 				<template repeat="{{contact in listData}}">
-					<contacts-list-item class="contactItem {{contact.page}}" contact="{{contact}}" on-tap="selectContactAction">
+					<contacts-list-item class="{{contact.page}}" contact="{{contact}}" xon-tap="selectContactAction">
 					</contacts-list-item>
 				</template>
 			</polymer-list>

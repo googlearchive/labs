@@ -1,4 +1,6 @@
+<link href="../../../../polymer-elements/polymer-animation/polymer-translate.html" rel="import">
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
+<link href="../../../../polymer-elements/polymer-scrub/polymer-scrub.html" rel="import">
 <link href="contacts-icon.html" rel="import">
 <polymer-element name="contacts-list-item" attributes="contact" noscript>
 	<template>
@@ -6,9 +8,53 @@
 			:host {
 				display: block;
 			}
+			#item {
+				position: relative;
+				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 0 1px;
+				box-sizing: border-box;
+				height: 80px;
+			}
+			#itemControls {
+				box-sizing: border-box;
+				position: relative;
+				height: 100%;
+				width: 100%;
+				left: -100%;
+				background-color: #f2f2f2;
+/*				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 1px 1px 0;
+*/				padding: 21px 30px;
+				text-align: right;
+			}
+			#itemBody {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 1px;
+				right: 0;
+				background-color: white;
+				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 0 0 1px;
+				font-size: 18px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				padding: 0 20px;
+			}
 		</style>
-		<polymer-flex-layout align="center"></polymer-flex-layout>
-		<contacts-icon contact="{{contact}}"></contacts-icon>
-		<div>{{contact.name}}</div>
+		<div id="item">
+			<div id="itemControls">
+				<polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
+			</div>
+			<div id="itemBody">
+				<polymer-flex-layout align="center"></polymer-flex-layout>
+				<contacts-icon contact="{{contact}}"></contacts-icon>
+				<div>{{contact.name}}</div>
+			</div>
+		</div>
+		<polymer-translate id="slideAnimation" target="{{$.item}}" fromX="0" toX="100%" duration="1"></polymer-translate>
+		<polymer-scrub target="{{$.itemBody}}" animation="{{$.slideAnimation.animation}}"></polymer-scrub>
 	</template>
 </polymer-element>
