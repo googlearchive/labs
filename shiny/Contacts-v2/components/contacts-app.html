@@ -9,6 +9,7 @@
 <link href="contacts-detail.html" rel="import">
 <link href="contacts-icon.html" rel="import">
 <link href="contacts-list.html" rel="import">
+<link href="contacts-list-item.html" rel="import">
 <link href="mock-data.html" rel="import">
 <polymer-element name="contacts-app" attribiutes="page">
 	<template>
@@ -101,11 +102,14 @@
 						{{alpha.letter}}
 					</div>
 					<template repeat="{{contact in alpha.contacts}}">
+						<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
+
 						<div class="contactItem">
 							<polymer-flex-layout align="center"></polymer-flex-layout>
 								<contacts-icon contact="{{contact}}"></contacts-icon>
 							<div>{{contact.name}}</div>
 						</div>
+						
 					</template>
 				</template>
 			</contacts-list>
