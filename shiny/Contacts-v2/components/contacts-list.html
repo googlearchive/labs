@@ -4,7 +4,8 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
 <link href="contacts-detail.html" rel="import">
-<polymer-element name="contacts-list" extends="polymer-selector" on-polymer-activate="{{activateAction}}">
+<link href="mock-data.html" rel="import">
+<polymer-element name="contacts-list" extends="polymer-selector" attributes="wideLayout">
 	<template>
 		<style>
 			/* @polyfill @host */
@@ -33,6 +34,38 @@
 				min-width: 320px;
 				overflow-y: scroll;
 			}
+			.contactItem {
+				background-color: white;
+				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.1);
+				border-width: 0 1px 1px;
+				font-size: 18px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				box-sizing: border-box;
+				height: 80px;
+				padding: 0 20px;
+			}
+			.contactItem.sticky {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 10;
+			}
+			.contactItem.header {
+		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    color: #9f9f9f;
+				font-variant: small-caps;
+				height: 60px;
+				padding: 20px;
+			}
+			[wideLayout] .contactItem.polymer-selected {
+		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		  }
 			#overlay {
 				position: fixed;
 				top: 0;
@@ -46,15 +79,8 @@
 			contacts-detail {
 				min-width: 65%;
 			}
-			/* @polyfill .sticky */
-			content::-webkit-distributed(.sticky) {
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				z-index: 10;
-			}
 		</style>
+		<mock-data id="mock"></mock-data>
 		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
 		<polymer-grid-layout id="grid"></polymer-grid-layout>
 		<polymer-ui-toolbar theme="polymer-ui-dark-theme">
@@ -68,43 +94,82 @@
 			</template>
 		</polymer-ui-toolbar>
 		<div class="clip" flex>
-			<content select=".sticky"></content>
-			<div id="listContainer">
-				<shadow></shadow>
-				<polymer-ui-overlay id="overlay">
-					<contacts-detail contact="{{selectedModel.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
-					</contacts-detail>
-				</polymer-ui-overlay>
+			<div id="sticky" class="contactItem header sticky">
+				{{stickyContent}}
 			</div>
+			<polymer-selector id="listContainer" selectedModel="{{selectedContact}}" on-polymer-activate="activateAction">
+				<template repeat="{{alpha in $.mock.alphabetized}}">
+					<div class="contactItem header">
+						{{alpha.letter}}
+					</div>
+					<template repeat="{{contact in alpha.contacts}}">
+						<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
+
+						<div class="contactItem">
+							<polymer-flex-layout align="center"></polymer-flex-layout>
+								<contacts-icon contact="{{contact}}"></contacts-icon>
+							<div>{{contact.name}}</div>
+						</div>
+						
+					</template>
+				</template>
+			</polymer-selector>
+			<polymer-ui-overlay id="overlay">
+				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
+				</contacts-detail>
+			</polymer-ui-overlay>
 		</div>
-		<contacts-detail contact="{{selectedModel.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
+		<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
 		</contacts-detail>
 	</template>
 	<script>
 		Polymer('contacts-list', {
 			applyAuthorStyles: true,
-			selected: -1,
 			wideLayout: true,
+			stickyContent: 'A',
+			selectedContact: null,
 			ready: function() {
-				this.$.listContainer.onscroll = function(e) {
-					this.fire('contacts-list-scroll', this.$.listContainer.scrollTop);
-				}.bind(this);
+				this.$.listContainer.onscroll = this.scrollAction.bind(this);
 				this.wideLayoutChanged();
 			},
 			wideLayoutChanged: function() {
 				if (this.wideLayout) {
 					this.$.overlay.active && (this.$.overlay.active = false);
 					this.$.grid.layout = [
-						[2, 2],
-						[3, 4],
-						[3, 4],
+						[3, 3],
+						[4, 5],
+						[4, 5],
 					];
 				} else {
 					this.$.grid.layout = [
-						[2, 2],
 						[3, 3],
-						[3, 3],
+						[4, 4],
+						[4, 4],
 					];
+				}
+			},
+			scrollAction: function() {
+				var items = this.$.listContainer.querySelectorAll('.contactItem');
+				var scrollTop = this.$.listContainer.scrollTop;
+				var offset = 0;
+				var header;
+				for (var i = 0, item; item = items[i]; i++) {
+					if (item.classList.contains('header')) {
+						header = item;
+						offset += 60;
+					} else {
+						offset += 80;
+					}
+					if (offset > scrollTop) {
+						this.stickyContent = header.textContent;
+						var transY = offset - scrollTop - 60;
+						if (transY < 0 && items[i + 1] && items[i + 1].classList.contains('header')) {
+							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
+						} else {
+							this.$.sticky.style['-webkit-transform'] = null;
+						}
+						break;
+					}
 				}
 			},
 			addAction: function() {

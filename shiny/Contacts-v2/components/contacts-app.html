@@ -6,11 +6,8 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-pages/polymer-ui-pages.html" rel="import">
 <link href="contacts-create.html" rel="import">
-<link href="contacts-detail.html" rel="import">
 <link href="contacts-icon.html" rel="import">
 <link href="contacts-list.html" rel="import">
-<link href="contacts-list-item.html" rel="import">
-<link href="mock-data.html" rel="import">
 <polymer-element name="contacts-app" attribiutes="page">
 	<template>
 		<style>
@@ -47,33 +44,7 @@
 				height: 100%;
 				z-index: 0;
 			}
-			.contactItem {
-				background-color: white;
-				border-style: solid;
-				border-color: rgba(0, 0, 0, 0.1);
-				border-width: 0 1px 1px;
-				font-size: 18px;
-				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				box-sizing: border-box;
-				height: 80px;
-				padding: 0 20px;
-			}
-			.contactItem.header {
-		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    color: #9f9f9f;
-				font-variant: small-caps;
-				height: 60px;
-				padding: 20px;
-			}
-			[wideLayout] .contactItem.polymer-selected {
-		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		  }
 		</style>
-		<mock-data id="mock"></mock-data>
 		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
 		<polymer-grid-layout id="grid"></polymer-grid-layout>
 		<polymer-ui-overlay id="sidebar" class="sidebar" backdrop modal>
@@ -93,36 +64,14 @@
 			</polymer-ui-menu>
 		</polymer-ui-overlay>
 		<polymer-ui-pages selected="{{page}}" wideLayout?="{{wideLayout}}">
-			<contacts-list id="listView" on-contacts-list-add="{{addContactAction}}" on-contacts-menu-open="{{sidebarOpenAction}}" on-contacts-list-scroll="{{scrollAction}}">
-				<div id="sticky" class="contactItem header sticky">
-					{{stickyContent}}
-				</div>
-				<template repeat="{{alpha in $.mock.alphabetized}}">
-					<div class="contactItem header">
-						{{alpha.letter}}
-					</div>
-					<template repeat="{{contact in alpha.contacts}}">
-						<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
-
-						<div class="contactItem">
-							<polymer-flex-layout align="center"></polymer-flex-layout>
-								<contacts-icon contact="{{contact}}"></contacts-icon>
-							<div>{{contact.name}}</div>
-						</div>
-						
-					</template>
-				</template>
-			</contacts-list>
-			<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{shrinkAction}}">
-			</contacts-detail>
-			<contacts-create on-contacts-create-cancel="{{shrinkAction}}">
+			<contacts-list id="listView" on-contacts-list-add="addContactAction" on-contacts-menu-open="sidebarOpenAction"></contacts-list>
+			<contacts-create on-contacts-create-cancel="shrinkAction">
 			</contacts-create>
 		</polymer-ui-pages>
 	</template>
 	<script>
 		Polymer('contacts-app', {
 			page: 0,
-			stickyContent: 'A',
 			wideLayout: false,
 			ready: function() {
 				// this.$.grid.layout = [
@@ -130,7 +79,7 @@
 				// ]
 			},
 			addContactAction: function() {
-				this.page = 2;
+				this.page = 1;
 			},
 			shrinkAction: function() {
 				this.page = 0;
@@ -140,30 +89,6 @@
 			},
 			sidebarCloseAction: function() {
 				this.$.sidebar.active = false;
-			},
-			scrollAction: function(e, detail, sender) {
-				var items = this.$.listView.querySelectorAll('.contactItem:not(.sticky)');
-				var scrollTop = detail;
-				var offset = 0;
-				var header;
-				for (var i = 0, item; item = items[i]; i++) {
-					if (item.classList.contains('header')) {
-						header = item;
-						offset += 60;
-					} else {
-						offset += 80;
-					}
-					if (offset > scrollTop) {
-						this.stickyContent = header.textContent;
-						var transY = offset - scrollTop - 60;
-						if (transY < 0 && items[i + 1] && items[i + 1].classList.contains('header')) {
-							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
-						} else {
-							this.$.sticky.style['-webkit-transform'] = null;
-						}
-						break;
-					}
-				}
 			}
 		});
 	</script>
