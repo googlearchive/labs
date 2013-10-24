@@ -17,7 +17,7 @@
     (function() {
       Polymer('shuttle-data', {
         isMock: Shuttle.isMock,
-        created: function() {
+        ready: function() {
           this.populateStops();
         },
         populateStops: function() {

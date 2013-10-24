@@ -37,7 +37,7 @@
   <script>
     Polymer('shuttle-map', {
       opened: false,
-      created: function() {
+      ready: function() {
         // FIXME(ffu): polymer-overlay should publish timeout
         this.$.overlay.timeout = 0;
       },

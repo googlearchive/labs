@@ -42,7 +42,7 @@
         layout: 'grid',
         pageSize: 24,
         itemsSelector: '.item',
-        created: function() {
+        ready: function() {
           this.target = this.$.container;
           this.setAttribute('touch-action', 'scroll');
           this.updateMoreShowing();

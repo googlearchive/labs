@@ -59,7 +59,7 @@
   </template>
   <script>
     Polymer('shuttle-favorites', {
-      created: function() {
+      ready: function() {
         this.transitionEndListener = this.transitionEnd.bind(this);
       },
       addListeners: function(node) {
