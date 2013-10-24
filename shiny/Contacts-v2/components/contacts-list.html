@@ -3,6 +3,7 @@
 <link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
+<link href="../../../list/elements/polymer-list/polymer-list.html" rel="import">
 <link href="contacts-detail.html" rel="import">
 <link href="mock-data.html" rel="import">
 <polymer-element name="contacts-list" extends="polymer-selector" attributes="wideLayout">
@@ -33,6 +34,9 @@
 				background-color: rgb(242, 242, 242),
 				min-width: 320px;
 				overflow-y: scroll;
+			}
+			polymer-list {
+				height: 100%;
 			}
 			.contactItem {
 				background-color: white;
@@ -97,13 +101,25 @@
 			<div id="sticky" class="contactItem header sticky">
 				{{stickyContent}}
 			</div>
-			<polymer-selector id="listContainer" selectedModel="{{selectedContact}}" on-polymer-activate="activateAction">
+			<polymer-list data="{{$.mock.contacts}}" listData="{{listData}}">
+				<template repeat="{{listData}}">
+					<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
+
+					<div class="contactItem {{page}}">
+						<polymer-flex-layout align="center"></polymer-flex-layout>
+							<contacts-icon contact="{{}}"></contacts-icon>
+						<div>{{name}}</div>
+					</div>
+					
+				</template>
+			</polymer-list>
+<!-- 			<polymer-selector id="listContainer" selectedModel="{{selectedContact}}" on-polymer-activate="activateAction">
 				<template repeat="{{alpha in $.mock.alphabetized}}">
 					<div class="contactItem header">
 						{{alpha.letter}}
 					</div>
 					<template repeat="{{contact in alpha.contacts}}">
-						<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
+						<contacts-list-item contact="{{contact}}"></contacts-list-item>
 
 						<div class="contactItem">
 							<polymer-flex-layout align="center"></polymer-flex-layout>
@@ -114,6 +130,7 @@
 					</template>
 				</template>
 			</polymer-selector>
+ -->			
 			<polymer-ui-overlay id="overlay">
 				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
 				</contacts-detail>
