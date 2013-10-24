@@ -14,8 +14,8 @@
       </template>
       <script>
         Polymer('marked-js', {
-          created: function() {
-            console.log('[#' + this.id + '] created: ', this.textContent);
+          ready: function() {
+            console.log('[#' + this.id + '] ready: ', this.textContent);
           },
           enteredView: function() {
             console.log('[#' + this.id + '] enteredView: ', this.textContent);

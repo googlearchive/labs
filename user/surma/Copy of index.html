@@ -16,7 +16,7 @@
           //name: '', // CAVEAT: don't redeclare 'name', it's a native property
           use: '',
           connection: 0,
-          created: function() {
+          ready: function() {
             // this.nameChanged();
           },
           nameChanged: function() {
@@ -57,7 +57,7 @@
       (function() {
         Polymer('connection-user', {
           raw: null,
-          created: function () {
+          ready: function () {
           },
           rawChanged: function() {
             this.innerHTML = this.raw;

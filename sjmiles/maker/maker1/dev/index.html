@@ -160,7 +160,7 @@
           [2, 2, 2, 2]
         ],
         elements: null,
-        created: function() {
+        ready: function() {
           this.nodes = [this.$.mainTabs, this.$.pages, this.$.docTabs,
               this.$.buildBar];
           this.$.code.mirror.on('change', this.codeChange.bind(this));

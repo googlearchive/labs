@@ -241,7 +241,7 @@
             ],
           },
           navOpen: true,
-          created: function() {
+          ready: function() {
             window.addEventListener('hashchange', this.parseLocationHash.bind(this));
             // TODO(sjmiles): manual because flatiron-director didn't work, find out why
             this.parseLocationHash();

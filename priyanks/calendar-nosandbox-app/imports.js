@@ -682,7 +682,7 @@ Polymer.addResolvePath = function (proto, element) {
       editingEvent: BLANK_EVENT,
       selectedEvent: BLANK_EVENT,
       viewStart: 1375660800000,
-      created: function() {
+      ready: function() {
       },
       eventsChanged: function() {
         console.log('=====Here\'s where you should persist this.events to chrome storage=====');

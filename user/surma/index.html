@@ -15,7 +15,7 @@
         Polymer('raw-connection', {
           //name: '', // CAVEAT: don't redeclare 'name', it's a native property
           use: '',
-          created: function() {
+          ready: function() {
             //this.nameChanged();
           },
           nameChanged: function() {
@@ -42,7 +42,7 @@
     <script>
       (function() {
         Polymer('connection-user', {
-          created: function () {
+          ready: function () {
             this.innerHTML = this.$.connect.connection;
           }
         });

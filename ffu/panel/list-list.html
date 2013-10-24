@@ -193,7 +193,7 @@
       margin: 300,
       listShowing: false,
       folders: [{name: 'Global'}, {name: 'Favorites'}, {name: 'My Contacts'}, {name: 'Work'}, {name: 'Family'}],
-      created: function() {
+      ready: function() {
         this.alphaContacts = alphaContacts();
         this.expandTransitionEndListener = this.exapndTransitionEnd.bind(this);
         this.shrinkTransitionEndListener = this.shrinkTransitionEnd.bind(this);

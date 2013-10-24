@@ -60,7 +60,7 @@ license that can be found in the LICENSE file.
   <script>
     Polymer('polymer-ui-card', {
       snapPoints: [0, 0.5, 1],
-      created: function() {
+      ready: function() {
         this.self = this;
       },
       // on-animation-start/end event doesn't work

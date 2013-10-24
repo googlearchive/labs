@@ -158,7 +158,7 @@
     Polymer('x-list-detail', {
       margin: 400,
       contact: null,
-      created: function() {
+      ready: function() {
         this.alphaContacts = alphaContacts();
         this.expandTransitionEndListener = this.exapndTransitionEnd.bind(this);
         this.detailShrinkTransitionEndListener = this.detailShrinkTransitionEnd.bind(this);

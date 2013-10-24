@@ -4,7 +4,7 @@
   </template>
   <script>
     Polymer('list-item', {
-      created: function() {
+      ready: function() {
         var h = Math.floor(Math.random()*360);
         var light = Boolean(Math.random() > 0.5);
         if (light) {
@@ -122,7 +122,7 @@
       amplitude: 120,
       colWidth: 108,
       centerY: 200,
-      created: function() {
+      ready: function() {
         observeNodes(this.$.content, this.contentNodesChanged, this);
       },
       itemsChanged: function() {
@@ -197,7 +197,7 @@
       limit: 20,
       items: null,
       scrub: 0,
-      created: function() {
+      ready: function() {
         this.items = [];
         for (var i = 0; i < 5000; i++) {
           var n = '';
