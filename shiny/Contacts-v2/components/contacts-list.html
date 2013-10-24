@@ -98,18 +98,25 @@
 			</template>
 		</polymer-ui-toolbar>
 		<div class="clip">
-			<div id="sticky" class="contactItem header sticky">
+<!-- 			<div id="sticky" class="contactItem header sticky">
 				{{stickyContent}}
 			</div>
-			<polymer-list id="list" data="{{$.mock.contacts}}" listData="{{listData}}">
+ -->			<polymer-list id="list" data="{{$.mock.withHeaders}}" listData="{{listData}}">
 				<template repeat="{{listData}}">
 					<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
 
-					<div class="contactItem {{page}}">
-						<polymer-flex-layout align="center"></polymer-flex-layout>
-							<contacts-icon contact="{{}}"></contacts-icon>
-						<div>{{name}}</div>
-					</div>
+					<template if="{{header}}">
+						<div class="contactItem header {{page}}">
+							{{header}}
+						</div>
+					</template>
+					<template if="{{!header}}">
+						<div class="contactItem {{page}}">
+							<polymer-flex-layout align="center"></polymer-flex-layout>
+								<contacts-icon contact="{{}}"></contacts-icon>
+							<div>{{name}}</div>
+						</div>
+					</template>
 					
 				</template>
 			</polymer-list>
@@ -146,7 +153,7 @@
 			stickyContent: 'A',
 			selectedContact: null,
 			ready: function() {
-				this.$.listContainer.onscroll = this.scrollAction.bind(this);
+				this.$.list.onscroll = this.scrollAction.bind(this);
 				this.wideLayoutChanged();
 			},
 			wideLayoutChanged: function() {
@@ -169,6 +176,9 @@
 				this.$.list.reset();
 			},
 			scrollAction: function() {
+				console.log('scroll', this.$.list.scrollTop);
+			},
+			xscrollAction: function() {
 				var items = this.$.listContainer.querySelectorAll('.contactItem');
 				var scrollTop = this.$.listContainer.scrollTop;
 				var offset = 0;
