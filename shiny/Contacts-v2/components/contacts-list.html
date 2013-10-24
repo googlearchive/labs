@@ -86,7 +86,7 @@
 		</style>
 		<mock-data id="mock"></mock-data>
 		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
-		<polymer-grid-layout id="grid"></polymer-grid-layout>
+		<polymer-grid-layout id="grid" on-polymer-grid-layout="{{layoutAction}}"></polymer-grid-layout>
 		<polymer-ui-toolbar theme="polymer-ui-dark-theme">
 			<polymer-ui-icon-button icon="menu" on-tap="{{menuAction}}"></polymer-ui-icon-button>
 			<div flex>Everyone</div>
@@ -97,11 +97,11 @@
 				<polymer-ui-icon-button icon="favorite"></polymer-ui-icon-button>
 			</template>
 		</polymer-ui-toolbar>
-		<div class="clip" flex>
+		<div class="clip">
 			<div id="sticky" class="contactItem header sticky">
 				{{stickyContent}}
 			</div>
-			<polymer-list data="{{$.mock.contacts}}" listData="{{listData}}">
+			<polymer-list id="list" data="{{$.mock.contacts}}" listData="{{listData}}">
 				<template repeat="{{listData}}">
 					<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
 
@@ -164,6 +164,9 @@
 						[4, 4],
 					];
 				}
+			},
+			layoutAction: function() {
+				this.$.list.reset();
 			},
 			scrollAction: function() {
 				var items = this.$.listContainer.querySelectorAll('.contactItem');
