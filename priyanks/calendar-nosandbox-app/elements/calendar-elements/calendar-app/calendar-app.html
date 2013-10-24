@@ -25,9 +25,9 @@
     </style>
 
     <div class="wrapper">
-      <calendar-day-view id="calendar-day-view" events="{{events}}" start="{{viewStart}}" on-calendar-event-details="onCalendarEventDetails" on-calendar-event-create="onCalendarEventCreate" class="{{hidden: selectedEvent.color || editingEvent.color}}"></calendar-day-view>
-      <calendar-event-details event="{{selectedEvent}}" on-calendar-event-details-done="onCalendarEventDetailsDone" on-calendar-event-details-edit="onCalendarEventDetailsEdit" on-calendar-event-delete="onCalendarEventDelete" class="{{hidden: !selectedEvent.color}}"></calendar-event-details>
-      <calendar-event-edit event="{{editingEvent}}" on-calendar-event-edit-done="onCalendarEventEditDone" class="{{hidden: !editingEvent.color}}"></calendar-event-edit>
+      <calendar-day-view id="calendar-day-view" events="{{events}}" start="{{viewStart}}" on-calendar-event-details="{{onCalendarEventDetails}}" on-calendar-event-create="{{onCalendarEventCreate}}" class="{{hidden: selectedEvent.color || editingEvent.color}}"></calendar-day-view>
+      <calendar-event-details event="{{selectedEvent}}" on-calendar-event-details-done="{{onCalendarEventDetailsDone}}" on-calendar-event-details-edit="{{onCalendarEventDetailsEdit}}" on-calendar-event-delete="{{onCalendarEventDelete}}" class="{{hidden: !selectedEvent.color}}"></calendar-event-details>
+      <calendar-event-edit event="{{editingEvent}}" on-calendar-event-edit-done="{{onCalendarEventEditDone}}" class="{{hidden: !editingEvent.color}}"></calendar-event-edit>
     </div>
   </template>
   <script>

@@ -187,7 +187,7 @@
 
 <polymer-element name="polymer-list">
   <template>
-    <button on-tap="up" on-pointerup="release">Up</button><button on-tap="down">Down</button><button on-tap="stop">Stop</button>
+    <button on-tap="{{up}}" on-pointerup="{{release}}">Up</button><button on-tap="{{down}}">Down</button><button on-tap="{{stop}}">Stop</button>
     <br><input style="width: 95%;" type="range" min="-10000" max="10000" value="{{scrub}}">
     <items-view items="{{items}}" offset="{{offset}}" limit="{{limit}}"></items-view>
   </template>

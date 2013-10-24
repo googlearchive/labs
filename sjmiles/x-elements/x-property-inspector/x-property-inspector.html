@@ -7,7 +7,7 @@ license that can be found in the LICENSE file.
 <link rel="import" href="../x-editors/x-editors.html">
 
 <polymer-element name="x-property-inspector" attributes="property nobind" 
-    on-editor-value-changed="valueChangedEvent">
+    on-editor-value-changed="{{valueChangedEvent}}">
   <template>
     <style>
       @host {
@@ -53,10 +53,10 @@ license that can be found in the LICENSE file.
     </style>
     <div class="property-name">{{property.name}}:</div>
     <span id="container"><content></content></span>
-    <div id="iconContainer" on-click="linkTap" nodisplay?="{{nobind}}">
+    <div id="iconContainer" on-click="{{linkTap}}" nodisplay?="{{nobind}}">
       <polymer-ui-icon id="icon" src="assets/link_dark.png" size="16"></polymer-ui-icon>
     </div>  
-<!--    <g-flip-out id="animOut" targetSelector="#container" on-complete="animOutComplete"></g-flip-out>
+<!--    <g-flip-out id="animOut" targetSelector="#container" on-complete="{{animOutComplete}}"></g-flip-out>
     <g-flip-in id="animIn" targetSelector="#container"></g-flip-in>-->
   </template>
   <script>
@@ -261,9 +261,9 @@ license that can be found in the LICENSE file.
         }
       }
     </style>
-    <x-id-select-editor id="idSelect" style="width: 112px;" options="{{elements}}" value="{{target}}" on-editor-value-changed="editorValueChanged" ></x-id-select-editor>
+    <x-id-select-editor id="idSelect" style="width: 112px;" options="{{elements}}" value="{{target}}" on-editor-value-changed="{{editorValueChanged}}" ></x-id-select-editor>
     <!-- <x-select-editor style="width: 145px;" options="{{properties}}"></x-select-editor> -->
-    <x-string-editor style="width: 161px;" value="{{workingValue}}" on-editor-value-changed="editorValueChanged" ></x-string-editor>
+    <x-string-editor style="width: 161px;" value="{{workingValue}}" on-editor-value-changed="{{editorValueChanged}}" ></x-string-editor>
   </template>
   <script>
     Polymer('x-binding-editor', {
@@ -364,7 +364,7 @@ license that can be found in the LICENSE file.
 
 <polymer-element name="x-action-editor" extends="x-abstract-editor">
   <template>
-    <button touch-action="none" on-pointerup="buttonClick">{{meta.label}}</button>
+    <button touch-action="none" on-pointerup="{{buttonClick}}">{{meta.label}}</button>
   </template>
   <script>
     Polymer('x-action-editor', {

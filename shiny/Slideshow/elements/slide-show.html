@@ -73,7 +73,7 @@
     <polymer-ui-toolbar id="groupbar">
       <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
       <span>Slideshow</span>
-      <polymer-ui-tabs selected="0" flex class="justify-center" on-polymer-activate="tabActivateAction">
+      <polymer-ui-tabs selected="0" flex class="justify-center" on-polymer-activate="{{tabActivateAction}}">
         <span>My Collections</span>
         <span>Explore</span>
         <span>Tabs</span>
@@ -86,19 +86,19 @@
     </polymer-ui-toolbar>
 
     <panel id="collections">
-      <slide-items-view id="itemsView" itemsData="{{collections}}" on-polymer-select="collectionSelectAction"></slide-items-view>
+      <slide-items-view id="itemsView" itemsData="{{collections}}" on-polymer-select="{{collectionSelectAction}}"></slide-items-view>
     </panel>
 
     <panel id="collectionDetail">
       <pi-feed-aggregator id="feeds" feed="{{$.itemsView.selectedModel.feed}}" count="200" entries="{{indie}}"></pi-feed-aggregator>
-      <pi-items-view id="items" view="topics" layout="grid" items="{{indie}}" on-select="selectItemAction" selected="{{selectedItem}}"></pi-items-view>
+      <pi-items-view id="items" view="topics" layout="grid" items="{{indie}}" on-select="{{selectItemAction}}" selected="{{selectedItem}}"></pi-items-view>
     </panel>
 
     <slide-preview id="slideshow" src="{{selectedItem.link}}" previewWidth="{{previewWidth}}" previewHeight="{{previewHeight}}" cover="{{previewCover}}"></slide-preview>
     <polymer-ui-toolbar id="slideshowbar">
-      <polymer-ui-icon-button icon="left" on-tap="previewBackAction"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="left" on-tap="{{previewBackAction}}"></polymer-ui-icon-button>
       <span flex>{{selectedItem.title}}</span>
-      <polymer-ui-menu-button id="previewMenu" selected="0" on-polymer-select="changePreviewAction" valign="top" align="right">
+      <polymer-ui-menu-button id="previewMenu" selected="0" on-polymer-select="{{changePreviewAction}}" valign="top" align="right">
         <polymer-ui-menu-item cover="phone" previewWidth="320" previewHeight="480">phone</polymer-ui-menu-item>
         <polymer-ui-menu-item cover="tablet" previewWidth="768" previewHeight="1024">tablet</polymer-ui-menu-item>
         <polymer-ui-menu-item cover="tablet" previewWidth="1024" previewHeight="768">custom</polymer-ui-menu-item>

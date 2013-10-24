@@ -89,10 +89,10 @@
     
     <polymer-selector id="selector" target="{{$.stops}}" itemsSelector=".stop" 
         valueattr="name" selected="{{selected}}" selectedItem="{{selectedItem}}"
-        selectedModel="{{selectedStop}}" on-polymer-activate="toggleAction"></polymer-selector>
+        selectedModel="{{selectedStop}}" on-polymer-activate="{{toggleAction}}"></polymer-selector>
     
     <div id="searchBox">
-      <input id="input" x-webkit-speech placeholder="{{searchInputLabel}}" on-input="asyncSearch">
+      <input id="input" x-webkit-speech placeholder="{{searchInputLabel}}" on-input="{{asyncSearch}}">
     </div>
     
     <div id="stops">

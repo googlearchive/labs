@@ -48,9 +48,9 @@
       <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
 
       <polymer-ui-toolbar id="toolbar">
-        <polymer-ui-icon-button icon="menu" on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="menu" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
         <span flex>Toolbar</span>
-        <polymer-ui-icon-button icon="settings" on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="settings" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <polymer-ui-sidebar-menu selected="{{selected}}" v-flex label="Sidebar" id="sidebar">
@@ -62,9 +62,9 @@
       <div id="example" flex>
         <polymer-layout vertical></polymer-layout>
         <polymer-ui-toolbar>
-          <polymer-ui-icon-button icon="drawer" on-click="toggleLayout"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="drawer" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
           <span flex>Example</span>
-          <polymer-ui-icon-button icon="search"on-click="toggleLayout"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="search"on-click="{{toggleLayout}}"></polymer-ui-icon-button>
         </polymer-ui-toolbar>
         <div flex>
           <iframe style="height:100%; width: 100%; border: 0;" src="../../../polymer-elements/{{item.name}}/index.html"></iframe>
@@ -72,9 +72,9 @@
       </div>
 
       <polymer-ui-toolbar id="docsToolbar">
-        <polymer-ui-icon-button icon="drawer" on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="drawer" on-click="{{toggleLayout}}"></polymer-ui-icon-button>
         <span flex>Info</span>
-        <polymer-ui-icon-button icon="search"on-click="toggleLayout"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="search"on-click="{{toggleLayout}}"></polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <div id="docs" v-flex>
@@ -82,7 +82,7 @@
       </div>
 
       <polymer-ajax url="../../../polymer-elements/manifest.xml" handleAs="xml" response="{{xml}}" auto></polymer-ajax>
-      <polymer-media-query query="min-width: 800px" on-polymer-mediachange="mediaChange"></polymer-media-query>
+      <polymer-media-query query="min-width: 800px" on-polymer-mediachange="{{mediaChange}}"></polymer-media-query>
     </template>
 
     <script>

@@ -121,9 +121,9 @@
       <link href="tracks.css" rel="stylesheet" />
 
       <polymer-ui-toolbar id="toolbar">
-        <polymer-ui-icon-button icon="menu" on-click="toggleLayout">Go</polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="menu" on-click="{{toggleLayout}}">Go</polymer-ui-icon-button>
         <span flex>Toolbar</span>
-        <polymer-ui-icon-button icon="settings" on-click="toggleLayout">Go</polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="settings" on-click="{{toggleLayout}}">Go</polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <polymer-ui-sidebar-menu v-flex label="Sidebar" id="sidebar">
@@ -137,8 +137,8 @@
 
       <polymer-ui-toolbar id="outputToolbar">
         <span flex>Info</span>
-        <polymer-ui-icon-button icon="drawer" active="{{outputLayout}}" on-click="toggleLayout">Go</polymer-ui-icon-button>
-        <polymer-ui-icon-button icon="search"on-click="toggleLayout">Go</polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="drawer" active="{{outputLayout}}" on-click="{{toggleLayout}}">Go</polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="search"on-click="{{toggleLayout}}">Go</polymer-ui-icon-button>
       </polymer-ui-toolbar>
 
       <div id="output" v-flex>

@@ -71,7 +71,7 @@
           Favorites
         </div>
         <div>
-          <template repeat="{{favorites}}"><div class="favorite-grid-item" on-tap="favoriteAction">{{}}</div></template>
+          <template repeat="{{favorites}}"><div class="favorite-grid-item" on-tap="{{favoriteAction}}">{{}}</div></template>
         </div>
       </contacts-collapsible>
       <template repeat="{{s in sections}}">
@@ -87,7 +87,7 @@
 				<div class="polymer-ui-collapsible-header">
 					Groups
 				</div>
-				<polymer-grid style="position: relative; height: 230px;" items="{{groups}}" on-tap="groupAction"></polymer-grid>
+				<polymer-grid style="position: relative; height: 230px;" items="{{groups}}" on-tap="{{groupAction}}"></polymer-grid>
 			</contacts-collapsible>
     </polymer-ui-accordion>
     <polymer-ui-overlay id="sheet" backdrop="true" active="{{overlayActive}}">
@@ -109,7 +109,7 @@
       favorites: ['Frankie Fu', 'Matt McNulty', 'Steve Orvell', 'Scott Miles', 'Daniel Freedman', 'Yvonne Yip'],
 			groups: ['Personal', 'Work', 'Foo', 'Bar', 'Baz', 'Zot', 'Moo'],
       overlayActive: false,
-      enteredDocument: function() {
+      enteredView: function() {
         this.async(function() {
           this.$.accordion.selected = [0];
         });

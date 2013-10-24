@@ -46,7 +46,7 @@ license that can be found in the LICENSE file.
       <div id="title">Elements</div>
       <div id="tree">
         <template repeat="{{components}}">
-          <div class="{{selected}}" on-tap="selectAction" style="padding-left: {{indent}}px"><span>{{name}}<id>{{id}}</id><span id="caption">{{text}}</span></span></div>
+          <div class="{{selected}}" on-tap="{{selectAction}}" style="padding-left: {{indent}}px"><span>{{name}}<id>{{id}}</id><span id="caption">{{text}}</span></span></div>
         </template>
       </div>
     </div>

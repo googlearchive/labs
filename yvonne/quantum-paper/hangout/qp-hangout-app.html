@@ -26,12 +26,12 @@
 			<span flex>Babel</span>
 			<polymer-ui-icon-button icon="plus"></polymer-ui-icon-button>
 		</polymer-ui-toolbar>
-		<div flex id="hangouts" class="polymer-ui-light-bg scrollable" xon-tap="reorderAction" on-qp-hangout-archive="archiveAnimationAction">
+		<div flex id="hangouts" class="polymer-ui-light-bg scrollable" xon-tap="{{reorderAction}}" on-qp-hangout-archive="{{archiveAnimationAction}}">
 			<template repeat="{{hangouts}}">
 				<qp-hangout-item name="{{name}}" chats="{{chats}}"></qp-hangout-item>
 			</template>
 		</div>
- 		<polymer-animation id="archiveAnimation" on-animation-end="archiveAction">
+ 		<polymer-animation id="archiveAnimation" on-animation-end="{{archiveAction}}">
 			<polymer-animation-keyframe>
 				<polymer-animation-prop name="transform" value="scaleY(1)"></polymer-animation-prop>
 			</polymer-animation-keyframe>
@@ -74,7 +74,7 @@
 					{time: '5 days', message: 'My spidey senses are tingling.'}
 				]
 			}],
-			enteredDocument: function() {
+			enteredView: function() {
 			},
 			applyLayoutAnimation: function() {
 				registerLayoutKeyframes('default', [

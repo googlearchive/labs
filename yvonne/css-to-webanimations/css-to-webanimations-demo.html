@@ -48,7 +48,7 @@
 		<div class="right" flex>
 			<h1>CSS Keyframes to Web Animations</h1>
 			<p>
-				<button on-click="syncAction">Sync</button>
+				<button on-click="{{syncAction}}">Sync</button>
 			</p>
 			<p>
 				<label>
@@ -60,7 +60,7 @@
 					<input id="par" name="group" type="radio"> Par
 				</label>
 				<br>
-				<button on-click="runAction">Run</button>
+				<button on-click="{{runAction}}">Run</button>
 			</p>
 			<p>Animations:</p>
 			<p>
@@ -75,7 +75,7 @@
 	<script>
 		Polymer('css-to-webanimations-demo', {
 			duration: 1,
-			enteredDocument: function() {
+			enteredView: function() {
 				this.$.parser.parse();
 			},
 			syncAction: function() {

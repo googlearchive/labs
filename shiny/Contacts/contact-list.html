@@ -16,7 +16,7 @@
     </style>
     <mock-data id="mock"></mock-data>
     <template repeat="{{$.mock.contacts}}">
-      <div class="contact" on-tap="contactAction">
+      <div class="contact" on-tap="{{contactAction}}">
         <polymer-ui-icon icon="contact"></polymer-ui-icon> {{name}}
       </div>
     </template>

@@ -46,12 +46,12 @@
 		<div class="wrapper">
 			<polymer-ui-toolbar>
 				<div flex>
-					<polymer-ui-icon-button src="../assets/arrow_left.png" on-click="onBackClick"></polymer-ui-icon-button>
+					<polymer-ui-icon-button src="../assets/arrow_left.png" on-click="{{onBackClick}}"></polymer-ui-icon-button>
 				</div>
 				<div>
 					<calendar-color-button value="{{event.color}}"></calendar-color-button>
-					<polymer-ui-icon-button src="../assets/edit.png" on-click="onEditClick"></polymer-ui-icon-button>
-					<polymer-ui-icon-button icon="trash" on-click="onDeleteClick"></polymer-ui-icon-button>
+					<polymer-ui-icon-button src="../assets/edit.png" on-click="{{onEditClick}}"></polymer-ui-icon-button>
+					<polymer-ui-icon-button icon="trash" on-click="{{onDeleteClick}}"></polymer-ui-icon-button>
 				</div>
 			</polymer-ui-toolbar>
 

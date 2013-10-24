@@ -88,24 +88,24 @@
     </style>
 
     <shuttle-inputs id="inputsView" class="card" fromQuery="{{fromQuery}}" toQuery="{{toQuery}}" 
-        on-shuttle-from-input-focus="fromInputFocus" on-shuttle-to-input-focus="toInputFocus" 
-        on-shuttle-inputs-swap="swap"></shuttle-inputs>
+        on-shuttle-from-input-focus="{{fromInputFocus}}" on-shuttle-to-input-focus="{{toInputFocus}}" 
+        on-shuttle-inputs-swap="{{swap}}"></shuttle-inputs>
     
     <polymer-selector id="panelSelector" valueattr="id" selectedClass="panel-selected" selected="{{panelSelected}}">
       <shuttle-stop-picker id="officeStopPicker" class="card" selected="{{route.officeSelected}}" selectedStop="{{officeSelectedStop}}" 
           stops="{{officeStops}}" focusedStop="{{selectedFilteredStop}}" query="{{reverse ? toQuery : fromQuery}}"
-          on-shuttle-stops-search="stopsSearch" on-shuttle-picker-close="hidePicker"></shuttle-stop-picker>
+          on-shuttle-stops-search="{{stopsSearch}}" on-shuttle-picker-close="{{hidePicker}}"></shuttle-stop-picker>
   
       <shuttle-stop-picker id="remoteStopPicker" class="card" selected="{{route.remoteSelected}}" selectedStop="{{remoteSelectedStop}}" 
           stops="{{remoteStops}}" focusedStop="{{selectedFilteredStop}}" query="{{reverse ? fromQuery : toQuery}}"
-          on-shuttle-stops-search="stopsSearch" on-shuttle-picker-close="hidePicker"></shuttle-stop-picker>
+          on-shuttle-stops-search="{{stopsSearch}}" on-shuttle-picker-close="{{hidePicker}}"></shuttle-stop-picker>
       
       <polymer-ui-card id="scheduleView" class="dark-shadow">
         <div id="description">
           <polymer-flex-layout></polymer-flex-layout>
           <div class="description-text" flex>{{fromStop.name}} to {{toStop.name}}</div>
           <shuttle-toggle-icon  class="fav-toggle-icon" active="{{isFav}}" src="assets/ic_favorite_darkalt.png" 
-              activeSrc="assets/ic_favorite_darkreg.png" on-tap="handleFavTap"></shuttle-toggle-icon>
+              activeSrc="assets/ic_favorite_darkreg.png" on-tap="{{handleFavTap}}"></shuttle-toggle-icon>
         </div>
         <div class="route-name">Route name</div>
         

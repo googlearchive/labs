@@ -1,7 +1,7 @@
 <link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
 <link rel="import" href="../../../more-elements/youtube/yt-search.html">
 <link rel="import" href="../../../more-elements/youtube/yt-video.html">
-<polymer-element name="name-tag" attributes="moods" on-pointerdown="clearSelection">
+<polymer-element name="name-tag" attributes="moods" on-pointerdown="{{clearSelection}}">
   <template>
     <style>
       @host {
@@ -75,7 +75,7 @@
     </template> -->
     <yt-video id="ytVideo" videoEntry="{{video}}" class="{{hidden: !$.ytVideo.videoId}}"></yt-video>
     <footer>
-      <button on-click="displayMood">I'm feeling...</button>
+      <button on-click="{{displayMood}}">I'm feeling...</button>
       <span>&copy; 2013</span>
     </footer>
   </template>

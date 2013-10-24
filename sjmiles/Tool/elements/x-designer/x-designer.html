@@ -3,7 +3,7 @@ Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 -->
-<polymer-element name="x-designer" on-source-applied="sourceApplied" attributes="designElement selected maximized">
+<polymer-element name="x-designer" on-source-applied="{{sourceApplied}}" attributes="designElement selected maximized">
   <template>
     <style>
       @host {
@@ -57,7 +57,7 @@ license that can be found in the LICENSE file.
     </style>
     <x-palette id="palette" elements="{{elements}}"></x-palette>
     
-    <x-designable id="canvas" tabIndex="-1" on-tap="canvasTap" on-pointerup="canvasDrop" on-keydown="canvasKeydown" designElement="{{$.designElement}}"
+    <x-designable id="canvas" tabIndex="-1" on-tap="{{canvasTap}}" on-pointerup="{{canvasDrop}}" on-keydown="{{canvasKeydown}}" designElement="{{$.designElement}}"
     ><design-element id="designElement"></design-element><
     /x-designable>
     

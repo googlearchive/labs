@@ -59,7 +59,7 @@ license that can be found in the LICENSE file.
 <polymer-element name="polymer-selector"
     attributes="selected multi valueattr selectedClass selectedProperty selectedItem selectedModel notap target itemsSelector activateEvent">
   <template>
-    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="selectionSelect"></polymer-selection>
+    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="{{selectionSelect}}"></polymer-selection>
     <content id="items" select="*"></content>
   </template>
   <script>

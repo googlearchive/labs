@@ -40,10 +40,10 @@
     </style>
     <div id="grid">
       <template repeat="{{contents}}">
-        <x-item url="{{url}}" on-load="onLoad" on-click="onClickItem"></x-item>
+        <x-item url="{{url}}" on-load="{{onLoad}}" on-click="{{onClickItem}}"></x-item>
       </template>
     </div>
-    <div id="fixed" on-click="onClickFixed">
+    <div id="fixed" on-click="{{onClickFixed}}">
       Hi!
     </div>
     <x-left-right id="leftright" class="flexbox">

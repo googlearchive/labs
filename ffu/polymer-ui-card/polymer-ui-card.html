@@ -33,7 +33,7 @@ license that can be found in the LICENSE file.
   <template>
     <link rel="stylesheet" href="polymer-ui-card.css">
     <content></content>
-    <polymer-animation-group id="swipeAnimation" type="seq" duration="1" on-animation-start="animationStart" on-animation-end="animationEnd">
+    <polymer-animation-group id="swipeAnimation" type="seq" duration="1" on-animation-start="{{animationStart}}" on-animation-end="{{animationEnd}}">
       <polymer-animation target="{{self}}" duration="0.5" fillMode="both">
         <polymer-animation-keyframe>
           <polymer-animation-prop id="transformLeft" name="transform" value="translate3d(-300%, 0, 0)"></polymer-animation-prop>

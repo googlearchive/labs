@@ -14,11 +14,11 @@ license that can be found in the LICENSE file.
     <div id="header">
       <div id="crumbList">
         <template repeat="{{crumbs}}">
-          <polymer-ui-icon-button src="assets/ic_chevron_left_darkreg.png" on-click="selectParentElement" hidden="{{top}}"></polymer-ui-icon-button>
+          <polymer-ui-icon-button src="assets/ic_chevron_left_darkreg.png" on-click="{{selectParentElement}}" hidden="{{top}}"></polymer-ui-icon-button>
           <b>{{name}}</b>
         </template>
       </div>
-      <polymer-ui-icon-button id="deleteIcon" src="assets/ic_delete_darkreg.png" on-click="deleteElement"></polymer-ui-icon-button>
+      <polymer-ui-icon-button id="deleteIcon" src="assets/ic_delete_darkreg.png" on-click="{{deleteElement}}"></polymer-ui-icon-button>
     </div>
     <div id="interior">
       <template repeat="{{properties}}">

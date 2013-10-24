@@ -1,6 +1,6 @@
 ﻿<polymer-element name="file-document" attributes="text fileName">
   <template>
-    <polymer-ajax id="post" method="POST" on-polymer-complete="postComplete"></polymer-ajax>
+    <polymer-ajax id="post" method="POST" on-polymer-complete="{{postComplete}}"></polymer-ajax>
     <polymer-ajax id="get" handleAs="text" response="{{text}}" auto></polymer-ajax>
   </template>
   <script>

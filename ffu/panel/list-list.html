@@ -153,7 +153,7 @@
     </style>
 
     <polymer-ui-toolbar theme="polymer-ui-light-theme">
-      <polymer-ui-icon-button icon="shrink" on-tap="shrinkAction"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="shrink" on-tap="{{shrinkAction}}"></polymer-ui-icon-button>
       <div id="toolbarLabel">Contacts</div>
       <div flex></div>
       <polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
@@ -161,7 +161,7 @@
     <div id="home">
       <div id="folders">
         <template repeat="{{folders}}">
-          <div class="folder" on-tap="folderTap">
+          <div class="folder" on-tap="{{folderTap}}">
             <polymer-ui-icon icon="contact"></polymer-ui-icon>
             <span>{{name}}</span>
           </div>

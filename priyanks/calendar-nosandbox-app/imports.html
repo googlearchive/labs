@@ -73,7 +73,7 @@
 			}
 		</style>
 		<div class="wrapper">
-			<ul on-click="onBackgroundClick">
+			<ul on-click="{{onBackgroundClick}}">
 				<li></li>
 				<li></li>
 				<li></li>
@@ -100,7 +100,7 @@
 				<li></li>
 			</ul>
 			<template repeat="{{events as event}}">
-				<calendar-event-preview style="top: {{(event.start - start) * 5 / 360000}}px;" event="{{event}}" on-click="onEventDetailsClick"></calendar-event-preview>
+				<calendar-event-preview style="top: {{(event.start - start) * 5 / 360000}}px;" event="{{event}}" on-click="{{onEventDetailsClick}}"></calendar-event-preview>
 			</template>
 		</div>
 	</template>
@@ -332,9 +332,9 @@ license that can be found in the LICENSE file.
  * Example:
  *
  *     <polymer-ui-toolbar>
- *       <polymer-ui-icon-button src="menu.png" on-click="menuAction"></polymer-ui-icon-button>
+ *       <polymer-ui-icon-button src="menu.png" on-click="{{menuAction}}"></polymer-ui-icon-button>
  *       <div flex>Title</div>
- *       <polymer-ui-icon-button src="more.png" on-click="moreAction"></polymer-ui-icon-button>
+ *       <polymer-ui-icon-button src="more.png" on-click="{{moreAction}}"></polymer-ui-icon-button>
  *     </polymer-ui-toolbar>
  *
  * polymer-ui-toolbar can adopt to smaller screen size.  If the attribute "responsive" is set
@@ -391,7 +391,7 @@ license that can be found in the LICENSE file.
  * @class polymer-ui-toggle-button
  */
 -->
-<polymer-element name="polymer-ui-toggle-button" attributes="value noCaption onCaption offCaption" on-tap="toggle" on-trackstart="trackStart" on-track="track" on-trackend="trackEnd" on-flick="flick" assetpath="elements/polymer-ui-elements/polymer-ui-toggle-button">
+<polymer-element name="polymer-ui-toggle-button" attributes="value noCaption onCaption offCaption" on-tap="{{toggle}}" on-trackstart="{{trackStart}}" on-track="{{track}}" on-trackend="{{trackEnd}}" on-flick="{{flick}}" assetpath="elements/polymer-ui-elements/polymer-ui-toggle-button">
   <template>
     <link rel="stylesheet" href="elements/polymer-ui-elements/polymer-ui-toggle-button/polymer-ui-toggle-button.css">
     <div id="toggle" class="toggle">
@@ -486,7 +486,7 @@ license that can be found in the LICENSE file.
 
 <polymer-element name="polymer-selector" attributes="selected multi valueattr selectedClass selectedProperty selectedItem selectedModel notap target itemsSelector activateEvent" assetpath="elements/polymer-elements/polymer-selector">
   <template>
-    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="selectionSelect"></polymer-selection>
+    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="{{selectionSelect}}"></polymer-selection>
     <content id="items" select="*"></content>
   </template>
   
@@ -625,12 +625,12 @@ license that can be found in the LICENSE file.
 		<div class="wrapper">
 			<polymer-ui-toolbar>
 				<div flex="">
-					<polymer-ui-icon-button src="elements/calendar-elements/assets/arrow_left.png" on-click="onBackClick"></polymer-ui-icon-button>
+					<polymer-ui-icon-button src="elements/calendar-elements/assets/arrow_left.png" on-click="{{onBackClick}}"></polymer-ui-icon-button>
 				</div>
 				<div>
 					<calendar-color-button value="{{event.color}}"></calendar-color-button>
-					<polymer-ui-icon-button src="elements/calendar-elements/assets/edit.png" on-click="onEditClick"></polymer-ui-icon-button>
-					<polymer-ui-icon-button icon="trash" on-click="onDeleteClick"></polymer-ui-icon-button>
+					<polymer-ui-icon-button src="elements/calendar-elements/assets/edit.png" on-click="{{onEditClick}}"></polymer-ui-icon-button>
+					<polymer-ui-icon-button icon="trash" on-click="{{onDeleteClick}}"></polymer-ui-icon-button>
 				</div>
 			</polymer-ui-toolbar>
 
@@ -715,9 +715,9 @@ license that can be found in the LICENSE file.
 
 		<div class="wrapper">
 			<polymer-ui-toolbar>
-				<!--<polymer-ui-icon-button icon="close" on-click="onCancelClick"></polymer-ui-icon-button>-->
+				<!--<polymer-ui-icon-button icon="close" on-click="{{onCancelClick}}"></polymer-ui-icon-button>-->
 				<div flex=""></div>
-				<polymer-ui-icon-button src="elements/calendar-elements/assets/checkmark.png" on-click="onSaveClick"></polymer-ui-icon-button>
+				<polymer-ui-icon-button src="elements/calendar-elements/assets/checkmark.png" on-click="{{onSaveClick}}"></polymer-ui-icon-button>
 			</polymer-ui-toolbar>
 
 			<div class="scrollable">
@@ -771,9 +771,9 @@ license that can be found in the LICENSE file.
     </style>
 
     <div class="wrapper">
-      <calendar-day-view id="calendar-day-view" events="{{events}}" start="{{viewStart}}" on-calendar-event-details="onCalendarEventDetails" on-calendar-event-create="onCalendarEventCreate" class="{{hidden: selectedEvent.color || editingEvent.color}}"></calendar-day-view>
-      <calendar-event-details event="{{selectedEvent}}" on-calendar-event-details-done="onCalendarEventDetailsDone" on-calendar-event-details-edit="onCalendarEventDetailsEdit" on-calendar-event-delete="onCalendarEventDelete" class="{{hidden: !selectedEvent.color}}"></calendar-event-details>
-      <calendar-event-edit event="{{editingEvent}}" on-calendar-event-edit-done="onCalendarEventEditDone" class="{{hidden: !editingEvent.color}}"></calendar-event-edit>
+      <calendar-day-view id="calendar-day-view" events="{{events}}" start="{{viewStart}}" on-calendar-event-details="{{onCalendarEventDetails}}" on-calendar-event-create="{{onCalendarEventCreate}}" class="{{hidden: selectedEvent.color || editingEvent.color}}"></calendar-day-view>
+      <calendar-event-details event="{{selectedEvent}}" on-calendar-event-details-done="{{onCalendarEventDetailsDone}}" on-calendar-event-details-edit="{{onCalendarEventDetailsEdit}}" on-calendar-event-delete="{{onCalendarEventDelete}}" class="{{hidden: !selectedEvent.color}}"></calendar-event-details>
+      <calendar-event-edit event="{{editingEvent}}" on-calendar-event-edit-done="{{onCalendarEventEditDone}}" class="{{hidden: !editingEvent.color}}"></calendar-event-edit>
     </div>
   </template>
   

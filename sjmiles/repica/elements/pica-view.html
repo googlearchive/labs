@@ -13,13 +13,13 @@ license that can be found in the LICENSE file.
 <element name="pica-view" extends="g-app">
   <link rel="stylesheet" href="css/pica-view.css" />
   <template>
-    <g-ribbon id="ribbon" class="custom-panel" label="Pica" selected="{{selected}}" valueattr="label" on-activate="hideRibbon">
+    <g-ribbon id="ribbon" class="custom-panel" label="Pica" selected="{{selected}}" valueattr="label" on-activate="{{hideRibbon}}">
       <g-menu-item label="Home" src="../images/ribbon_home_lightreg.png" iconsize="32"></g-menu-item>
 <!--      <g-menu-item label="Topics" src="../images/ribbon_topics_lightreg.png" iconsize="32"></g-menu-item>
       <g-menu-item label="Explore" src="../images/ribbon_explore_lightreg.png" iconsize="32"></g-menu-item>
       <g-menu-item label="Accounts" src="../images/ribbon_accounts_lightreg.png" iconsize="32"></g-menu-item>-->
     </g-ribbon>
-    <pica-main id="main" touch-action="user" on-tap="hideRibbon" on-back="backAction" panel="{{selected}}" hideactionbar="{{hideActionbar}}"></pica-main>
+    <pica-main id="main" touch-action="user" on-tap="{{hideRibbon}}" on-back="{{backAction}}" panel="{{selected}}" hideactionbar="{{hideActionbar}}"></pica-main>
   </template>
   <script>
     Polymer.register(this, {

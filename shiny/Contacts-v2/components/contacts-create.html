@@ -33,34 +33,34 @@
 			}
 		</style>
 		<polymer-ui-toolbar>
-			<button on-tap="cancelAction">Cancel</button>
+			<button on-tap="{{cancelAction}}">Cancel</button>
 			<div flex></div>
-			<button on-tap="createAction">✓</button>
+			<button on-tap="{{createAction}}">✓</button>
 		</polymer-ui-toolbar>
 		<!-- FIXME: autofocus name input when switching to this page -->
 		<contacts-create-item icon="account" activeicon="account" label="Name" value="{{contact.name}}" autofocus></contacts-create-item>
 		<template repeat="{{phone in contact.phone}}">
-	 		<contacts-create-phone-item activeicon="{{phone.icon}}" value="{{phone.value}}" on-contacts-create-item-cancel="itemCancelAction">
+	 		<contacts-create-phone-item activeicon="{{phone.icon}}" value="{{phone.value}}" on-contacts-create-item-cancel="{{itemCancelAction}}">
 				<polymer-ui-menu-item icon="dialoga" label="Home"></polymer-ui-menu-item>
 				<polymer-ui-menu-item icon="filter" label="Mobile"></polymer-ui-menu-item>
 				<polymer-ui-menu-item icon="briefcase" label="Work"></polymer-ui-menu-item>
 			</contacts-create-phone-item>
 		</template>
-		<contacts-create-add-item label="Add a phone" on-tap="addPhoneAction" on-contacts-create-item-cancel="itemCancelAction"></contacts-create-add-item>
+		<contacts-create-add-item label="Add a phone" on-tap="{{addPhoneAction}}" on-contacts-create-item-cancel="{{itemCancelAction}}"></contacts-create-add-item>
 		<template repeat="{{email in contact.email}}">
 	 		<contacts-create-item activeicon="{{email.icon}}" value="{{email.value}}">
 				<polymer-ui-menu-item icon="dialoga" label="Home"></polymer-ui-menu-item>
 				<polymer-ui-menu-item icon="briefcase" label="Work"></polymer-ui-menu-item>
 			</contacts-create-item>
 		</template>
-		<contacts-create-add-item label="Add an email" on-tap="addEmailAction" on-contacts-create-item-cancel="itemCancelAction"></contacts-create-add-item>
+		<contacts-create-add-item label="Add an email" on-tap="{{addEmailAction}}" on-contacts-create-item-cancel="{{itemCancelAction}}"></contacts-create-add-item>
 		<template repeat="{{address in contact.address}}">
 	 		<contacts-create-item activeicon="{{address.icon}}" value="{{address.value}}">
 				<polymer-ui-menu-item icon="dialoga" label="Home"></polymer-ui-menu-item>
 				<polymer-ui-menu-item icon="briefcase" label="Work"></polymer-ui-menu-item>
 			</contacts-create-item>
 		</template>
-		<contacts-create-add-item label="Add an address" on-tap="addAddressAction"></contacts-create-add-item>
+		<contacts-create-add-item label="Add an address" on-tap="{{addAddressAction}}"></contacts-create-add-item>
 	</template>
 	<script>
 		Polymer('contacts-create', {
@@ -72,7 +72,7 @@
 				'address': [],
 				'group': 0
 			},
-			enteredDocument: function() {
+			enteredView: function() {
 				this.observer = new MutationObserver(function(mutations) {
 					mutations.forEach(function(m) {
 						Array.prototype.forEach.call(m.addedNodes, function(n) {
@@ -85,7 +85,7 @@
 				});
 				this.observer.observe(window.ShadowDOMPolyfill ? this : this.shadowRoot, {childList: true});
 			},
-			leftDocument: function() {
+			leftView: function() {
 				this.observer.disconnect();
 			},
 			addPhoneAction: function() {

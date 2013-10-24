@@ -7,7 +7,7 @@
 				background: black;
 			}
 		</style>
-		<polymer-selector selected="{{selectedIndex}}" multi on-polymer-activate="activateAction">
+		<polymer-selector selected="{{selectedIndex}}" multi on-polymer-activate="{{activateAction}}">
 			<template repeat="{{imports}}">
 				<div>{{}}</div>
 			</template>

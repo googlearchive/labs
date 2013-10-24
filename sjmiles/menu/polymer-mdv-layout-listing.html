@@ -101,7 +101,7 @@ license that can be found in the LICENSE file.
     </script>
   </polymer-element>
 
-  <polymer-element name="x-tiles" on-pointerdown="hold" on-pointerup="release" touch-action="none">
+  <polymer-element name="x-tiles" on-pointerdown="{{hold}}" on-pointerup="{{release}}" touch-action="none">
     <template>
       <style>
         @host {*{
@@ -133,7 +133,7 @@ license that can be found in the LICENSE file.
         </template>
       </div>
       <div id="controls">
-        <button on-click="up">Go Up</button><button on-click="down">Go Down</button><button on-click="farUp">Go Far</button>
+        <button on-click="{{up}}">Go Up</button><button on-click="{{down}}">Go Down</button><button on-click="{{farUp}}">Go Far</button>
       </div>
       <div id="tiles">
         <template repeat="{{info}}">

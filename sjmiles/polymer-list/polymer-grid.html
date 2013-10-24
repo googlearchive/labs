@@ -102,7 +102,7 @@
         overflow: hidden;
       }}
     </style>
-    <!--    <button on-tap="up" on-pointerup="release">Up</button><button on-tap="down">Down</button><button on-tap="stop">Stop</button><br>-->
+    <!--    <button on-tap="{{up}}" on-pointerup="{{release}}">Up</button><button on-tap="{{down}}">Down</button><button on-tap="{{stop}}">Stop</button><br>-->
     <input style="width: 95%;" type="range" min="-10000" max="10000" value="{{scrub}}">
     <items-grid-view items="{{items}}" offset="{{offset}}" limit="{{limit}}"></items-grid-view>
   </template>
@@ -130,7 +130,7 @@
           }
         }
       },
-      enteredDocument: function() {
+      enteredView: function() {
         this._move();
       },
       stop: function() {

@@ -121,7 +121,7 @@ license that can be found in the LICENSE file.
     </script>
   </polymer-element>
   <!-- -->
-  <polymer-element name="x-menu" attributes="xml" on-track="track" on-trackEnd="trackEnd" touch-action="none">
+  <polymer-element name="x-menu" attributes="xml" on-track="{{track}}" on-trackEnd="{{trackEnd}}" touch-action="none">
     <template>
       <style>
         @host{*{
@@ -145,10 +145,10 @@ license that can be found in the LICENSE file.
       <polymer-ajax url="snap/s.txt" handleAs="text" response="{{raw}}" auto></polymer-ajax>
       
       <div class="controls">
-        Perspective: <input type="range" min="0" max="5000" value="1000" on-change="perspChange">
-        Center: <input type="range" min="-2000" max="2000" value="600" on-change="radChange">
-        Scale: <input type="range" min="0.5" max="10" value="1.2" step="0.005" on-change="scaleChange"><br>
-        <button on-tap="spin">Spin Down</button><button id="up" on-tap="spin">Spin Up</button>
+        Perspective: <input type="range" min="0" max="5000" value="1000" on-change="{{perspChange}}">
+        Center: <input type="range" min="-2000" max="2000" value="600" on-change="{{radChange}}">
+        Scale: <input type="range" min="0.5" max="10" value="1.2" step="0.005" on-change="{{scaleChange}}"><br>
+        <button on-tap="{{spin}}">Spin Down</button><button id="up" on-tap="{{spin}}">Spin Up</button>
       </div>
 
       <x-spiral id="spiral" off="{{off}}" origin="{{origin}}">
@@ -157,7 +157,7 @@ license that can be found in the LICENSE file.
           <div style="text-align:center; padding: 4px 8px 8px;">{{description}} ({{year}})</div></x-cover>
         </template>
       </x-spiral>
-      <button on-tap="spin">Spin Down</button><button id="up" on-tap="spin">Spin Up</button>
+      <button on-tap="{{spin}}">Spin Down</button><button id="up" on-tap="{{spin}}">Spin Up</button>
       
     </template>
     <script>

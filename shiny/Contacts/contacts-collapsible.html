@@ -29,14 +29,14 @@
 				transform: rotate(0deg);
 			}
 		</style>
-		<div id="header" on-tap="headerTap">
+		<div id="header" on-tap="{{headerTap}}">
 			<polymer-flex-layout align="center"></polymer-flex-layout>
 			<div flex>
 				<content select=".polymer-ui-collapsible-header"></content>
 			</div>
 			<polymer-ui-icon-button id="collapsedIcon" icon="dropdown" class="{{active: active}}"></polymer-ui-icon-button>
 		</div>
-		<div id="collapsibleBody" on-tap="bodyTap">
+		<div id="collapsibleBody" on-tap="{{bodyTap}}">
 			<content></content>
 		</div>
 		<polymer-collapse targetId="collapsibleBody" closed="{{!active}}"></polymer-collapse>
