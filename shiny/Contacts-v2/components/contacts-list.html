@@ -1,3 +1,7 @@
+<link href="../../../../polymer-elements/polymer-animation/polymer-animation-group.html" rel="import">
+<link href="../../../../polymer-elements/polymer-animation/polymer-fadein.html" rel="import">
+<link href="../../../../polymer-elements/polymer-animation/polymer-translate.html" rel="import">
+<link href="../../../../polymer-elements/polymer-scrub/polymer-scrub.html" rel="import">
 <link href="../../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
 <link href="../../../../polymer-elements/polymer-media-query/polymer-media-query.html" rel="import">
 <link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
@@ -5,6 +9,7 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
 <link href="../../../list/elements/polymer-list/polymer-list.html" rel="import">
 <link href="contacts-detail.html" rel="import">
+<link href="contacts-icon.html" rel="import">
 <link href="mock-data.html" rel="import">
 <polymer-element name="contacts-list" extends="polymer-selector" attributes="wideLayout">
 	<template>
@@ -22,6 +27,7 @@
 				padding-right: 10px;
 			}
 			.clip {
+				background: #eeeeee;
 				overflow: hidden;
 				position: relative;
 			}
@@ -39,15 +45,8 @@
 				height: 100%;
 			}
 			.contactItem {
-				background-color: white;
-				border-style: solid;
-				border-color: rgba(0, 0, 0, 0.1);
-				border-width: 0 1px 1px;
 				font-size: 18px;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				box-sizing: border-box;
-				height: 80px;
-				padding: 0 20px;
 			}
 			.contactItem.sticky {
 				position: absolute;
@@ -60,6 +59,10 @@
 		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
 		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
 		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 0 1px;
+				box-sizing: border-box;
 		    color: #9f9f9f;
 				font-variant: small-caps;
 				height: 60px;
@@ -69,6 +72,32 @@
 		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
 		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
 		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		  }
+		  .contactItemControls {
+		  	position: absolute;
+		  	top: 0;
+		  	left: -100%;
+				box-sizing: border-box;
+		  	width: 100%;
+		  	height: 100%;
+				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 0 1px;
+		  	text-align: right;
+		  	padding: 21px 30px;
+		  }
+		  .contactItemControls.active {
+		  	background: #f5565a;
+		  	opacity: 0;
+		  }
+		  .contactItemBody {
+				background-color: white;
+				border-style: solid;
+				border-color: rgba(0, 0, 0, 0.14902);
+				border-width: 0 0 1px 1px;
+				box-sizing: border-box;
+				height: 80px;
+				padding: 0 20px;
 		  }
 			#overlay {
 				position: fixed;
@@ -111,10 +140,16 @@
 						</div>
 					</template>
 					<template if="{{!header}}">
-						<div class="contactItem {{page}}">
-							<polymer-flex-layout align="center"></polymer-flex-layout>
-								<contacts-icon contact="{{}}"></contacts-icon>
-							<div>{{name}}</div>
+						<div class="contactItem {{page}}" on-pointerdown="{{pointerdownAction}}">
+							<div class="contactItemControls active"></div>
+							<div class="contactItemControls">
+								<polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
+							</div>
+							<div class="contactItemBody" on-tap="{{activateAction}}">
+								<polymer-flex-layout align="center"></polymer-flex-layout>
+									<contacts-icon contact="{{}}"></contacts-icon>
+								<div>{{name}}</div>
+							</div>
 						</div>
 					</template>
 					
@@ -142,6 +177,11 @@
 				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
 				</contacts-detail>
 			</polymer-ui-overlay>
+			<polymer-animation-group id="slideAnimation" type="par" fillMode="forwards">
+				<polymer-translate id="translateAnimation" fromX="0" toX="100%" duration="0.6" fillMode="forwards"></polymer-translate>
+				<polymer-fadein id="fadeAnimation" duration="0.1" fillMode="forwards"></polymer-fadein>
+			</polymer-animation-group>
+			<polymer-scrub id="scrub" animation="{{$.slideAnimation.animation}}" on-polymer-scrub-animation-end="{{scrubAnimationEndAction}}"></polymer-scrub>
 		</div>
 		<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
 		</contacts-detail>
@@ -202,6 +242,16 @@
 					}
 				}
 			},
+			pointerdownAction: function(e, detail, sender) {
+				this.$.scrub.target = sender;
+				this.$.translateAnimation.target = sender;
+				this.$.fadeAnimation.target = sender.querySelector('.contactItemControls.active');
+				this.$.slideAnimation.apply();
+			},
+			scrubAnimationEndAction: function(e, detail, sender) {
+				sender.target.remove();
+				// this.$.list.forceUpdate();
+			},
 			addAction: function() {
 				this.fire('contacts-list-add');
 			},
@@ -211,7 +261,8 @@
 			overlayCloseAction: function() {
 				this.$.overlay.active = false;
 			},
-			activateAction: function() {
+			xactivateAction: function() {
+				console.log('activate');
 				if (!this.wideLayout) {
 					this.$.overlay.active = true;
 				}
