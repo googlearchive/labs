@@ -4,14 +4,13 @@
 <link href="../../../../polymer-elements/polymer-scrub/polymer-scrub.html" rel="import">
 <link href="../../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
 <link href="../../../../polymer-elements/polymer-media-query/polymer-media-query.html" rel="import">
-<link href="../../../../polymer-elements/polymer-selector/polymer-selector.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html" rel="import">
 <link href="../../../list/elements/polymer-list/polymer-list.html" rel="import">
 <link href="contacts-detail.html" rel="import">
 <link href="contacts-icon.html" rel="import">
 <link href="mock-data.html" rel="import">
-<polymer-element name="contacts-list" extends="polymer-selector" attributes="wideLayout">
+<polymer-element name="contacts-list" attributes="wideLayout">
 	<template>
 		<style>
 			/* @polyfill @host */
@@ -54,6 +53,7 @@
 				left: 0;
 				right: 0;
 				z-index: 10;
+				opacity: 0.95;
 			}
 			.contactItem.header {
 		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
@@ -127,10 +127,10 @@
 			</template>
 		</polymer-ui-toolbar>
 		<div class="clip">
-<!-- 			<div id="sticky" class="contactItem header sticky">
+			<div id="sticky" class="contactItem header sticky">
 				{{stickyContent}}
 			</div>
- -->			<polymer-list id="list" data="{{$.mock.withHeaders}}" listData="{{listData}}">
+			<polymer-list id="list" data="{{$.mock.withHeaders}}" listData="{{listData}}" on-polymer-list-scroll="{{scrollAction}}">
 				<template repeat="{{listData}}">
 					<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
 
@@ -155,24 +155,6 @@
 					
 				</template>
 			</polymer-list>
-<!-- 			<polymer-selector id="listContainer" selectedModel="{{selectedContact}}" on-polymer-activate="activateAction">
-				<template repeat="{{alpha in $.mock.alphabetized}}">
-					<div class="contactItem header">
-						{{alpha.letter}}
-					</div>
-					<template repeat="{{contact in alpha.contacts}}">
-						<contacts-list-item contact="{{contact}}"></contacts-list-item>
-
-						<div class="contactItem">
-							<polymer-flex-layout align="center"></polymer-flex-layout>
-								<contacts-icon contact="{{contact}}"></contacts-icon>
-							<div>{{contact.name}}</div>
-						</div>
-						
-					</template>
-				</template>
-			</polymer-selector>
- -->			
 			<polymer-ui-overlay id="overlay">
 				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
 				</contacts-detail>
@@ -193,7 +175,6 @@
 			stickyContent: 'A',
 			selectedContact: null,
 			ready: function() {
-				this.$.list.onscroll = this.scrollAction.bind(this);
 				this.wideLayoutChanged();
 			},
 			wideLayoutChanged: function() {
@@ -216,24 +197,19 @@
 				this.$.list.reset();
 			},
 			scrollAction: function() {
-				console.log('scroll', this.$.list.scrollTop);
-			},
-			xscrollAction: function() {
-				var items = this.$.listContainer.querySelectorAll('.contactItem');
-				var scrollTop = this.$.listContainer.scrollTop;
-				var offset = 0;
-				var header;
+				var items = this.$.list.querySelectorAll('.contactItem');
+				var scrollTop = this.$.list.scrollOffset;
 				for (var i = 0, item; item = items[i]; i++) {
-					if (item.classList.contains('header')) {
-						header = item;
-						offset += 60;
-					} else {
-						offset += 80;
-					}
+					var offset = item.offsetTop + (item.offsetParent ? item.offsetParent.offsetTop : 0);
+					var isHeader = item.classList.contains('header');
 					if (offset > scrollTop) {
-						this.stickyContent = header.textContent;
+						if (!isHeader) {
+							this.stickyContent = item.templateInstance.model.name[0].toUpperCase();
+						} else if (items[i-1]) {
+							this.stickyContent = items[i-1].templateInstance.model.name[0].toUpperCase();
+						}
 						var transY = offset - scrollTop - 60;
-						if (transY < 0 && items[i + 1] && items[i + 1].classList.contains('header')) {
+						if (transY < 0 && isHeader) {
 							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
 						} else {
 							this.$.sticky.style['-webkit-transform'] = null;
