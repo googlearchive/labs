@@ -172,6 +172,7 @@
         return this.$.viewport.querySelector('[page="' + pageNum + '"]');
       },
       scroll: function() {
+        this.fire('polymer-list-scroll');
         var info = this.getViewportPageInfo();
         if (!this.pages[0] || this.pages[0].pageNum != info.start) {
           this.prepareUpdate(info);
