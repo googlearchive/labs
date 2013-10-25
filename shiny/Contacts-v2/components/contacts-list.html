@@ -250,7 +250,9 @@
 			},
 			scrubAnimationEndAction: function(e, detail, sender) {
 				sender.target.remove();
-				// this.$.list.forceUpdate();
+				var index = this.$.mock.withHeaders.indexOf(sender.target.templateInstance.model.__proto__);
+				this.$.mock.withHeaders.splice(index, 1);
+				this.$.list.forceUpdate();
 			},
 			addAction: function() {
 				this.fire('contacts-list-add');
