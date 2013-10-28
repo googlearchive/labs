@@ -131,24 +131,24 @@
 				{{stickyContent}}
 			</div>
 			<polymer-list id="list" data="{{$.mock.withHeaders}}" listData="{{listData}}" on-polymer-list-scroll="{{scrollAction}}">
-				<template repeat="{{listData}}">
+				<template repeat="{{contact in listData}}">
 					<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
 
-					<template if="{{header}}">
-						<div class="contactItem header {{page}}">
-							{{header}}
+					<template if="{{contact.header}}">
+						<div class="contactItem header {{contact.page}}">
+							{{contact.header}}
 						</div>
 					</template>
-					<template if="{{!header}}">
-						<div class="contactItem {{page}}" on-pointerdown="{{pointerdownAction}}">
+					<template if="{{!contact.header}}">
+						<div class="contactItem {{contact.page}}" on-pointerdown="{{pointerdownAction}}">
 							<div class="contactItemControls active"></div>
 							<div class="contactItemControls">
 								<polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
 							</div>
-							<div class="contactItemBody" on-tap="{{activateAction}}">
+							<div class="contactItemBody" on-click="{{activateAction}}">
 								<polymer-flex-layout align="center"></polymer-flex-layout>
-									<contacts-icon contact="{{}}"></contacts-icon>
-								<div>{{name}}</div>
+									<contacts-icon contact="{{contact}}"></contacts-icon>
+								<div>{{contact.name}}</div>
 							</div>
 						</div>
 					</template>
@@ -156,7 +156,7 @@
 				</template>
 			</polymer-list>
 			<polymer-ui-overlay id="overlay">
-				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
+				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
 				</contacts-detail>
 			</polymer-ui-overlay>
 			<polymer-animation-group id="slideAnimation" type="par" fillMode="forwards">
@@ -165,7 +165,7 @@
 			</polymer-animation-group>
 			<polymer-scrub id="scrub" animation="{{$.slideAnimation.animation}}" on-polymer-scrub-animation-end="{{scrubAnimationEndAction}}"></polymer-scrub>
 		</div>
-		<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="overlayCloseAction">
+		<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
 		</contacts-detail>
 	</template>
 	<script>
@@ -239,10 +239,12 @@
 			overlayCloseAction: function() {
 				this.$.overlay.active = false;
 			},
-			xactivateAction: function() {
-				console.log('activate');
-				if (!this.wideLayout) {
-					this.$.overlay.active = true;
+			activateAction: function(e, detail, sender) {
+				if (!this.$.scrub.scrubbing) {
+					this.selectedContact = sender.templateInstance.model;
+					if (!this.wideLayout) {
+						this.$.overlay.active = true;
+					}
 				}
 			}
 		})
