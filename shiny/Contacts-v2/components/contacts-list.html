@@ -1,5 +1,7 @@
+<link href="../../../../polymer-elements/polymer-animation/polymer-animation.html" rel="import">
 <link href="../../../../polymer-elements/polymer-animation/polymer-animation-group.html" rel="import">
 <link href="../../../../polymer-elements/polymer-animation/polymer-fadein.html" rel="import">
+<link href="../../../../polymer-elements/polymer-animation/polymer-fadeout.html" rel="import">
 <link href="../../../../polymer-elements/polymer-animation/polymer-translate.html" rel="import">
 <link href="../../../../polymer-elements/polymer-scrub/polymer-scrub.html" rel="import">
 <link href="../../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html" rel="import">
@@ -105,6 +107,11 @@
 				left: 0;
 				bottom: 0;
 				right: 0;
+				-webkit-transform-origin-y: top;
+				opacity: 0;
+			}
+			#overlay.opened {
+				opacity: 1;
 			}
 			#overlay::x-overlay {
 				height: 100%;
@@ -116,7 +123,7 @@
 		<mock-data id="mock"></mock-data>
 		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
 		<polymer-grid-layout id="grid" on-polymer-grid-layout="{{layoutAction}}"></polymer-grid-layout>
-		<polymer-ui-toolbar theme="polymer-ui-dark-theme">
+		<polymer-ui-toolbar id="toolbar">
 			<polymer-ui-icon-button icon="menu" on-tap="{{menuAction}}"></polymer-ui-icon-button>
 			<div flex>Everyone</div>
 			<polymer-ui-icon-button icon="plus" on-tap="{{addAction}}"></polymer-ui-icon-button>
@@ -155,7 +162,7 @@
 					
 				</template>
 			</polymer-list>
-			<polymer-ui-overlay id="overlay">
+			<polymer-ui-overlay id="overlay" transitions="{{activateTransitions}}">
 				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
 				</contacts-detail>
 			</polymer-ui-overlay>
@@ -163,7 +170,23 @@
 				<polymer-translate id="translateAnimation" fromX="0" toX="100%" duration="0.6" fillMode="forwards"></polymer-translate>
 				<polymer-fadein id="fadeAnimation" duration="0.1" fillMode="forwards"></polymer-fadein>
 			</polymer-animation-group>
-			<polymer-scrub id="scrub" animation="{{$.slideAnimation.animation}}" on-polymer-scrub-animation-end="{{scrubAnimationEndAction}}"></polymer-scrub>
+			<polymer-scrub id="scrub" animation="{{$.slideAnimation.animation}}" snapThreshold="0.2" on-polymer-scrub-animation-end="{{scrubAnimationEndAction}}"></polymer-scrub>
+			<polymer-animation-group id="activateAnimation" type="par" duration="0.1">
+				<polymer-translate target="{{$.toolbar}}" fromY="0" toY="-100%"></polymer-translate>
+				<polymer-fadeout target="{{$.toolbar}}"></polymer-fadeout>
+				<polymer-fadeout target="{{$.sticky}}"></polymer-fadeout>
+				<polymer-fadeout target="{{$.list}}"></polymer-fadeout>
+				<polymer-animation target="{{$.overlay}}" easing="ease-in">
+					<polymer-animation-keyframe>
+						<polymer-animation-prop name="transform" value="scaleY(1.5)"></polymer-animation-prop>
+						<polymer-animation-prop name="opacity" value="0"></polymer-animation-prop>
+					</polymer-animation-keyframe>
+					<polymer-animation-keyframe>
+						<polymer-animation-prop name="transform" value="scaleY(1)"></polymer-animation-prop>
+						<polymer-animation-prop name="opacity" value="1"></polymer-animation-prop>
+					</polymer-animation-keyframe>
+				</polymer-animation>
+			</polymer-animation-group>
 		</div>
 		<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
 		</contacts-detail>
@@ -175,6 +198,7 @@
 			stickyContent: 'A',
 			selectedContact: null,
 			ready: function() {
+				this.activateTransitions = [this.$.activateAnimation, null];
 				this.wideLayoutChanged();
 			},
 			wideLayoutChanged: function() {
@@ -226,7 +250,8 @@
 			},
 			scrubAnimationEndAction: function(e, detail, sender) {
 				sender.target.remove();
-				var index = this.$.mock.withHeaders.indexOf(sender.target.templateInstance.model.__proto__);
+				var index = this.$.mock.withHeaders.indexOf(sender.target.templateInstance.model.contact.__proto__);
+				console.log('index', index, sender.target.templateInstance.model.contact);
 				this.$.mock.withHeaders.splice(index, 1);
 				this.$.list.forceUpdate();
 			},
