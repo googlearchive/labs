@@ -199,15 +199,12 @@
 			scrollAction: function() {
 				var items = this.$.list.querySelectorAll('.contactItem');
 				var scrollTop = this.$.list.scrollOffset;
+				var lastHeader;
 				for (var i = 0, item; item = items[i]; i++) {
 					var offset = item.offsetTop + (item.offsetParent ? item.offsetParent.offsetTop : 0);
 					var isHeader = item.classList.contains('header');
 					if (offset > scrollTop) {
-						if (!isHeader) {
-							this.stickyContent = item.templateInstance.model.name[0].toUpperCase();
-						} else if (items[i-1]) {
-							this.stickyContent = items[i-1].templateInstance.model.name[0].toUpperCase();
-						}
+						this.stickyContent = lastHeader.textContent;
 						var transY = offset - scrollTop - 60;
 						if (transY < 0 && isHeader) {
 							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
@@ -215,6 +212,9 @@
 							this.$.sticky.style['-webkit-transform'] = null;
 						}
 						break;
+					}
+					if (isHeader) {
+						lastHeader = item;
 					}
 				}
 			},
