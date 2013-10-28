@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>template-image</title>
+    <!--<script src="../../../../polymer/polymer.js"></script>-->
+  </head>
+  <body>
+    <template>
+        <style>
+          .message {
+            height: 120px;
+          }
+        </style>
+        <img src="images/0.png"></div>
+        <div class="message" style="background-image: url(images/0.png);"></div>
+      </template>
+    <script>
+      //document.body.appendChild(document.querySelector('template').createInstance());
+      document.body.appendChild(document.querySelector('template').content.cloneNode(true));
+
+      var doc = document.implementation.createHTMLDocument();
+      doc.body.innerHTML = '<div class="message" style="background-image: url(images/0.png);"></div>';
+      document.body.appendChild(doc.body.firstChild);
+
+    </script>
+  </body>
+</html>

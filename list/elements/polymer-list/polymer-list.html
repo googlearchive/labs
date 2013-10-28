@@ -47,7 +47,9 @@
           d.page = 'page' + Math.floor((start+i) / this.pageSize);
         }
         this.super(arguments);
-        this.onMutation(this, this.forceUpdate);
+        //if (!this.fixedHeight) {
+          this.onMutation(this, this.forceUpdate);
+        //}
       }
     });
   </script>

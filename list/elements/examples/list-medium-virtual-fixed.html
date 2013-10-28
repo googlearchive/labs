@@ -37,6 +37,7 @@ license that can be found in the LICENSE file.
         <style>
           polymer-virtual-list {
             height: 100%;
+            background: red;
           }
 
           ::part(message) {
@@ -52,7 +53,7 @@ license that can be found in the LICENSE file.
             background-repeat: no-repeat;
             background-position: 10px 10px;
             background-size: 60px;
-            border-bottom: 1px solid #ddd;
+            border: 1px solid #ddd;
           }
           
           ::part(from) {
@@ -91,7 +92,6 @@ license that can be found in the LICENSE file.
 
         <template id="listItem">
           <div>
-            <div part="divider"></div>
             <div part="message">
               <span part="from"></span>
               <span part="timestamp"></span>
@@ -162,11 +162,15 @@ license that can be found in the LICENSE file.
             var dom = document.createDocumentFragment();
             for (var i = detail.start, l=detail.end, d, r; (i<l) && (d=this.data[i]); i++) {
               r = this.$.listItem.ref.content.cloneNode(true);
-              var divider = r.querySelector('[part=divider]');
-              divider.style.display = d.divider ? null : 'none';
-              divider.textContent = d.divider;
+              //var divider = r.querySelector('[part=divider]');
+              //divider.style.display = d.divider ? null : 'none';
+              //divider.textContent = d.divider;
               var message = r.querySelector('[part=message]');
-              //message.style.backgroundImage = 'url(images/' + d.index % 4 + '.png)';
+              var s = 'url(images/' + d.index % 4 + '.png)';
+
+              message.style.height = 100 + (Math.random() * 1000) + 'px';
+              //message.style.backgroundImage = s;
+              //message.setAttribute('style', 'background-image: ' + s + ';');
               r.querySelector('[part=from]').textContent = d.name;
               r.querySelector('[part=timestamp]').textContent = d.time;
               r.querySelector('[part=subject]').textContent = 'Infinite List. ' + d.index;

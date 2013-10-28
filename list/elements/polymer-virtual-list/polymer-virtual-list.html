@@ -1,7 +1,7 @@
 <polymer-element name="polymer-virtual-list" attributes="count pageSize numPages">
   <template>
     <link rel="stylesheet" href="polymer-virtual-list.css">
-    <div id="list" class="polymer-list-list">
+    <div id="list" class="polymer-list-list" on-scroll="{{scroll}}">
       <div id="viewport" class="polymer-list-viewport"></div>
     </div>
   </template>
@@ -17,7 +17,6 @@
       numInitialPages: 0, 
       horizontal: false,
       fixedHeight: false,
-      useRaf: false,
       retainPages: false,
       observe: {
         count: 'reset',
@@ -35,6 +34,8 @@
       },
       // re-render at the top
       reset: function(count) {
+        this.initialized = false;
+        this.pageCache = [];
         this.updateMetrics();
         this.count = count || this.count;
         this.scrollOffset = 0;
@@ -45,14 +46,7 @@
         this.rowHeight = 0;
         this.pageTops = [];
         this.$.viewport.classList.toggle('horizontal', this.horizontal);
-        // TODO(sorvell): remove when event system is updated
-        if (this.useRaf) {
-          this.$.list.removeEventListener('scroll', this.scroll.bind(this));
-          this.rafUpdate();
-        } else {
-          this.$.list.addEventListener('scroll', this.scroll.bind(this));
-          this.scroll();
-        }
+        this.scroll();
       },
       updateMetrics: function() {
         var h = this.horizontal;
@@ -85,15 +79,17 @@
           var end = Math.min(start + this.pageSize, this.count);
           this.generatePageContent(p, start, end);
           this.$.viewport.appendChild(p);
+          this.pageCache[pageNum] = p;
           return p;
         }
       },
-      setupInitial: function(pageHeight, pageNumber) {
+      initialize: function(pageHeight, pageNumber) {
         this.rowHeight = pageHeight/(this.pageSize < this.count ? 
             this.pageSize : this.count);
         this.viewportHeight = this.count * this.rowHeight;
-        this.applyViewportHeight();
-        for (var i = 0; i < this.numInitialPages; i++) {
+        var numPages = Math.min(Math.ceil(this.count / this.pageSize),
+            this.numInitialPages);
+        for (var i = 0; i < numPages; i++) {
           if (pageNumber !== i) {
             var p = this.generatePage(i);
             if (this.fixedHeight) {
@@ -101,13 +97,14 @@
             }
           }
         }
+        this.initialized = true;
       },
       measurePage: function(page) {
         var ph = this.calcPageHeight(page);
         var pn = page.pageNum;
         if (!this.rowHeight) {
           // rowHeight is not set, use the page's height to setup initial values
-          this.setupInitial(ph, pn);
+          this.initialize(ph, pn);
         }
         var ph0 = this.getPageHeight(pn);
         if (ph && ph0 != ph) {
@@ -117,11 +114,14 @@
           this.pageTops.splice(pn+1, this.pageTops.length);
           // also adjust the viewport's height
           this.viewportHeight += ph - ph0;
-          this.applyViewportHeight();
         }
       },
-      applyViewportHeight: function() {
-        this.$.viewport.style[this.metrics.extent] = this.viewportHeight + 'px';
+      get viewportHeight() {
+        return this._viewportHeight;
+      },
+      set viewportHeight(value) {
+        this._viewportHeight = value;
+        this.$.viewport.style[this.metrics.extent] = this._viewportHeight + 'px';
       },
       calcPageHeight: function(page) {
         return (this.fixedHeight && this.rowHeight) ? 
@@ -132,6 +132,7 @@
             this.pageHeights[pageNum] : 
             this.pageSize * (this.rowHeight || 100);
       },
+      // calculates the start and center page for the current scroll position
       getViewportPageInfo: function() {
         var c = Math.floor(this.locatePage(this.scrollOffset + 
               this.$.list[this.metrics.offsetExtent]/2) + 0.5);
@@ -140,57 +141,77 @@
         // the current start/center page index
         return {start: k, center: c};
       },
+      // given a positon, returns page number + decimal offset on page.
       locatePage: function(pos) {
-        var n = pos/this.getPageHeight(0);
+        // guesstimate page given 1st page's height
+        var pn = pos/this.getPageHeight(0);
         if (this.fixedHeight) {
-          return n;
+          return pn;
         }
-        n = Math.floor(n);
-        while (n && !this.pageTops[n] || (this.pageTops[n] > pos)) {
-          n--;
+        pn = Math.floor(pn);
+        // decrement page if the pageTop of guesstimate is > requested pos
+        while (pn && !this.pageTops[pn] || (this.pageTops[pn] > pos)) {
+          pn--;
         }
-        var p = this.pageTops[n] || 0;
-        while (pos >= p) {
-          p += this.getPageHeight(n++);
-          this.pageTops[n] = p;
+        var pt = this.pageTops[pn] || 0;
+        // increment page if pageTop of guesstimate is < requested pos
+        // also adjust the pageTops for any interrogated page
+        while (pos >= pt) {
+          pt += this.getPageHeight(pn++);
+          this.pageTops[pn] = pt;
         }
-        n--;
-        var ph = this.getPageHeight(n);
-        return n + (pos-p+ph)/ph;
+        // find decimal offset on page
+        pn--;
+        var ph = this.getPageHeight(pn);
+        return pn + (pos-pt+ph)/ph;
       },
+      // positions the given page and returns the adjustment delta.
       positionPage: function(page) {
-        var pn = page.pageNum;
+        var pn = page.pageNum, t;
         if (this.fixedHeight) {
           t = pn * this.rowHeight * this.pageSize;
-        } else {
-          if (this.pageTops[pn]) {
-            t = this.pageTops[pn];
-          } else {
-            var n = 0, t = 0; 
-            while (n < pn) {
-              t += this.getPageHeight(n);
-              n++;
-            }
+          if (!this.pageTops[pn]) {
+            this.pageTops[pn] = t;
+            page.style[this.metrics.position] = t + 'px';
           }
-        }
-        var t0 = page.style[this.metrics.position].slice(0, -2);
-        if (!this.fixedHeight) {
+          return 0;
+        } else {
+          t = this.pageTops[pn] ? this.pageTops[pn] : this.calcPageTop(pn);
           // update pageTops cache
           this.pageTops[pn] = t;
           this.pageTops[pn+1] = t + this.getPageHeight(pn);
+          // save old top
+          var t0 = page.style[this.metrics.position].slice(0, -2);
+          // set the page's top
+          page.style[this.metrics.position] = t + 'px';
+          // return delta between old and new
+          if (t0) {
+            return t0 - t;
+          }
         }
-        if (this.fixedHeight && t0 == t) {
-          return;
+      },
+      // calculate a pageTop from scratch by iterating from the top
+      // NOTE: this is costly, but we almost never need to do this
+      // because of the pageTop setting done by locatePage
+      calcPageTop: function(pageNum) {
+        var n = 0, t=0; 
+        while (n < pageNum) {
+          t += this.getPageHeight(n);
+          n++;
         }
-        // set the page's top
-        page.style[this.metrics.position] = t + 'px';
-        if (t0) {
-          return t0 - t;
-        }
+        return n;
       },
       findPage: function(pageNum) {
-        return this.$.viewport.querySelector('[page="' + pageNum + '"]');
+        if (!this.retainPages || !this.pageCache[pageNum]) {
+          this.pageCache[pageNum] = this.$.viewport.querySelector(
+              '[page="' + pageNum + '"]');
+        }
+        return this.pageCache[pageNum];
       },
+      /*
+      TODO(sorvell): chrome fires scroll events with raf timing;
+      on other browser, we will want to throttle events to that timing
+      */
       scroll: function() {
         this.fire('polymer-list-scroll');
         var info = this.getViewportPageInfo();
@@ -199,15 +220,10 @@
           this.update(info);
         }
       },
-      rafUpdate: function() {
-        requestAnimationFrame(function() {
-          this.scroll();
-          this.rafUpdate();
-        }.bind(this));
-      },
       update: function(pageInfo) {
         var k = pageInfo.start, n = pageInfo.start+this.numPages, 
             c = pageInfo.center;
+        this.previousPages = this.pages;
         this.pages = [];
         for (; k<n; k++) {
           var p = this.findPage(k) || this.generatePage(k);
@@ -217,20 +233,11 @@
             }
             this.measurePage(p);
             var d = this.positionPage(p);
-            this.pages.push(p);
             // adjust scrollOffset if center page's top has changed
-            if (d && k === c) {
+            if (!this.fixedHeight && (d && k === c)) {
               this.scrollOffset -= d;
             }
-            // account for async mutation, aka template if and the like.
-            Platform.flush();
-            // TODO(sorvell): this makes SD polyfill blow up
-            /*
-            var self = this;
-            this.onMutation(p, function() {
-              self.update(pageInfo);
-            });
-            */
+            this.pages.push(p);
           }
         }
         // remove out-of-bounds pages
@@ -243,7 +250,8 @@
         this.update(info);
       },
       cleanupPages: function() {
-        for (var c=this.$.viewport.children, i=c.length-1, p; p=c[i]; i--) {
+        var p$ = this.previousPages;
+        for (var i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
           if (this.pages.indexOf(p) == -1) {
             if (this.retainPages) {
               p.style.display = 'none';

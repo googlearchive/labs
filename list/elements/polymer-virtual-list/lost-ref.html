@@ -16,10 +16,6 @@
       </x-other>
     </template>
 
-    <template id="x-other">
-      <div>I am x-other!</div>
-    </template>
-
     <script>
       // get template metrics before manipulation
       var template_before = document.querySelector('#x-test').content
@@ -35,15 +31,27 @@
           return;
         }
         inDefaultView = true;
-
+        this.makeDom();
+      }
+      proto.makeDom = function() {
         var template = document.querySelector('#' + this.localName);
         if (template) {
           var dom = template.createInstance(this);
           this.appendChild(dom);
         }
       }
-      document.register('x-other', {prototype: Object.create(proto)});
-      document.register('x-test', {prototype: Object.create(proto)});
+
+
+      var otherProto = Object.create(proto);
+      otherProto.makeDom = function() {
+        var d = document.createElement('div');
+        d.innerHTML = 'Foo';
+        this.appendChild(d);
+      }
+
+
+      document.register('x-other', {prototype: otherProto});
+      document.register('x-test', {prototype: proto});
 
       // get template metrics after manipulation
       var template_after = document.querySelector('.noContent');
