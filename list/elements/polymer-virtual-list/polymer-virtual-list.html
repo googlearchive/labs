@@ -44,9 +44,6 @@
         this.pages = [];
         this.rowHeight = 0;
         this.pageTops = [];
-        for (var i = 0; i < this.numInitialPages; i++) {
-          this.generatePage(i);
-        }
         this.$.viewport.classList.toggle('horizontal', this.horizontal);
         // TODO(sorvell): remove when event system is updated
         if (this.useRaf) {
@@ -91,27 +88,44 @@
           return p;
         }
       },
+      setupInitial: function(pageHeight, pageNumber) {
+        this.rowHeight = pageHeight/(this.pageSize < this.count ? 
+            this.pageSize : this.count);
+        this.viewportHeight = this.count * this.rowHeight;
+        this.applyViewportHeight();
+        for (var i = 0; i < this.numInitialPages; i++) {
+          if (pageNumber !== i) {
+            var p = this.generatePage(i);
+            if (this.fixedHeight) {
+              this.positionPage(p);
+            }
+          }
+        }
+      },
       measurePage: function(page) {
-        var ph = page[this.metrics.offsetExtent];
+        var ph = this.calcPageHeight(page);
         var pn = page.pageNum;
         if (!this.rowHeight) {
-          this.rowHeight = ph/(this.pageSize < this.count ? this.pageSize : 
-              this.count);
-          this.viewportHeight = this.count * this.rowHeight;
-          this.$.viewport.style[this.metrics.extent] = 
-              this.viewportHeight + 'px';
+          // rowHeight is not set, use the page's height to setup initial values
+          this.setupInitial(ph, pn);
         }
         var ph0 = this.getPageHeight(pn);
         if (ph && ph0 != ph) {
           this.pageHeights[pn] = ph;
-          // since page height has changed, invalidate all the pageTops after this page
+          // since page height has changed, invalidate all the pageTops after
+          // this page
           this.pageTops.splice(pn+1, this.pageTops.length);
           // also adjust the viewport's height
           this.viewportHeight += ph - ph0;
-          //console.log('measurePage #', pn, 'height', ph, 'viewport', this.viewportHeight);
-          this.$.viewport.style[this.metrics.extent] = 
-              this.viewportHeight + 'px';
+          this.applyViewportHeight();
         }
+      },
+      applyViewportHeight: function() {
+        this.$.viewport.style[this.metrics.extent] = this.viewportHeight + 'px';
+      },
+      calcPageHeight: function(page) {
+        return (this.fixedHeight && this.rowHeight) ? 
+            (this.pageSize * this.rowHeight) : page[this.metrics.offsetExtent];
       },
       getPageHeight: function(pageNum) {
         return this.pageHeights[pageNum] !== undefined ? 
@@ -123,7 +137,8 @@
               this.$.list[this.metrics.offsetExtent]/2) + 0.5);
         var k = c - Math.floor(this.numPages/2);
         k = Math.max(0, k);
-        return {start: k, center: c, end: k+this.numPages};
+        // the current start/center page index
+        return {start: k, center: c};
       },
       locatePage: function(pos) {
         var n = pos/this.getPageHeight(0);
@@ -159,9 +174,14 @@
           }
         }
         var t0 = page.style[this.metrics.position].slice(0, -2);
-        // update pageTops cache
-        this.pageTops[pn] = t;
-        this.pageTops[pn+1] = t + this.getPageHeight(pn);
+        if (!this.fixedHeight) {
+          // update pageTops cache
+          this.pageTops[pn] = t;
+          this.pageTops[pn+1] = t + this.getPageHeight(pn);
+        }
+        if (this.fixedHeight && t0 == t) {
+          return;
+        }
         // set the page's top
         page.style[this.metrics.position] = t + 'px';
         if (t0) {
@@ -186,7 +206,8 @@
         }.bind(this));
       },
       update: function(pageInfo) {
-        var k = pageInfo.start, n = pageInfo.end, c = pageInfo.center;
+        var k = pageInfo.start, n = pageInfo.start+this.numPages, 
+            c = pageInfo.center;
         this.pages = [];
         for (; k<n; k++) {
           var p = this.findPage(k) || this.generatePage(k);
@@ -197,8 +218,8 @@
             this.measurePage(p);
             var d = this.positionPage(p);
             this.pages.push(p);
-            // adjust scrollTop if centerPage's top has changed
-            if (d && k == c) {
+            // adjust scrollOffset if center page's top has changed
+            if (d && k === c) {
               this.scrollOffset -= d;
             }
             // account for async mutation, aka template if and the like.
@@ -207,7 +228,7 @@
             /*
             var self = this;
             this.onMutation(p, function() {
-              self.update(startPageNum, centerPageNum);
+              self.update(pageInfo);
             });
             */
           }
