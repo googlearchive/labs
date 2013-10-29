@@ -65,7 +65,7 @@
           var marker = new google.maps.Marker({
             map: this.map,
             position: latLng,
-            icon: 'assets/marker_grey.png',
+            icon: this.resolvePath('assets/marker_grey.png'),
             zIndex: 0
           });
           this.markers.push(marker);
