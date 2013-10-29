@@ -178,11 +178,15 @@
 				</contacts-detail>
 			</polymer-ui-overlay>
 			<div class="addButton" on-tap="{{addAction}}">&#x2b;</div>
+			<!-- scrubbing -->
+			<polymer-scrub id="scrub" animation="{{$.slideAnimation.animation}}" snapThreshold="0.2" on-polymer-scrub-animation-end="{{scrubAnimationEndAction}}"></polymer-scrub>
 			<polymer-animation-group id="slideAnimation" type="par" fillMode="forwards">
 				<polymer-translate id="translateAnimation" fromX="0" toX="100%" duration="0.6" fillMode="forwards"></polymer-translate>
 				<polymer-fadein id="fadeAnimation" duration="0.1" fillMode="forwards"></polymer-fadein>
 			</polymer-animation-group>
-			<polymer-scrub id="scrub" animation="{{$.slideAnimation.animation}}" snapThreshold="0.2" on-polymer-scrub-animation-end="{{scrubAnimationEndAction}}"></polymer-scrub>
+			<!-- item delete animation -->
+			<polymer-translate id="deleteAnimation" duration="0.1" fromY="0" toY="-100%" fillMode="forwards" easing="ease-in" on-polymer-animation-end="{{deleteAnimationEndAction}}"></polymer-translate>
+			<!-- transition -->
 			<polymer-animation-group id="activateAnimation" type="par" duration="0.1">
 				<polymer-translate target="{{$.toolbar}}" fromY="0" toY="-100%"></polymer-translate>
 				<polymer-fadeout target="{{$.toolbar}}"></polymer-fadeout>
@@ -261,9 +265,24 @@
 				this.$.slideAnimation.apply();
 			},
 			scrubAnimationEndAction: function(e, detail, sender) {
-				sender.target.remove();
-				var index = this.$.mock.withHeaders.indexOf(sender.target.templateInstance.model.contact.__proto__);
-				console.log('index', index, sender.target.templateInstance.model.contact);
+				this.deletedContact = sender.target.templateInstance.model.contact.__proto__;
+        var listRect = this.$.list.getBoundingClientRect();
+        var itemRect = sender.target.getBoundingClientRect();
+        var height = listRect.bottom - itemRect.top;
+        var item = sender.target;
+        var targets = [];
+        do {
+          item = item.nextElementSibling;
+          if (item.classList.contains('contactItem')) {
+            targets.push(item);
+            height -= itemRect.height;
+          }
+        } while (height > 0);
+        this.$.deleteAnimation.target = targets;
+        this.$.deleteAnimation.play();
+			},
+			deleteAnimationEndAction: function(e, detail, sender) {
+				var index = this.$.mock.withHeaders.indexOf(this.deletedContact);
 				this.$.mock.withHeaders.splice(index, 1);
 				this.$.list.forceUpdate();
 			},
