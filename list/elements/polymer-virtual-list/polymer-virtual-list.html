@@ -53,6 +53,7 @@
         this.metrics = {
           scrollOffset: h ? 'scrollLeft' : 'scrollTop',
           offsetExtent: h ? 'offsetWidth' : 'offsetHeight',
+          offsetPosition: h ? 'offsetLeft' : 'offsetTop',
           extent: h ? 'width' : 'height',
           position: h ? 'left' : 'top'
         };
@@ -260,6 +261,25 @@
             }
           }
         }
+      },
+      setScrollOffsetImmediate: function(pos){
+        this.scrollOffset = pos;
+        this.scroll();
+      },
+      scrollToRow: function(row) {
+        // find page and row in page
+        var pageNum = Math.floor(row / this.pageSize);
+        // guesstimate offset and scroll to it
+        var top = this.pageTops[pageNum] || this.calcPageTop(pageNum);
+        this.setScrollOffsetImmediate(top);
+        // re-scroll with updated info
+        var top = this.pageTops[pageNum];
+        this.setScrollOffsetImmediate(top);
+        // scroll to offset on this page
+        var page = this.findPage(pageNum);
+        var rowInPage = row - pageNum * this.pageSize;
+        var rowOffset = page.children[rowInPage][this.metrics.offsetPosition];
+        this.scrollOffset += rowOffset;
       }
     });
   </script>
