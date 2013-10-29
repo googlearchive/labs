@@ -24,30 +24,20 @@
 				right: 0;
 			}
 			polymer-ui-toolbar {
-				padding-left: 10px;
-				padding-right: 10px;
+				padding-left: 8px;
+				padding-right: 8px;
 			}
 			.clip {
 				background: #eeeeee;
 				overflow: hidden;
 				position: relative;
 			}
-			#listContainer {
-				position: absolute;
-				top: 0;
-				right: 0;
-				left: 0;
-				bottom: 0;
-				background-color: rgb(242, 242, 242),
-				min-width: 320px;
-				overflow-y: scroll;
-			}
 			polymer-list {
 				height: 100%;
 			}
 			.contactItem {
-				font-size: 18px;
-				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				font-size: 14px;
+				font-family: 'Helvetica Neue', HelveticaNeue, Helvetica, sans-serif;
 			}
 			.contactItem.sticky {
 				position: absolute;
@@ -58,22 +48,20 @@
 				opacity: 0.95;
 			}
 			.contactItem.header {
-		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f0f0f0;
 				border-style: solid;
-				border-color: rgba(0, 0, 0, 0.14902);
+				border-color: rgba(0, 0, 0, 0.15);
 				border-width: 0 0 1px;
 				box-sizing: border-box;
-		    color: #9f9f9f;
+		    color: #999;
 				font-variant: small-caps;
-				height: 60px;
-				padding: 20px;
+				padding: 16px;
 			}
+      .contactItem .firstName {
+        font-weight: bold;
+      }
 			[wideLayout] .contactItem.polymer-selected {
-		    background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
-		    background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+		    background: #f0f0f0;
 		  }
 		  .contactItemControls {
 		  	position: absolute;
@@ -86,7 +74,7 @@
 				border-color: rgba(0, 0, 0, 0.14902);
 				border-width: 0 0 1px;
 		  	text-align: right;
-		  	padding: 21px 30px;
+		  	padding: 17px 24px;
 		  }
 		  .contactItemControls.active {
 		  	background: #f5565a;
@@ -98,8 +86,7 @@
 				border-color: rgba(0, 0, 0, 0.14902);
 				border-width: 0 0 1px 1px;
 				box-sizing: border-box;
-				height: 80px;
-				padding: 0 20px;
+				padding: 16px;
 		  }
 		  .addButton {
 		  	position: absolute;
@@ -166,7 +153,7 @@
 							<div class="contactItemBody" on-click="{{activateAction}}">
 								<polymer-flex-layout align="center"></polymer-flex-layout>
 									<contacts-icon contact="{{contact}}"></contacts-icon>
-								<div>{{contact.name}}</div>
+								<div><span class="firstName">{{contact.firstName}}</span> {{contact.surname}}</div>
 							</div>
 						</div>
 					</template>
@@ -209,7 +196,6 @@
 	</template>
 	<script>
 		Polymer('contacts-list', {
-			applyAuthorStyles: true,
 			wideLayout: true,
 			stickyContent: 'A',
 			selectedContact: null,

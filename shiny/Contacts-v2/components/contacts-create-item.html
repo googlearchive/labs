@@ -8,18 +8,18 @@
 		<style>
 			/* @polyfill @host */
 			:host {
-				padding: 0 20px;
+				padding: 16px;
 				border-color: rgba(0, 0, 0, 0.14902);
 				border-width: 0 1px 1px;
 				border-style: solid;
 			}
 			input {
-				margin-left: 20px;
+				margin: 0 0 0 16px;
+				padding: 0;
 				border: none;
-				font-size: 18px;
+				font-size: 14px;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
 				box-sizing: border-box;
-				height: 60px;
 				background: transparent;
 			}
 			input:focus {
@@ -30,31 +30,27 @@
 				display: none !important;
 			}
 			#typeOverlay {
-				left: 10px;
+				left: 8px;
 				box-shadow: 5px 5px 5px rgba(50, 50, 50, 0.6);
 			}
-			#typeOverlay input {
-				margin-left: 0px;
-				height: auto;
-			}
 			#typeOverlay polymer-ui-menu-item {
-				font-size: 18px !important;
-				height: 61px !important;
+				font-size: 14px !important;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				padding: 10px 20px !important;
-				border-color: rgba(0, 0, 0, 0.14902) !important;
+				padding: 16px !important;
+				border-color: rgba(0, 0, 0, 0.15) !important;
 				border-width: 0 1px 1px !important;
 				border-style: solid !important;
+				height: auto !important;
 			}
 			/* FIXME: Safari drops the whole rule if it doesn't recognize the selector. */
 			#typeOverlay content::-webkit-distributed(polymer-ui-menu-item) {
-				font-size: 18px !important;
-				height: 61px !important;
+				font-size: 14px !important;
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				padding: 10px 20px !important;
-				border-color: rgba(0, 0, 0, 0.14902) !important;
+				padding: 16px !important;
+				border-color: rgba(0, 0, 0, 0.15) !important;
 				border-width: 0 1px 1px !important;
 				border-style: solid !important;
+				height: auto !important;
 			}
 		</style>
 		<polymer-flex-layout align="center"></polymer-flex-layout>
