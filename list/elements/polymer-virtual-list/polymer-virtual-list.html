@@ -1,4 +1,4 @@
-<polymer-element name="polymer-virtual-list" attributes="count pageSize numPages">
+<polymer-element name="polymer-virtual-list" attributes="count pageSize numPages horizontal">
   <template>
     <link rel="stylesheet" href="polymer-virtual-list.css">
     <div id="list" class="polymer-list-list" on-scroll="{{scroll}}">
@@ -199,7 +199,7 @@
           t += this.getPageHeight(n);
           n++;
         }
-        return n;
+        return t;
       },
       findPage: function(pageNum) {
         if (!this.retainPages || !this.pageCache[pageNum]) {
