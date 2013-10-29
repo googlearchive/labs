@@ -12,10 +12,11 @@
 			button {
 				background: transparent none;
 				border: 0;
-				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				font-family: 'Helvetica Neue', HelveticaNeue, Helvetica, sans-serif;
 				font-size: 14px;
-				color: #999;
-				padding: 10px;
+				font-weight: bold;
+				color: #777;
+				padding: 8px;
 				margin: 0 16px;
 			}
 			button:focus {
@@ -23,8 +24,11 @@
 			}
 			button:active {
 				outline: none;
-				border: 1px solid #ccc;
+				border: 1px solid rgba(0, 0, 0, 0.15);
 				border-radius: 3px;
+			}
+			button.save {
+				color: #00bbd3;
 			}
 			contacts-create-item[active], contacts-create-phone-item[active] {
 		    background: #f7f7f7;
@@ -33,7 +37,7 @@
 		<polymer-ui-toolbar>
 			<button on-tap="{{cancelAction}}">Cancel</button>
 			<div flex></div>
-			<button on-tap="{{createAction}}">✓</button>
+			<button class="save" on-tap="{{createAction}}">Save</button>
 		</polymer-ui-toolbar>
 		<!-- FIXME: autofocus name input when switching to this page -->
 		<contacts-create-item icon="account" activeicon="account" label="Name" value="{{contact.name}}" autofocus></contacts-create-item>
