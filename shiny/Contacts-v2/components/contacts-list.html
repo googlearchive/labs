@@ -12,7 +12,7 @@
 <link href="contacts-detail.html" rel="import">
 <link href="contacts-icon.html" rel="import">
 <link href="mock-data.html" rel="import">
-<polymer-element name="contacts-list" attributes="wideLayout">
+<polymer-element name="contacts-list" attributes="desktopLayout tabletLayout">
 	<template>
 		<style>
 			/* @polyfill @host */
@@ -27,14 +27,21 @@
 				padding-left: 8px;
 				padding-right: 8px;
 			}
-			.clip {
+			#clip {
 				background: #eeeeee;
 				overflow: hidden;
 				position: relative;
 			}
+      [desktopLayout]#clip {
+        min-width: 320px;
+        max-width: 384px;
+      }
 			polymer-list {
 				height: 100%;
 			}
+      [tabletLayout] polymer-list {
+        margin: 24px;
+      }
 			.contactItem {
 				font-size: 14px;
 				font-family: 'Helvetica Neue', HelveticaNeue, Helvetica, sans-serif;
@@ -47,21 +54,27 @@
 				z-index: 10;
 				opacity: 0.95;
 			}
+      [tabletLayout] .contactItem.sticky {
+        display: none;
+      }
 			.contactItem.header {
 		    background: #f0f0f0;
 				border-style: solid;
 				border-color: rgba(0, 0, 0, 0.15);
-				border-width: 0 0 1px;
+				border-width: 0 1px 1px;
 				box-sizing: border-box;
 		    color: #999;
 				font-variant: small-caps;
-				padding: 16px;
+				padding: 16px 24px;
 			}
+      [tabletLayout] .contactItem.header:nth-child(3) {
+        border-top-width: 1px;
+      }
       .contactItem .firstName {
         font-weight: bold;
       }
-			[wideLayout] .contactItem.polymer-selected {
-		    background: #f0f0f0;
+			[desktopLayout] .contactItem.polymer-selected {
+		    background: #f7f7f7;
 		  }
 		  .contactItemControls {
 		  	position: absolute;
@@ -71,7 +84,7 @@
 		  	width: 100%;
 		  	height: 100%;
 				border-style: solid;
-				border-color: rgba(0, 0, 0, 0.14902);
+				border-color: rgba(0, 0, 0, 0.15);
 				border-width: 0 0 1px;
 		  	text-align: right;
 		  	padding: 17px 24px;
@@ -83,13 +96,14 @@
 		  .contactItemBody {
 				background-color: white;
 				border-style: solid;
-				border-color: rgba(0, 0, 0, 0.14902);
-				border-width: 0 0 1px 1px;
+				border-color: rgba(0, 0, 0, 0.15);
+				border-width: 0 1px 1px;
 				box-sizing: border-box;
 				padding: 16px;
 		  }
 		  .addButton {
 		  	position: absolute;
+        left: auto;
 		  	bottom: 16px;
 		  	right: 16px;
 		  	color: white;
@@ -115,23 +129,24 @@
 			#overlay::x-overlay {
 				height: 100%;
 			}
-			contacts-detail {
-				min-width: 65%;
-			}
+      contacts-detail {
+        min-width: 50%;
+      }
 		</style>
 		<mock-data id="mock"></mock-data>
-		<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
-		<polymer-grid-layout id="grid" on-polymer-grid-layout="{{layoutAction}}"></polymer-grid-layout>
+		<polymer-media-query query="min-width: 768px" queryMatches="{{desktopLayout}}"></polymer-media-query>
+    <polymer-media-query query="(min-width: 480px) and (max-width: 768px)" queryMatches="{{tabletLayout}}"></polymer-media-query>
+		<polymer-grid-layout id="grid" nodes="{{layoutNodes}}" on-polymer-grid-layout="{{layoutAction}}"></polymer-grid-layout>
 		<polymer-ui-toolbar id="toolbar">
 			<polymer-ui-icon-button icon="menu" on-tap="{{menuAction}}"></polymer-ui-icon-button>
 			<div flex>Everyone</div>
 			<polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
-			<template if="{{wideLayout}}">
+			<template if="{{desktopLayout}}">
 				<polymer-ui-icon-button icon="shortcut"></polymer-ui-icon-button>
 				<polymer-ui-icon-button icon="favorite"></polymer-ui-icon-button>
 			</template>
 		</polymer-ui-toolbar>
-		<div class="clip">
+		<div id="clip" desktopLayout?="{{desktopLayout}}" tabletLayout?="{{tabletLayout}}">
 			<div id="sticky" class="contactItem header sticky">
 				{{stickyContent}}
 			</div>
@@ -164,7 +179,6 @@
 				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
 				</contacts-detail>
 			</polymer-ui-overlay>
-			<div class="addButton" on-tap="{{addAction}}">&#x2b;</div>
 			<!-- scrubbing -->
 			<polymer-scrub id="scrub" animation="{{$.slideAnimation.animation}}" snapThreshold="0.2" on-polymer-scrub-animation-end="{{scrubAnimationEndAction}}"></polymer-scrub>
 			<polymer-animation-group id="slideAnimation" type="par" fillMode="forwards">
@@ -191,31 +205,40 @@
 				</polymer-animation>
 			</polymer-animation-group>
 		</div>
-		<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
+		<contacts-detail id="details" contact="{{selectedContact.contact}}" desktopLayout?="{{desktopLayout}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
 		</contacts-detail>
+    <div class="addButton" on-tap="{{addAction}}">&#x2b;</div>
 	</template>
 	<script>
 		Polymer('contacts-list', {
-			wideLayout: true,
+			desktopLayout: true,
+      tabletLayout: false,
 			stickyContent: 'A',
 			selectedContact: null,
+      observe: {
+        desktopLayout: 'layoutChanged',
+        tabletLayout: 'layoutChanged'
+      },
 			ready: function() {
 				this.activateTransitions = [this.$.activateAnimation, null];
-				this.wideLayoutChanged();
+        this.selectedContact = {contact: this.$.mock.contacts[0]};
+        this.layoutNodes = [this.$.toolbar, this.$.clip, this.$.details];
+        this.layoutChanged();
 			},
-			wideLayoutChanged: function() {
-				if (this.wideLayout) {
+			layoutChanged: function() {
+				if (this.desktopLayout) {
 					this.$.overlay.active && (this.$.overlay.active = false);
+          this.$.clip.style.width = null;
 					this.$.grid.layout = [
-						[3, 3],
-						[4, 5],
-						[4, 5],
+						[1, 1],
+						[2, 3],
+						[2, 3],
 					];
 				} else {
 					this.$.grid.layout = [
-						[3, 3],
-						[4, 4],
-						[4, 4],
+						[1, 1],
+						[2, 2],
+						[2, 2],
 					];
 				}
 			},
@@ -231,7 +254,7 @@
 					var isHeader = item.classList.contains('header');
 					if (offset > scrollTop) {
 						this.stickyContent = lastHeader.textContent;
-						var transY = offset - scrollTop - 60;
+						var transY = offset - scrollTop - lastHeader.offsetHeight;
 						if (transY < 0 && isHeader) {
 							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
 						} else {
@@ -284,7 +307,7 @@
 			activateAction: function(e, detail, sender) {
 				if (!this.$.scrub.scrubbing) {
 					this.selectedContact = sender.templateInstance.model;
-					if (!this.wideLayout) {
+					if (!this.desktopLayout) {
 						this.$.overlay.active = true;
 					}
 				}

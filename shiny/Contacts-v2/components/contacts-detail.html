@@ -1,9 +1,8 @@
 <link href="../../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html" rel="import">
-<link href="../../../../polymer-elements/polymer-media-query/polymer-media-query.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
 <link href="contacts-detail-item.html" rel="import">
 <link href="contacts-icon.html" rel="import">
-<polymer-element name="contacts-detail" attributes="contact">
+<polymer-element name="contacts-detail" attributes="contact desktopLayout">
 	<template>
 		<style>
 			polymer-ui-toolbar {
@@ -12,58 +11,63 @@
 			}
 			.detailHeader {
 				height: 275px;
+				border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 			}
 			.detailIconContainer {
 				padding: 16px;
 			}
-			.detailName {
+			[desktopLayout] .detailIconContainer {
+				padding: 24px 36px;
+			}
+			.detailIconContainer > div {
 				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
-				background: #999;
-				color: white;
 				font-size: 20px;
-				box-sizing: border-box;
-				padding: 16px 20px;
+				color: white;
 			}
 			contacts-detail-item {
-				border-color: rgba(0, 0, 0, 0.14902);
+				border-color: rgba(0, 0, 0, 0.15);
 				border-width: 0 1px 1px;
 				border-style: solid;
 			}
+			[desktopLayout] contacts-detail-item {
+				padding: 24px 36px !important;
+				border-width: 0 0 1px;
+			}
 		</style>
-		<div class="detailHeader" style="background: url('{{contact.background}}') repeat-x;">
-			<polymer-media-query query="min-width: 768px" queryMatches="{{wideLayout}}"></polymer-media-query>
-			<polymer-flex-layout vertical="true"></polymer-flex-layout>
-			<template if="{{!wideLayout}}">
-				<polymer-ui-toolbar theme="polymer-ui-dark-theme">
-					<polymer-ui-icon-button icon="left" on-tap="{{backAction}}"></polymer-ui-icon-button>
-					<div flex></div>
-					<!-- <polymer-ui-icon-button icon="edit"></polymer-ui-icon-button> no such icon -->
-					<polymer-ui-icon-button icon="shortcut"></polymer-ui-icon-button>
-					<polymer-ui-icon-button icon="favorite"></polymer-ui-icon-button>
-				</polymer-ui-toolbar>
-			</template>
-			<div flex></div>
-			<div class="detailIconContainer">
-				<contacts-icon contact="{{contact}}" large></contacts-icon>
+		<div desktopLayout?="{{desktopLayout}}">
+			<div class="detailHeader" style="background: url('{{contact.background}}') repeat-x;">
+				<polymer-flex-layout vertical="true"></polymer-flex-layout>
+				<template if="{{!desktopLayout}}">
+					<polymer-ui-toolbar theme="polymer-ui-dark-theme">
+						<polymer-ui-icon-button icon="left" on-tap="{{backAction}}"></polymer-ui-icon-button>
+						<div flex></div>
+						<!-- <polymer-ui-icon-button icon="edit"></polymer-ui-icon-button> no such icon -->
+						<polymer-ui-icon-button icon="shortcut"></polymer-ui-icon-button>
+						<polymer-ui-icon-button icon="favorite"></polymer-ui-icon-button>
+					</polymer-ui-toolbar>
+				</template>
+				<div flex></div>
+				<div class="detailIconContainer">
+					<polymer-flex-layout align="center"></polymer-flex-layout>
+					<contacts-icon contact="{{contact}}" large></contacts-icon>
+					<div flex>{{contact.name}}</div>
+				</div>
 			</div>
+			<template repeat="{{contact.phone}}">
+				<contacts-detail-item label="Phone" value="{{value}}"></contacts-detail-item>
+			</template>
+			<template repeat="{{contact.email}}">
+				<contacts-detail-item label="Email" value="{{value}}"></contacts-detail-item>
+			</template>
+			<template repeat="{{contact.address}}">
+				<contacts-detail-item label="Address" value="{{value}}"></contacts-detail-item>
+			</template>
+			<contacts-detail-item label="Handle" value="{{contact.handle}}"></contacts-detail-item>
 		</div>
-		<div class="detailName">
-			{{contact.name}}
-		</div>
-		<template repeat="{{contact.phone}}">
-			<contacts-detail-item label="Phone" value="{{value}}"></contacts-detail-item>
-		</template>
-		<template repeat="{{contact.email}}">
-			<contacts-detail-item label="Email" value="{{value}}"></contacts-detail-item>
-		</template>
-		<template repeat="{{contact.address}}">
-			<contacts-detail-item label="Address" value="{{value}}"></contacts-detail-item>
-		</template>
-		<contacts-detail-item label="Handle" value="{{contact.handle}}"></contacts-detail-item>
 	</template>
 	<script>
 		Polymer('contacts-detail', {
-			wideLayout: false,
+			desktopLayout: false,
 			backAction: function() {
 				this.fire('contacts-detail-shrink');
 			}
