@@ -8,13 +8,19 @@
 
 <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
 
-<polymer-element name="shuttle-toggle-icon" attributes="src icon active activeSrc activeIcon" on-tap="{{toggle}}">
+<polymer-element name="shuttle-toggle-icon" attributes="active src activeSrc" on-tap="{{toggle}}">
   <template>
-    <polymer-ui-icon src="{{active ? activeSrc : src}}" icon="{{active ? activeIcon : icon}}"></polymer-ui-icon>
+    <polymer-ui-icon id="icon"></polymer-ui-icon>
   </template>
   <script>
     Polymer('shuttle-toggle-icon', {
       active: false,
+      ready: function() {
+        this.activeChanged();
+      },
+      activeChanged: function() {
+        this.$.icon.src = this.resolvePath(this.active ? this.activeSrc : this.src);
+      },
       toggle: function() {
         this.active = !this.active;
       }
