@@ -101,6 +101,18 @@
 				height: 80px;
 				padding: 0 20px;
 		  }
+		  .addButton {
+		  	position: absolute;
+		  	bottom: 16px;
+		  	right: 16px;
+		  	color: white;
+		  	padding: 8px 14px;
+		  	background: #bdc146;
+		  	font-size: 20px;
+		  	border: 1px solid #d9d9d9;
+		  	border-radius: 20px;
+		  	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+		  }
 			#overlay {
 				position: fixed;
 				top: 0;
@@ -126,7 +138,6 @@
 		<polymer-ui-toolbar id="toolbar">
 			<polymer-ui-icon-button icon="menu" on-tap="{{menuAction}}"></polymer-ui-icon-button>
 			<div flex>Everyone</div>
-			<polymer-ui-icon-button icon="plus" on-tap="{{addAction}}"></polymer-ui-icon-button>
 			<polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
 			<template if="{{wideLayout}}">
 				<polymer-ui-icon-button icon="shortcut"></polymer-ui-icon-button>
@@ -166,6 +177,7 @@
 				<contacts-detail contact="{{selectedContact.contact}}" on-contacts-detail-shrink="{{overlayCloseAction}}">
 				</contacts-detail>
 			</polymer-ui-overlay>
+			<div class="addButton" on-tap="{{addAction}}">&#x2b;</div>
 			<polymer-animation-group id="slideAnimation" type="par" fillMode="forwards">
 				<polymer-translate id="translateAnimation" fromX="0" toX="100%" duration="0.6" fillMode="forwards"></polymer-translate>
 				<polymer-fadein id="fadeAnimation" duration="0.1" fillMode="forwards"></polymer-fadein>
