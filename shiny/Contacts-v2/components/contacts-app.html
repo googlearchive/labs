@@ -92,14 +92,14 @@
         display: none;
       }
 			.contactItem.header {
-		    background: #f0f0f0;
+		    background: white;
 				border-style: solid;
 				border-color: rgba(0, 0, 0, 0.15);
 				border-width: 0 1px 1px;
 				box-sizing: border-box;
 		    color: #999;
-				font-variant: small-caps;
 				padding: 16px 24px;
+				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
 			}
       [tabletLayout] .contactItem.header:nth-child(3) {
         border-top-width: 1px;
@@ -204,7 +204,7 @@
 		</polymer-ui-overlay>
 		<polymer-ui-toolbar id="toolbar">
 			<polymer-ui-icon-button icon="menu" on-tap="{{menuAction}}"></polymer-ui-icon-button>
-			<div flex>Everyone</div>
+			<div flex>All Contacts</div>
 			<polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
 			<template if="{{desktopLayout}}">
 				<polymer-ui-icon-button icon="shortcut"></polymer-ui-icon-button>
