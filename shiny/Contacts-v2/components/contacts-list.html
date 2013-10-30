@@ -293,7 +293,6 @@
 			deleteAnimationEndAction: function(e, detail, sender) {
 				var index = this.$.mock.withHeaders.indexOf(this.deletedContact);
 				this.$.mock.withHeaders.splice(index, 1);
-				this.$.list.forceUpdate();
 			},
 			addAction: function() {
 				this.fire('contacts-list-add');
