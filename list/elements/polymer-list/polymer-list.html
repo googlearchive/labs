@@ -3,24 +3,20 @@
 <polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data listData">
   <script>
     Polymer('polymer-list', {
-      createdCallback: function() {
+      ready: function() {
+        this.data = [];
         this.listData = [];
         this.super();
       },
-      reset: function() {
-        if (this.data) {
-          this.super([this.data.length]);
-        }
-      },
       dataChanged: function() {
-        this.reset();
+        this.count = this.data.length;
+        //console.log('dataChanged', this.count);
       },
       generatePageContent: function(page, start, end) {
         this.super();
         var pageClass = 'page' + page.pageNum;
         // mdv is very unhappy if our array is sparse!
         var start = Math.min(this.listData.length, start);
-        
         // NOTE: allowing this array to simply grow destroys perf.
         // add this page of data to our data window; insert page class
         /*
@@ -36,8 +32,7 @@
         c.select = '.' + pageClass;
         page.appendChild(c);
       },
-      prepareUpdate: function(pageInfo) {
-        // generate list data
+      generateListData: function(pageInfo) {
         var start = pageInfo.start * this.pageSize;
         var end = Math.min(start + this.pageSize * this.numPages, this.count);
         this.fire('polymer-list-generate-data', {start: start, end: end});
@@ -46,10 +41,19 @@
           d = this.listData[i] = Object.create(this.data[start+i]);
           d.page = 'page' + Math.floor((start+i) / this.pageSize);
         }
+      },
+      prepareUpdate: function(pageInfo) {
+        this.generateListData(pageInfo);
         this.super(arguments);
-        //if (!this.fixedHeight) {
-          this.onMutation(this, this.forceUpdate);
-        //}
+        if (!this.fixedHeight) {
+          this.onMutation(this, this.validate);
+        }
+      },
+      mutationNodeForPage: function(page) {
+        return this;
+      },
+      findRowOnPage: function(page, index) {
+        return this.querySelectorAll('.page' + page.pageNum)[index];
       }
     });
   </script>

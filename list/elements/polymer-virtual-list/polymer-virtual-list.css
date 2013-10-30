@@ -32,8 +32,8 @@
 
 .polymer-list-viewport > * {
   position: absolute;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  /*-webkit-transform: translateZ(0);
+  transform: translateZ(0);*/
 }
 
 .polymer-list-viewport:not(.horizontal) > * {

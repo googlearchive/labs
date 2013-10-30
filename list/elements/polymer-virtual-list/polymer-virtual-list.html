@@ -25,20 +25,15 @@
         retainPages: 'reset',
         horizontal: 'reset'
       },
-      createdCallback: function() {
-        this.updateMetrics();
-        this.super();
-      },
       ready: function() {
+        this.updateMetrics();
         this.reset();
       },
       // re-render at the top
-      reset: function(count) {
+      reset: function() {
         this.initialized = false;
         this.pageCache = [];
         this.updateMetrics();
-        this.count = count || this.count;
-        this.scrollOffset = 0;
         this.$.viewport.innerText = '';
         this.pageCount = Math.ceil(this.count/this.pageSize);
         this.pageHeights = [];
@@ -46,6 +41,7 @@
         this.rowHeight = 0;
         this.pageTops = [];
         this.$.viewport.classList.toggle('horizontal', this.horizontal);
+        this.scrollOffset = 0;
         this.scroll();
       },
       updateMetrics: function() {
@@ -58,9 +54,11 @@
           position: h ? 'left' : 'top'
         };
       },
+      // get the current scrollOffset
       get scrollOffset() {
         return this.$.list[this.metrics.scrollOffset];
       },
+      // sets the current scrollOffset
       set scrollOffset(offset) {
         this.$.list[this.metrics.scrollOffset] = offset;
       },
@@ -81,6 +79,10 @@
           this.generatePageContent(p, start, end);
           this.$.viewport.appendChild(p);
           this.pageCache[pageNum] = p;
+          if (this.fixedHeight) {
+            this.pageTops[pageNum] = null;
+            this.positionPage(p);
+          }
           return p;
         }
       },
@@ -92,10 +94,7 @@
             this.numInitialPages);
         for (var i = 0; i < numPages; i++) {
           if (pageNumber !== i) {
-            var p = this.generatePage(i);
-            if (this.fixedHeight) {
-              this.positionPage(p);
-            }
+            this.generatePage(i);
           }
         }
         this.initialized = true;
@@ -202,6 +201,8 @@
         }
         return t;
       },
+      // use cache if pages are retained because in this case we expect
+      // querySelector to be slow!
       findPage: function(pageNum) {
         if (!this.retainPages || !this.pageCache[pageNum]) {
           this.pageCache[pageNum] = this.$.viewport.querySelector(
@@ -215,12 +216,17 @@
       */
       scroll: function() {
         this.fire('polymer-list-scroll');
+        // update the list at the current scroll offset, if needed
         var info = this.getViewportPageInfo();
+        // update if needed
         if (!this.pages[0] || this.pages[0].pageNum != info.start) {
           this.prepareUpdate(info);
           this.update(info);
         }
       },
+      // extension point for customizing data
+      prepareUpdate: function(pageInfo) {},
+      // render items at a given page + offset
       update: function(pageInfo) {
         var k = pageInfo.start, n = pageInfo.start+this.numPages, 
             c = pageInfo.center;
@@ -244,9 +250,8 @@
         // remove out-of-bounds pages
         this.cleanupPages();
       },
-      // extension point for customizing data
-      prepareUpdate: function(pageInfo) {},
-      forceUpdate: function() {
+      // validate rendering at the current scroll position
+      validate: function() {
         var info = this.getViewportPageInfo();
         this.update(info);
       },
@@ -262,11 +267,14 @@
           }
         }
       },
+      // setting scrollOffset is asynchronous; this method provides
+      // a way to scroll the list synchronously.
       setScrollOffsetImmediate: function(pos){
         this.scrollOffset = pos;
         this.scroll();
       },
       scrollToRow: function(row) {
+        row = Math.max(0, Math.min(row, this.count-1));
         // find page and row in page
         var pageNum = Math.floor(row / this.pageSize);
         // guesstimate offset and scroll to it
@@ -278,8 +286,27 @@
         // scroll to offset on this page
         var page = this.findPage(pageNum);
         var rowInPage = row - pageNum * this.pageSize;
-        var rowOffset = page.children[rowInPage][this.metrics.offsetPosition];
-        this.scrollOffset += rowOffset;
+        this.whenNodeFoundOnPage(page, rowInPage, function(node) {
+          this.setScrollOffsetImmediate(this.scrollOffset + 
+              node[this.metrics.offsetPosition]);
+        });
+      },
+      // note: may need to go async to find node
+      whenNodeFoundOnPage: function(page, index, callback) {
+        var node = this.findRowOnPage(page, index, callback);
+        if (node) {
+          callback.call(this, node);
+        } else {
+          this.onMutation(this.mutationNodeForPage(page), function() {
+            this.whenNodeFoundOnPage(page, index, callback);
+          })
+        }
+      },
+      mutationNodeForPage: function(page) {
+        return page;
+      },
+      findRowOnPage: function(page, index) {
+        return page.children[index];
       }
     });
   </script>

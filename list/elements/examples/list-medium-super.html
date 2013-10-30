@@ -6,7 +6,7 @@ license that can be found in the LICENSE file.
 -->
 <html>
   <head>
-    <title>list: medium</title>
+    <title>list: medium, virtual</title>
     <meta name="viewport" content="width=device-width">
     <script src="../../../../polymer/polymer.js"></script>
     <link rel="import" href="../polymer-list/polymer-list.html">
@@ -35,11 +35,12 @@ license that can be found in the LICENSE file.
     <polymer-element name="list-test">
       <template>
         <style>
-          polymer-list {
+          polymer-virtual-list {
             height: 100%;
+            background: red;
           }
 
-          .message {
+          ::part(message) {
             box-sizing: border-box;
             height: 80px;
             padding: 4px;
@@ -52,21 +53,21 @@ license that can be found in the LICENSE file.
             background-repeat: no-repeat;
             background-position: 10px 10px;
             background-size: 60px;
-            border-bottom: 1px solid #ddd;
+            border: 1px solid #ddd;
           }
           
-          .from {
+          ::part(from) {
             display: inline;
             font-weight: bold;
           }
           
-          .timestamp {
+          ::part(timestamp) {
             margin-left: 10px;
             font-size: 12px;
             opacity: 0.8;
           }
           
-          .body {
+          ::part(body) {
             font-size: 12px;
             opacity: 0.8;
             /*white-space: nowrap;
@@ -74,10 +75,10 @@ license that can be found in the LICENSE file.
             text-overflow: ellipsis;*/
           }
           
-          .subject {
+          ::part(subject) {
           }
           
-          .divider {
+          ::part(divider) {
             background: grey;
             color: white;
             height: 30px;
@@ -86,21 +87,19 @@ license that can be found in the LICENSE file.
             text-transform: uppercase;
           }
         </style>
-        <polymer-list id="list" data="{{data}}" listData="{{listData}}">
-          <template repeat="{{listData}}">
-            <div class="{{page}}">
-              <template if="{{divider}}">
-                <div class="divider">{{divider}}</div>
-              </template>
-              <div class="message" Xstyle="background-image: url(images/{{index % 4}}.png);">
-                <span class="from">{{name}}</span>
-                <span class="timestamp">{{time}}</span>
-                <div class="subject">Infinite List. {{index}}</div>
-                <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-              </div>
+        <polymer-virtual-list id="list" on-polymer-list-generate-page="{{generateListPage}}" count="{{count}}" on-pointerdown="{{toggleSuperScroll}}">
+        </polymer-virtual-list>
+
+        <template id="listItem">
+          <div>
+            <div part="message">
+              <span part="from"></span>
+              <span part="timestamp"></span>
+              <div part="subject"></div>
+              <div part="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
             </div>
-          </template>
-        </polymer-list>
+          </div>
+        </template>
 
       </template>
       <script>
@@ -128,6 +127,11 @@ license that can be found in the LICENSE file.
           count: 50000,
           ready: function() {
             this.data = this.generateData();
+            //this.$.list.retainPages = true;
+            //this.$.list.fixedHeight = true;
+            //this.$.list.pageSize = 1;
+            //this.$.list.numPages = 100;
+            //this.$.list.numInitialPages = 50000;
           },
           generateData: function() {
             var names = [], data = [];
@@ -153,6 +157,42 @@ license that can be found in the LICENSE file.
           },
           tapAction: function(e) {
             console.log('tap', e);
+          },
+          generateListPage: function(e, detail) {
+            var dom = document.createDocumentFragment();
+            for (var i = detail.start, l=detail.end, d, r; (i<l) && (d=this.data[i]); i++) {
+              r = this.$.listItem.ref.content.cloneNode(true);
+              //var divider = r.querySelector('[part=divider]');
+              //divider.style.display = d.divider ? null : 'none';
+              //divider.textContent = d.divider;
+              var message = r.querySelector('[part=message]');
+              var s = 'url(images/' + d.index % 4 + '.png)';
+
+              //message.style.height = 100 + (Math.random() * 1000) + 'px';
+              //message.style.backgroundImage = s;
+              //message.setAttribute('style', 'background-image: ' + s + ';');
+              r.querySelector('[part=from]').textContent = d.name;
+              r.querySelector('[part=timestamp]').textContent = d.time;
+              r.querySelector('[part=subject]').textContent = 'Infinite List. ' + d.index;
+              r.querySelector('[part=body]').textContent = d.details;
+              dom.appendChild(r);
+            }
+            detail.page.appendChild(dom);
+          },
+          toggleSuperScroll: function() {
+            this.superScroll = !this.superScroll;
+          },
+          superScrollChanged: function() {
+            if (this.superScroll) {
+              var self = this;
+              function doSuperScroll() {
+                self.$.list.scrollToRow(Math.floor(self.count * Math.random()));
+                if (self.superScroll) {
+                  requestAnimationFrame(doSuperScroll);
+                }
+              }
+              doSuperScroll();
+            }
           }
         });
       })();  

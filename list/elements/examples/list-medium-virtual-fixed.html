@@ -30,7 +30,7 @@ license that can be found in the LICENSE file.
     </style>
   </head>
   <body>
-    <list-test></list-test>
+    <list-test id="lt"></list-test>
 
     <polymer-element name="list-test">
       <template>
@@ -128,9 +128,8 @@ license that can be found in the LICENSE file.
           ready: function() {
             this.data = this.generateData();
             //this.$.list.retainPages = true;
-            //this.$.list.fixedHeight = true;
-            //this.$.list.pageSize = 1;
-            //this.$.list.numPages = 15;
+            this.$.list.fixedHeight = true;
+            //this.$.list.numPages = 10;
             //this.$.list.numInitialPages = 50000;
           },
           generateData: function() {
@@ -168,7 +167,7 @@ license that can be found in the LICENSE file.
               var message = r.querySelector('[part=message]');
               var s = 'url(images/' + d.index % 4 + '.png)';
 
-              message.style.height = 100 + (Math.random() * 1000) + 'px';
+              //message.style.height = 100 + (Math.random() * 1000) + 'px';
               //message.style.backgroundImage = s;
               //message.setAttribute('style', 'background-image: ' + s + ';');
               r.querySelector('[part=from]').textContent = d.name;
