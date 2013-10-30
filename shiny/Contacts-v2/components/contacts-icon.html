@@ -27,7 +27,7 @@
 			}
 		</style>
 		<template if="{{large}}">
-			<div class="contactIcon large" style="background-image: url('{{contact.picture}}');"></div>
+			<div class="contactIcon large" style="background-image: url('{{contact.picture}}?{{contact.guid}}');"></div>
 		</template>
 		<template if="{{!large}}">
 			<div class="contactIcon">

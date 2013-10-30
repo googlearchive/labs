@@ -39,7 +39,7 @@
 			}
 		</style>
 		<div desktopLayout?="{{desktopLayout}}">
-			<div class="detailHeader" style="background: url('{{contact.background}}') repeat-x;">
+			<div class="detailHeader" style="background: url('{{contact.background}}?{{contact.guid}}') repeat-x;">
 				<polymer-flex-layout vertical="true"></polymer-flex-layout>
 				<template if="{{!desktopLayout}}">
 					<polymer-ui-toolbar>
@@ -73,7 +73,7 @@
 		Polymer('contacts-detail', {
 			desktopLayout: false,
 			backAction: function() {
-				this.fire('contacts-detail-shrink');
+				this.fire('contacts-detail-cancel');
 			}
 		});
 	</script>
