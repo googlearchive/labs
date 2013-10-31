@@ -77,6 +77,7 @@
         margin: 24px;
       }
 			.contactItem {
+				position: relative;
 				font-size: 14px;
 				font-family: 'Helvetica Neue', HelveticaNeue, Helvetica, sans-serif;
 			}
@@ -108,9 +109,6 @@
       .contactItem .firstName {
         font-weight: bold;
       }
-			[desktopLayout] .contactItem.polymer-selected {
-		    background: #f7f7f7;
-		  }
 		  .contactItemControls {
 		  	position: absolute;
 		  	top: 0;
@@ -128,14 +126,30 @@
 		  	background: #f5565a;
 		  	opacity: 0;
 		  }
+			.contactItemInk {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				background: #f2f2f2;
+				visibility: hidden;
+			}
+			.contactItem[selected] .contactItemInk {
+				visibility: visible;
+			}
 		  .contactItemBody {
-				background-color: white;
+				position: relative;
+				background: white;
 				border-style: solid;
 				border-color: rgba(0, 0, 0, 0.15);
 				border-width: 0 1px 1px;
 				box-sizing: border-box;
 				padding: 16px;
 		  }
+			.contactItemBody > :not(.contactItemInk) {
+				z-index: 1;
+			}
 		  [desktopLayout] #details {
 		  	min-width: 50%;
 		  	height: 100%;
@@ -226,12 +240,13 @@
 						</div>
 					</template>
 					<template if="{{!contact.header}}">
-						<div class="contactItem {{contact.page}}" on-pointerdown="{{pointerdownAction}}">
+						<div class="contactItem {{contact.page}}" selected?="{{contact.selected}}" on-pointerdown="{{pointerdownAction}}">
 							<div class="contactItemControls active"></div>
 							<div class="contactItemControls">
 								<polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
 							</div>
-							<div class="contactItemBody" on-click="{{activateAction}}">
+							<div class="contactItemBody" on-pointerup="{{setupInkAnimationAction}}" on-click="{{activateAction}}">
+								<div class="contactItemInk"></div>
 								<polymer-flex-layout align="center"></polymer-flex-layout>
 									<contacts-icon contact="{{contact}}"></contacts-icon>
 								<div><span class="firstName">{{contact.firstName}}</span> {{contact.surname}}</div>
@@ -259,7 +274,8 @@
 		<!-- item delete animation -->
 		<polymer-translate id="deleteAnimation" duration="0.1" fromY="0" toY="-100%" fillMode="forwards" easing="ease-in" on-polymer-animation-end="{{deleteAnimationEndAction}}"></polymer-translate>
 		<!-- transition -->
-		<polymer-animation-group id="activateAnimation" type="par" duration="0.1">
+		<polymer-animation id="inkAnimation" duration="0.3" easing="ease-in" on-polymer-animation-end="{{inkAnimationEndAction}}"></polymer-animation>
+		<polymer-animation-group id="activateAnimation" type="par" duration="2" delay="0.2">
 			<polymer-translate target="{{$.toolbar}}" fromY="0" toY="-100%"></polymer-translate>
 			<polymer-fadeout target="{{$.toolbar}}"></polymer-fadeout>
 			<polymer-fadeout target="{{$.sticky}}"></polymer-fadeout>
@@ -320,7 +336,7 @@
 				}
 			},
 			layoutAction: function() {
-				this.$.list.reset();
+				this.$.list.refresh();
 			},
 			scrollAction: function() {
 				var items = this.$.list.querySelectorAll('.contactItem');
@@ -383,13 +399,37 @@
 			closeCreateAction: function() {
 				this.$.createOverlay.active = false;
 			},
+			setupInkAnimationAction: function(e, detail, sender) {
+				var rect = sender.getBoundingClientRect();
+				var target = sender.querySelector('.contactItemInk');
+				this.$.inkAnimation.sample = function(t) {
+					target.style.webkitClipPath = 'circle(' + (e.x - rect.left) + 'px,' + (e.y - rect.top) + 'px,' + t * rect.width + 'px)';
+				};
+				this.$.inkAnimation.target = target;
+			},
+			inkAnimationEndAction: function() {
+				this.$.inkAnimation.sample(1);
+			},
 			activateAction: function(e, detail, sender) {
 				if (!this.$.scrub.scrubbing) {
+					if (this.selectedContact) {
+						this.selectedContact.contact.selected = false;
+					}
 					this.selectedContact = sender.templateInstance.model;
+					this.selectedContact.contact.selected = true;
 					if (!this.desktopLayout) {
 						this.$.detailsOverlay.opened = true;
 					}
 				}
+				if (this.desktopLayout) {
+					this.$.inkAnimation.play();
+				}
+				// if (!this.$.scrub.scrubbing) {
+				// 	this.selectedContact = sender.templateInstance.model;
+				// 	if (!this.desktopLayout) {
+				// 		this.$.detailsOverlay.opened = true;
+				// 	}
+				// }
 			},
 			sidebarOpenAction: function() {
 				this.$.sidebar.active = true;
