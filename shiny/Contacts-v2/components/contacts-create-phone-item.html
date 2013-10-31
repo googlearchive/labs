@@ -14,13 +14,13 @@
 			#errorOverlay {
 				position: absolute !important;
 				left: 8px;
-				top: 40px !important;
+				top: 58px !important;
 				right: 8px;
 				box-sizing: border-box;
 			}
 			#errorOverlay::x-overlay {
 				background: transparent;
-				font-family: 'Helvetica Neue Medium', HelveticaNeue-Medium, Helvetica, sans-serif;
+				font-family: 'Helvetica Neue', HelveticaNeue, Helvetica, sans-serif;
 			}
 			#errorOverlay polymer-ui-arrow {
 				position: absolute !important;
@@ -33,17 +33,21 @@
 				border-radius: 3px;
 				left: 0;
 				right: 0;
+				background: #ff1844;
+				color: white;
+				box-shadow: 2px 5px 5px rgba(0,0,0,0.2);
 			}
 			#errorOverlay .overlayLabel {
-				color: #b6b6b6;
+				opacity: 0.7;
+				margin-right: 16px;
 			}
 		</style>
 		<libphonenumber-js phone="{{value}}" valid="{{valid}}" formatted="{{value}}"></libphonenumber-js>
 		<shadow></shadow>
 		<polymer-ui-overlay id="errorOverlay">
-			<polymer-ui-arrow color="#2b2b2b" borderColor="#2b2b2b"></polymer-ui-arrow>
+			<polymer-ui-arrow color="#ff1844" borderColor="#ff1844"></polymer-ui-arrow>
 			<br>
-			<div class="overlayBody polymer-ui-dark-bg" overlay-toggle>
+			<div class="overlayBody" overlay-toggle>
 				<span class="overlayLabel">Error:</span> Invalid phone number
 			</div>
 		</polymer-ui-overlay>
