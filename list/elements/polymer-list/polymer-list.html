@@ -32,21 +32,24 @@
         c.select = '.' + pageClass;
         page.appendChild(c);
       },
-      generateListData: function(pageInfo) {
-        var start = pageInfo.start * this.pageSize;
+      generateListData: function(info) {
+        var start = info.start * this.pageSize;
         var end = Math.min(start + this.pageSize * this.numPages, this.count);
         this.fire('polymer-list-generate-data', {start: start, end: end});
+        // produce data window
         this.listData = [];
         for (var i=0, l=end-start, d, pageClass; i<l; i++) {
           d = this.listData[i] = Object.create(this.data[start+i]);
           d.page = 'page' + Math.floor((start+i) / this.pageSize);
         }
       },
-      prepareUpdate: function(pageInfo) {
-        this.generateListData(pageInfo);
+      invalidatePages: function(info) {
+        this.generateListData(info);
         this.super(arguments);
         if (!this.fixedHeight) {
-          this.onMutation(this, this.validate);
+          this.onMutation(this, function() {
+            this.invalidate(info);
+          });
         }
       },
       mutationNodeForPage: function(page) {

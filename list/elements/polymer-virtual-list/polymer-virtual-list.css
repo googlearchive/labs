@@ -13,6 +13,7 @@
   padding: 0 20px;
   background-color: #f8f8f8;
   border-bottom: 1px solid #ddd;
+  overflow: hidden;
 }
 
 .polymer-list-list {
@@ -32,6 +33,7 @@
 
 .polymer-list-viewport > * {
   position: absolute;
+  overflow: hidden;
   /*-webkit-transform: translateZ(0);
   transform: translateZ(0);*/
 }

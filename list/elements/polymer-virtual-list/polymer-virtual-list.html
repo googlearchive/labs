@@ -19,30 +19,37 @@
       fixedHeight: false,
       retainPages: false,
       observe: {
-        count: 'reset',
+        count: 'refresh',
         pageSize: 'reset',
         numPages: 'reset',
         retainPages: 'reset',
         horizontal: 'reset'
       },
       ready: function() {
-        this.updateMetrics();
         this.reset();
       },
       // re-render at the top
       reset: function() {
         this.initialized = false;
-        this.pageCache = [];
-        this.updateMetrics();
-        this.$.viewport.innerText = '';
-        this.pageCount = Math.ceil(this.count/this.pageSize);
-        this.pageHeights = [];
-        this.pages = [];
-        this.rowHeight = 0;
-        this.pageTops = [];
+        // discover dimensionality
         this.$.viewport.classList.toggle('horizontal', this.horizontal);
+        this.updateMetrics();
+        // clear size estimate caches
+        this.rowHeight = 0;
+        this.pageHeights = [];
+        this.pageTops = [];
+        // scroll to top!
         this.scrollOffset = 0;
-        this.scroll();
+        this.refresh();
+      },
+      // completely refresh rendering at the current scroll position
+      refresh: function() {
+        this.pageCount = Math.ceil(this.count/this.pageSize);
+        this.$.viewport.textContent = '';
+        this.pages = [];
+        this.pageCache = [];
+        // completely invalidate rendering
+        this.invalidatePages(this.getViewportPageInfo());
       },
       updateMetrics: function() {
         var h = this.horizontal;
@@ -216,20 +223,21 @@
       */
       scroll: function() {
         this.fire('polymer-list-scroll');
-        // update the list at the current scroll offset, if needed
         var info = this.getViewportPageInfo();
-        // update if needed
+        // validate if needed
         if (!this.pages[0] || this.pages[0].pageNum != info.start) {
-          this.prepareUpdate(info);
-          this.update(info);
+          this.invalidatePages(info);
         }
       },
-      // extension point for customizing data
-      prepareUpdate: function(pageInfo) {},
-      // render items at a given page + offset
-      update: function(pageInfo) {
-        var k = pageInfo.start, n = pageInfo.start+this.numPages, 
-            c = pageInfo.center;
+      // extension point for customizing page setup
+      invalidatePages: function(info) {
+        this.invalidate(info);
+      },
+      // validate rendering at the given or current scroll position
+      invalidate: function(info) {
+        info = info || this.getViewportPageInfo();
+        var k = info.start, n = info.start+this.numPages, 
+            c = info.center;
         this.previousPages = this.pages;
         this.pages = [];
         for (; k<n; k++) {
@@ -249,11 +257,6 @@
         }
         // remove out-of-bounds pages
         this.cleanupPages();
-      },
-      // validate rendering at the current scroll position
-      validate: function() {
-        var info = this.getViewportPageInfo();
-        this.update(info);
       },
       cleanupPages: function() {
         var p$ = this.previousPages;
