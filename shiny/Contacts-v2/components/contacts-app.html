@@ -136,7 +136,7 @@
 				background: #f2f2f2;
 				visibility: hidden;
 			}
-			.contactItem[selected] .contactItemInk {
+			[desktopLayout] .contactItem[selected] .contactItemInk {
 				visibility: visible;
 			}
 		  .contactItemBody {
@@ -276,7 +276,7 @@
 		<polymer-translate id="deleteAnimation" duration="0.1" fromY="0" toY="-100%" fillMode="forwards" easing="ease-in" on-polymer-animation-end="{{deleteAnimationEndAction}}"></polymer-translate>
 		<!-- transition -->
 		<polymer-animation id="inkAnimation" duration="0.3" easing="ease-in" on-polymer-animation-end="{{inkAnimationEndAction}}"></polymer-animation>
-		<polymer-animation-group id="activateAnimation" type="par" duration="2" delay="0.2">
+		<polymer-animation-group id="activateAnimation" type="par" duration="0.2">
 			<polymer-translate target="{{$.toolbar}}" fromY="0" toY="-100%"></polymer-translate>
 			<polymer-fadeout target="{{$.toolbar}}"></polymer-fadeout>
 			<polymer-fadeout target="{{$.sticky}}"></polymer-fadeout>
