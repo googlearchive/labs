@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cat and Hat</title>
+</head>
+<body>
+  <!-- layout from cat and hat document -->
+  <style id="style1"></style>
+  <div id="host">
+    <shadow-root>
+      <style id="style2"></style>
+      <div id="b">
+        <shadow-root>
+          <style id="style3"></style>
+          <div id="d"></div>
+        </shadow-root>
+      </div>
+    </shadow-root>
+    <shadow-root>
+      <style id="style4"></style>
+      <div id="c">
+        <shadow-root>
+          <style id="style5"></style>
+          <div id="e"></div>
+        </shadow-root>
+      </div>
+      <shadow></shadow>
+    </shadow-root>
+    <div id="a"></div>
+  </div>
+
+
+
+  <script>
+    // collect test elements
+    var elements = Array.prototype.slice.call(document.body.querySelectorAll('div'));
+    elements = elements.sort(function(e1, e2) {
+      var a = e1.id, b = e2.id;
+      if (a == 'host') {
+        return -1;
+      }
+      if (b == 'host') {
+        return 1;
+      }
+      return a.localeCompare(b);
+    });
+
+    // collect style elements
+    var styles = Array.prototype.slice.call(document.body.querySelectorAll('style'));
+    styles = styles.sort(function(a, b) {
+      return a.id.localeCompare(b.id);
+    });
+
+    // Abuse Custom Elements to make self-injecting shadow roots
+    document.register('shadow-root', {
+      prototype: Object.create(HTMLElement.prototype, {
+        enteredViewCallback: {
+          value: function() {
+            var s = this.parentNode.createShadowRoot();
+            while(this.children.length) {
+              s.appendChild(this.firstChild);
+            }
+            this.remove();
+          }
+        }
+      })
+    });
+
+    var border = 'rgb(0, 255, 0)';
+    var tests = [
+      'div ^ div',
+      ':host ^ div',
+      'div ^^ div',
+      ':host ^^ div'
+    ];
+
+    function makeRule(s) {
+      return document.createTextNode(s + '{ border: 1px solid ' + border + '; }');
+    }
+
+    function testRule(s, r, test) {
+      var ret;
+      s.appendChild(r);
+      ret = test();
+      s.removeChild(r);
+      return ret;
+    }
+
+    var results = [
+      // across: styles
+      // down: elements
+      [
+        [ 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0 ],
+        [ 1, 0, 0, 0, 0 ],
+        [ 1, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 1, 0 ],
+        [ 0, 1, 0, 1, 0 ]
+      ],
+      [
+        [ 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 1, 0 ],
+        [ 0, 1, 0, 1, 0 ],
+        [ 0, 0, 1, 0, 0 ],
+        [ 0, 0, 0, 0, 1 ]
+      ],
+      [
+        [ 0, 0, 0, 0, 0 ],
+        [ 1, 0, 0, 0, 0 ],
+        [ 1, 0, 0, 0, 0 ],
+        [ 1, 0, 0, 0, 0 ],
+        [ 1, 1, 0, 1, 0 ],
+        [ 1, 1, 0, 1, 0 ]
+      ],
+      [
+        [ 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 1, 0 ],
+        [ 0, 1, 0, 1, 0 ],
+        [ 0, 1, 1, 1, 0 ],
+        [ 0, 1, 0, 1, 1 ]
+      ]
+    ];
+
+    results.forEach(function(r, ix) {
+      var rule = makeRule(tests[ix]);
+      var el, style, ex;
+      for(var i = 0; i < r.length; i++) {
+        el = elements[i];
+        for (var j = 0; j < r[i].length; j++) {
+          style = styles[j];
+          ex = r[i][j];
+          testRule(style, rule, function() {
+            // force style recalc
+            el.offsetHeight;
+            var c = getComputedStyle(el, null).getPropertyValue('border-color');
+            var matches = c === border;
+            var matchesExpectation = !(matches ^ ex);
+            if (!matchesExpectation) {
+              console.log(el.id, style.id, tests[ix]);
+              console.log('expected: %s, actual: %s', ex ? border : 'rgb(0, 0, 0)', c);
+            }
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>

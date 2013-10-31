@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cat and Hat</title>
+  <script src="../../../polymer/polymer.js"></script>
+</head>
+<body>
+
+  <style id="style1">
+    body ^^ x-baz ^^ x-nub {
+      background: yellow;
+    }
+  </style>
+
+  <polymer-element name="x-bar" noscript>
+    <template>
+      <div>x-bar</div>
+      <style id="style3">
+      </style>
+      <div id="d">d</div>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-foo" noscript>
+    <template>
+      <div>x-foo</div>
+      <style id="style2">
+        :host(.foo) ^ x-quux {
+          display: block;
+          border: 1px solid red;
+        }
+      </style>
+      <x-bar id="b">b</x-bar>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-baz" extends="x-foo" noscript>
+    <template>
+      <div>x-baz</div>
+      <style id="style4">
+        :host(.foo) ^ x-quux {
+          display: block;
+          border: 1px solid black;
+        }
+      </style>
+      <x-quux id="c">c</x-quux>
+      <x-nub class="nested"></x-nub>
+      <shadow></shadow>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-quux" noscript>
+    <template>
+      <div>x-quux</div>
+      <style id="style5">
+      </style>
+      <div id="e">e</div>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-nub" noscript>
+    <template>
+      x-nub
+    </template>
+  </polymer-element>
+
+  <div class="foo">
+    <x-baz id="host">
+    <div id="a">a</div>
+    </x-baz>
+  </div>
+
+  <x-nub></x-nub>
+
+</body>
+</html>
