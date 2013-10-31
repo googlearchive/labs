@@ -51,6 +51,21 @@
         // completely invalidate rendering
         this.invalidatePages(this.getViewportPageInfo());
       },
+      // adjust viewport height when page count changes...
+      pageCountChanged: function(oldValue) {
+        if (this.initialized && oldValue) {
+          var h = 0, delta = this.pageCount - oldValue;
+          if (delta > 0) {
+            h = (delta-1) * this.getPageHeight(this.pageCount-1);
+          } else {
+            for (var i=oldValue-1; i >= this.pageCount; i--) {
+              h -= this.getPageHeight(i);
+            }
+          }
+          console.log('pageCount changed', delta, h);
+          this.viewportHeight += h;
+        }
+      },
       updateMetrics: function() {
         var h = this.horizontal;
         this.metrics = {
