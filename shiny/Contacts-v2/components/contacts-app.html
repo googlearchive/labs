@@ -174,14 +174,15 @@
 				bottom: 0;
 				right: 0;
 			}
+			/*:host([desktopLayout]) ^ #createOverlay {*/
 			#createOverlay[desktopLayout] {
 				right: 16px;
 				left: 336px;
 			}
-			#createOverlay::x-overlay {
+			#createOverlay ^ #container {
 				height: 100%;
 			}
-			#createOverlay[desktopLayout]::x-overlay {
+			#createOverlay[desktopLayout] ^ #container {
 				border-radius: 3px;
 			}
 		  .addButton {
@@ -259,7 +260,7 @@
 			</polymer-list>
 		</div>
 		<contacts-detail id="details" contact="{{selectedContact.contact}}" desktopLayout?="{{desktopLayout}}" on-contacts-detail-cancel="{{closeDetailsAction}}"></contacts-detail>
-		<polymer-ui-overlay id="createOverlay" desktopLayout?="{{desktopLayout}}" autocloseDisabled backdrop on-polymer-overlay-open="{{openCreateAction}}">
+		<polymer-ui-overlay id="createOverlay" xdesktopLayout?="{{desktopLayout}}" autocloseDisabled backdrop on-polymer-overlay-open="{{openCreateAction}}">
 			<contacts-create id="create" on-contacts-create-cancel="{{closeCreateAction}}" on-contacts-create="{{closeCreateAction}}"></contacts-create>
 		</polymer-ui-overlay>
     <div class="addButton" on-tap="{{addAction}}">&#x2b;</div>
@@ -295,7 +296,7 @@
 	</template>
 	<script>
 		Polymer('contacts-app', {
-			desktopLayout: true,
+			desktopLayout: false,
       tabletLayout: false,
 			stickyContent: 'A',
 			selectedContact: null,
