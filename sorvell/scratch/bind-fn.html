@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../../polymer/polymer.js"></script>
+</head>
+<body>
+  <polymer-element name="x-foo" attributes="test">
+    <script>
+      Polymer('x-foo', {
+        test: null,
+        testChanged: function() {
+          this.test();
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="x-bar">
+    <template>
+      <x-foo test="{{test}}"></x-foo>
+    </template>
+    <script>
+      Polymer('x-bar', {
+        test: null,
+        ready: function() {
+          this.test = function() {
+            console.log('hi!');
+          };
+        }
+      });
+    </script>
+  </polymer-element>
+  <x-bar></x-bar>
+</body>
+</html>
