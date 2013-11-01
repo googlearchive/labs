@@ -247,7 +247,7 @@
 							<div class="contactItemControls">
 								<polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
 							</div>
-							<div class="contactItemBody" on-pointerup="{{setupInkAnimationAction}}" on-click="{{activateAction}}">
+							<div class="contactItemBody" on-click="{{activateAction}}">
 								<div class="contactItemInk"></div>
 								<polymer-flex-layout align="center"></polymer-flex-layout>
 									<contacts-icon contact="{{contact}}"></contacts-icon>
@@ -424,6 +424,12 @@
 					}
 				}
 				if (this.desktopLayout) {
+					var rect = sender.getBoundingClientRect();
+					var target = sender.querySelector('.contactItemInk');
+					this.$.inkAnimation.sample = function(t) {
+						target.style.webkitClipPath = 'circle(' + (e.x - rect.left) + 'px,' + (e.y - rect.top) + 'px,' + t * rect.width + 'px)';
+					};
+					this.$.inkAnimation.target = target;
 					this.$.inkAnimation.play();
 				}
 			},
