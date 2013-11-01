@@ -347,7 +347,7 @@
 				for (var i = 0, item; item = items[i]; i++) {
 					var offset = item.offsetTop + (item.offsetParent ? item.offsetParent.offsetTop : 0);
 					var isHeader = item.classList.contains('header');
-					if (offset > scrollTop) {
+					if (lastHeader && offset > scrollTop) {
 						this.stickyContent = lastHeader.textContent;
 						var transY = offset - scrollTop - lastHeader.offsetHeight;
 						if (transY < 0 && isHeader) {
