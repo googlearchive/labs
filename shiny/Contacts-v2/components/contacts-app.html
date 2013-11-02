@@ -12,7 +12,7 @@
 <link href="../../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-overlay/polymer-ui-overlay.html" rel="import">
 <link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
-<link href="../../../list/elements/polymer-list/polymer-list.html" rel="import">
+<link href="../../../list/elements/polymer-sectioned-list/polymer-sectioned-list.html" rel="import">
 <link href="contacts-create.html" rel="import">
 <link href="contacts-detail.html" rel="import">
 <link href="contacts-icon.html" rel="import">
@@ -70,29 +70,25 @@
         min-width: 320px;
         max-width: 384px;
       }
-			polymer-list {
+			polymer-sectioned-list {
 				height: 100%;
 			}
-      [tabletLayout] polymer-list {
+      [tabletLayout] polymer-sectioned-list {
         margin: 24px;
       }
 			.contactItem {
 				position: relative;
+			}
+      polymer-sectioned-list ^ #sticky,
+			.contactItem {
 				font-size: 14px;
 				font-family: 'Helvetica Neue', HelveticaNeue, Helvetica, sans-serif;
 				user-select: none;
 			}
-			.contactItem.sticky {
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				z-index: 10;
-				opacity: 0.95;
-			}
-      [tabletLayout] .contactItem.sticky {
+      [tabletLayout] polymer-sectioned-list ^ #sticky {
         display: none;
       }
+      polymer-sectioned-list ^ #sticky,
 			.contactItem.header {
 		    background: white;
 				border-style: solid;
@@ -229,10 +225,7 @@
 			</template>
 		</polymer-ui-toolbar>
 		<div id="listContainer" desktopLayout?="{{desktopLayout}}" tabletLayout?="{{tabletLayout}}">
-			<div id="sticky" class="contactItem header sticky">
-				{{stickyContent}}
-			</div>
-			<polymer-list id="list" data="{{$.mock.withHeaders}}" listData="{{listData}}" on-polymer-list-scroll="{{scrollAction}}">
+			<polymer-sectioned-list id="list" data="{{$.mock.withHeaders}}" listData="{{listData}}">
 				<template repeat="{{contact in listData}}">
 					<!-- <contacts-list-item contact="{{contact}}"></contacts-list-item> -->
 
@@ -257,7 +250,7 @@
 					</template>
 					
 				</template>
-			</polymer-list>
+			</polymer-sectioned-list>
 		</div>
 		<contacts-detail id="details" contact="{{selectedContact.contact}}" desktopLayout?="{{desktopLayout}}" on-contacts-detail-cancel="{{closeDetailsAction}}"></contacts-detail>
 		<polymer-ui-overlay id="createOverlay" xdesktopLayout?="{{desktopLayout}}" autocloseDisabled backdrop on-polymer-overlay-open="{{openCreateAction}}">
@@ -298,7 +291,6 @@
 		Polymer('contacts-app', {
 			desktopLayout: false,
       tabletLayout: false,
-			stickyContent: 'A',
 			selectedContact: null,
       observe: {
         desktopLayout: 'layoutChanged',
@@ -339,28 +331,6 @@
 			},
 			layoutAction: function() {
 				this.$.list.refresh();
-			},
-			scrollAction: function() {
-				var items = this.$.list.querySelectorAll('.contactItem');
-				var scrollTop = this.$.list.scrollOffset;
-				var lastHeader;
-				for (var i = 0, item; item = items[i]; i++) {
-					var offset = item.offsetTop + (item.offsetParent ? item.offsetParent.offsetTop : 0);
-					var isHeader = item.classList.contains('header');
-					if (lastHeader && offset > scrollTop) {
-						this.stickyContent = lastHeader.textContent;
-						var transY = offset - scrollTop - lastHeader.offsetHeight;
-						if (transY < 0 && isHeader) {
-							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
-						} else {
-							this.$.sticky.style['-webkit-transform'] = null;
-						}
-						break;
-					}
-					if (isHeader) {
-						lastHeader = item;
-					}
-				}
 			},
 			pointerdownAction: function(e, detail, sender) {
 				this.$.scrub.target = sender;
