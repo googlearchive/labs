@@ -1,0 +1,46 @@
+<link href="../polymer-list/polymer-list.html" rel="import">
+
+<polymer-element name="polymer-sectioned-list" extends="polymer-list" on-polymer-list-scroll="{{scrollAction}}">
+	<template>
+		<style>
+			#sticky {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 10;
+				opacity: 0.95;
+			}
+		</style>
+		<div id="sticky" hidden?="{{!stickyContent}}">{{stickyContent}}</div>
+		<shadow><content></content></shadow>
+	</template>
+	<script>
+		Polymer('polymer-sectioned-list', {
+			scrollAction: function() {
+				var items = this.querySelectorAll(':not(template)');
+				var scrollTop = this.scrollOffset;
+				var lastHeader;
+				for (var i = 0, item; item = items[i]; i++) {
+					var offset = item.offsetTop + (item.offsetParent ? item.offsetParent.offsetTop : 0);
+					var isHeader = item.classList.contains('header');
+					if (offset > this.scrollOffset) {
+						if (lastHeader) {
+							this.stickyContent = lastHeader.textContent;
+						}
+						var transY = offset - this.scrollOffset - this.$.sticky.offsetHeight;
+						if (transY < 0 && isHeader) {
+							this.$.sticky.style['-webkit-transform'] = 'translateY(' + transY + 'px)';
+						} else {
+							this.$.sticky.style['-webkit-transform'] = null;
+						}
+						break;
+					}
+					if (isHeader) {
+						lastHeader = item;
+					}
+				}
+			}
+		});
+	</script>
+</polymer-element>
