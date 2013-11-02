@@ -8,9 +8,8 @@ license that can be found in the LICENSE file.
   <head>
     <title>list: medium, virtual</title>
     <meta name="viewport" content="width=device-width">
-    <script src="../../../../polymer/polymer.js"></script>
-    <link rel="import" href="../polymer-list/polymer-list.html">
-    <link rel="import" href="../../../../polymer-elements/polymer-selector/polymer-selector.html">
+    <script src="../../../../../polymer/polymer.js"></script>
+    <link rel="import" href="../../polymer-list/polymer-list.html">
     <style>
       html, body {
         height: 100%;
@@ -33,97 +32,26 @@ license that can be found in the LICENSE file.
   <body>
     <list-test id="lt"></list-test>
 
-    <polymer-element name="list-letters" attributes="target letterOffsets selected">
-      <template>
-        <style>
-          :host {
-            display: inline-block;
-            cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
-          }
-          div {
-            font-variant: uppercase;
-            font-family: 'Helvetica Neue', Helvetica, Arial, 'open sans', sans-serif;
-            font-size: 16px;
-            padding: 4px;
-          }
 
-          .polymer-selected {
-            color: white;
-            background-color: #666;
-          }
+    <template id="item-template">
+      <div part="message">
+        <span part="from"></span>
+        <span part="timestamp"></span>
+        <div part="subject"></div>
+        <div part="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+      </div>
+    </template>
 
-          #scrim {
-            display: none;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-          }
-
-        </style>
-        <polymer-selector id="selector" on-polymer-select="{{selectedAction}}" valueattr="textContent" selected="{{selected}}">
-          <template repeat="{{letters}}">
-            <div class="letter" on-tap="{{tap}}" on-pointerdown="{{down}}" on-trackstart="{{trackstart}}" on-track="{{track}}" on-trackend="{{trackend}}">{{}}</div>
-          </template>
-        </polymer-selector>
-      </template>
-      <script>
-        (function() {
-          var letters = [];
-          for (var i = 0; i != 26; ++i) {
-            letters.push(String.fromCharCode(i + 65));
-          }
-          Polymer('list-letters', {
-            ready: function() {
-              this.letters = letters;
-            },
-            down: function(e) {
-              //e.target.setPointerCapture(e.pointerId);
-            },
-            trackstart: function(e) {
-              if (this.target) {
-                this.target.style.pointerEvents = 'none';
-              }
-            },
-            track: function(e) {
-              var t = e.relatedTarget;
-              if (this.contains(t) && t.classList.contains('letter')) {
-                this.selected = t.textContent;
-              }
-            },
-            trackend: function(e) {
-              if (this.target) {
-                this.target.style.pointerEvents = null;
-              }
-              this.selected = null;
-            },
-            tap: function() {
-              this.async(function() {
-                this.selected = null;
-              });
-            },
-            selectedAction: function(e, detail) {
-              if (detail.isSelected) {
-                var letter = e.target.selected;
-                this.fire('letter', {letter: letter});
-                this.scrollTarget(letter);
-              }
-            },
-            scrollTarget: function(letter) {
-              if (this.target && this.letterOffsets) {
-                var row = this.letterOffsets[letter.toLowerCase()];
-                if (row !== undefined) {
-                  this.target.scrollToRow(row);
-                }
-              }
-            }
-          })
-        })();
-      </script>
-    </polymer-element>
+     <script>
+      var t = document.getElementById('item-template');
+      var proto = Object.create(HTMLElement.prototype);
+      proto.createdCallback = function() {
+        this.createShadowRoot().appendChild(t.content.cloneNode(true));
+      }
+      proto.enteredViewCallback = function() {}
+      proto.leftViewCallback = function() {}
+      document.register('list-item', {prototype: proto});
+    </script>
 
     <polymer-element name="list-test">
       <template>
@@ -133,7 +61,7 @@ license that can be found in the LICENSE file.
             background: red;
           }
 
-          ::part(message) {
+          polymer-virtual-list ^ list-item ^ .message {
             box-sizing: border-box;
             height: 80px;
             padding: 4px;
@@ -147,21 +75,20 @@ license that can be found in the LICENSE file.
             background-position: 10px 10px;
             background-size: 60px;
             border: 1px solid #ddd;
-            overflow: hidden;
           }
           
-          ::part(from) {
+          polymer-virtual-list ^ list-item ^ .from {
             display: inline;
             font-weight: bold;
           }
           
-          ::part(timestamp) {
+          polymer-virtual-list ^ list-item ^ .timestamp {
             margin-left: 10px;
             font-size: 12px;
             opacity: 0.8;
           }
           
-          ::part(body) {
+          polymer-virtual-list ^ list-item ^ .body {
             font-size: 12px;
             opacity: 0.8;
             /*white-space: nowrap;
@@ -169,10 +96,10 @@ license that can be found in the LICENSE file.
             text-overflow: ellipsis;*/
           }
           
-          ::part(subject) {
+          polymer-virtual-list ^ list-item ^ .subject {
           }
           
-          ::part(divider) {
+          polymer-virtual-list ^ list-item ^ .divider {
             background: grey;
             color: white;
             height: 30px;
@@ -180,26 +107,12 @@ license that can be found in the LICENSE file.
             padding: 0 10px;
             text-transform: uppercase;
           }
-
-          list-letters {
-            position: absolute;
-            right: 20px;
-            top: 40px;
-          }
         </style>
         <polymer-virtual-list id="list" on-polymer-list-generate-page="{{generateListPage}}" count="{{count}}">
         </polymer-virtual-list>
-        <list-letters id="letters" target="{{$.list}}" letterOffsets="{{dividers}}"><list-letters>
+
         <template id="listItem">
-          <div>
-            <div part="divider"></div>
-            <div part="message">
-              <span part="from"></span>
-              <span part="timestamp"></span>
-              <div part="subject"></div>
-              <div part="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-            </div>
-          </div>
+          <list-item></list-item>
         </template>
 
       </template>
@@ -228,17 +141,9 @@ license that can be found in the LICENSE file.
           count: 50000,
           ready: function() {
             this.data = this.generateData();
-            this.dividers = {}
-            for (var i=0, l=this.data.length, d; i<l; i++) {
-              d = this.data[i];
-              if (d.divider) {
-                this.dividers[d.divider] = i;
-              }
-            }
             //this.$.list.retainPages = true;
-            //this.$.list.fixedHeight = true;
-            //this.$.list.pageSize = 1;
-            //this.$.list.numPages = 100;
+            this.$.list.fixedHeight = true;
+            //this.$.list.numPages = 10;
             //this.$.list.numInitialPages = 50000;
           },
           generateData: function() {
@@ -270,25 +175,22 @@ license that can be found in the LICENSE file.
             var dom = document.createDocumentFragment();
             for (var i = detail.start, l=detail.end, d, r; (i<l) && (d=this.data[i]); i++) {
               r = this.$.listItem.ref.content.cloneNode(true);
-              var divider = r.querySelector('[part=divider]');
-              divider.style.display = d.divider ? null : 'none';
-              divider.textContent = d.divider;
+              //var divider = r.querySelector('[part=divider]');
+              //divider.style.display = d.divider ? null : 'none';
+              //divider.textContent = d.divider;
               var message = r.querySelector('[part=message]');
               var s = 'url(images/' + d.index % 4 + '.png)';
 
               //message.style.height = 100 + (Math.random() * 1000) + 'px';
               //message.style.backgroundImage = s;
               //message.setAttribute('style', 'background-image: ' + s + ';');
-              r.querySelector('[part=from]').textContent = d.name;
+              /*r.querySelector('[part=from]').textContent = d.name;
               r.querySelector('[part=timestamp]').textContent = d.time;
               r.querySelector('[part=subject]').textContent = 'Infinite List. ' + d.index;
-              r.querySelector('[part=body]').textContent = d.details;
+              r.querySelector('[part=body]').textContent = d.details;*/
               dom.appendChild(r);
             }
             detail.page.appendChild(dom);
-          },
-          letterAction: function(e, detail) {
-            console.log('letter:', detail.letter);
           }
         });
       })();  

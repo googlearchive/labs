@@ -1,0 +1,298 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>list: medium, virtual</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="../../../../../polymer/polymer.js"></script>
+    <link rel="import" href="../../polymer-list/polymer-list.html">
+    <link rel="import" href="../../../../../polymer-elements/polymer-selector/polymer-selector.html">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      
+      list-test {
+        display: block;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .stuff {
+        min-height: 60px;
+        background: red !important;
+        border-bottom: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <list-test id="lt"></list-test>
+
+    <polymer-element name="list-letters" attributes="target letterOffsets selected">
+      <template>
+        <style>
+          :host {
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+          }
+          div {
+            font-variant: uppercase;
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'open sans', sans-serif;
+            font-size: 16px;
+            padding: 4px;
+          }
+
+          .polymer-selected {
+            color: white;
+            background-color: #666;
+          }
+
+          #scrim {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+          }
+
+        </style>
+        <polymer-selector id="selector" on-polymer-select="{{selectedAction}}" valueattr="textContent" selected="{{selected}}">
+          <template repeat="{{letters}}">
+            <div class="letter" on-tap="{{tap}}" on-pointerdown="{{down}}" on-trackstart="{{trackstart}}" on-track="{{track}}" on-trackend="{{trackend}}">{{}}</div>
+          </template>
+        </polymer-selector>
+      </template>
+      <script>
+        (function() {
+          var letters = [];
+          for (var i = 0; i != 26; ++i) {
+            letters.push(String.fromCharCode(i + 65));
+          }
+          Polymer('list-letters', {
+            ready: function() {
+              this.letters = letters;
+            },
+            down: function(e) {
+              //e.target.setPointerCapture(e.pointerId);
+            },
+            trackstart: function(e) {
+              if (this.target) {
+                this.target.style.pointerEvents = 'none';
+              }
+            },
+            track: function(e) {
+              var t = e.relatedTarget;
+              if (this.contains(t) && t.classList.contains('letter')) {
+                this.selected = t.textContent;
+              }
+            },
+            trackend: function(e) {
+              if (this.target) {
+                this.target.style.pointerEvents = null;
+              }
+              this.selected = null;
+            },
+            tap: function() {
+              this.async(function() {
+                this.selected = null;
+              });
+            },
+            selectedAction: function(e, detail) {
+              if (detail.isSelected) {
+                var letter = e.target.selected;
+                this.fire('letter', {letter: letter});
+                this.scrollTarget(letter);
+              }
+            },
+            scrollTarget: function(letter) {
+              if (this.target && this.letterOffsets) {
+                var row = this.letterOffsets[letter.toLowerCase()];
+                if (row !== undefined) {
+                  this.target.scrollToRow(row);
+                }
+              }
+            }
+          })
+        })();
+      </script>
+    </polymer-element>
+
+    <polymer-element name="list-test">
+      <template>
+        <style>
+          polymer-virtual-list {
+            height: 100%;
+            background: red;
+          }
+
+          ::part(message) {
+            box-sizing: border-box;
+            height: 80px;
+            padding: 4px;
+            padding-left: 77px;
+            line-height: 167%;
+            cursor: default;
+            background-color: white;
+            position: relative;
+            color: black;
+            background-repeat: no-repeat;
+            background-position: 10px 10px;
+            background-size: 60px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+          }
+          
+          ::part(from) {
+            display: inline;
+            font-weight: bold;
+          }
+          
+          ::part(timestamp) {
+            margin-left: 10px;
+            font-size: 12px;
+            opacity: 0.8;
+          }
+          
+          ::part(body) {
+            font-size: 12px;
+            opacity: 0.8;
+            /*white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;*/
+          }
+          
+          ::part(subject) {
+          }
+          
+          ::part(divider) {
+            background: grey;
+            color: white;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            text-transform: uppercase;
+          }
+
+          list-letters {
+            position: absolute;
+            right: 20px;
+            top: 40px;
+          }
+        </style>
+        <polymer-virtual-list id="list" on-polymer-list-generate-page="{{generateListPage}}" count="{{count}}">
+        </polymer-virtual-list>
+        <list-letters id="letters" target="{{$.list}}" letterOffsets="{{dividers}}"><list-letters>
+        <template id="listItem">
+          <div>
+            <div part="divider"></div>
+            <div part="message">
+              <span part="from"></span>
+              <span part="timestamp"></span>
+              <div part="subject"></div>
+              <div part="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+            </div>
+          </div>
+        </template>
+
+      </template>
+      <script>
+      (function() {
+        var strings = [
+          "PARKOUR!",
+          "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+        ];
+
+        var namegen = {
+          generateString: function(inLength) {
+            var s = '';
+            for (var i=0; i<inLength; i++) {
+              s += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+            }
+            return s;
+          },
+          generateName: function(inMin, inMax) {
+            return this.generateString(Math.floor(Math.random() * (inMax - inMin + 1) + inMin));
+          }
+        };
+ 
+        Polymer('list-test', {
+          count: 50000,
+          ready: function() {
+            this.data = this.generateData();
+            this.dividers = {}
+            for (var i=0, l=this.data.length, d; i<l; i++) {
+              d = this.data[i];
+              if (d.divider) {
+                this.dividers[d.divider] = i;
+              }
+            }
+            //this.$.list.retainPages = true;
+            //this.$.list.fixedHeight = true;
+            //this.$.list.pageSize = 1;
+            //this.$.list.numPages = 100;
+            //this.$.list.numInitialPages = 50000;
+          },
+          generateData: function() {
+            var names = [], data = [];
+            for (var i=0; i<this.count; i++) {
+              names.push(namegen.generateName(4, 8));
+            }
+            names.sort();
+            for (var i=0; i<this.count; i++) {
+              var name = names[i];
+              var divider = name.charAt(0);
+              if (divider === (names[i-1] || '').charAt(0)) {
+                divider = null;
+              }
+              data.push({
+                index: i,
+                name: name,
+                divider: divider,
+                details: strings[i % 3],
+                time: '8:29pm'
+              });
+            }
+            return data;
+          },
+          tapAction: function(e) {
+            console.log('tap', e);
+          },
+          generateListPage: function(e, detail) {
+            var dom = document.createDocumentFragment();
+            for (var i = detail.start, l=detail.end, d, r; (i<l) && (d=this.data[i]); i++) {
+              r = this.$.listItem.ref.content.cloneNode(true);
+              var divider = r.querySelector('[part=divider]');
+              divider.style.display = d.divider ? null : 'none';
+              divider.textContent = d.divider;
+              var message = r.querySelector('[part=message]');
+              var s = 'url(images/' + d.index % 4 + '.png)';
+
+              //message.style.height = 100 + (Math.random() * 1000) + 'px';
+              //message.style.backgroundImage = s;
+              //message.setAttribute('style', 'background-image: ' + s + ';');
+              r.querySelector('[part=from]').textContent = d.name;
+              r.querySelector('[part=timestamp]').textContent = d.time;
+              r.querySelector('[part=subject]').textContent = 'Infinite List. ' + d.index;
+              r.querySelector('[part=body]').textContent = d.details;
+              dom.appendChild(r);
+            }
+            detail.page.appendChild(dom);
+          },
+          letterAction: function(e, detail) {
+            console.log('letter:', detail.letter);
+          }
+        });
+      })();  
+      </script>
+    </polymer-element>
+  </body>
+</html>

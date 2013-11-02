@@ -8,8 +8,8 @@ license that can be found in the LICENSE file.
   <head>
     <title>list: medium</title>
     <meta name="viewport" content="width=device-width">
-    <script src="../../../../polymer/polymer.js"></script>
-    <link rel="import" href="../polymer-list/polymer-list.html">
+    <script src="../../../../../polymer/polymer.js"></script>
+    <link rel="import" href="../../polymer-list/polymer-list.html">
     <style>
       html, body {
         height: 100%;
@@ -34,7 +34,7 @@ license that can be found in the LICENSE file.
 
     <polymer-element name="list-item" attributes="data" noscript>
       <template>
-        <style>
+        <!--<style>
           .message {
             box-sizing: border-box;
             height: 80px;
@@ -78,7 +78,7 @@ license that can be found in the LICENSE file.
             padding: 0 10px;
             text-transform: uppercase;
           }
-        </style>
+        </style>-->
         <template if="{{data.divider}}">
           <div class="divider">{{data.divider}}</div>
         </template>
@@ -108,7 +108,7 @@ license that can be found in the LICENSE file.
             height: 100%;
             background: red;
           }
-          /*
+          
           list-item ^ .message {
             box-sizing: border-box;
             height: 80px;
@@ -151,7 +151,7 @@ license that can be found in the LICENSE file.
             line-height: 30px;
             padding: 0 10px;
             text-transform: uppercase;
-          }*/
+          }
         </style>
         <polymer-list id="list" data="{{data}}" listData="{{listData}}">
           <template repeat="{{listData}}">
