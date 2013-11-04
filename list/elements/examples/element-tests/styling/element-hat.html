@@ -34,7 +34,7 @@ license that can be found in the LICENSE file.
 
     <polymer-element name="list-item" attributes="data" noscript>
       <template>
-        <style>
+        <!--<style>
           .message {
             box-sizing: border-box;
             height: 80px;
@@ -78,7 +78,7 @@ license that can be found in the LICENSE file.
             padding: 0 10px;
             text-transform: uppercase;
           }
-        </style>
+        </style>-->
         <template if="{{data.divider}}">
           <div class="divider">{{data.divider}}</div>
         </template>
@@ -91,12 +91,66 @@ license that can be found in the LICENSE file.
       </template> 
     </polymer-element>
 
+    <!--<script>
+      var proto = Object.create(HTMLElement.prototype);
+      proto.createdCallback = function() {
+        this.createShadowRoot();
+      }
+      proto.enteredViewCallback = function() {}
+      proto.leftViewCallback = function() {}
+      document.register('list-item', {prototype: proto});
+    </script>-->
+
     <polymer-element name="list-test">
       <template>
         <style>
           polymer-list {
             height: 100%;
             background: red;
+          }
+          
+          list-item ^ .message {
+            box-sizing: border-box;
+            height: 80px;
+            padding: 4px;
+            padding-left: 77px;
+            line-height: 167%;
+            cursor: default;
+            background-color: white;
+            position: relative;
+            color: black;
+            background-repeat: no-repeat;
+            background-position: 10px 10px;
+            background-size: 60px;
+            border-bottom: 1px solid #ddd;
+          }
+          
+          list-item ^ .from {
+            display: inline;
+            font-weight: bold;
+          }
+          
+          list-item ^ .timestamp {
+            margin-left: 10px;
+            font-size: 12px;
+            opacity: 0.8;
+          }
+          
+          list-item ^ .body {
+            font-size: 12px;
+            opacity: 0.8;
+          }
+          
+          list-item ^ .subject {
+          }
+          
+          list-item ^ .divider {
+            background: grey;
+            color: white;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            text-transform: uppercase;
           }
         </style>
         <polymer-list id="list" data="{{data}}" listData="{{listData}}">

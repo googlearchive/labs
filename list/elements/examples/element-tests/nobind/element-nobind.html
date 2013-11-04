@@ -32,9 +32,18 @@ license that can be found in the LICENSE file.
   <body>
     <list-test id="lt"></list-test>
 
-    <polymer-element name="list-item" attributes="data" noscript>
+
+    <polymer-element name="list-item" noscript>
+    </polymer-element>
+
+    <polymer-element name="list-test">
       <template>
         <style>
+          polymer-list {
+            height: 100%;
+            background: red;
+          }
+
           .message {
             box-sizing: border-box;
             height: 80px;
@@ -65,6 +74,9 @@ license that can be found in the LICENSE file.
           .body {
             font-size: 12px;
             opacity: 0.8;
+            /*white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;*/
           }
           
           .subject {
@@ -79,30 +91,18 @@ license that can be found in the LICENSE file.
             text-transform: uppercase;
           }
         </style>
-        <template if="{{data.divider}}">
-          <div class="divider">{{data.divider}}</div>
-        </template>
-        <div class="message" Xstyle="background-image: url(images/{{data.index % 4}}.png);">
-          <span class="from">{{data.name}}</span>
-          <span class="timestamp">{{data.time}}</span>
-          <div class="subject">Infinite List. {{data.index}}</div>
-          <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-        </div>
-      </template> 
-    </polymer-element>
-
-    <polymer-element name="list-test">
-      <template>
-        <style>
-          polymer-list {
-            height: 100%;
-            background: red;
-          }
-        </style>
         <polymer-list id="list" data="{{data}}" listData="{{listData}}">
           <template repeat="{{listData}}">
             <div class="{{page}}">
-              <list-item data="{{}}"></list-item>
+              <list-item >
+                <div class="divider">divider</div>
+                <div class="message" Xstyle="background-image: url(images/1.png);">
+                  <span class="from">asdf4werwer</span>
+                  <span class="timestamp">8:29 pm</span>
+                  <div class="subject">Infinite List. 3983439</div>
+                  <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+                </div>
+              </list-item>
             </div>
           </template>
         </polymer-list>
@@ -133,8 +133,6 @@ license that can be found in the LICENSE file.
           count: 50000,
           ready: function() {
             this.data = this.generateData();
-            this.$.list.numPages = 4;
-            this.$.list.pageSize = 10;
           },
           generateData: function() {
             var names = [], data = [];
