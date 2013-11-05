@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>polymer::sheet</title>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="stylesheet" href="sheety.css" name="x-sheety">
+  <style name="x-sheety">
+    :host(.bar) {
+      font-weight: bold;
+    }
+
+    :host(.foo) {
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <x-sheety>vanilla</x-sheety>
+  <div class="foo">
+    <x-sheety>green!</x-sheety>
+  </div>
+  <x-sheety class="bar">red!</x-sheety>
+  
+  <polymer-element name="x-sheety">
+    <template>
+      <content></content>
+    </template>
+    <script>
+    (function() {
+      function rulesToCss(cssRules) {
+        for (var i=0, css=[]; i < cssRules.length; i++) {
+          css.push(cssRules[i].cssText);
+        }
+        return css.join('\n\n');
+      }
+
+      function collectScopeCss(name) {
+        var style = document.createElement('style');
+        var n$ = document.querySelectorAll('link[rel=stylesheet][name=' + name + ']');
+        for (var i=0, l=n$.length, n; (i<l) && (n=n$[i]); i++) {
+          if (n.sheet) {
+            style.textContent += rulesToCss(n.sheet.cssRules);
+            n.parentNode.removeChild(n);
+          }
+        }
+        style.textContent += '\n\n';
+        n$ = document.querySelectorAll('style[name=' + name + ']');
+        for (var i=0, l=n$.length, n; (i<l) && (n=n$[i]); i++) {
+          style.textContent += n.textContent;
+          n.parentNode.removeChild(n);
+        }
+        if (style.textContent) {
+          return style;
+        }
+      }
+
+      Polymer('x-sheety', {
+        registerCallback: function(element) {
+          var content = element.templateContent();
+          if (content) {
+            var style = collectScopeCss(element.name);
+            if (style) {
+              // goes away if we do this during desugaring
+              if (window.ShadowDOMPolyfill) {
+                var frag = document.createDocumentFragment();
+                frag.appendChild(style);
+                Platform.ShadowCSS.shimStyling(frag, element.name,
+                    element.getAttribute('extends'));
+              } else {
+                var styles = content.querySelectorAll('style');
+                var ref = styles.length ? styles[styles.length-1].nextElementSibling : null;
+                content.insertBefore(style, ref);
+              }
+            }
+          }
+        }
+      });
+    })();
+    </script>
+  </polymer-element>
+  </body>
+</html>
