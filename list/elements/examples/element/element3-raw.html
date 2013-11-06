@@ -33,17 +33,15 @@ license that can be found in the LICENSE file.
     <list-test id="lt"></list-test>
 
     <script>
-      // var proto = Object.create(HTMLElement.prototype);
-      // proto.createdCallback = function() {
-      // }
-      // proto.enteredViewCallback = function() {}
-      // proto.leftViewCallback = function() {}
-      // document.register('list-item', {prototype: proto});
+      var proto = Object.create(HTMLElement.prototype);
+      proto.createdCallback = function() {
+        var root = this.createShadowRoot();
+        root.appendChild(document.createElement('content'));
+      }
+      proto.enteredViewCallback = function() {}
+      proto.leftViewCallback = function() {}
+      document.register('list-item', {prototype: proto});
     </script>
-
-    <polymer-element name="list-item" attributes="data" noscript>
-      <template><content></content></template>
-    </polymer-element>
 
     <polymer-element name="list-test">
       <template>
@@ -103,7 +101,7 @@ license that can be found in the LICENSE file.
         <polymer-list id="list" data="{{data}}" listData="{{listData}}">
           <template repeat="{{listData}}">
             <div class="{{page}}">
-              <list-item data="{{data}}">
+              <list-item>
                 <template if="{{divider}}">
                   <div class="divider">{{divider}}</div>
                 </template>
