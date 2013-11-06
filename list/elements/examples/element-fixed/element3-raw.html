@@ -9,6 +9,7 @@ license that can be found in the LICENSE file.
     <title>list: medium</title>
     <meta name="viewport" content="width=device-width">
     <script src="../../../../../polymer/polymer.js"></script>
+    <script src="../test.js"></script>
     <link rel="import" href="../../polymer-list/polymer-list.html">
     <style>
       html, body {
@@ -30,7 +31,18 @@ license that can be found in the LICENSE file.
     </style>
   </head>
   <body>
-    <list-test></list-test>
+    <list-test id="lt"></list-test>
+
+    <script>
+      var proto = Object.create(HTMLElement.prototype);
+      proto.createdCallback = function() {
+        var root = this.createShadowRoot();
+        root.appendChild(document.createElement('content'));
+      }
+      proto.enteredViewCallback = function() {}
+      proto.leftViewCallback = function() {}
+      document.register('list-item', {prototype: proto});
+    </script>
 
     <polymer-element name="list-test">
       <template>
@@ -89,12 +101,14 @@ license that can be found in the LICENSE file.
         <polymer-list id="list" data="{{data}}" listData="{{listData}}" fixedHeight>
           <template repeat="{{listData}}">
             <div class="{{page}}">
-              <div class="message" Xstyle="background-image: url(images/{{index % 4}}.png);">
-                <span class="from">{{name}}</span>
-                <span class="timestamp">{{time}}</span>
-                <div class="subject">Infinite List. {{index}}</div>
-                <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-              </div>
+              <list-item>
+                <div class="message" Xstyle="background-image: url(images/{{index % 4}}.png);">
+                  <span class="from">{{name}}</span>
+                  <span class="timestamp">{{time}}</span>
+                  <div class="subject">Infinite List. {{index}}</div>
+                  <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+                </div>
+              </list-item>
             </div>
           </template>
         </polymer-list>

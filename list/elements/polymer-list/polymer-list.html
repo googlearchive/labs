@@ -46,7 +46,7 @@
       invalidatePages: function(info) {
         this.generateListData(info);
         this.super(arguments);
-        if (!this.fixedHeight) {
+        if (!this.fixedHeight || !this.rowHeight) {
           this.onMutation(this, function() {
             this.invalidate(info);
           });

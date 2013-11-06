@@ -9,6 +9,7 @@ license that can be found in the LICENSE file.
     <title>list: medium</title>
     <meta name="viewport" content="width=device-width">
     <script src="../../../../../polymer/polymer.js"></script>
+    <script src="../test.js"></script>
     <link rel="import" href="../../polymer-list/polymer-list.html">
     <style>
       html, body {
@@ -30,15 +31,11 @@ license that can be found in the LICENSE file.
     </style>
   </head>
   <body>
-    <list-test></list-test>
+    <list-test id="lt"></list-test>
 
-    <polymer-element name="list-test">
+    <polymer-element name="list-item" attributes="data" noscript>
       <template>
         <style>
-          polymer-list {
-            height: 100%;
-          }
-
           .message {
             box-sizing: border-box;
             height: 80px;
@@ -69,9 +66,6 @@ license that can be found in the LICENSE file.
           .body {
             font-size: 12px;
             opacity: 0.8;
-            /*white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;*/
           }
           
           .subject {
@@ -86,19 +80,29 @@ license that can be found in the LICENSE file.
             text-transform: uppercase;
           }
         </style>
+        <div class="message" Xstyle="background-image: url(images/{{data.index % 4}}.png);">
+          <span class="from">{{data.name}}</span>
+          <span class="timestamp">{{data.time}}</span>
+          <div class="subject">Infinite List. {{data.index}}</div>
+          <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+        </div>
+      </template> 
+    </polymer-element>
+
+    <polymer-element name="list-test">
+      <template>
+        <style>
+          polymer-list {
+            height: 100%;
+          }
+        </style>
         <polymer-list id="list" data="{{data}}" listData="{{listData}}" fixedHeight>
           <template repeat="{{listData}}">
             <div class="{{page}}">
-              <div class="message" Xstyle="background-image: url(images/{{index % 4}}.png);">
-                <span class="from">{{name}}</span>
-                <span class="timestamp">{{time}}</span>
-                <div class="subject">Infinite List. {{index}}</div>
-                <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-              </div>
+              <list-item data="{{}}"></list-item>
             </div>
           </template>
         </polymer-list>
-
       </template>
       <script>
       (function() {

@@ -9,6 +9,7 @@ license that can be found in the LICENSE file.
     <title>list: medium</title>
     <meta name="viewport" content="width=device-width">
     <script src="../../../../../polymer/polymer.js"></script>
+    <script src="../test.js"></script>
     <link rel="import" href="../../polymer-list/polymer-list.html">
     <style>
       html, body {
@@ -30,7 +31,27 @@ license that can be found in the LICENSE file.
     </style>
   </head>
   <body>
-    <list-test></list-test>
+    <list-test id="lt"></list-test>
+
+    <polymer-element name="list-item" attributes="data">
+      <template>
+        <div class="message" Xstyle="background-image: url(images/{{data.index % 4}}.png);">
+          <span class="from">{{data.name}}</span>
+          <span class="timestamp">{{data.time}}</span>
+          <div class="subject">Infinite List. {{data.index}}</div>
+          <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+        </div>
+      </template> 
+      <script>
+        Polymer('list-item', {
+          createdCallback: function() {
+            this.prepareElement();
+          },
+          enteredViewCallback: function() {},
+          leftViewCallback: function() {}
+        });
+      </script>
+    </polymer-element>
 
     <polymer-element name="list-test">
       <template>
@@ -38,8 +59,8 @@ license that can be found in the LICENSE file.
           polymer-list {
             height: 100%;
           }
-
-          .message {
+          
+          list-item ^ .message {
             box-sizing: border-box;
             height: 80px;
             padding: 4px;
@@ -55,29 +76,26 @@ license that can be found in the LICENSE file.
             border-bottom: 1px solid #ddd;
           }
           
-          .from {
+          list-item ^ .from {
             display: inline;
             font-weight: bold;
           }
           
-          .timestamp {
+          list-item ^ .timestamp {
             margin-left: 10px;
             font-size: 12px;
             opacity: 0.8;
           }
           
-          .body {
+          list-item ^ .body {
             font-size: 12px;
             opacity: 0.8;
-            /*white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;*/
           }
           
-          .subject {
+          list-item ^ .subject {
           }
           
-          .divider {
+          list-item ^ .divider {
             background: grey;
             color: white;
             height: 30px;
@@ -89,12 +107,7 @@ license that can be found in the LICENSE file.
         <polymer-list id="list" data="{{data}}" listData="{{listData}}" fixedHeight>
           <template repeat="{{listData}}">
             <div class="{{page}}">
-              <div class="message" Xstyle="background-image: url(images/{{index % 4}}.png);">
-                <span class="from">{{name}}</span>
-                <span class="timestamp">{{time}}</span>
-                <div class="subject">Infinite List. {{index}}</div>
-                <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-              </div>
+              <list-item data="{{}}"></list-item>
             </div>
           </template>
         </polymer-list>
