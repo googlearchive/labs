@@ -125,23 +125,6 @@
         }
         this.initialized = true;
       },
-      measurePage: function(page) {
-        var ph = this.calcPageHeight(page);
-        var pn = page.pageNum;
-        if (!this.rowHeight) {
-          // rowHeight is not set, use the page's height to setup initial values
-          this.initialize(ph, pn);
-        }
-        var ph0 = this.getPageHeight(pn);
-        if (ph && ph0 != ph) {
-          this.pageHeights[pn] = ph;
-          // since page height has changed, invalidate all the pageTops after
-          // this page
-          this.pageTops.splice(pn+1, this.pageTops.length);
-          // also adjust the viewport's height
-          this.viewportHeight += ph - ph0;
-        }
-      },
       get viewportHeight() {
         return this._viewportHeight;
       },
@@ -190,6 +173,25 @@
         pn--;
         var ph = this.getPageHeight(pn);
         return pn + (pos-pt+ph)/ph;
+      },
+      /* returns delta between actual and expected */
+      measurePage: function(page) {
+        var ph = this.calcPageHeight(page);
+        var pn = page.pageNum;
+        if (!this.rowHeight) {
+          // rowHeight is not set, use the page's height to setup initial values
+          this.initialize(ph, pn);
+        }
+        var ph0 = this.getPageHeight(pn);
+        if (ph && ph0 != ph) {
+          this.pageHeights[pn] = ph;
+          // since page height has changed, invalidate all the pageTops after
+          // this page
+          this.pageTops.splice(pn+1, this.pageTops.length);
+          // also adjust the viewport's height
+          return ph - ph0;
+        }
+        return 0;
       },
       // positions the given page and returns the adjustment delta.
       positionPage: function(page) {
@@ -257,7 +259,7 @@
       invalidate: function(info) {
         info = info || this.getViewportPageInfo();
         var k = info.start, n = info.start+this.numPages, 
-            c = info.center;
+            c = info.center, v=0, s=0, d;
         this.previousPages = this.pages;
         this.pages = [];
         for (; k<n; k++) {
@@ -266,13 +268,22 @@
             if (this.retainPages) {
               p.style.display = null;
             }
-            this.measurePage(p);
-            var d = this.positionPage(p);
+            v += this.measurePage(p);
+            d = this.positionPage(p);
             // adjust scrollOffset if center page's top has changed
-            if (!this.fixedHeight && (d && k === c)) {
-              this.scrollOffset -= d;
+            if (d && k === c) {
+              s = d;
             }
             this.pages.push(p);
+          }
+        }
+        // adjust viewport and scroll position iff needed
+        if (!this.fixedHeight) {
+          if (v) { 
+            this.viewportHeight += v;
+          }
+          if (s) {
+            this.scrollOffset -= s;
           }
         }
         // remove out-of-bounds pages
