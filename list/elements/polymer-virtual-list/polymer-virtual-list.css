@@ -1,12 +1,11 @@
 /* ShadowDOM styling */
- @host {
-   :scope {
-     display: block;
-   }
- }
+:host {
+  display: block;
+  overflow: hidden;
+}
 
 /* @polyfill .polymer-list-item */
-::-webkit-distributed(.polymer-list-item), .polymer-list-item, [part=polymer-list-item] {
+::content > .polymer-list-item, .polymer-list-item {
   box-sizing: border-box;
   height: 80px;
   line-height: 80px;

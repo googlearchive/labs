@@ -1,7 +1,7 @@
 <polymer-element name="polymer-virtual-list" attributes="count pageSize numPages horizontal">
   <template>
     <link rel="stylesheet" href="polymer-virtual-list.css">
-    <div id="list" class="polymer-list-list" on-scroll="{{scroll}}">
+    <div id="list" class="polymer-list-list">
       <div id="viewport" class="polymer-list-viewport"></div>
     </div>
   </template>
@@ -26,6 +26,10 @@
         horizontal: 'reset'
       },
       ready: function() {
+        var self = this;
+        this.$.list.addEventListener('scroll', function(e) {
+          self.scroll(e);
+        })
         this.reset();
       },
       // re-render at the top
@@ -206,6 +210,7 @@
           var t0 = page.style[this.metrics.position].slice(0, -2);
           // set the page's top
           page.style[this.metrics.position] = t + 'px';
+          //page.style.webkitTransform = 'translate3d(0, ' + t + 'px, 0)';
           // return delta between old and new
           if (t0) {
             return t0 - t;
@@ -236,7 +241,7 @@
       TODO(sorvell): chrome fires scroll events with raf timing;
       on other browser, we will want to throttle events to that timing
       */
-      scroll: function() {
+      scroll: function(e) {
         this.fire('polymer-list-scroll');
         var info = this.getViewportPageInfo();
         // validate if needed

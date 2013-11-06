@@ -14,6 +14,7 @@ license that can be found in the LICENSE file.
       html, body {
         height: 100%;
         margin: 0;
+        background: red;
       }
       
       list-test {
@@ -37,10 +38,9 @@ license that can be found in the LICENSE file.
         <style>
           polymer-virtual-list {
             height: 100%;
-            background: red;
           }
 
-          ::part(message) {
+          polymer-virtual-list ^ .message {
             box-sizing: border-box;
             height: 80px;
             padding: 4px;
@@ -56,29 +56,26 @@ license that can be found in the LICENSE file.
             border-bottom: 1px solid #ddd;
           }
           
-          ::part(from) {
+          polymer-virtual-list ^ .from {
             display: inline;
             font-weight: bold;
           }
           
-          ::part(timestamp) {
+          polymer-virtual-list ^ .timestamp {
             margin-left: 10px;
             font-size: 12px;
             opacity: 0.8;
           }
           
-          ::part(body) {
+          polymer-virtual-list ^ .body {
             font-size: 12px;
             opacity: 0.8;
-            /*white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;*/
           }
           
-          ::part(subject) {
+          polymer-virtual-list ^ .subject {
           }
           
-          ::part(divider) {
+          polymer-virtual-list ^ .divider {
             background: grey;
             color: white;
             height: 30px;
@@ -91,13 +88,13 @@ license that can be found in the LICENSE file.
         </polymer-virtual-list>
 
         <template id="listItem">
-          <div>
-            <div part="divider"></div>
-            <div part="message">
-              <span part="from"></span>
-              <span part="timestamp"></span>
-              <div part="subject"></div>
-              <div part="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+          <div class="item">
+            <div class="divider"></div>
+            <div class="message">
+              <span class="from"></span>
+              <span class="timestamp"></span>
+              <div class="subject"></div>
+              <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
             </div>
           </div>
         </template>
@@ -128,11 +125,6 @@ license that can be found in the LICENSE file.
           count: 50000,
           ready: function() {
             this.data = this.generateData();
-            //this.$.list.retainPages = true;
-            //this.$.list.fixedHeight = true;
-            //this.$.list.pageSize = 1;
-            //this.$.list.numPages = 15;
-            //this.$.list.numInitialPages = 50000;
           },
           generateData: function() {
             var names = [], data = [];
@@ -163,15 +155,17 @@ license that can be found in the LICENSE file.
             var dom = document.createDocumentFragment();
             for (var i = detail.start, l=detail.end, d, r; (i<l) && (d=this.data[i]); i++) {
               r = this.$.listItem.ref.content.cloneNode(true);
-              var divider = r.querySelector('[part=divider]');
+              var item = r.querySelector('.item');
+              //item.style.height = (80 + Math.random() * 80) + 'px';
+              var divider = r.querySelector('.divider');
               divider.style.display = d.divider ? null : 'none';
               divider.textContent = d.divider;
-              var message = r.querySelector('[part=message]');
+              var message = r.querySelector('.message');
               //message.style.backgroundImage = 'url(images/' + d.index % 4 + '.png)';
-              r.querySelector('[part=from]').textContent = d.name;
-              r.querySelector('[part=timestamp]').textContent = d.time;
-              r.querySelector('[part=subject]').textContent = 'Infinite List. ' + d.index;
-              r.querySelector('[part=body]').textContent = d.details;
+              r.querySelector('.from').textContent = d.name;
+              r.querySelector('.timestamp').textContent = d.time;
+              r.querySelector('.subject').textContent = 'Infinite List. ' + d.index;
+              r.querySelector('.body').textContent = d.details;
               dom.appendChild(r);
             }
             detail.page.appendChild(dom);
