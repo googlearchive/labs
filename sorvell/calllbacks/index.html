@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../../polymer/polymer.js"></script>
+</head>
+<body>
+  <polymer-element name="x-item">
+    <template>
+      <style>
+        :host(.ready) {
+          color: red;
+        }
+      </style>
+      <content></content>
+    </template>
+    <script>
+      Polymer('x-item', {
+        ready: function() {
+          console.log('ready', this);
+          this.classList.add('ready');
+        },
+        enteredView: function() {
+          console.log('enteredView');
+        }
+      });
+    </script>
+  </polymer-element>
+  <polymer-element name="x-repeat">
+    <template>
+      <template repeat="{{items}}">
+        <x-item>{{}}</x-item>
+      </template>
+      <x-item>not repeat</x-item>
+      <template if="{{ifItem}}">
+        <x-item>if</x-item>
+      </template>
+    </template>
+    <script>
+      Polymer('x-repeat', {
+        ifItem: true,
+        items: [1,2,3,4,5]
+      });
+    </script>
+  </polymer-element>
+  <x-repeat></x-repeat>
+</body>
+</html>
