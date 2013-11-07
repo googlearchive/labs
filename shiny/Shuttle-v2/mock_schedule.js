@@ -6,7 +6,7 @@
 
 (function() {
 
-if (!window.Shuttle || Polymer.flags.mock) {
+if (!window.Shuttle || Platform.flags.mock) {
   window.Shuttle = {
     isMock: true,
     officeLabel: 'Office',
