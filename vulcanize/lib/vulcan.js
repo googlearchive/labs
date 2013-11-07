@@ -211,7 +211,11 @@ function handleMainDocument() {
     output = tempoutput.html();
     // join scripts with ';' to prevent breakages due to EOF semicolon insertion
     var script_name = path.basename(options.output, '.html') + '.js';
-    fs.writeFileSync(script_name, scripts.join(';' + EOL), 'utf8');
+    var script_path = options.outputDir;
+    if(script_path != undefined && script_path.length > 0 ){
+        script_path += "/"
+    }
+    fs.writeFileSync(script_path + script_name, scripts.join(';' + EOL), 'utf8');
     scripts_after_polymer.push('<script src="' + script_name + '"></script>');
     findScriptLocation($).append(EOL + scripts_after_polymer.join(EOL) + EOL);
   }
