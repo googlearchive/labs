@@ -1,0 +1,95 @@
+<link rel="import" href="../polymer-virtual-list/polymer-virtual-list.html">
+
+<polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data">
+  <script>
+    Polymer('polymer-list', {
+      ready: function() {
+        this.data = [];
+        this.listData = [];
+        this.super();
+      },
+      enteredView: function() {
+        this.template = this.querySelector('template');
+      },
+      dataChanged: function() {
+        this.count = this.data.length;
+        //console.log('dataChanged', this.count);
+      },
+      generatePageContent: function(page, start, end) {
+        this.super();
+        // add a content w/select into this page
+        var c = document.createElement('content');
+        c.select = '.page' + page.pageNum;
+        page.appendChild(c);
+      },
+      /*
+        auto-generate a scope: 
+        {root: template model, item: item data, page}
+      */
+      generateListData: function(info) {
+        var start = info.start * this.pageSize;
+        var end = Math.min(start + this.pageSize * this.numPages, this.count);
+        this.fire('polymer-list-generate-data', {start: start, end: end});
+        // produce data window
+        //this.listData = [];
+        for (var i=0, l=end-start, d, pageClass; i<l; i++) {
+          d = this.listData[i] || 
+              (this.listData[i] = {root: this.template.templateInstance.model});
+          if (!d.item) {
+            d.item = Polymer.extend({}, this.data[start+i]);
+          } else {
+            // clear previous value, ug
+            for (var a in d.item) {
+              d.item[a] = undefined;
+            }
+            Polymer.extend(d.item, this.data[start+i]);
+          }
+          d.page = 'page' + Math.floor((start+i) / this.pageSize);
+        }
+        if (l < this.listData.length) {
+          console.log('splicing!');
+          this.listData.splice(l, this.listData.length - l);
+        }
+      },
+      templateChanged: function() {
+        if (!this.template) {
+          return;
+        }
+        var content = this.template.ref.content;
+        // why isn't this necessary?
+        /*if (content.bindingMap_) {
+          console.log(content.bindingMap_);
+          content.bindingMap_ = null;
+        }*/
+        // add 'page' element to template
+        var page = document.createElement('div');
+        page.setAttribute('class', '{{page}}');
+        while (content.firstChild) {
+          page.appendChild(content.firstChild);
+        }
+        content.appendChild(page);
+        // set template to repeat
+        var model = this.template.templateInstance.model
+        this.template.bind('repeat', model, 'listData');
+      },
+      listDataChanged: function() {
+        this.template.templateInstance.model.listData = this.listData;
+      },
+      invalidatePages: function(info) {
+        this.generateListData(info);
+        this.super(arguments);
+        if (!this.fixedHeight || !this.rowHeight) {
+          this.onMutation(this, function() {
+            this.invalidate(info);
+          });
+        }
+      },
+      mutationNodeForPage: function(page) {
+        return this;
+      },
+      findRowOnPage: function(page, index) {
+        return this.querySelectorAll('.page' + page.pageNum)[index];
+      }
+    });
+  </script>
+</polymer-element>
