@@ -31,30 +31,43 @@
         var end = Math.min(start + this.pageSize * this.numPages, this.count);
         this.fire('polymer-list-generate-data', {start: start, end: end});
         // produce data window
-        //this.listData = [];
-        for (var i=0, l=end-start, d, pageClass; i<l; i++) {
-          d = this.listData[i] || 
-              (this.listData[i] = {root: this.template.templateInstance.model});
-          if (!d.item) {
-            d.item = Polymer.extend({}, this.data[start+i]);
+        for (var i=0, l=end-start; i<l; i++) {
+          this.generateListDataItem(i, start+i);
+        }
+        if (l < this.listData.length) {
+          this.listData.splice(l, this.listData.length - l);
+        }
+      },
+      generateListDataItem: function(index, dataIndex) {
+        var item = this.data[dataIndex];
+        if (this.useFreshData) {
+          this.listData[index] = {
+            item: item,
+            root: this.rootData
+          };
+        } else {
+          if (!this.listData[index]) {
+            this.listData[index] = {
+              item: Polymer.extend({}, item),
+              root: this.rootData
+            };
           } else {
+            var d = this.listData[index];
             // clear previous value, ug
             for (var a in d.item) {
               d.item[a] = undefined;
             }
-            Polymer.extend(d.item, this.data[start+i]);
+            Polymer.extend(d.item, item);
           }
-          d.page = 'page' + Math.floor((start+i) / this.pageSize);
         }
-        if (l < this.listData.length) {
-          console.log('splicing!');
-          this.listData.splice(l, this.listData.length - l);
-        }
+        this.listData[index].page = 'page' +
+            Math.floor(dataIndex / this.pageSize);
       },
       templateChanged: function() {
         if (!this.template) {
           return;
         }
+        this.rootData = this.template.templateInstance.model;
         var content = this.template.ref.content;
         // why isn't this necessary?
         /*if (content.bindingMap_) {
@@ -69,8 +82,7 @@
         }
         content.appendChild(page);
         // set template to repeat
-        var model = this.template.templateInstance.model
-        this.template.bind('repeat', model, 'listData');
+        this.template.bind('repeat', this, 'listData');
       },
       listDataChanged: function() {
         this.template.templateInstance.model.listData = this.listData;
