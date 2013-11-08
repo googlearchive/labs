@@ -6,6 +6,7 @@
   <link rel="import" href="../../../polymer-elements/polymer-jsonp/polymer-jsonp.html">
   <link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
   <link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
+  <link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
@@ -13,6 +14,8 @@
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-collapsible/polymer-ui-collapsible.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-card/polymer-ui-card.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-ratings/polymer-ui-ratings.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-button/polymer-ui-menu-button.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html">
   <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
 </head>
 <body class="polymer-ui-body-text">
@@ -20,9 +23,6 @@
   <polymer-element name="gb-finder">
     <template>
       <style>
-        :host {
-          position: relative;
-        }
         polymer-ui-toolbar#toolbar {
           background: #4285f4 !important;
         }
@@ -32,19 +32,28 @@
           width: 300px;
           margin: 10px;
         }
+        polymer-ui-menu-button {
+          padding-right: 10px;
+        }
         #main {
           background: #f2f2f2;
           overflow: auto;
         }
-        .book-list {
+        .book-lists {
           display: block;
           width: 980px;
           margin: 0 auto;
         }
+        .book-list {
+          display: inline-block;
+          width: 490px;
+          float: left;
+          vertical-align: top;
+        }
         gb-book-info {
           vertical-align: top;
         }
-        #loading {
+        .loading-icon {
           display: none;
           position: absolute;
           bottom: 50%;
@@ -55,50 +64,65 @@
           background: url(loading.png);
           z-index: 1;
         }
-        #loading[loading] {
+        .loading-icon[loading] {
           display: block;
         }
+        polymer-ui-menu-button ^^ polymer-ui-icon {
+          background-position: -72px -864px !important;
+        }
         @media screen and (max-width: 1000px) {
-          .book-list {
+          .book-lists {
             width: 490px;
           }
         }
       </style>
       
-      <polymer-ui-toolbar id="toolbar" theme="polymer-ui-dark-theme">
+      <polymer-ui-toolbar id="toolbar">
         <div flex></div>
         <polymer-ui-field>
           <polymer-ui-icon icon="search" theme="polymer-ui-light-theme"></polymer-ui-icon>
           <input placeholder="Search Books" value="{{query}}" flex x-webkit-speech on-change="{{search}}">
         </polymer-ui-field>
-        <div flex></div>
+        <div flex>
+          <polymer-ui-menu-button selected="{{bookTypeSelected}}" halign="right" icon="filter">
+            <polymer-ui-menu-item name="all" label="All"></polymer-ui-menu-item>
+            <polymer-ui-menu-item name="books" label="Books"></polymer-ui-menu-item>
+            <polymer-ui-menu-item name="magazines" label="Magazines"></polymer-ui-menu-item>
+          </polymer-ui-menu-button>
+        </div>
       </polymer-ui-toolbar>
       
       <div id="main">
-        <polymer-selector id="bookList" class="book-list" multi>
+        <polymer-selector id="bookSelector" target="{{$.bookLists}}" multi itemsSelector="gb-book-info"></polymer-selector>
+        <div id="bookLists" class="book-lists">
           <template repeat="{{books}}">
-            <gb-book-info book="{{}}"></gb-book-info>
+            <div class="book-list">
+              <template repeat="{{}}">
+                <gb-book-info book="{{}}"></gb-book-info>
+              </template>
+            </div>
           </template>
-        </polymer-selector>
+        </div>
       </div>
       
-      <div id="loading" loading?="{{loading}}"></div>
+      <div class="loading-icon" loading?="{{loading}}"></div>
       
-      <polymer-grid-layout nodes="{{nodes}}" layout="{{layout}}"></polymer-grid-layout>
+      <polymer-grid-layout nodes="{{layoutNodes}}" layout="{{layout}}"></polymer-grid-layout>
       
       <polymer-jsonp id="bookSearch" 
-          url="https://www.googleapis.com/books/v1/volumes?q={{query}}&maxResults=40&callback=" 
+          url="https://www.googleapis.com/books/v1/volumes?q={{query}}&printType={{bookTypeSelected}}&maxResults=40&callback=" 
           on-polymer-response="{{gotBooks}}"></polymer-jsonp>
     </template>
     <script>
       Polymer('gb-finder', {
         query: '',
+        bookTypeSelected: 'all',
         ready: function() {
-          this.nodes = [this.$.toolbar, this.$.main];
-          this.layout = [
-            [1],
-            [2]
-          ];
+          this.layoutNodes = [this.$.toolbar, this.$.main];
+          this.layout = [[1],[2]];
+        },
+        bookTypeSelectedChanged: function() {
+          this.async('search');
         },
         search: function() {
           this.loading = true;
@@ -106,15 +130,19 @@
         },
         gotBooks: function(e, detail) {
           this.loading = false;
+          this.$.bookSelector.selected = null;
           this.$.main.scrollTop = 0;
-          this.$.bookList.selected = null;
-          this.books = detail.response.items;
+          var bs = detail.response.items;
+          this.books = [[], []];
+          bs && bs.forEach(function(b, i) {
+            this.books[i & 1].push(b);
+          }, this);
         }
       });
     </script>
   </polymer-element>
   
-  <polymer-element name="gb-book-info" attributes="book active">
+  <polymer-element name="gb-book-info" noscript attributes="book active">
     <template>
       <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
       <style>
@@ -161,6 +189,9 @@
           right: 0;
           z-index: 1;
         }
+        polymer-ui-ratings {
+          pointer-events: none;
+        }
       </style>
       
       <polymer-ui-card>
@@ -194,10 +225,6 @@
         </polymer-ui-collapsible>
       </polymer-ui-card>
     </template>
-    <script>
-      Polymer('gb-book-info', {
-      });
-    </script>
   </polymer-element>
   
   <polymer-element name="gb-info-field" attributes="label value hideValue">
