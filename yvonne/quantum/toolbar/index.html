@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+	<link href="../../../../polymer-elements/polymer-animation/web-animations.html" rel="import">
+	<link href="../../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html" rel="import">
+	<link href="../../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html" rel="import">
+	<script src="../../../../polymer/polymer.js"></script>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		polymer-ui-toolbar {
+			background-color: #4682ec;
+			padding: 16px;
+		}
+	</style>
+</head>
+<body>
+	<polymer-element name="text-transition">
+		<template>
+			<style>
+				:host, #target {
+					background-color: #4682ec;
+					color: white;
+					padding: 16px;
+					box-sizing: border-box;
+				}
+				:host {
+					display: block;
+					position: relative;
+				}
+				#target {
+					position: absolute;
+					top: 0;
+					left: 0;
+					bottom: 0;
+					right: 0;
+					visibility: hidden;
+				}
+				#target.animating {
+					visibility: visible;
+				}
+			</style>
+			<div id="target">
+				{{strTo}}
+			</div>
+			{{strFrom}}
+		</template>
+		<script>
+			Polymer('text-transition', {
+				strTo: 'bbbbbbbbbbbbbbbbbbbbbb',
+				strFrom: 'aaaaaaaaaaaaaaaaaaaaaa',
+				swap: function() {
+					var swap = this.strFrom;
+					this.strFrom = this.strTo;
+					this.strTo = swap;
+				},
+				wipeAnimation: function(t) {
+					var path = 'polygon(' + (t * 400)
+						+ 'px 0px, 400px 0px, 400px 58px, '
+						+ (t * 400 - 25) + 'px 58px)';
+					this.$.target.style.webkitClipPath = path;
+				},
+				animationEndAction: function() {
+					this.$.target.classList.remove('animating');
+				},
+				get animation() {
+					var anim = new Animation(this.$.target,
+						{sample: this.wipeAnimation.bind(this)},
+						{duration: 0.3, easing: 'ease-in'});
+					anim.onend = this.animationEndAction.bind(this);
+					this.$.target.classList.add('animating');
+					this.swap();
+					return anim;
+				}
+			});
+		</script>
+	</polymer-element>
+	<polymer-element name="icon-transition" attributes="icons delay">
+		<template>
+			<style>
+				:host {
+					position: relative;
+					padding: 8px;
+					box-sizing: border-box;
+				}
+				polymer-ui-icon.to {
+					position: absolute;
+					top: 0;
+					left: 0;
+					bottom: 0;
+					right: 0;
+					margin: 8px;
+					opacity: 0;
+				}
+			</style>
+			<polymer-ui-icon id="icon1" icon="{{icons.0}}" class="polymer-ui-light-icon"></polymer-ui-icon>
+			<polymer-ui-icon id="icon2" icon="{{icons.1}}" class="polymer-ui-light-icon"></polymer-ui-icon>
+		</template>
+		<script>
+			Polymer('icon-transition', {
+				delay: 0,
+				down: false,
+				enteredView: function() {
+					this.swap();
+				},
+				iconsChanged: function() {
+					if (typeof this.icons === 'string') {
+						this.icons = this.icons.split(',');
+					}
+				},
+				swap: function() {
+					var swap = this.from || this.$.icon2;
+					this.from = this.to || this.$.icon1;
+					this.to = swap;
+					this.to.classList.add('to');
+					this.from.classList.remove('to');
+					this.down = !this.down;
+				},
+				animationEndAction: function() {
+					this.swap();
+				},
+				get animation() {
+					var anim = new ParGroup([
+						new Animation(this.to, [
+							{'transform': 'translateY(' + (this.down ? '-' : '') + '75%) scale(0.85)', 'opacity': 0},
+							{'transform': 'translateY(0)', 'opacity': 1}
+						], {duration: 0.1, easing: 'ease-in'}),
+						new Animation(this.from, [
+							{'transform': 'translateY(0)', 'opacity': 1},
+							{'transform': 'translateY(' + (!this.down ? '-' : '') + '75%) scale(0.85)', 'opacity': 0}
+						], {duration: 0.1, easing: 'ease-out'})
+					], {delay: this.delay});
+					anim.onend = this.animationEndAction.bind(this);
+					this.async(function() {
+					}, null, 100);
+					return anim;
+				}
+			});
+		</script>
+	</polymer-element>
+	<polymer-ui-toolbar>
+		<polymer-ui-icon icon="menu" class="polymer-ui-light-icon"></polymer-ui-icon>
+		<text-transition flex></text-transition>
+		<icon-transition icons="favorite,none" delay="0.2"></icon-transition>
+		<icon-transition icons="search,shortcut" delay="0.1"></icon-transition>
+		<icon-transition icons="add,dots"></icon-transition>
+	</polymer-ui-toolbar>
+	<script>
+		var direction = 'normal';
+		function transition() {
+			var text = document.querySelector('text-transition');
+			var icons = document.querySelectorAll('icon-transition');
+			var animations = [text.animation, 
+				icons[0].animation, icons[1].animation, icons[2].animation];
+			var anim = new ParGroup(animations);
+			anim.onend = function() {
+				direction = direction === 'normal' ? 'reverse' : 'normal';
+				setTimeout(transition, 1000);
+			};
+			document.timeline.play(anim);
+		}
+		document.addEventListener('WebComponentsReady', function() {
+			setTimeout(transition, 1000);
+		});
+	</script>
+</body>
+</html>
