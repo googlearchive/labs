@@ -5,7 +5,7 @@
 }
 
 /* @polyfill .polymer-list-item */
-::content > .polymer-list-item, .polymer-list-item {
+::content .polymer-list-item, .polymer-list-item {
   box-sizing: border-box;
   height: 80px;
   line-height: 80px;

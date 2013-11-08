@@ -1,0 +1,82 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>list</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="../../../../polymer/polymer.js"></script>
+    <link rel="import" href="polymer-list.html">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      
+      list-test {
+        display: block;
+        max-width: 600px;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .stuff {
+        min-height: 60px;
+        background: red !important;
+        border-bottom: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <list-test></list-test>
+
+    <polymer-element name="list-test">
+      <template>
+        <style>
+          polymer-list {
+            height: 100%;
+          }
+
+          .header {
+            background: gray;
+            text: black;
+            font-weight: bold;
+          }
+
+          .polymer-list-item {
+            background: #333 !important;
+            color: white;
+          }
+        </style>
+        <polymer-list id="list" data="{{data}}">
+          <template>
+            <div hidden?="{{!item.header}}" class="header">{{item.header}}: {{item.index}}</div>
+            <div class="polymer-list-item" on-tap="{{tapAction}}">Index: {{item.index}}</div>
+          </template>
+        </polymer-list>
+
+      </template>
+      <script>
+        Polymer('list-test', {
+          ready: function() {
+            var data = [];
+            for (var i=0, o; i< 50000; i++) {
+              o = {index: i};
+              if ((i+1) % 10 === 0) {
+                o.header = 'Header';
+              }
+              data.push(o);
+            }
+            this.data = data;
+          },
+          tapAction: function(e) {
+            console.log('tap', e);
+          }
+        })
+      </script>
+    </polymer-element>
+  </body>
+</html>
