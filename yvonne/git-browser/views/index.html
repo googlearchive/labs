@@ -7,6 +7,13 @@
 	<polymer-element name="repo-list">
 		<template>
 			<style>
+				.help {
+					font-style: italic;
+					margin: 16px 8px;
+					padding: 8px;
+					border: 1px solid black;
+					font-size: 0.9em;
+				}
 				span.name.needpush, span.name.dirty {
 					color: red;
 				}
@@ -26,6 +33,14 @@
 				}
 			</style>
 			<h1>{{root}}</h1>
+			<div class="help">
+				<span style="color:green">Green</span> = all good!<br>
+				<span style="color:red">Red</span> = uncommitted/unpushed<br>
+				<span style="color:red;font-weight:bold">Bold</span> = unpushed<br>
+				* = Has uncommitted changes<br>
+				+ = Has untracked files<br>
+				Click for git status
+			</div>
 			<template repeat="{{repos}}">
 				<div on-tap="{{toggleAction}}">
 					<span class="name {{ {needpush: ahead > 0, dirty: !clean} | tokenList}}">{{name}}</span>
