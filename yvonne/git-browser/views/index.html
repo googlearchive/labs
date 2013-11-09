@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+	<script src="http://www.polymer-project.org/polymer.min.js"></script>
+</head>
+<body>
+	<polymer-element name="repo-list">
+		<template>
+			<style>
+				div {
+					color: red;
+				}
+				div.clean {
+					color: green;
+				}
+				div.status {
+					color: black;
+					margin: 8px;
+					padding: 8px;
+					border: 1px solid black;
+				}
+			</style>
+			<h1>{{root}}</h1>
+			<template repeat="{{repos}}">
+				<div class="{{ {clean: clean} | tokenList}}" on-tap="{{toggleAction}}">{{name}} <template if="{{untracked}}">*</template></div>
+				<template if="{{!clean}}">
+					<div class="status" hidden?="{{!expanded}}">
+						<pre>{{status}}</pre>
+					</div>
+				</template>
+			</template>
+		</template>
+		<script>
+			Polymer('repo-list', {
+				root: ##ROOT##,
+				repos: ##REPOS##,
+				toggleAction: function(e, detail, sender) {
+					var model = sender.templateInstance.model;
+					model.expanded = !model.expanded;
+				}
+			});
+		</script>
+	</polymer-element>
+	<repo-list></repo-list>
+</body>
+</html>
