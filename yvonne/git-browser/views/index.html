@@ -7,14 +7,17 @@
 	<polymer-element name="repo-list">
 		<template>
 			<style>
-				span.name {
+				span.name.needpush, span.name.dirty {
 					color: red;
 				}
-				span.name.clean {
+				span.name {
 					color: green;
 				}
 				span.ab {
 					font-style: italic;
+				}
+				span.needpush {
+					font-weight: bold;
 				}
 				div.status {
 					margin: 8px;
@@ -25,9 +28,12 @@
 			<h1>{{root}}</h1>
 			<template repeat="{{repos}}">
 				<div on-tap="{{toggleAction}}">
-					<span class="name {{ {clean: clean} | tokenList}}">{{name}}</span>
-					<template if="{{untracked}}">*</template>
-					<span class="ab">(+{{ahead}}/-{{behind}})</span>
+					<span class="name {{ {needpush: ahead > 0, dirty: !clean} | tokenList}}">{{name}}</span>
+					<template if="{{!clean}}">*</template>
+					<template if="{{untracked}}">+</template>
+					<template if="{{ahead > 0 || behind > 0}}">
+						<span class="ab">(<span class="{{ {needpush: ahead > 0} | tokenList}}">+{{ahead}} to push</span>/-{{behind}} behind)</span>
+					</template>
 				</div>
 				<template if="{{!clean}}">
 					<div class="status" hidden?="{{!expanded}}">
