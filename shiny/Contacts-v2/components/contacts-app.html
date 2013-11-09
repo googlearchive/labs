@@ -20,8 +20,18 @@
 <polymer-element name="contacts-app" attributes="page desktopLayout tabletLayout">
 	<template>
 		<style>
+			:host {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				background: #f0f0f0;
+			}
 			polymer-ui-menu {
 				padding: 0 !important;
+				height: 100%;
+				background: white;
 			}
 			.sidebar {
 				position: absolute;
@@ -47,15 +57,6 @@
 			.sidebar polymer-ui-menu-item {
 				margin: 10px;
 				color: black;
-			}
-			/* @polyfill @host */
-			:host {
-				position: absolute;
-				top: 0;
-				left: 0;
-				bottom: 0;
-				right: 0;
-				background: #f0f0f0;
 			}
 			polymer-ui-toolbar {
 				padding-left: 8px;
@@ -363,7 +364,7 @@
 				this.$.createOverlay.active = true;
 			},
 			menuAction: function() {
-				this.fire('contacts-menu-open');
+				this.$.sidebar.toggle();
 			},
 			closeDetailsAction: function() {
 				this.$.detailsOverlay.opened = false;
