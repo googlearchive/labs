@@ -7,14 +7,16 @@
 	<polymer-element name="repo-list">
 		<template>
 			<style>
-				div {
+				span.name {
 					color: red;
 				}
-				div.clean {
+				span.name.clean {
 					color: green;
 				}
+				span.ab {
+					font-style: italic;
+				}
 				div.status {
-					color: black;
 					margin: 8px;
 					padding: 8px;
 					border: 1px solid black;
@@ -22,7 +24,11 @@
 			</style>
 			<h1>{{root}}</h1>
 			<template repeat="{{repos}}">
-				<div class="{{ {clean: clean} | tokenList}}" on-tap="{{toggleAction}}">{{name}} <template if="{{untracked}}">*</template></div>
+				<div on-tap="{{toggleAction}}">
+					<span class="name {{ {clean: clean} | tokenList}}">{{name}}</span>
+					<template if="{{untracked}}">*</template>
+					<span class="ab">(+{{ahead}}/-{{behind}})</span>
+				</div>
 				<template if="{{!clean}}">
 					<div class="status" hidden?="{{!expanded}}">
 						<pre>{{status}}</pre>
