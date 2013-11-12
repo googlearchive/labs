@@ -88,7 +88,7 @@ license that can be found in the LICENSE file.
         <template if="{{data.item.divider}}">
           <div class="divider">{{data.item.divider}}</div>
         </template>
-        <div class="message {{data.selected}}" Xstyle="background-image: url(images/{{data.item.index % 4}}.png);">
+        <div class="message {{data.selected}}" style="background-image: url(images/{{data.item.index % 4}}.png);">
           <span class="from">{{data.item.name}}</span>
           <span class="timestamp">{{data.item.time}}</span>
           <div class="subject">Infinite List. {{data.item.index}}</div>
