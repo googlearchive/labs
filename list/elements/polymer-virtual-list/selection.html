@@ -1,0 +1,85 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>polymer:: virtual-list</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="../../../../components/platform/platform.js"></script>
+    <link rel="import" href="../../../../components/polymer-selection/polymer-selection.html">
+    <link rel="import" href="polymer-virtual-list.html">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      
+      polymer-selection-list {
+        max-width: 600px;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      polymer-selection-list ^ .polymer-selected {
+        font-weight: bold;
+      }
+
+    </style>
+  </head>
+  <body>
+    <polymer-element name="polymer-selection-list" extends="polymer-virtual-list">
+      <template>
+        <polymer-selection id="selection" on-polymer-select="{{selectItem}}"></polymer-selection>
+        <shadow></shadow>
+      </template>
+      <script>
+        Polymer('polymer-selection-list', {
+          ready: function() {
+            this.$.viewport.addEventListener('tap', this.tapAction.bind(this));
+            this.super();
+          },
+          eventToItem: function(e) {
+            for (var i=0, p$=e.path, l=p$.length, c, c1; (i<l) && (c=p$[i]); i++) {
+              if (c === this.$.viewport) {
+                return p$[i-2];
+              }
+            }
+          },
+          tapAction: function(e, detail, sender) {
+            // manually add index
+            var item = this.eventToItem(e), parent = item.parentNode;
+            item.index = Number(parent.getAttribute('page')) * this.pageSize +
+                Array.prototype.indexOf.call(parent.children, item);
+            this.$.selection.select(item);
+          },
+          selectItem: function(e, detail, sender) {
+            detail.item.classList.toggle('polymer-selected', detail.isSelected);
+          }
+        })
+      </script>
+    </polymer-element>
+
+
+    <polymer-selection-list count="100000" pageSize="50" numPages="2"></polymer-selection-list>
+    
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+        var list = document.querySelector('polymer-selection-list');
+        list.addEventListener('polymer-list-generate-page', function(e) {
+          var d = e.detail;
+          var selected = this.$.selection.getSelection();
+          var selectedIndex = selected ? selected.index : -1;
+          for (var i = d.start, html='', s; i < d.end; i++) {
+            s = i === selectedIndex ? 'polymer-selected' : '';
+            html += '<div class="polymer-list-item ' + s + '">Item ' + i + '</div>';
+          }
+          d.page.innerHTML = html;
+        });
+        //list.reset();
+      });
+    </script>
+  </body>
+</html>

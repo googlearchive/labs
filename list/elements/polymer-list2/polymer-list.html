@@ -1,8 +1,13 @@
+<link rel="import" href="../../../../components/polymer-selection/polymer-selection.html">
 <link rel="import" href="../polymer-virtual-list/polymer-virtual-list.html">
-
-<polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data">
+<polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data" on-tap="{{tapAction}}">
+  <template>
+    <polymer-selection id="selection" multi on-polymer-select="{{selectedAction}}"></polymer-selection>
+    <shadow></shadow>
+  </template>
   <script>
     Polymer('polymer-list', {
+      selectedClass: 'polymer-selected',
       ready: function() {
         this.data = [];
         this.listData = [];
@@ -24,35 +29,54 @@
       },
       /*
         auto-generate a scope: 
-        {root: template model, item: item data, page}
+        {root: template model, item: item data, 
+          page: list page, index: data index, selected: selectedClass if selected}
       */
       generateListData: function(info) {
         var start = info.start * this.pageSize;
         var end = Math.min(start + this.pageSize * this.numPages, this.count);
+        this.dataStart = start;
+        this.dataEnd = end;
         this.fire('polymer-list-generate-data', {start: start, end: end});
         // produce data window
         for (var i=0, l=end-start; i<l; i++) {
-          this.generateListDataItem(i, start+i);
+          this.updateDataAtIndex(start+i);
         }
         if (l < this.listData.length) {
           this.listData.splice(l, this.listData.length - l);
         }
       },
-      generateListDataItem: function(index, dataIndex) {
-        var item = this.data[dataIndex];
+      /*
+      TODO(sorvell): go to some trouble to re-use data objects rather than
+      creating new ones. This allows mdv to avoid re-generating dom and is
+      a massive speed improvement (4x) when items contain custom elements.
+      There's an ongoing effort to make generating custom elements faster, but
+      this approach may just be superior. However, if so, we need better 
+      support from mdv for this use case. By maintaining a copy of the user's
+      data, we lose the live link to it, which is unacceptable. It's therefore 
+      currnetly necessary to call 'updateDataAtIndex' to cause the list's 
+      data to sync to the user's data. In addition, having to mutate data
+      objects is cumbersome and slow. 
+      */
+      updateDataAtIndex: function(dataIndex) {
+        var index = dataIndex - this.dataStart;
+        if (index > this.dataEnd) {
+          return;
+        }
+        var item = this.data[dataIndex], d;
         if (this.useFreshData) {
-          this.listData[index] = {
+          d = this.listData[index] = {
             item: item,
             root: this.rootData
           };
         } else {
           if (!this.listData[index]) {
-            this.listData[index] = {
+            d = this.listData[index] = {
               item: Polymer.extend({}, item),
               root: this.rootData
             };
           } else {
-            var d = this.listData[index];
+            d = this.listData[index];
             // clear previous value, ug
             for (var a in d.item) {
               d.item[a] = undefined;
@@ -60,8 +84,11 @@
             Polymer.extend(d.item, item);
           }
         }
-        this.listData[index].page = 'page' +
-            Math.floor(dataIndex / this.pageSize);
+        d.userItem = item;
+        d.index = dataIndex;
+        d.page = 'page' + Math.floor(dataIndex / this.pageSize);
+        d.selected = this.$.selection.isSelected(item) ? 
+            this.selectedClass : '';
       },
       templateChanged: function() {
         if (!this.template) {
@@ -91,9 +118,13 @@
         this.generateListData(info);
         this.super(arguments);
         if (!this.fixedHeight || !this.rowHeight) {
-          this.onMutation(this, function() {
-            this.invalidate(info);
+          var self = this;
+          Platform.endOfMicrotask(function() {
+            self.invalidate(info);
           });
+          /*this.onMutation(this, function() {
+            this.invalidate(info);
+          });*/
         }
       },
       mutationNodeForPage: function(page) {
@@ -101,6 +132,28 @@
       },
       findRowOnPage: function(page, index) {
         return this.querySelectorAll('.page' + page.pageNum)[index];
+      },
+      tapAction: function(e) {
+        var n = this.eventToItemNode(e);
+        if (n) {
+          var model = n.templateInstance.model;
+          this.$.selection.select(model.userItem);
+        }
+      },
+      eventToItemNode: function(e) {
+        var n = e.target;
+        if (n !== this) {
+          while (n.parentNode !== this) {
+            n = n.parentNode;
+          }
+          return n;
+        }
+      },
+      selectedAction: function(e, detail) {
+        this.updateDataAtIndex(this.indexOfItem(detail.item));
+      },
+      indexOfItem: function(dataItem) {
+        return this.data.indexOf(dataItem);
       }
     });
   </script>

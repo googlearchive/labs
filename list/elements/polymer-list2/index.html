@@ -8,7 +8,7 @@ license that can be found in the LICENSE file.
   <head>
     <title>list</title>
     <meta name="viewport" content="width=device-width">
-    <script src="../../../../polymer/polymer.js"></script>
+    <script src="../../../../components/platform/platform.js"></script>
     <link rel="import" href="polymer-list.html">
     <style>
       html, body {
@@ -46,15 +46,26 @@ license that can be found in the LICENSE file.
             font-weight: bold;
           }
 
-          .polymer-list-item {
-            background: #333 !important;
+          .item {
+            box-sizing: border-box;
+            height: 80px;
+            line-height: 80px;
+            padding: 0 20px;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+            background: #333;
             color: white;
           }
+
+          .polymer-selected {
+            background: whitesmoke;
+            color: black;
+          }
         </style>
-        <polymer-list id="list" data="{{data}}">
+        <polymer-list id="list" data="{{data}}" on-polymer-select="{{selectAction}}">
           <template>
             <div hidden?="{{!item.header}}" class="header">{{item.header}}: {{item.index}}</div>
-            <div class="polymer-list-item" on-tap="{{tapAction}}">Index: {{item.index}}</div>
+            <div class="item {{selected}}">Index: {{index}}</div>
           </template>
         </polymer-list>
 
@@ -72,8 +83,9 @@ license that can be found in the LICENSE file.
             }
             this.data = data;
           },
-          tapAction: function(e) {
-            console.log('tap', e);
+          selectAction: function(e, detail) {
+            //this.data[detail.item].selected = detail.isSelected ? 'polymer-selected' : '';
+            //this.$.list.refresh();
           }
         })
       </script>

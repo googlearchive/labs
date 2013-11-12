@@ -8,7 +8,7 @@ license that can be found in the LICENSE file.
   <head>
     <title>list: medium</title>
     <meta name="viewport" content="width=device-width">
-    <script src="../../../../polymer/polymer.js"></script>
+    <script src="../../../../components/platform/platform.js"></script>
     <script src="../examples/test.js"></script>
     <link rel="import" href="polymer-list.html">
     <style>
@@ -79,14 +79,19 @@ license that can be found in the LICENSE file.
             padding: 0 10px;
             text-transform: uppercase;
           }
+
+          .polymer-selected {
+            background-color: #333;
+            color: whitesmoke;
+          }
         </style>
-        <template if="{{data.divider}}">
-          <div class="divider">{{data.divider}}</div>
+        <template if="{{data.item.divider}}">
+          <div class="divider">{{data.item.divider}}</div>
         </template>
-        <div class="message" Xstyle="background-image: url(images/{{data.index % 4}}.png);">
-          <span class="from">{{data.name}}</span>
-          <span class="timestamp">{{data.time}}</span>
-          <div class="subject">Infinite List. {{data.index}}</div>
+        <div class="message {{data.selected}}" Xstyle="background-image: url(images/{{data.item.index % 4}}.png);">
+          <span class="from">{{data.item.name}}</span>
+          <span class="timestamp">{{data.item.time}}</span>
+          <div class="subject">Infinite List. {{data.item.index}}</div>
           <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
         </div>
       </template> 
@@ -101,7 +106,7 @@ license that can be found in the LICENSE file.
         </style>
         <polymer-list id="list" data="{{data}}">
           <template>
-            <list-item data="{{item}}"></list-item>
+            <list-item data="{{}}"></list-item>
           </template>
         </polymer-list>
 
