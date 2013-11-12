@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>stuff</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer-selector/polymer-selector.html">
+</head>
+<body>
+  <x-test></x-test>
+  <polymer-element name="x-test">
+    <template>
+      <style>
+        .polymer-selected {
+          background: black;
+          color: white;
+        }
+      </style>
+      <polymer-selector selected="{{stuff}}" stuff="{{stuff}}">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+      </polymer-selector>
+    </template>
+    <script>
+      Polymer('x-test', {
+        stuffChanged: function() {
+          console.log('stuff changed');
+        }
+      });
+    </script>
+  </polymer-element>
+</body>
+</html>
