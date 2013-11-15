@@ -7,6 +7,7 @@
   <link rel="import" href="../../../polymer-elements/polymer-selector/polymer-selector.html">
   <link rel="import" href="../../../polymer-elements/polymer-grid-layout/polymer-grid-layout.html">
   <link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
+  <link rel="import" href="../../../polymer-elements/polymer-localstorage/polymer-localstorage.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon/polymer-ui-icon.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
@@ -16,217 +17,12 @@
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-ratings/polymer-ui-ratings.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-button/polymer-ui-menu-button.html">
   <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-pages/polymer-ui-pages.html">
   <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
 </head>
 <body class="polymer-ui-body-text">
 
-  <polymer-element name="gb-finder">
-    <template>
-      <style>
-        polymer-ui-toolbar#toolbar {
-          background: #4285f4 !important;
-        }
-        polymer-ui-field {
-          background: white;
-          height: 40px;
-          width: 300px;
-          margin: 10px;
-        }
-        polymer-ui-menu-button {
-          padding-right: 10px;
-        }
-        #main {
-          background: #f2f2f2;
-          overflow: auto;
-        }
-        .book-lists {
-          display: block;
-          width: 980px;
-          margin: 0 auto;
-        }
-        .book-list {
-          display: inline-block;
-          width: 490px;
-          float: left;
-          vertical-align: top;
-        }
-        gb-book-info {
-          vertical-align: top;
-        }
-        .loading-icon {
-          display: none;
-          position: absolute;
-          bottom: 50%;
-          left: 50%;
-          width: 160px;
-          height: 160px;
-          margin: -80px;
-          background: url(loading.png);
-          z-index: 1;
-        }
-        .loading-icon[loading] {
-          display: block;
-        }
-        polymer-ui-menu-button ^^ polymer-ui-icon {
-          background-position: -72px -864px !important;
-        }
-        @media screen and (max-width: 1000px) {
-          .book-lists {
-            width: 490px;
-          }
-        }
-      </style>
-      
-      <polymer-ui-toolbar id="toolbar">
-        <div flex></div>
-        <polymer-ui-field>
-          <polymer-ui-icon icon="search" theme="polymer-ui-light-theme"></polymer-ui-icon>
-          <input placeholder="Search Books" value="{{query}}" flex x-webkit-speech on-change="{{search}}">
-        </polymer-ui-field>
-        <div flex>
-          <polymer-ui-menu-button selected="{{bookTypeSelected}}" halign="right" icon="filter">
-            <polymer-ui-menu-item name="all" label="All"></polymer-ui-menu-item>
-            <polymer-ui-menu-item name="books" label="Books"></polymer-ui-menu-item>
-            <polymer-ui-menu-item name="magazines" label="Magazines"></polymer-ui-menu-item>
-          </polymer-ui-menu-button>
-        </div>
-      </polymer-ui-toolbar>
-      
-      <div id="main">
-        <polymer-selector id="bookSelector" target="{{$.bookLists}}" multi itemsSelector="gb-book-info"></polymer-selector>
-        <div id="bookLists" class="book-lists">
-          <template repeat="{{books}}">
-            <div class="book-list">
-              <template repeat="{{}}">
-                <gb-book-info book="{{}}"></gb-book-info>
-              </template>
-            </div>
-          </template>
-        </div>
-      </div>
-      
-      <div class="loading-icon" loading?="{{loading}}"></div>
-      
-      <polymer-grid-layout nodes="{{layoutNodes}}" layout="{{layout}}"></polymer-grid-layout>
-      
-      <polymer-jsonp id="bookSearch" 
-          url="https://www.googleapis.com/books/v1/volumes?q={{query}}&printType={{bookTypeSelected}}&maxResults=40&callback=" 
-          on-polymer-response="{{gotBooks}}"></polymer-jsonp>
-    </template>
-    <script>
-      Polymer('gb-finder', {
-        query: '',
-        bookTypeSelected: 'all',
-        ready: function() {
-          this.layoutNodes = [this.$.toolbar, this.$.main];
-          this.layout = [[1],[2]];
-        },
-        bookTypeSelectedChanged: function() {
-          this.async('search');
-        },
-        search: function() {
-          this.loading = true;
-          this.$.bookSearch.go();
-        },
-        gotBooks: function(e, detail) {
-          this.loading = false;
-          this.$.bookSelector.selected = null;
-          this.$.main.scrollTop = 0;
-          var bs = detail.response.items;
-          this.books = [[], []];
-          bs && bs.forEach(function(b, i) {
-            this.books[i & 1].push(b);
-          }, this);
-        }
-      });
-    </script>
-  </polymer-element>
-  
-  <polymer-element name="gb-book-info" noscript attributes="book active">
-    <template>
-      <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
-      <style>
-        :host {
-          display: inline-block;
-        }
-        polymer-ui-card {
-          display: block;
-          width: 410px;
-          min-height: 195px;
-          padding: 20px;
-          margin: 20px;
-        }
-        .thumbnail {
-          width: 128px;
-          height: 195px;
-        }
-        .info {
-          height: 195px;
-          padding-left: 10px;
-          color: #555;
-        }
-        .title {
-          font-size: 16px;
-          font-weight: 600;
-        }
-        .authors {
-          padding-top: 10px;
-          opacity: 0.8;
-        }
-        .publisher {
-          opacity: 0.6;
-        }
-        .more-info {
-          padding-top: 20px;
-          color: #666;
-        }
-        .link-icon-container {
-          position: relative;
-        }
-        .link-icon-container > * {
-          position: absolute;
-          top: 0;
-          right: 0;
-          z-index: 1;
-        }
-        polymer-ui-ratings {
-          pointer-events: none;
-        }
-      </style>
-      
-      <polymer-ui-card>
-        <div flexbox>
-          <img class="thumbnail" src="{{book.volumeInfo.imageLinks.thumbnail}}">
-          <div class="info" flex v-flexbox>
-            <div class="title">{{book.volumeInfo.title}}</div>
-            <div class="authors">{{book.volumeInfo.authors}}</div>
-            <div flex></div>
-            <div class="publisher">{{book.volumeInfo.publisher}}</div>
-          </div>
-        </div>
-        
-        <polymer-ui-collapsible class="more-info" active="{{active}}">
-          <div class="link-icon-container">
-            <a target="_blank" href="{{book.volumeInfo.infoLink}}">
-              <polymer-ui-icon icon="shortcut"></polymer-ui-icon>
-            </a>
-          </div>
-          <gb-info-field label="Description" value="{{book.volumeInfo.description}}"></gb-info-field>
-          <gb-info-field label="Categories" value="{{book.volumeInfo.categories}}"></gb-info-field>
-          <gb-info-field label="Published Date" value="{{book.volumeInfo.publishedDate}}"></gb-info-field>
-          <gb-info-field label="Page Count" value="{{book.volumeInfo.pageCount}}"></gb-info-field>
-          <gb-info-field label="Price" value="{{book.saleInfo.listPrice.amount}}" hideValue>
-            {{book.saleInfo.listPrice.amount}} {{book.saleInfo.listPrice.currencyCode}}
-          </gb-info-field>
-          <gb-info-field label="Ratings" value="{{book.volumeInfo.averageRating}}" hideValue>
-            <polymer-ui-ratings value="{{book.volumeInfo.averageRating}}"></polymer-ui-ratings>
-            ( {{book.volumeInfo.ratingsCount}} reviews )
-          </gb-info-field>
-        </polymer-ui-collapsible>
-      </polymer-ui-card>
-    </template>
-  </polymer-element>
-  
   <polymer-element name="gb-info-field" attributes="label value hideValue">
     <template>
       <style>
@@ -250,7 +46,378 @@
     </script>
   </polymer-element>
   
-  <gb-finder class="polymer-ui-fit" theme="polymer-ui-light-theme"></gb-finder>
+  <polymer-element name="gb-toggle-icon" attributes="active src activeSrc" on-tap="{{toggle}}">
+    <template>
+      <polymer-ui-icon id="icon"></polymer-ui-icon>
+    </template>
+    <script>
+      Polymer('gb-toggle-icon', {
+        active: false,
+        ready: function() {
+          this.activeChanged();
+        },
+        activeChanged: function() {
+          this.$.icon.src = this.resolvePath(
+              this.active ? this.activeSrc : this.src);
+        },
+        toggle: function(e) {
+          this.active = !this.active;
+          e.stopPropagation();
+        }
+      });
+    </script>
+  </polymer-element>
+  
+  <polymer-element name="gb-book-info" attributes="book active hideFavoriteIcon">
+    <template>
+      <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
+      <style>
+        .thumbnail {
+          width: 128px;
+          height: 195px;
+        }
+        .info {
+          height: 195px;
+          padding-left: 10px;
+          color: #555;
+        }
+        .title {
+          font-size: 16px;
+          font-weight: 600;
+        }
+        .authors {
+          padding-top: 10px;
+          opacity: 0.8;
+        }
+        .publisher {
+          opacity: 0.6;
+        }
+        gb-toggle-icon {
+          padding-left: 10px;
+        }
+        .more-info {
+          padding-top: 20px;
+          color: #666;
+        }
+        .link-icon-container {
+          position: relative;
+        }
+        .link-icon-container > * {
+          position: absolute;
+          top: 0;
+          right: 0;
+          z-index: 1;
+        }
+        polymer-ui-ratings {
+          pointer-events: none;
+        }
+      </style>
+      
+      <div flexbox>
+        <img class="thumbnail" src="{{book.volumeInfo.imageLinks.thumbnail}}">
+        <div class="info" flex v-flexbox>
+          <div class="title" flexbox>
+            <div flex>{{book.volumeInfo.title}}</div>
+            <gb-toggle-icon src="assets/ic_favorite_darkalt.png" 
+                activeSrc="assets/ic_favorite_darkreg.png" hidden?="{{hideFavoriteIcon}}" 
+                on-tap="{{toggleFavorite}}"></gb-toggle-icon>
+          </div>
+          <div class="authors">{{book.volumeInfo.authors}}</div>
+          <div flex></div>
+          <div class="publisher">{{book.volumeInfo.publisher}}</div>
+        </div>
+      </div>
+      
+      <polymer-ui-collapsible class="more-info" active="{{active}}">
+        <div class="link-icon-container">
+          <a target="_blank" href="{{book.volumeInfo.infoLink}}">
+            <polymer-ui-icon icon="shortcut" theme="polymer-ui-light-theme"></polymer-ui-icon>
+          </a>
+        </div>
+        <gb-info-field label="Description" value="{{book.volumeInfo.description}}"></gb-info-field>
+        <gb-info-field label="Categories" value="{{book.volumeInfo.categories}}"></gb-info-field>
+        <gb-info-field label="Published Date" value="{{book.volumeInfo.publishedDate}}"></gb-info-field>
+        <gb-info-field label="Page Count" value="{{book.volumeInfo.pageCount}}"></gb-info-field>
+        <gb-info-field label="Price" value="{{book.saleInfo.listPrice.amount}}" hideValue>
+          {{book.saleInfo.listPrice.amount}} {{book.saleInfo.listPrice.currencyCode}}
+        </gb-info-field>
+        <gb-info-field label="Ratings" value="{{book.volumeInfo.averageRating}}" hideValue>
+          <polymer-ui-ratings value="{{book.volumeInfo.averageRating}}"></polymer-ui-ratings>
+          ( {{book.volumeInfo.ratingsCount}} reviews )
+        </gb-info-field>
+      </polymer-ui-collapsible>
+    </template>
+    <script>
+      Polymer('gb-book-info', {
+        hideFavoriteIcon: false,
+        toggleFavorite: function(e, detail, sender) {
+          this.fire('gb-book-favorite-toggle', 
+              {book: this.book, active: sender.active});
+        }
+      });
+    </script>
+  </polymer-element>
+  
+  <polymer-element name="gb-books-view" attributes="books selected hideFavoriteIcon swipeable">
+    <template>
+      <style>
+        :host {
+          display: block;
+        }
+        .book-lists {
+          display: block;
+          width: 960px;
+          margin: 0 auto;
+        }
+        .book-list {
+          display: inline-block;
+          width: 50%;
+          float: left;
+          vertical-align: top;
+          padding: 10px 0;
+        }
+        polymer-ui-card {
+          display: inline-block;
+          width: 420px;
+          min-height: 195px;
+          padding: 20px;
+          margin: 10px;
+        }
+        gb-book-info {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+        @media screen and (max-width: 1000px) {
+          .book-lists {
+            width: 480px;
+          }
+          .book-list {
+            width: 100%;
+            padding: 0;
+          }
+        }
+        @media screen and (max-width: 500px) {
+          .book-lists {
+            width: auto;
+          }
+          .book-list {
+            display: block;
+            float: none;
+          }
+          polymer-ui-card {
+            display: block;
+            width: auto;
+          }
+        }
+      </style>
+      
+      <polymer-selector target="{{$.bookLists}}" multi itemsSelector="gb-book-info" 
+          selected="{{selected}}"></polymer-selector>
+
+      <div id="bookLists" class="book-lists">
+        <template repeat="{{column in columns}}">
+          <div class="book-list">
+            <template repeat="{{book in column}}">
+              <polymer-ui-card swipeable="{{swipeable}}" on-polymer-card-swipe-away="{{swipeAway}}">
+                <gb-book-info book="{{book}}" hideFavoriteIcon="{{hideFavoriteIcon}}"></gb-book-info>
+              </polymer-ui-card>
+            </template>
+          </div>
+        </template>
+      </div>
+    </template>
+    <script>
+      Polymer('gb-books-view', {
+        swipeable: false,
+        hideFavoriteIcon: false,
+        booksChanged: function() {
+          this.columns = [[], []];
+          this.books && this.books.forEach(function(b, i) {
+            this.columns[i & 1].push(b);
+          }, this);
+        },
+        swipeAway: function(e, detail, sender) {
+          this.fire('gb-book-favorite-remove', 
+              {book: sender.templateInstance.model.book});
+        }
+      })
+    </script>
+  </polymer-element>
+  
+  <polymer-element name="gb-app">
+    <template>
+      <style>
+        #sidebar {
+          width: 200px;
+          -webkit-transition: left ease-in .1s;
+          transition: left ease-out .1s;
+          -webkit-transition-property: left;
+          transition-property: left;
+          background: #fff;
+          z-index: 2;
+        }
+        .sidebar-title {
+          color: #999;
+          padding: 0 14px;
+        }
+        .sidebar-menu-selected {
+          color: #4285f4;
+          opacity: 1;
+        }
+        #scrim {
+          background-color: rgba(128, 128, 128, 0.5);
+          z-index: 1;
+        }
+        polymer-ui-toolbar#toolbar {
+          background: #4285f4 !important;
+          z-index: 1 !important;
+        }
+        polymer-ui-field {
+          background: white;
+          height: 40px;
+          width: 300px;
+          margin: 10px;
+        }
+        polymer-ui-menu-button {
+          padding-right: 10px;
+        }
+        polymer-ui-pages {
+          display: block;
+          height: 100%;
+        }
+        polymer-ui-pages > * {
+          display: block;
+          background: #f2f2f2;
+          overflow: auto;
+        }
+        .loading-icon {
+          display: none;
+          position: absolute;
+          bottom: 50%;
+          left: 50%;
+          width: 160px;
+          height: 160px;
+          margin: -80px;
+          background: url(assets/loading.png);
+          z-index: 1;
+        }
+        .loading-icon[loading] {
+          display: block;
+        }
+        polymer-ui-menu-button ^^ polymer-ui-icon {
+          /* hack */
+          background-position: -72px -864px !important;
+        }
+        [hidden] {
+          visibility: hidden;
+        }
+      </style>
+      
+      <polymer-ui-toolbar id="toolbar" offscreen="basement">
+        <polymer-ui-icon-button icon="menu" on-tap="{{toggleMenu}}" theme="polymer-ui-dark-theme"></polymer-ui-icon-button>
+        <div flex></div>
+        <polymer-ui-field hidden?="{{viewSelected}}">
+          <polymer-ui-icon icon="search" theme="polymer-ui-light-theme"></polymer-ui-icon>
+          <input placeholder="Search Books" value="{{query}}" flex x-webkit-speech on-change="{{search}}">
+        </polymer-ui-field>
+        <polymer-ui-menu-button selected="{{bookTypeSelected}}" halign="right" icon="filter" theme="polymer-ui-light-theme" hidden?="{{viewSelected}}">
+          <polymer-ui-menu-item name="all" label="All"></polymer-ui-menu-item>
+          <polymer-ui-menu-item name="books" label="Books"></polymer-ui-menu-item>
+          <polymer-ui-menu-item name="magazines" label="Magazines"></polymer-ui-menu-item>
+        </polymer-ui-menu-button>
+        <div flex></div>
+      </polymer-ui-toolbar>
+      
+      <div id="main" offscreen="basement">
+        <polymer-ui-pages selected="{{viewSelected}}">
+          <gb-books-view id="searchView" books="{{books}}" on-gb-book-favorite-toggle="{{toggleFavorite}}"></gb-books-view>
+          <gb-books-view id="favoritesView" books="{{favorites}}" hideFavoriteIcon swipeable 
+              on-gb-book-favorite-remove="{{removeFavorite}}"></gb-books-view>
+        </polymer-ui-pages>
+      </div>
+      
+      <div id="sidebar" offscreen="left" theme="polymer-ui-dark-icon">
+        <polymer-ui-toolbar><div class="sidebar-title">Books</div></polymer-ui-toolbar>
+        <polymer-ui-menu selected="{{viewSelected}}" on-polymer-activate="{{menuActivate}}" selectedClass="sidebar-menu-selected">
+          <polymer-ui-menu-item label="Search" xicon="search"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Favorites" xicon="favorite"></polymer-ui-menu-item>
+        </polymer-ui-menu>
+      </div>
+      
+      <div id="scrim" on-tap="{{toggleMenu}}" offscreen="right"></div>
+      
+      <div class="loading-icon" loading?="{{loading}}"></div>
+      
+      <polymer-grid-layout nodes="{{layoutNodes}}" layout="{{layout}}"></polymer-grid-layout>
+      
+      <polymer-jsonp id="bookSearch" 
+          url="https://www.googleapis.com/books/v1/volumes?q={{query}}&printType={{bookTypeSelected}}&maxResults=40&callback=" 
+          on-polymer-response="{{gotBooks}}"></polymer-jsonp>
+      
+      <polymer-localstorage name="book-search" value="{{favorites}}"></polymer-localstorage>
+    </template>
+    <script>
+      Polymer('gb-app', {
+        viewSelected: 0,
+        query: '',
+        bookTypeSelected: 'all',
+        layouts: {
+          main:[
+            [1, 1],
+            [2, 2],
+            [2, 2]
+          ],
+          menu: [
+            [3, 4],
+            [3, 4],
+            [3, 4]
+          ]
+        },
+        ready: function() {
+          this.layoutNodes = [this.$.toolbar, this.$.main, 
+                              this.$.sidebar, this.$.scrim];
+          this.toggleMenu();
+        },
+        toggleMenu: function() {
+          this.layout = this.layout === this.layouts.main ? 
+              this.layouts.menu : this.layouts.main;
+        },
+        menuActivate: function() {
+          this.async('toggleMenu');
+        },
+        bookTypeSelectedChanged: function() {
+          this.async('search');
+        },
+        search: function() {
+          this.loading = true;
+          this.$.bookSearch.go();
+        },
+        gotBooks: function(e, detail) {
+          this.loading = false;
+          this.$.searchView.selected = null;
+          this.$.searchView.scrollTop = 0;
+          this.books = detail.response.items;
+        },
+        toggleFavorite: function(e, detail) {
+          this.favorites = this.favorites || [];
+          if (detail.active) {
+            this.favorites.push(detail.book);
+          } else {
+            var i = this.favorites.indexOf(detail.book);
+            if (i >= 0) {
+              this.favorites.splice(i, 1);
+            }
+          }
+        },
+        removeFavorite: function(e, detail, sender) {
+          this.toggleFavorite(e, {active: false, book: detail.book});
+        }
+      });
+    </script>
+  </polymer-element>
+  
+  <gb-app class="polymer-ui-fit"></gb-app>
   
 </body>
 </html>
