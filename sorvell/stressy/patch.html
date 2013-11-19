@@ -1,0 +1,13 @@
+<script>
+  (function() {
+    var info = {prepared: 0};
+    var base = Polymer.api.instance.base;
+    var prepareElement = base.prepareElement;
+    base.prepareElement = function() {
+      info.prepared++;
+      prepareElement.call(this);
+    }
+
+    window.elementInfo = info;
+  })();
+</script>

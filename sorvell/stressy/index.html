@@ -1,0 +1,91 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer: stressy</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+    }
+  </style>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <!-- elements -->
+  <link rel="import" href="../../../components/polymer/polymer.html">
+  <link rel="import" href="patch.html">
+  <link rel="import" href="../../../components/polymer-elements/elements.html">
+  <link rel="import" href="../../../components/polymer-ui-elements/elements.html">
+  <!-- metadata -->
+  <link rel="import" href="../../../components/x-meta/x-meta.html">
+  <link rel="import" href="../../../components/polymer-elements/metadata.html">
+  <link rel="import" href="../../../components/polymer-ui-elements/metadata.html">
+</head>
+<body>
+  <elt-list></elt-list>
+
+  <polymer-element name="meta-archetype" attributes="meta">
+    <template></template>
+    <script>
+      Polymer('meta-archetype', {
+        meta: null,
+        metaChanged: function () {
+          if (this.meta) {
+            var h = document.createElement('h3');
+            h.innerText = this.meta.id;
+            this.shadowRoot.appendChild(h);
+            if (this.meta.archetype) {
+              var d = this.meta.archetype.content.cloneNode(true);
+              this.shadowRoot.appendChild(d);
+            }
+          }
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="elt-list">
+    <template>
+      <style>
+        meta-archetype {
+          display: block;
+          padding: 20px;
+          border-bottom: 1px solid black;
+        }
+      </style>
+      <x-meta id="meta" list="{{list}}"></x-meta>
+      <template repeat="{{bigList}}">
+        <template if="{{archetype}}">
+          <meta-archetype meta="{{}}"></meta-archetype>
+        </template>
+      </template>
+    </template>
+    <script>
+      (function() {
+        var flags = {};
+        location.search.slice(1).split('&').forEach(function(o) {
+          o = o.split('=');
+          o[0] && (flags[o[0]] = o[1] || true);
+        });
+        var count = flags.count || 5;
+
+        Polymer('elt-list', {
+          count: count,
+          listChanged: function() {
+            this.bigList = this.bigList || [];
+            for (var i=0; i<this.count; i++) {
+              this.bigList = this.bigList.concat(this.list);
+            }
+            var start = Date.now();
+            this.onMutation(this.shadowRoot, function() {
+              var t = (Date.now() - start) / 1000;
+              var p = elementInfo.prepared;
+              console.log('Created ' + this.bigList.length + ' archetypes in ' +
+                  t + ' seconds. Prepared ' + p + ' elements (' + 
+                  (p / t).toFixed(2) + '/second)');
+            });
+          }
+        });
+      })();
+    </script>
+  </polymer-element>
+</body>
+</html>
