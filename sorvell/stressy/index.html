@@ -8,16 +8,14 @@
       font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
     }
   </style>
-  <script src="../../../components/platform-dev/platform.js"></script>
+  <script src="components/platform-dev/platform.js"></script>
   <!-- elements -->
-  <link rel="import" href="../../../components/polymer/polymer.html">
+  <link rel="import" href="components/polymer/polymer.html">
   <link rel="import" href="patch.html">
-  <link rel="import" href="../../../components/polymer-elements/elements.html">
-  <link rel="import" href="../../../components/polymer-ui-elements/elements.html">
+  <link rel="import" href="components/polymer-ui-elements/elements.html">
   <!-- metadata -->
-  <link rel="import" href="../../../components/x-meta/x-meta.html">
-  <link rel="import" href="../../../components/polymer-elements/metadata.html">
-  <link rel="import" href="../../../components/polymer-ui-elements/metadata.html">
+  <link rel="import" href="components/x-meta/x-meta.html">
+  <link rel="import" href="components/polymer-ui-elements/metadata.html">
 </head>
 <body>
   <elt-list></elt-list>
@@ -53,9 +51,7 @@
       </style>
       <x-meta id="meta" list="{{list}}"></x-meta>
       <template repeat="{{bigList}}">
-        <template if="{{archetype}}">
-          <meta-archetype meta="{{}}"></meta-archetype>
-        </template>
+        <meta-archetype meta="{{}}"></meta-archetype>
       </template>
     </template>
     <script>
@@ -75,7 +71,9 @@
               this.bigList = this.bigList.concat(this.list);
             }
             var start = Date.now();
+            console.profile();
             this.onMutation(this.shadowRoot, function() {
+              console.profileEnd();
               var t = (Date.now() - start) / 1000;
               var p = elementInfo.prepared;
               console.log('Created ' + this.bigList.length + ' archetypes in ' +

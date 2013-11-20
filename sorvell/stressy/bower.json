@@ -1,0 +1,9 @@
+{
+  "name": "stressy",
+  "private": true,
+  "dependencies": {
+    "platform-dev": "Polymer/platform-dev#master",
+    "x-meta": "Polymer/x-meta#master",
+    "polymer-ui-elements": "Polymer/polymer-ui-elements#master"
+  }
+}
