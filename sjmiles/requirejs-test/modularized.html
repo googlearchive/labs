@@ -1,0 +1,17 @@
+﻿<link rel="import" href="components/polymer/polymer.html">
+
+<polymer-element name='x-foo'>
+  <template>
+    foo is {{foo.color}}
+  </template>
+</polymer-element>
+
+<script>
+  requirejs(['modules/polymer', 'modules/foo'], 
+    function(polymer, foo) {
+      polymer('x-foo', {
+        foo: foo
+      }
+    );
+  });
+</script>
