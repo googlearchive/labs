@@ -1,0 +1,30 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer: syntax</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  <x-test></x-test>
+  <polymer-element name="x-test">
+    <template>
+      <div>foo: {{foo}}, {{foo | fomat('zap')}}</div>
+    </template>
+    <script>
+      Polymer('x-test', {
+        foo: '5',
+        created: function() {
+          this.syntax = new PolymerExpressions();
+          this.syntax.filters.fomat = {
+            toDOM: function() {
+              return 'dom!';
+            }
+          }
+        }
+      });
+    </script>
+  </polymer-element>
+</body>
+</html>

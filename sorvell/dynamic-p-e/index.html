@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>dynamic polymer-element</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  <x-echo echo="0"></x-echo>
+
+  <template id="peTemplate">
+    <polymer-element name="{{name}}" attributes="echo">
+      <template>
+        <style>
+        :host {
+          display: block;
+          border: 1px solid black;
+          }
+        </style>
+        {{echo}} <button on-click="{{inc}}">echo++</button>
+      </template>
+      <script>
+        Polymer('{{name}}', {
+          inc: function() {
+            this.echo++;
+          }
+        });
+      </script>
+    </polymer-element>
+  </template>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var t = document.getElementById('peTemplate');
+      var model = {name: 'x-echo'};
+      document.body.appendChild(t.createInstance(model));
+    });
+  </script>
+</body>
+</html>

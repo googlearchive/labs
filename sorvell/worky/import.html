@@ -1,0 +1,46 @@
+<polymer-element name="x-nog">
+  <template>
+    I am x-nog!
+    <template bind>
+      1
+    </template>
+  </template>
+  <script>
+    Polymer('x-nog', {
+      nog: true,
+      registerCallback: function() {
+        console.log('x-nog registered')
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="x-foo">
+  <template>
+    <div>I am x-foo!</div>
+    <x-nog></x-nog>
+  </template>
+  <script>
+    Polymer('x-foo', {
+      foo: true,
+      registerCallback: function() {
+        console.log('x-foo registered')
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="x-bar">
+  <template>
+    <div>I am x-bar and in me is:</div>
+    <x-foo></x-foo>
+  </template>
+  <script>
+    Polymer('x-bar', {
+      bar: true,
+      registerCallback: function() {
+        console.log('x-bar registered')
+      }
+    });
+  </script>
+</polymer-element>

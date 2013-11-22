@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link href="../../../components/polymer/polymer.html" rel="import">
+</head>
+<body>
+  <polymer-element name="x-host" noscript>
+    <template>
+      <style>
+        :host {
+          display: block;
+        }
+        :host(.bar) {
+          color: blue;
+        }
+        :host(.baz:host) {
+          color: red;
+        }
+      </style>
+      <content></content>
+    </template>
+  </polymer-element>
+  <x-host>Hi!</x-host>
+  <div class="bar">
+    <x-host>I should be blue</x-host>
+  </div>
+  <x-host class="bar">I should also be blue</x-host>
+  <x-host class="baz">I should be red</x-host>
+  <div class="baz">
+    <x-host>I should not be red</x-host>
+  </div>
+</body>
+</html>

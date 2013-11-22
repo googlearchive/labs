@@ -1,0 +1,62 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer: syntax</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  <x-test></x-test>
+
+  <polymer-element name="x-echo" attributes="echo">
+    <template>
+      <style>:host {
+        display: block;
+        border: 1px solid black;
+        }
+      </style>
+      {{echo}}
+      <button on-click="{{inc}}">echo++</button>
+    </template>
+    <script>
+      Polymer('x-echo', {
+        inc: function() {
+          this.echo++;
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="x-test">
+    <template>
+      <div>foo: {{foo}}</div>
+      <button on-click="{{addBoundElement}}">bind element</button>
+      <button on-click="{{addBoundTemplate}}">bind template</button>
+      <button on-click="{{inc}}">foo++</button>
+    </template>
+
+    <template id="dynamic">
+      <div>dynamic html with bindings... foo: {{foo}}</div>
+    </template>
+
+    <script>
+      Polymer('x-test', {
+        foo: '5',
+        addBoundElement: function() {
+          var d = document.createElement('x-echo');
+          d.bind('echo', this, 'foo');
+          this.shadowRoot.appendChild(d);
+        },
+        addBoundTemplate: function() {
+          var template = this.element.querySelector('#dynamic');
+          this.shadowRoot.appendChild(template.createInstance(this, this.syntax));
+        },
+        inc: function() {
+          this.foo++;
+        }
+      });
+    </script>
+  </polymer-element>
+</body>
+</html>
