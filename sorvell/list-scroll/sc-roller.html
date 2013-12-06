@@ -1,0 +1,82 @@
+<link rel="import" src="../../../components/polymer/polymer.html">
+<polymer-element name="sc-roller" attributes="target">
+  <script>
+    Polymer('sc-roller', {
+      trackCount: 5,
+      distance: 200,
+      time: 0.2,
+      //distance: 20000,
+      //time: 2,
+      ready: function() {
+        this.listeners = {
+          pointerdown: this.down.bind(this),
+          track: this.track.bind(this),
+          pointerup: this.up.bind(this)/*,
+          tap: this.tap.bind(this)*/
+        }
+      },
+      targetChanged: function(oldValue) {
+        if (oldValue) {
+          for (var i in this.listeners) {
+            oldValue.removeEventListener(i, this.listeners[i], false);
+          }
+        }
+        for (var i in this.listeners) {
+            this.target.addEventListener(i, this.listeners[i], false);
+          }
+      },
+      down: function(e) {
+        e.preventDefault();
+        this.tracks = [];
+        if (this.player) {
+          this.player.paused = true;
+        }
+      },
+      track: function(e) {
+        this.tracking = true;
+        this.effectScroll(-e.ddy);
+        this.tracks.push(e);
+        if (this.tracks.length > this.trackCount) {
+          this.tracks.shift();
+        }
+        this.trackDirection = e.yDirection ? e.yDirection : this.trackDirection;
+        //console.log(e);
+      },
+      up: function(e) {
+        if (!this.tracking || this.tracks.length < 2) {
+          return;
+        }
+        this.tracking = false;
+        e.preventTap = true;
+        // tracking would handle a 'speed' calc.
+        var et = this.tracks[this.tracks.length-1];
+        var lt = this.tracks[this.tracks.length-2];
+        var v = Math.abs(et.ddy / (et.timeStamp - lt.timeStamp));
+        var d = v * this.distance;
+        var t = v * this.time;
+        var self = this;
+        var last = 0;
+        //console.log('v', v, 't', t, 'd', d);
+        this.player = document.timeline.play(new Animation(this.target, {
+          sample: function(e, f, target) {
+            var n = d * e;
+            self.effectScroll((n - last) * -self.trackDirection);
+            last = n;
+          }
+        }, {duration: t, easing: 'cubic-bezier(0,0.25,0.15,1)'}));
+      },
+      tap: function() {
+        var self = this;
+        this.player = document.timeline.play(new Animation(this.target, {
+          sample: function(e, f, target) {
+            self.effectScroll(5000);
+          }
+        }, {duration: 100}));
+      },
+      effectScroll: function(delta) {
+        this.target.scrollOffset += delta;
+        this.target.scroll();
+      }
+    });
+  </script>
+</polymer-element>

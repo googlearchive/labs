@@ -1,0 +1,104 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>scrolly</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" src="sc-roller.html">
+  <link rel="import" src="../../../components/polymer-list/polymer-list.html">
+  <link rel="import" src="../../../components/polymer-animation/polymer-animation.html">
+  <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      
+      list-test {
+        display: block;
+        max-width: 600px;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .stuff {
+        min-height: 60px;
+        background: red !important;
+        border-bottom: 1px solid black;
+      }
+    </style>
+  </head>
+  <body unresolved>
+    <list-test></list-test>
+
+    <polymer-element name="scrolly-list" extends="polymer-list">
+      <template>
+        <sc-roller target="{{}}"></sc-roller>
+        <shadow></shadow>
+      </template>
+      <script>
+        Polymer('scrolly-list', {
+          setupScrollListener: function() {},
+          // argh, preventTap not working
+          tapAction: function() {}
+        });
+      </script>
+    </polymer-element>
+
+    <polymer-element name="list-test">
+      <template>
+        <style>
+          scrolly-list {
+            height: 100%;
+          }
+
+          .header {
+            background: gray;
+            text: black;
+            font-weight: bold;
+          }
+
+          .item {
+            box-sizing: border-box;
+            height: 80px;
+            line-height: 80px;
+            padding: 0 20px;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+            background: #333;
+            color: white;
+          }
+
+          .polymer-selected {
+            background: whitesmoke;
+            color: black;
+          }
+        </style>
+        <scrolly-list id="list" data="{{data}}" fixedHeight on-polymer-select="{{selectAction}}">
+          <template>
+            <div class="item {{selected}}">Index: {{index}}</div>
+          </template>
+
+        </scrolly-list>
+        <template>
+            <div hidden?="{{!item.header}}" class="header">{{item.header}}: {{item.index}}</div>
+            <div class="item {{selected}}">Index: {{index}}</div>
+          </template>
+      </template>
+      <script>
+        Polymer('list-test', {
+          ready: function() {
+            var data = [];
+            for (var i=0, o; i< 50000; i++) {
+              o = {index: i};
+              if ((i+1) % 10 === 0) {
+                o.header = 'Header';
+              }
+              data.push(o);
+            }
+            this.data = data;
+          }
+        })
+      </script>
+    </polymer-element>
+</body>
+</html>
