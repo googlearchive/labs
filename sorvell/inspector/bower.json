@@ -1,0 +1,8 @@
+{
+  "name": "inspector",
+  "private": true,
+  "dependencies": {
+    "x-inspector": "Polymer/x-inspector#master",
+    "polymer-animation": "Polymer/polymer-animation#master"
+  }
+}

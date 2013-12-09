@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <title>animation-inspector</title>
+    <script src="components/platform/platform.js"></script>
+    <link rel="import" href="components/polymer-animation/web-animations.html">
+    <link rel="import" href="animation-inspector.html">
+    <style>
+      animation-inspector {
+        height: 500px;
+        width: 300px;
+      }
+
+      #host {
+        border-radius: 50px;
+        height: 50px;
+        width: 50px;
+        background: orange;
+        text-align: center;
+        line-height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="play()">Play</button>
+    <br><br>
+    <div id="host">Hi</div>
+    <br><br>
+    <animation-inspector></animation-inspector>
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+        // make an animation
+        var animation = new Animation(document.querySelector('#host'),
+          {transform: 'translate3d(500px, 0px, 0px)'},
+          {iterations: 2, duration: 1, easing: "ease-out"}
+        );
+        // inspect it!
+        var inspector = document.querySelector('animation-inspector');
+        inspector.animation = animation;
+        // play it...
+        var play = function() {
+          document.timeline.play(animation);
+        }
+        window.play = play;
+      });
+    </script>
+   </body>
+</html>

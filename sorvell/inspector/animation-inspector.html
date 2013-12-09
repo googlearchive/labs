@@ -1,0 +1,50 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="components/polymer/polymer.html">
+<link rel="import" href="components/x-inspector/x-inspector.html">
+
+<polymer-element name="animation-inspector" attributes="animation">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+        border: 1px solid silver;
+        padding: 8px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+    <div id="interior">
+      <template repeat="{{properties}}">
+        <x-property-inspector property="{{}}" nobind></x-property-inspector>
+      </template>
+    </div>
+    <x-meta id="timingMeta">
+      <property name="delay"></property>
+      <property name="direction" kind="select" options="normal, reverse, alternate, alternate-reverse"></property>
+      <property name="duration"></property>
+      <property name="easing" kind="select" options="ease, ease-in, ease-out, ease-in-out, linear"></property>
+      <property name="fill" kind="select" options="none, forwards, backwards, both, auto"></property>
+      <property name="iterations"></property>
+      <property name="playbackRate"></property>
+    </x-meta>
+  </template>
+  <script>
+    Polymer('animation-inspector', {
+      properties: null,
+      animationChanged: function() {
+        if (this.animation) {
+          // TODO: just doing some timing properties now, but can extend
+          // to do whatever properties make sense
+          this.properties = Reflection.object(this.animation.specified,
+              this.$.timingMeta.properties);
+        }
+      }
+    });
+  </script>
+</polymer-element>
