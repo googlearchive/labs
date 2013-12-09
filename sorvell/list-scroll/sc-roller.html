@@ -21,6 +21,7 @@
             oldValue.removeEventListener(i, this.listeners[i], false);
           }
         }
+        this.target.setAttribute('touch-action', 'none');
         for (var i in this.listeners) {
             this.target.addEventListener(i, this.listeners[i], false);
           }
