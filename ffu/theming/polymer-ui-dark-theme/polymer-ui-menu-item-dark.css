@@ -1,0 +1,20 @@
+/*
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+body ^^ polymer-ui-menu-item.polymer-ui-dark-theme {
+  color: #b3b3b3;
+}
+  
+body ^^ polymer-ui-menu-item.polymer-ui-dark-theme:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body ^^ polymer-ui-menu-item.polymer-ui-dark-theme.polymer-selected, 
+body ^^ polymer-ui-menu-item.polymer-ui-dark-theme[active] {
+  background-color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}

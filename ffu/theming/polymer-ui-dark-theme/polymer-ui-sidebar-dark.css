@@ -1,0 +1,12 @@
+/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+body ^^ polymer-ui-sidebar.polymer-ui-dark-theme {
+  background: -webkit-linear-gradient(-60deg, #3d3d3d, #353535);
+  background: -moz-linear-gradient(-60deg, #3d3d3d, #353535);
+  background: -ms-linear-gradient(-60deg, #3d3d3d, #353535);
+  color: #ededed;
+}
