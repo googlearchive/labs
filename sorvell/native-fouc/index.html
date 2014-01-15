@@ -1,0 +1,31 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer: test</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="elements/elements.html">
+</head>
+<body Xunresolved>
+  <!-- <template> -->
+   <x-fouc>
+    <div>Can you seeeeee me?</div>
+   </x-fouc>
+  <!-- </template> -->
+  <section></section>
+  <section style="border: 10px solid red;"></section>
+  
+  <script>
+    function go() {
+      var template = document.querySelector('template');
+      var dom = template.createInstance();
+      var h = document.querySelector('section');
+      h.appendChild(dom);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      //setTimeout(go, 1);
+    });
+  </script>
+</body>
+</html>
