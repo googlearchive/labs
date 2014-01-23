@@ -1,0 +1,22 @@
+<link rel="import" href="../../../../components/polymer/polymer.html">
+
+<!-- <link rel="stylesheet" href="sheet.css"> -->
+
+<polymer-element name="x-fouc">
+  <template>
+    <link rel="stylesheet" href="sheet.css">
+    <template repeat="{{boxes}}">
+      <div>Box {{index}}</div>
+    </template>
+  </template>
+  <script>
+    Polymer('x-fouc', {
+      boxes: [
+        {index: 1},
+        {index: 2},
+        {index: 3},
+        {index: 4}
+      ]
+    });
+  </script>
+</polymer-element>

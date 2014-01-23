@@ -2,24 +2,38 @@
 <html>
 <head>
   <title>importz load</title>
+  <link rel="stylesheet" href="sheet.css" onload="loaded(this)">
+  <style onload="loaded(this)">
+    @import 'sheet.css';
+  </style>
   <script>
-    new MutationObserver(function() {
-      var i$ = document.querySelectorAll('link[rel=import]');
-      for (var i=0, p; i< i$.length; i++) {
-        p = i$[i];
-        console.log('added', p);
-        if (p.import) {
-          console.log('import already loaded!', p.import);
-        } else {
-          p.addEventListener('load', function() {
-            console.log('import load event fired!');
-          })
-        }
-      }
-    }).observe(document, {childList: true, subtree: true});    
-  </script>
-  <link rel="import" href="import1.html">
-  <link rel="import" href="import2.html">
-</head>
+    function loaded(element) {
+      console.log(element, element.sheet);
+    }
 
+    /*
+    window.addEventListener('load', function() {
+      //console.log('dom content loaded!');
+      //testStyle();
+
+      var l = document.createElement('link');
+      l.rel = 'import';
+      l.href = 'import1.html';
+      l.onload = function() {
+        console.log('import1 loaded');
+        testStyle();
+      }
+      document.body.appendChild(l);
+    });
+*/
+    function testStyle() {
+      console.log('readyState', document.readyState);
+      var c = getComputedStyle(document.querySelector('.red')).backgroundColor;
+      console.log('div is', c);
+    }
+  </script>
+</head>
+<body>
+  <div class="red">red?</div>
+</body>
 </html>

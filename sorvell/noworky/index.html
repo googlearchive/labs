@@ -1,0 +1,25 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer: no-worky</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" src="../../../components/polymer/polymer.html">
+  <!-- <link rel="import" src="../../../components/polymer/polymer.js"> -->
+</head>
+<body unresolved>
+   <x-hi>Hi =(</x-hi>
+ 
+  <polymer-element name="x-hi">
+    <template>
+      Hi =)
+    </template>
+    <script>
+      Polymer('x-hi', {
+        happy: true
+      });
+    </script>
+  </polymer-element>
+
+</body>
+</html>

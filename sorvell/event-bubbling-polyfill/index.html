@@ -1,0 +1,32 @@
+
+<!doctype html>
+<html>
+<head>
+  <script src="../../../components/platform-dev/platform.js"></script>
+</head>
+<body>
+  <host>
+    <child></child>
+  </host>
+  <script>
+    var host = document.querySelector('host');
+    var root = host.createShadowRoot();
+    root.innerHTML = 'waiting...';
+
+    var child = document.querySelector('child');
+    host.addEventListener('test', function(e) {
+      host.shadowRoot.innerHTML = e.detail;
+    });
+
+    function send(msg) {
+      child.dispatchEvent(new CustomEvent('test', {bubbles: true, detail: msg}));
+    }
+
+    send('sync event received');
+
+    setTimeout(function() {
+      send('async event received');
+    }, 500);
+  </script>
+</body>
+</html>
