@@ -1,0 +1,11 @@
+﻿<link rel="import" href="components/polymer/polymer.html">
+
+<polymer-element name="async-import" attributes="href">
+  <script>
+    Polymer('async-import', {
+      ready: function() {
+        Polymer.import([ this.href ]);
+      }
+    });
+  </script>
+</polymer-element>

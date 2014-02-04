@@ -12,22 +12,32 @@
   <script src="components/webL10n/l10n.js"></script>
   <link rel="arbitrary" type="application/l10n" href="data.ini" />
 
+  <script>
+
+    var locale = window.location.search.slice(1);
+    if (locale) {
+      document.querySelector('[rel=arbitrary]').href = 'data_' + locale + '.ini';
+    }
+
+  </script>
+
 </head>
 
 <body unresolved>
+
+  <p>
+    <a href="?">Default (en-us)</a><br>
+    <a href="?fr">French (fr)</a>
+  </p>
 
   <p><element-a></element-a></p>
 
   <script>
 
-    var locale = 'fr';
-    document.querySelector('[rel=arbitrary]').href = 'data_' + locale + '.ini';
-
     addEventListener('localized', function() {
-      console.log('localized');
       var link = document.createElement('link');
       link.setAttribute('rel', 'import');
-      link.setAttribute('href', 'application.html');
+      link.setAttribute('href', 'elements/application.html');
       document.body.appendChild(link);
     });
 

@@ -6,18 +6,28 @@
 
   <title>imports modules</title>
 
-  <script src="components/platform-dev/platform.js"></script>
+  <script src="components/platform/platform.js"></script>
 
   <link rel="import" href="module-a.html">
 
 </head>
 
-<body unresolved>
+<body>
 
   <script>
-    using(['module-A'], function(ma) {
-      document.body.innerHTML = ma;
+
+    module('example', function() {
+      return ' + example';
     });
+
+    module('jit', 'example', function(ex) {
+      return ex + ' + jit';
+    });
+
+    using(['module-A', 'jit'], function(ma, jit) {
+      document.body.innerHTML = ma + jit;
+    });
+
   </script>
 
 </body>

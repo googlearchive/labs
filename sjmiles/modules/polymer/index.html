@@ -16,12 +16,7 @@
 <body unresolved>
 
   <p><element-a></element-a></p>
-
   <p><element-b></element-b></p>
-  <p><element-b></element-b></p>
-
-  <p><element-c></element-c></p>
-  <p><element-c></element-c></p>
 
   <polymer-element name="element-a">
 
@@ -33,7 +28,7 @@
       Polymer('element-a', {
 
         ready: function() {
-          this.hello = "All a's are individuals."
+          this.hello = "All a's are individuals. ";
         }
 
       });
@@ -44,40 +39,19 @@
   <polymer-element name="element-b" extends="element-a">
 
     <script>
-      Polymer('element-b', function() {
+      using(['module-A'], function(ma) {
 
-        var private_value = Math.floor((Math.random() + 1)*9000) + 1000;
-
-        return {
-          ready: function() {
-            this.hello = "Only real b's share this secret: " + private_value;
-          }
-        };
-
-      });
-    </script>
-
-  </polymer-element>
-
-  <polymer-element name="element-c" extends="element-b">
-
-    <script>
-      Polymer('element-c', function() {
-
-        var private_value = Math.floor((Math.random() + 1)*9000) + 1000;
-
-        return {
-          ready: function() {
-            this.super();
-            this.hello += ", as do c's who also know: " + private_value;
-          }
-        };
+          Polymer('element-b', {
+            ready: function() {
+              this.super();
+              this.hello += ma;
+            }
+          });
 
       });
     </script>
 
   </polymer-element>
-
 
 </body>
 

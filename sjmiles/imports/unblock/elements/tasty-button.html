@@ -1,0 +1,27 @@
+﻿<polymer-element name="tasty-button">
+
+  <template>
+    <button style="background-color: #87d847; border-radius: 15px; padding: 2px 3px; border: 1px solid #77c837; font-size: 0.7em;">+Tasty!</button>
+  </template>
+
+  <script>
+    (function() {
+
+      // waste time to simulate network latency
+
+      var x = 0, y = 0;
+      var t = Date.now();
+      for (var i=0; i<1e8; i++) {
+        x += i;
+        y += Math.random();
+      }
+      document.title = (Date.now() - t) + 'ms ' + y;
+
+      // now our resource is here
+
+      Polymer('tasty-button');
+
+    })();
+  </script>
+
+</polymer-element>
