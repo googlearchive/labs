@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>3. Playing with Paper</title>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link rel="import" href="components/paper-drawer-panels/paper-drawer-panels.html">
+  <link rel="import" href="components/paper-toolbar-panel/paper-toolbar-panel.html">
+  <link rel="import" href="components/paper-appbar/paper-appbar.html">
+  <link rel="import" href="components/paper-radio-button/paper-radio-button.html">
+
+  <style>
+
+    /* Application */
+
+    body {
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+    }
+
+    [nav] {
+      background-color: #3c75d4;
+    }
+
+    [content] {
+      background-color: white;
+    }
+
+    paper-appbar {
+      background-color: #4285f4;
+    }
+
+    div[content] {
+      padding: 12px 20px;
+      height: 1024px;
+    }
+
+    /* Framework */
+
+    /* invent 'maximized' mode for drawer-panels */
+    [maximized] > [content] {
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+  </style>
+
+</head>
+
+<body unresolved>
+
+  <paper-drawer-panels maximized>
+
+    <div nav></div>
+
+    <paper-toolbar-panel content mode="waterfall">
+
+      <paper-appbar>
+        <span>App Bar</span>
+      </paper-appbar>
+
+      <div content>
+
+        <p>The App Bar and this content are parts of a paper-toolbar-panel, so we can take advantage of the built-in <b>modes</b>:</p>
+
+        <polymer-selector selectedProperty="checked" valueAttr="label" selected="Default" activateEvent="paper-radio-button-activate">
+          <paper-radio-button label="Default"></paper-radio-button><br><br>
+          <paper-radio-button label="Scroll"></paper-radio-button><br><br>
+          <paper-radio-button label="Waterfall"></paper-radio-button><br><br>
+          <paper-radio-button label="Waterfall-Tall"></paper-radio-button><br><br>
+        </polymer-selector>
+
+      </div>
+
+    </paper-toolbar-panel>
+
+  </paper-drawer-panels>
+
+  <script>
+    addEventListener('polymer-select', function(e) {
+      if (e.detail.isSelected) {
+        document.querySelector('paper-toolbar-panel').mode = e.target.selected.toLowerCase();
+      }
+    });
+  </script>
+</body>
+</html>

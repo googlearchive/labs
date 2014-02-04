@@ -1,0 +1,32 @@
+﻿<!doctype html>
+
+<html>
+
+<head>
+
+  <title>imports modules</title>
+
+  <script src="components/platform-dev/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html"></link>
+
+  <script src="components/webL10n/l10n.js"></script>
+  <link rel="arbitrary" type="application/l10n" href="data.ini" />
+
+  <link rel="import" href="application.html"></link>
+
+</head>
+
+<body unresolved>
+
+  <p><element-a></element-a></p>
+
+  <script>
+
+    var locale = 'fr';
+    document.querySelector('[rel=arbitrary]').href = 'data_' + locale + '.ini';
+
+  </script>
+
+</body>
+
+</html>

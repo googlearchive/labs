@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>3. Playing with Paper</title>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link rel="import" href="components/paper-toolbar-panel/paper-toolbar-panel.html">
+  <link rel="import" href="components/paper-appbar/paper-appbar.html">
+  <link rel="import" href="components/paper-drawer-panels/paper-drawer-panels.html">
+
+  <style>
+
+    /* Application */
+
+    body {
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+      margin: 0;
+      background-color: #eee;
+    }
+
+    paper-appbar {
+      background-color: #4285f4;
+    }
+
+    .card [content] {
+      padding: 12px 20px;
+      background-color: white;
+      margin-bottom: 20px;
+      box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
+    }
+
+    paper-toolbar-panel[content] {
+      height: 100vh;
+    }
+
+    [nav] {
+      background-color: #3c75d4;
+    }
+
+    [column] {
+      max-width: 720px;
+      margin: 20px auto;
+    }
+
+  </style>
+
+</head>
+
+<body unresolved>
+
+  <paper-drawer-panels>
+
+    <div nav></div>
+
+    <paper-toolbar-panel content mode="waterfall-tall">
+
+      <paper-appbar style="background: silver url('//lorempixel.com/nightlife/1440/512') bottom center no-repeat;">
+        <span>App Bar</span>
+      </paper-appbar>
+
+      <div column>
+
+        <paper-toolbar-panel id="card1" class="card">
+
+          <paper-appbar>
+            <div>Card Toolbar</div>
+          </paper-appbar>
+
+          <div content>
+
+            <p>I'm a paper-toolbar-panel styled as a card.</p>
+
+            <p>This panel is as tall as it's content.</p>
+
+            <p>All these panels are on a central column which has a max-width.</p>
+
+          </div>
+
+        </paper-toolbar-panel>
+
+
+        <paper-toolbar-panel mode="waterfall" class="card" style="height: 320px;">
+
+          <paper-appbar style="background-color: #d39eca;">
+            <div>Card Toolbar</div>
+          </paper-appbar>
+
+          <div content>
+
+            <br><br><br>
+
+            <p>Because I'm a paper-toolbar-panel, I have modes. This one is 'waterfall'.</p>
+
+            <p>This panel has a fixed height and scrolling content.</p>
+
+            <div style="height: 512px;"></div>
+
+          </div>
+
+        </paper-toolbar-panel>
+
+
+        <paper-toolbar-panel mode="waterfall-tall" class="card" style="height: 512px;">
+
+          <paper-appbar style="background: url('//lorempixel.com/fashion/720/256') bottom left no-repeat;">
+            <div>Card Toolbar</div>
+          </paper-appbar>
+
+          <div content>
+
+            <p>Because I'm a paper-toolbar-panel, I have modes. This one is 'waterfall-tall'.</p>
+
+            <p>This panel has a fixed height and scrolling content.</p>
+
+            <div style="height: 768px;"></div>
+
+          </div>
+
+        </paper-toolbar-panel>
+
+
+        <paper-toolbar-panel mode="scroll" class="card" style="height: 216px;">
+
+          <paper-appbar>
+            <div>Card Toolbar</div>
+          </paper-appbar>
+
+          <div content>
+
+            <p>Because I'm a paper-toolbar-panel, I have modes. This one is 'scroll'.</p>
+
+            <p>This panel has a fixed height and scrolling content.</p>
+
+            <div style="height: 200px;"></div>
+
+          </div>
+
+        </paper-toolbar-panel>
+
+      </div>
+
+    </paper-toolbar-panel>
+
+</paper-drawer-panels>
+
+</body>
+</html>

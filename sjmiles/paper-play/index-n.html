@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>Bowager: Lister</title>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link rel="import" href="components/polymer-ajax/polymer-ajax.html">
+  <link rel="import" href="components/paper-toolbar-panel/paper-toolbar-panel.html">
+  <link rel="import" href="components/paper-drawer-panels/paper-drawer-panels.html">
+  <link rel="import" href="components/paper-appbar/paper-appbar.html">
+  <link rel="import" href="components/polymer-ui-menu-item/polymer-ui-menu-item.html">
+  <link rel="import" href="components/polymer-ui-menu/polymer-ui-menu.html">
+  <link rel="import" href="components/polymer-ui-icon-button/polymer-ui-icon-button.html">
+
+  <style>
+
+    /* not structural */
+
+    body {
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+      Xbackground-color: #3975d8;
+    }
+
+    h2 {
+      width: auto;
+      font-size: 24px;
+      text-transform: uppercase;
+      border-radius: 0;
+      box-sizing: border-box;
+      margin: 0 0 12px 0;
+      padding: 32px 64px;
+      color: white;
+      background: #4285f4;
+    }
+
+    paper-appbar {
+      background-color: #4285f4;
+      color: #d7e5fc;
+    }
+
+    #navbar {
+      background-color: #3c75d4;
+    }
+
+    #outer paper-toolbar-panel {
+      background-color: #eee;
+    }
+
+    div[nav] {
+      background-color: white;
+    }
+
+    /* structural (aka hacks) */
+
+    /* invent 'maximized' mode for drawer-panels */
+    #outer {
+      height: 100vh;
+      margin: 0 !important;
+      Xmargin: 0 20px !important;
+      max-width: 9999em !important;
+      box-shadow: none;
+      Xoverflow: visible;
+      Xborder: 1px solid orange;
+    }
+    body > paper-drawer-panels ^ #main {
+      padding: 0;
+    }
+
+    /* I also want this panel maximized */
+    #outer paper-toolbar-panel {
+      height: 100%;
+    }
+
+    /* recreating the content portion of paper-toolbar-panel*/
+    #mainContent {
+      max-width: 1024px;
+      margin: 20px auto;
+      Xborder: 3px solid red;
+    }
+
+    /*
+    #outer paper-drawer-panels {
+      position: relative;
+    }
+    */
+
+    #mainContent paper-toolbar-panel {
+      margin-bottom: 20px;
+    }
+
+    .card {
+      margin-bottom: 20px;
+      box-shadow: rgba(0, 0, 0, 0.14902) 0px 2px 4px, rgba(0, 0, 0, 0.14902) 0px 0px 3px;
+    }
+    .card > [content] {
+      padding: 8px;
+    }
+  </style>
+
+</head>
+
+<body unresolved>
+
+  <paper-drawer-panels>
+
+    <div nav>
+
+      <paper-toolbar-panel flex mode="xscroll">
+
+        <paper-appbar id="navbar" class="tall seamed">
+          <div>Paper Elements</div>
+        </paper-appbar>
+
+        <polymer-ui-menu flex content selected="0">
+            <polymer-ui-menu-item src="code.png" label="Project A"></polymer-ui-menu-item>
+        </polymer-ui-menu>
+
+      </paper-toolbar-panel>
+
+    </div>
+
+    <div content id="outer">
+
+      <paper-toolbar-panel content mode="waterfall">
+
+          <paper-appbar class="xseamed">
+            <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+            <div>App Bar</div>
+          </paper-appbar>
+
+          <div id="mainContent" content>
+
+            <paper-toolbar-panel mode="scroll" class="card">
+              <paper-appbar>
+                <div>Card Toobar</div>
+              </paper-appbar>
+              <div content style="height: 200px; background-color: white;">Card Content</div>
+            </paper-toolbar-panel>
+
+            <paper-toolbar-panel mode="waterfall" class="card" style="height: 200px;">
+              <paper-appbar class="seamed">
+                <div>Card Toobar</div>
+              </paper-appbar>
+              <div content style="height: 440px; background-color: white;">Card Content</div>
+            </paper-toolbar-panel>
+
+            <paper-toolbar-panel mode="waterfall" class="card">
+              <paper-appbar class="seamed">
+                <div>Card Toobar</div>
+              </paper-appbar>
+              <div content style="height: 512px; background-color: white;">Card Content</div>
+            </paper-toolbar-panel>
+
+          </div>
+
+        </paper-toolbar-panel>
+
+    </div>
+
+  </paper-drawer-panels>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+﻿<script src="module-b.js"></script>
+
+<link rel="import" href="module-c.html">
+
+<script>
+  module('module-A', ['module-B', 'module-C'], function(mb, mc) {
+    return 'Hello World from Module-A (and ' + mb + ', ' + mc + ')';
+  });
+</script>

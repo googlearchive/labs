@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>2. Playing with Paper</title>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link rel="import" href="components/paper-drawer-panels/paper-drawer-panels.html">
+  <link rel="import" href="components/paper-toolbar-panel/paper-toolbar-panel.html">
+  <link rel="import" href="components/paper-appbar/paper-appbar.html">
+
+  <style>
+
+    /* Application */
+
+    body {
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+    }
+
+    [nav] {
+      background-color: #3c75d4;
+    }
+
+    [content] {
+      background-color: lightblue;
+    }
+
+    paper-appbar {
+      background-color: #4285f4;
+    }
+
+    /* Framework */
+
+    /* invent 'maximized' mode for drawer-panels */
+    [maximized] [content] {
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+  </style>
+
+</head>
+
+<body unresolved>
+
+  <paper-drawer-panels maximized>
+
+    <div nav></div>
+
+    <div content>
+
+        <paper-toolbar-panel content mode="waterfall">
+
+          <paper-appbar>
+            <span>App Bar</span>
+          </paper-appbar>
+
+          <div content>
+            The App Bar and I are parts of a paper-toolbar-panel.
+          </div>
+
+        </paper-toolbar-panel>
+
+    </div>
+
+  </paper-drawer-panels>
+
+</body>
+</html>

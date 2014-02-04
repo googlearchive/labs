@@ -1,0 +1,43 @@
+﻿<!doctype html>
+
+<html>
+
+<head>
+
+  <title>imports modules</title>
+
+  <script src="components/platform-dev/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html"></link>
+
+  <script src="components/webL10n/l10n.js"></script>
+  <link rel="arbitrary" type="application/l10n" href="data.ini" />
+
+</head>
+
+<body unresolved>
+
+  <p><element-a></element-a></p>
+
+  <script>
+
+    var locale = 'fr';
+    document.querySelector('[rel=arbitrary]').href = 'data_' + locale + '.ini';
+
+    addEventListener('localized', function() {
+      console.log('localized');
+    });
+
+    addEventListener('polymer-ready', function() {
+      console.log('polymer-ready');
+      Polymer.import(['application.html'], function() {
+        console.log('Polymer.import complete');
+        var link = document.querySelectorAll('link')[2];
+        CustomElements.upgradeDocument(link.import);
+      });
+    });
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+﻿<polymer-element name="element-a">
+
+  <template>
+    Dude says "{{hello}}"
+  </template>
+
+  <script>
+
+    //var hello = window._ ? _('test') : 'l10n not ready yet';
+    var hello = document.webL10n ? document.webL10n.get('test') : 'l10n not ready yet';
+    hello = hello || 'l10n data not loaded';
+
+    Polymer('element-a', {
+
+      ready: function() {
+        this.hello = hello;
+      }
+
+    });
+
+  </script>
+
+</polymer-element>
