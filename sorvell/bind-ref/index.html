@@ -1,0 +1,60 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+    }
+    .polymer-selected {
+
+    }
+
+  </style>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="../../../components/polymer-ui-elements/elements.html">
+</head>
+<body unresolved>
+  <polymer-element name="my-tag" attributes="item">
+    <template>
+        <template id="one">one</template>
+        <template id="two">two</template>
+        <template id="three">three</template>
+
+        <template bind ref="{{ item }}"></template>
+    </template>
+    <script>
+        Polymer('my-tag');
+    </script>
+</polymer-element>
+    
+<template id="t" bind>
+    <my-tag item="{{ item }}"></my-tag>
+</template>
+
+<script>
+  document.addEventListener('WebComponentsReady', function() {
+    var t = document.getElementById('t');
+
+    setTimeout(function() {
+       t.model = { item: 'one' };
+       Platform.flush();
+    }, 0)
+/*
+    setTimeout(function() {
+       t.model.item = 'two';
+       Platform.flush();
+    }, 1000)
+
+    setTimeout(function() {
+       t.model = { item: 'three' };
+       Platform.flush();
+    }, 2000)
+*/
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>sheet-^</title>
+  <!-- <link rel="stylesheet" href="sheety.css"> -->
+  <body>
+    <h2>^ selector targeting element inside shadowRoot</h2>
+    <host></host>
+    <hr>
+    <h2>regular selector</h2>
+    <div class="blue">am I blue?</div>
+    <script>
+    var host = document.querySelector('host');
+    var root = host.createShadowRoot();
+    root.innerHTML = '<div class="green">am I green?</div>';
+    setTimeout(function() {
+      link = document.createElement('link');
+      link.href = 'sheety.css';
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+      console.log('attached!', link);
+    }, 0);
+  </script>
+  </body>
+</html>

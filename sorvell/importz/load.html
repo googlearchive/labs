@@ -2,30 +2,8 @@
 <html>
 <head>
   <title>importz load</title>
-  <link rel="stylesheet" href="sheet.css" onload="loaded(this)">
-  <style onload="loaded(this)">
-    @import 'sheet.css';
-  </style>
+  <link rel="import" href="import-multi.html">
   <script>
-    function loaded(element) {
-      console.log(element, element.sheet);
-    }
-
-    /*
-    window.addEventListener('load', function() {
-      //console.log('dom content loaded!');
-      //testStyle();
-
-      var l = document.createElement('link');
-      l.rel = 'import';
-      l.href = 'import1.html';
-      l.onload = function() {
-        console.log('import1 loaded');
-        testStyle();
-      }
-      document.body.appendChild(l);
-    });
-*/
     function testStyle() {
       console.log('readyState', document.readyState);
       var c = getComputedStyle(document.querySelector('.red')).backgroundColor;

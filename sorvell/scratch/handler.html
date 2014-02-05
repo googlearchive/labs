@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>scratch</title>
+  <meta charset="utf-8">
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <x-test></x-test>
+  
+  <polymer-element name="x-test" on-tap="{{tap}}">
+    <template>
+      <div on-tap="{{tap}}">Hi</div>
+    </template>
+    <script>
+      Polymer('x-test', {
+        tap: function() {
+          console.log('tap!');
+        }
+      })
+    </script>
+  </polymer-element>
+  </body>
+</html>

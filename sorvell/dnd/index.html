@@ -1,0 +1,95 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer: dnd</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  <nb-polymer-ui-menu-item label="hello world" draggable="true" name="zonk"></nb-polymer-ui-menu-item>
+  <!-- <polymer-element name="x-dnd" on-drag='{{dragStart}}'  on-dragover="{{allowDrop}}" on-drop='{{dragStop}}' attributes="type name guid">
+    <template>
+      <style>:host { display: block};</style>
+      Hi!
+    </template>
+    <script>
+    Polymer('x-dnd', {
+      dragStart: function(ev) {
+        if (this.dragged) return;
+        ev.dataTransfer.effectAllowed='none';  // tried different values to no avail
+        ev.dataTransfer.setData("Text",this.name);
+        console.log(ev.dataTransfer.getData("Text")) // dataTransfer is not set with this.name
+        this.dragged=true;
+       },
+       allowDrop: function(ev){
+         ev.preventDefault();
+       },
+       dragStop: function(ev){
+         ev.preventDefault();
+         var data=ev.dataTransfer.getData("Text");
+         console.log("dragStop",ev,ev.target,data)   // does not provide what I set above
+         this.dragged=false;
+       }
+      });
+    </script>
+  </polymer-element> -->
+<link rel="import" href="../../../components/polymer-ui-icon/polymer-ui-icon.html">
+<link rel="import" href="../../../components/polymer-ui-theme-aware/polymer-ui-theme-aware.html">
+
+<polymer-element name="nb-polymer-ui-menu-item"
+     extends="polymer-ui-theme-aware"
+     on-dragstart='{{dragStart}}'  on-dragover="{{allowDrop}}"
+     on-drop='{{dragStop}}'  attributes="src label icon item">
+  <template>
+    <link rel="stylesheet" href="../../../components/polymer-ui-menu-item/polymer-ui-menu-item.css">
+    <polymer-ui-icon src="{{src}}" icon="{{icon}}" showing?="{{icon || src}}"></polymer-ui-icon>
+    <span id="label">{{label}}<content></content></span>
+  </template>
+  <script>
+ var draginfo="";
+    Polymer('nb-polymer-ui-menu-item', {
+      label: '',
+      // calc item's offset middle pos instead of using offsetTop/Height 
+      // directly which requires to wait for submenu's collapsing transition to 
+      // complete first before it can return the correct pos.
+       enteredView: function() {
+    console.log("nb menu item inserted now");
+    },
+     dragStart: function(ev) {
+
+   if (this.dragged) return;
+   draginfo=this;
+   this.dragged=true;
+
+      ev.dataTransfer.effectAllowed='none';  // tried different values to no avail
+        ev.dataTransfer.setData("Text",this.getAttribute('name'));
+        console.log(ev.dataTransfer.getData("Text")) // dataTransfer is not set with this.name
+     },
+     allowDrop: function(ev){
+   ev.preventDefault();
+     },
+     dragStop: function(ev){
+   if (draginfo=="") return;
+   ev.preventDefault();
+   var parent=this.parentNode
+   draginfo.dragged=false;
+   parent.insertBefore(draginfo,this)
+   draginfo="";
+     },
+      getOffsetMiddle: function() {
+        var p = this.parentNode;
+        if (p) {
+          var i = Array.prototype.indexOf.call(p.items, this);
+          var h = this.getItemHeight();
+          return i * h + h/2 + p.items[0].offsetTop;
+        }
+      },
+      getItemHeight: function() {
+        return this.offsetHeight;
+      }
+    });
+  </script>
+</polymer-element>
+</body>
+</html>

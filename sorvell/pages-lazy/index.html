@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+<head>
+  <title>pages-lazy</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+      background-color: #eee;
+    }
+
+    pages-lazy {
+      display: block;
+      position: relative;
+      height: 300px;
+      width: 400px;
+      /*border: 2px solid orange;*/
+      -webkit-user-select: none;
+      overflow: hidden;
+    }
+
+    pages-lazy > * {
+      background: steelblue;
+      border: 2px solid orange;
+    }
+  </style>
+</head>
+<body unresolved>
+  
+  <pages-lazy indicateLoading>
+    <div>Uno</div>
+    <div>Deux</div>
+    <div>III</div>
+    <template>
+      <div>4?</div>
+    </template>
+    <template>
+      <link rel="import" href="../../../components/polymer-ui-icon-button/polymer-ui-icon-button.html">
+      <link rel="import" href="../../../components/polymer-ui-toolbar/polymer-ui-toolbar.html">
+      <polymer-ui-toolbar>
+        <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+        <div flex>Toolbar: default theme</div>
+        <polymer-ui-icon-button icon="refresh"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+    </polymer-ui-toolbar>
+    </template>
+    <template>
+      <link rel="import" href="../../../components/polymer-ui-icon-button/polymer-ui-icon-button.html">
+      <link rel="stylesheet" href="../../../components/polymer-ui-base/base.css">
+      <polymer-ui-icon-button icon="drawer"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="dropdown"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+    </template>
+    <template>
+      <link rel="import" href="../../../components/polymer-ui-stock/polymer-ui-stock.html">
+      <polymer-ui-stock symbols=".INX,NDAQ,.DJI"></polymer-ui-stock>
+    </template>
+    <div>another</div>
+  </pages-lazy>
+
+  <link rel="import" href="../../../components/polymer-ui-animated-pages/polymer-ui-animated-pages.html">
+  <polymer-element name="pages-lazy" extends="polymer-ui-animated-pages" on-tap="tap" attributes="indicateLoading">
+    <template>
+      <style>
+        #loading {
+          z-index: 1000;
+          position: absolute;
+          top: 4px;
+          left: 0;
+          right: 0;
+          text-align: center;
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+
+        #loading.isLoading {
+          opacity: 1;
+        }
+
+        #loadIndicator {
+          background: orange;
+          padding: 4px 8px;
+        }
+      </style>
+      <shadow></shadow>
+      <div id="loading" on-transitionend="loadTransitionEnd" style="display: none;">
+        <span id="loadIndicator">Loading...</span>
+      </div>
+    </template>
+    <script>
+      Polymer('pages-lazy', {
+        inflating: false,
+        indicateLoading: false,
+        tap: function() {
+          var c = this.items.length, s = Number(this.selected);
+          this.selected = s >= c - 1 ? 0 : s + 1;
+        },
+        // TODO(sorvell): items can be templates here; better factoring would
+        // avoid having to re-implement this.
+        get items() {
+          var nodes = this.target !== this ? (this.itemsSelector ? 
+              this.target.querySelectorAll(this.itemsSelector) : 
+                  this.target.children) : this.$.items.getDistributedNodes();
+          return nodes;
+        },
+        selectedChanged: function(oldValue) {
+          var selectedItem = this.items[this.valueToIndex(this.selected)];
+          if (selectedItem.localName === 'template') {
+            this.inflateTemplateItem(selectedItem, this.selected);
+            this.selected = oldValue;
+          } else {
+            this.super();
+          }
+        },
+        inflateTemplateItem: function(template, select) {
+          // make a suitable instance
+          var i = this.templateInstance,
+              model = i ? i.model : this,
+              syntax = model.syntax || this.syntax;
+          var item = template.createInstance(model, syntax);
+          if (item.children.length > 1) {
+            var w = document.createElement('div');
+            w.appendChild(item);
+            item = w;
+          }
+          // replace template with instance
+          this.replaceChild(item, template);
+          this.loading = true;
+          // when ready, update selection
+          Polymer.whenPolymerReady(function() {
+            //this.async(function() {
+              this.loading = false;
+              this.selected = select;
+            //}, null, 1000);
+          }.bind(this));
+        },
+        loadingChanged: function() {
+          if (this.indicateLoading) {
+            this.$.loading.style.display = '';
+            this.async(function() {
+              this.$.loading.classList.toggle('isLoading', this.loading);
+            });
+          }
+        },
+        loadTransitionEnd: function() {
+          if (!this.loading) {
+            this.$.loading.style.display = 'none';
+          }
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <transition-hslide-scale-out></transition-hslide-scale-out>
+
+  <script>
+    document.addEventListener('polymer-ready', function() {
+      var pages = document.querySelector('pages-lazy');
+      pages.transition = document.querySelector('transition-hslide-scale-out');
+      pages.directional = true;
+    });
+  </script>
+
+  <link rel="import" href="../../../components/polymer-animation/polymer-animation-group.html">
+  <polymer-element name="transition-hslide-scale-out" extends="polymer-animation-group" noscript>
+    <template>
+      <polymer-animation id="scale-out" duration="0.4" easing="ease-in-out">
+        <polymer-animation-keyframe>
+          <polymer-animation-prop name="transform" value="scale(1)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+        <polymer-animation-keyframe>
+          <polymer-animation-prop name="transform" value="scale(0.8)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+      </polymer-animation>
+      <polymer-animation id="hslide-in" duration="0.4" easing="ease-in-out">
+        <polymer-animation-keyframe>
+          <polymer-animation-prop name="transform" value="translateX(100%)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+        <polymer-animation-keyframe>
+          <polymer-animation-prop name="transform" value="translateX(0)"></polymer-animation-prop>
+        </polymer-animation-keyframe>
+      </polymer-animation>
+    </template>
+  </polymer-element>
+ </body>
+</html>

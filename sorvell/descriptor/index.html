@@ -1,0 +1,23 @@
+
+<!doctype html>
+<html>
+<head>
+  <title></title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var x = {
+        foo: function() {}
+      }
+
+      var y = {};
+      Polymer.extend(y, x);
+
+      console.log(y.foo === x.foo);
+    });
+  </script>
+</body>
+</html>

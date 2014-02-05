@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <polymer-element name="x-item">
+    <template>
+      <style>
+        :host(.ready) {
+          color: red;
+        }
+      </style>
+      <div>{{'zonk' | fomat}}</div>
+      <content></content>
+    </template>
+    <script>
+      Polymer('x-item', {
+        ready: function() {
+          console.log('ready', this);
+          this.classList.add('ready');
+        },
+        /*fomat: function(a) {
+          return a;
+        }*/
+        fomat: {
+          toDOM: function(a) {
+            return 'fomat' + a;
+          }
+        }
+      });
+    </script>
+  </polymer-element>
+  
+  <x-item></x-item>
+</body>
+</html>

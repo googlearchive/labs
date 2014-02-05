@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>scratch</title>
+  <script src="../../../components/platform/platform.js"></script>
+
+
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <script>
+    function showMsg(anchor) {
+      console.log("So, you want to go to", anchor.href);
+      //event.preventDefault();
+    }
+    
+    document.body.addEventListener('click', function (event) {
+      showMsg(event.target);
+      console.log(event.path);
+    });
+
+  //I thought this might work but it does not
+  var old = Element.prototype.createShadowRoot;
+/*
+  Object.defineProperties(Element.prototype, {
+    createShadowRoot: {
+      value: function() {
+        var shadowRoot = old.apply(this, arguments);
+        console.log("shadowRoot created", shadowRoot);
+        shadowRoot.addEventListener("click", function (event) {
+          console.log("Hi, I am in your Shadow DOM!");
+          showMsg(event.target);
+        });
+        return shadowRoot;
+      }
+    }
+  });*/
+
+  Element.prototype.createShadowRoot = function() {
+    var shadowRoot = old.apply(this, arguments);
+    console.log("shadowRoot created", shadowRoot);
+    (shadowRoot.impl || shadowRoot).addEventListener("click", function (event) {
+      console.log("Hi, I am in your Shadow DOM!");
+      showMsg(event.target);
+      event.preventDefault();
+    }, true);
+
+    return shadowRoot;
+  }
+  </script>
+
+
+  <x-test></x-test>
+  
+  <polymer-element name="x-test" noscript>
+    <template>
+      <div>Scratch</div>
+      <a href="foo">Hi</a>
+    </template>
+  </polymer-element>
+  </body>
+</html>

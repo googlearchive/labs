@@ -1,0 +1,7 @@
+.blue {
+  background: blue;
+}
+
+host ^ .green {
+  background: green;
+}

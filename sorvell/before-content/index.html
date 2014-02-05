@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <polymer-element name="ui-icon" noscript>
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      #one::before {
+        color: green;
+        content: "hithere"; /* no space */
+        background: red;
+      }
+      #two::before {
+        content: "hithere ";
+      }
+      #three::before {
+        content: " hithere";
+      }
+      #four::before {
+        content: "hi there";
+      }
+    </style>
+    <div id="one">1</div>
+    <div id="two">2</div>
+    <div id="three">3</div>
+    <div id="four">4</div>
+  </template>
+</polymer-element>
+
+<ui-icon></ui-icon>
+</body>
+</html>

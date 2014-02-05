@@ -1,0 +1,61 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>thingy</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  
+  
+
+</head>
+<body unresolved=""><!--/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */-->
+<script src="../../../components/polymer-dev/src/polymer.js"></script>
+<script src="../../../components/polymer-dev/src/boot.js"></script>
+<script src="../../../components/polymer-dev/src/lib/lang.js"></script>
+<script src="../../../components/polymer-dev/src/lib/job.js"></script>
+<script src="../../../components/polymer-dev/src/lib/dom.js"></script>
+<script src="../../../components/polymer-dev/src/lib/super.js"></script>
+<script src="../../../components/polymer-dev/src/lib/deserialize.js"></script>
+<script src="../../../components/polymer-dev/src/api.js"></script>
+<script src="../../../components/polymer-dev/src/instance/utils.js"></script>
+<script src="../../../components/polymer-dev/src/instance/events.js"></script>
+<script src="../../../components/polymer-dev/src/instance/attributes.js"></script>
+<script src="../../../components/polymer-dev/src/instance/properties.js"></script>
+<script src="../../../components/polymer-dev/src/instance/mdv.js"></script>
+<script src="../../../components/polymer-dev/src/instance/base.js"></script>
+<script src="../../../components/polymer-dev/src/instance/styles.js"></script>
+<script src="../../../components/polymer-dev/src/declaration/path.js"></script>
+<script src="../../../components/polymer-dev/src/declaration/styles.js"></script>
+<script src="../../../components/polymer-dev/src/declaration/events.js"></script>
+<script src="../../../components/polymer-dev/src/declaration/properties.js"></script>
+<script src="../../../components/polymer-dev/src/declaration/attributes.js"></script>
+<script src="../../../components/polymer-dev/src/declaration/prototype.js"></script>
+<script src="../../../components/polymer-dev/src/declaration/polymer-element.js"></script>
+<!--
+ Copyright 2013 The Polymer Authors. All rights reserved.
+ Use of this source code is governed by a BSD-style
+ license that can be found in the LICENSE file.
+-->
+<!-- <script src="polymer.js"></script> -->
+
+<polymer-element name="x-thingy" assetpath="components/thingy/">
+  <template>
+    <img id="thingy">
+    </template>
+  
+  <script>
+    Polymer('x-thingy', {
+      ready: function() {
+        this.$.thingy.src = this.resolvePath('../resource/logo.png');
+      }
+    });
+  </script>
+</polymer-element>
+
+  <x-thingy></x-thingy>
+</body>
+</html>

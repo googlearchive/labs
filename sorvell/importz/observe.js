@@ -45,7 +45,7 @@ var mo = new MutationObserver(function(mxns) {
 });
 
 function observe(doc) {
-  mo.observe(document, {childList: true, subtree: true});      
+  mo.observe(doc, {childList: true, subtree: true});      
 }
 
 observe(document.currentScript.ownerDocument);

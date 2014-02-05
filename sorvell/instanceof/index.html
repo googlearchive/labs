@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>Polymer: isntanceof</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" src="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  <x-foo></x-foo>
+  <x-bar></x-bar>
+
+  <polymer-element name="x-foo" constructor="XFoo" noscript>
+    <template>
+      I am x-foo!
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-bar" extends="x-foo" constructor="XBar" noscript>
+    <template>
+      I am x-bar!
+    </template>
+  </polymer-element>
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var xfoo = document.querySelector('x-foo');
+      var xbar = document.querySelector('x-bar');
+      console.log(xfoo instanceof XFoo);
+      console.log(xfoo instanceof XBar);
+      console.log(xbar instanceof XBar);
+      console.log(xbar instanceof XFoo);
+
+      console.log(xbar instanceof Object.getPrototypeOf(xfoo).constructor);
+      console.log(xbar instanceof Object.getPrototypeOf(xbar).constructor);
+      console.log(xbar instanceof Object.getPrototypeOf(document.createElement('x-bar')).constructor);
+      console.log(xfoo instanceof Object.getPrototypeOf(xbar).constructor);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>capture</title>
+  <!--<script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" src="../../../components/polymer/polymer.html">-->
+</head>
+<body unresolved>
+  <div>
+    <button>Go</button>
+  </div>
+  <script>
+    /*document.addEventListener('WebComponentsReady', function() {
+      console.log('first!');
+    });
+
+    document.addEventListener('WebComponentsReady', function() {
+      console.log('second, capture');
+    }, true);*/
+
+    var b = document.querySelector('button');
+    var d = document.querySelector('div');
+
+    b.addEventListener('click', function() {
+      console.log(this.localName, 'first!');
+    });
+
+    b.addEventListener('click', function() {
+      console.log(this.localName, 'second, capture');
+    }, true);
+
+    d.addEventListener('click', function() {
+      console.log(this.localName, 'first!');
+    });
+
+    d.addEventListener('click', function() {
+      console.log(this.localName, 'second, capture');
+    }, true);
+  </script>
+</body>
+</html>
