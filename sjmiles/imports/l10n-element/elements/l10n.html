@@ -1,0 +1,18 @@
+﻿<script src="components/webL10n/l10n.js"></script>
+
+<script>
+
+  var locale = window.location.search.slice(1);
+
+  if (locale) {
+    document.querySelector('[rel=arbitrary]').href = 'data_' + locale + '.ini';
+  }
+
+  window.l10n =  document.webL10n;
+  
+  l10n.translate = function(id, args, prop) {
+    var data = l10n.getL10nData(id, args);
+    return data[prop || 'textContent'];
+  }
+
+</script>

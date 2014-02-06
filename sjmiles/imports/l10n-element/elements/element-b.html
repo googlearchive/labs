@@ -1,0 +1,31 @@
+﻿
+<link rel="import" href="../components/polymer/polymer.html">
+<link rel="import" href="l10n.html">
+
+<polymer-element name="element-b">
+
+  <template>
+
+    Dude says again "{{'test' | l10n}}"
+
+  </template>
+
+  <script>
+
+    var l10n = document.webL10n;
+
+    addEventListener('localized', function() {
+
+      Polymer('element-b', {
+
+        l10n: function(text) {
+          return l10n.get(text);
+        }
+
+      });
+
+    });
+
+  </script>
+
+</polymer-element>

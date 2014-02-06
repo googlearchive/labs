@@ -1,0 +1,41 @@
+﻿
+<link rel="import" href="../components/polymer/polymer.html">
+<link rel="import" href="l10n.html">
+
+<polymer-element name="element-a">
+
+  <template>
+
+    Dude says "{{'test' | l10n}}"<br>
+    Squid report: "{{'squids,' + squids | l10n}}"
+
+  </template>
+
+  <script>
+
+    var l10n = document.webL10n;
+
+    addEventListener('localized', function() {
+
+      Polymer('element-a', {
+
+        squids: 1,
+
+        l10n: function(a) {
+          var args = a.split(',');
+          return l10n.translate(args[0], {n: args[1]}) || args[0];
+        },
+
+        ready: function() {
+          setInterval(function() {
+            this.squids = (this.squids + 1) % 5;
+          }.bind(this), 700);
+        }
+
+      });
+
+    });
+
+  </script>
+
+</polymer-element>
