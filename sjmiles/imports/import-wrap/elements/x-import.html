@@ -1,0 +1,54 @@
+<link rel="import" href="../components/polymer/polymer.html">
+
+<polymer-element name="x-import" attributes="href asif">
+
+  <script>
+
+    (function() {
+
+      var monikers = {};
+      var hrefs = [];
+      var ready = true;
+
+      function queuem(href) {
+        console.log('queuem', href);
+        if (!monikers[href]) {
+          console.log('queued: ', href);
+          hrefs.push(href);
+          monikers[href] = true;
+        }
+      }
+
+      function loadem() {
+        console.log('loadem', ready, hrefs);
+        if (ready && hrefs) {
+          ready = false;
+          var imports = hrefs;
+          hrefs = [];
+          console.log('loading: ', imports);
+          Polymer.import(imports, function() {
+            console.log('done with: ', imports);
+            ready = true;
+          });
+        }
+      }
+
+      Polymer('x-import', {
+
+        hrefChanged: function() {
+          queuem(this.href);
+          this.async(loadem);
+        },
+
+        asifChanged: function() {
+          console.log('asif', this.asif);
+          monikers[this.asif] = true;
+        }
+
+      });
+
+    })();
+
+  </script>
+
+</polymer-element>

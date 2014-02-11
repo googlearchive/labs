@@ -1,0 +1,20 @@
+﻿<link rel="import" href="../components/polymer/polymer.html">
+
+<polymer-element name="async-import" attributes="href wait">
+  <script>
+    Polymer('async-import', {
+      wait: 0,
+      href: '',
+      hrefChanged: function() {
+        if (this.wait) {
+          setTimeout(this.import.bind(this), this.wait);
+        } else {
+          this.import();
+        }
+      },
+      import: function() {
+        Polymer.import([ this.href ]);
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,3475 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+
+<polymer-element name="polymer-ui-theme-aware" attributes="theme" assetpath="../components/polymer-ui-theme-aware/">
+  <script>
+    PolymerUI = {
+      validateTheme: function() {
+        var theme = this.theme;
+        var defaultTheme = this.defaultTheme;
+        if (!theme) {
+          var p = this;
+          while (p && !theme) {
+            theme = p.getAttribute && p.getAttribute('theme');
+            defaultTheme = defaultTheme || p.defaultTheme;
+            p = p.parentNode || p.host;
+          }
+        }
+        this.activeTheme = this.theme || theme || defaultTheme;
+      }
+    };
+    Polymer('polymer-ui-theme-aware', {
+      defaultTheme: '',
+      activeTheme: '',
+      validateTheme: PolymerUI.validateTheme,
+      enteredView: function() {
+        this.validateTheme();
+      },
+      themeChanged: function() {
+        this.activeTheme = this.theme;
+      },
+      activeThemeChanged: function(old) {
+        this.classList.switch(old, this.activeTheme);
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-media-query can be used to data bind to a CSS media query.
+ * The "query" property is a bare CSS media query.
+ * The "queryMatches" property will be a boolean representing if the page matches that media query.
+ *
+ * polymer-media-query uses media query listeners to dynamically update the "queryMatches" property.
+ * A "polymer-mediachange" event also fires when queryMatches changes.
+ *
+ * Example:
+ *
+ *      <polymer-media-query query="max-width: 640px" queryMatches="{{phoneScreen}}"></polymer-media-query>
+ *
+ * @class polymer-media-query
+ */
+-->
+
+
+<polymer-element name="polymer-media-query" attributes="query queryMatches" assetpath="../components/polymer-media-query/">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+  </template>
+  <script>
+
+    Polymer('polymer-media-query', {
+      /**
+       * The Boolean return value of the media query
+       * @attribute queryMatches
+       * @type Boolean
+       * @default false
+       */
+      queryMatches: false,
+      /**
+       * The CSS media query to evaulate
+       * @attribute query
+       * @type string
+       * @default ''
+       */
+      query: '',
+      ready: function() {
+        this._mqHandler = this.queryHandler.bind(this);
+        this._mq = null;
+      },
+      queryChanged: function() {
+        if (this._mq) {
+          this._mq.removeListener(this._mqHandler);
+        }
+        var query = this.query;
+        if (query[0] !== '(') {
+          query = '(' + this.query + ')';
+        }
+        this._mq = window.matchMedia(query);
+        this._mq.addListener(this._mqHandler);
+        this.queryHandler(this._mq);
+      },
+      queryHandler: function(mq) {
+        this.queryMatches = mq.matches;
+        this.asyncFire('polymer-mediachange', mq);
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-flex-layout provides a helper to use CSS3 Flexible Boxes.  By putting
+ * polymer-flex-layout inside an element it makes the element a flex
+ * container. Use 'flex' attribute to make the flex item flexible.
+ *
+ * Example:
+ *
+ *     <div>
+ *       <polymer-flex-layout></polymer-flex-layout>
+ *       <div>Left</div>
+ *       <div flex>Main</div>
+ *       <div>Right</div>
+ *     </div>
+ *
+ *     ---------------------------------
+ *     |-------------------------------|
+ *     ||Left|       Main       |Right||
+ *     |-------------------------------|
+ *     ---------------------------------
+ *
+ *     <div>
+ *       <polymer-flex-layout vertical></polymer-flex-layout>
+ *       <div>Header</div>
+ *       <div flex>Body</div>
+ *       <div>Footer</div>
+ *     </div>
+ *
+ *     ----------
+ *     ||------||
+ *     ||Header||
+ *     ||------||
+ *     ||Body  ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||------||
+ *     ||Footer||
+ *     ||------||
+ *     ----------
+ *
+ * @class polymer-flex-layout
+ */
+/**
+ * If true, flex items are aligned vertically.
+ *
+ * @attribute vertical
+ * @type boolean
+ * @default false
+ */
+/**
+ * Defines the default for how flex items are laid out along the cross axis on 
+ * the current line.  Possible values are 'start', 'center' and 'end'.
+ *
+ * @attribute align
+ * @type string
+ * @default ''
+ */
+/**
+ * Defines how flex items are laid out along the main axis on the current line.
+ * Possible values are 'start', 'center' and 'end'.
+ *
+ * @attribute justify
+ * @type string
+ * @default ''
+ */
+/**
+ * If true, polymer-flex-layout is the flex container.
+ *
+ * Example:
+ *
+ *     <polymer-flex-layout isContainer>
+ *       <div>Left</div>
+ *       <div flex>Main</div>
+ *       <div>Right</div>
+ *     </polymer-flex-layout>
+ *
+ *     ---------------------------------
+ *     |-------------------------------|
+ *     ||Left|       Main       |Right||
+ *     |-------------------------------|
+ *     ---------------------------------
+ *
+ * @attribute isContainer
+ * @type boolean
+ * @default false
+ */
+-->
+
+
+<polymer-element name="polymer-flex-layout" attributes="vertical align justify isContainer" assetpath="../components/polymer-flex-layout/">
+  <template>
+    <style polymer-scope="controller">/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+.flexbox, [flexbox], [h-flexbox], [v-flexbox] {
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: -moz-flex !important;
+  display: -webkit-flex !important;
+  display: flex !important;
+}
+
+.flexbox.row, [flexbox], [h-flexbox] {
+  -webkit-box-orient: horizontal;
+  -ms-flex-direction: row;
+  -moz-flex-direction: row;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+
+.flexbox.column, [v-flexbox] {
+  -webkit-box-orient: vertical;
+  -ms-flex-direction: column;
+  -moz-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+.flex, [flex], [fit] {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  -moz-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+::-webkit-distributed(.flex), 
+::-webkit-distributed([flex]),
+::-webkit-distributed([fit]) {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  -moz-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+.flexbox.align-start {
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  -moz-align-items: flex-start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+}
+
+.flexbox.align-end {
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  -moz-align-items: flex-end;
+  -webkit-align-items: flex-end;
+  align-items: flex-end;
+}
+
+.flexbox.align-center {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -moz-align-items: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.flexbox.justify-start {
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  -moz-justify-content: flex-start;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+.flexbox.justify-end {
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  -moz-justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+.flexbox.justify-center {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -moz-justify-content: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.flexbox.justify-between {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  -moz-justify-content: space-between;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+
+:host(.flexbox:host, [flexbox]:host, [h-flexbox]:host, [v-flexbox]:host) {
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: -moz-flex !important;
+  display: -webkit-flex !important;
+  display: flex !important;
+}
+  
+:host(.flexbox.row:host, [flexbox]:host, [h-flexbox]:host) {
+  -webkit-box-orient: horizontal;
+  -ms-flex-direction: row;
+  -moz-flex-direction: row;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+  
+:host(.flexbox.column:host, [v-flexbox]:host) {
+  -webkit-box-orient: vertical;
+  -ms-flex-direction: column;
+  -moz-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+  
+:host(.flexbox.align-start:host) {
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  -moz-align-items: flex-start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+}
+  
+:host(.flexbox.align-end:host) {
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  -moz-align-items: flex-end;
+  -webkit-align-items: flex-end;
+  align-items: flex-end;
+}
+
+:host(.flexbox.align-center:host) {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -moz-align-items: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+:host(.flexbox.justify-start:host) {
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  -moz-justify-content: flex-start;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+:host(.flexbox.justify-end:host) {
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  -moz-justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+:host(.flexbox.justify-center:host) {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -moz-justify-content: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+:host(.flexbox.justify-between:host) {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  -moz-justify-content: space-between;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+</style>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+.flexbox, [flexbox], [h-flexbox], [v-flexbox] {
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: -moz-flex !important;
+  display: -webkit-flex !important;
+  display: flex !important;
+}
+
+.flexbox.row, [flexbox], [h-flexbox] {
+  -webkit-box-orient: horizontal;
+  -ms-flex-direction: row;
+  -moz-flex-direction: row;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+
+.flexbox.column, [v-flexbox] {
+  -webkit-box-orient: vertical;
+  -ms-flex-direction: column;
+  -moz-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+.flex, [flex], [fit] {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  -moz-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+::-webkit-distributed(.flex), 
+::-webkit-distributed([flex]),
+::-webkit-distributed([fit]) {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  -moz-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+.flexbox.align-start {
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  -moz-align-items: flex-start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+}
+
+.flexbox.align-end {
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  -moz-align-items: flex-end;
+  -webkit-align-items: flex-end;
+  align-items: flex-end;
+}
+
+.flexbox.align-center {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -moz-align-items: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.flexbox.justify-start {
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  -moz-justify-content: flex-start;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+.flexbox.justify-end {
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  -moz-justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+.flexbox.justify-center {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -moz-justify-content: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.flexbox.justify-between {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  -moz-justify-content: space-between;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+
+:host(.flexbox:host, [flexbox]:host, [h-flexbox]:host, [v-flexbox]:host) {
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: -moz-flex !important;
+  display: -webkit-flex !important;
+  display: flex !important;
+}
+  
+:host(.flexbox.row:host, [flexbox]:host, [h-flexbox]:host) {
+  -webkit-box-orient: horizontal;
+  -ms-flex-direction: row;
+  -moz-flex-direction: row;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+  
+:host(.flexbox.column:host, [v-flexbox]:host) {
+  -webkit-box-orient: vertical;
+  -ms-flex-direction: column;
+  -moz-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+  
+:host(.flexbox.align-start:host) {
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  -moz-align-items: flex-start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+}
+  
+:host(.flexbox.align-end:host) {
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  -moz-align-items: flex-end;
+  -webkit-align-items: flex-end;
+  align-items: flex-end;
+}
+
+:host(.flexbox.align-center:host) {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -moz-align-items: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+:host(.flexbox.justify-start:host) {
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  -moz-justify-content: flex-start;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+:host(.flexbox.justify-end:host) {
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  -moz-justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+:host(.flexbox.justify-center:host) {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -moz-justify-content: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+:host(.flexbox.justify-between:host) {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  -moz-justify-content: space-between;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+</style>
+    <content></content>
+  </template>
+  <script>
+    Polymer('polymer-flex-layout', {
+      vertical: false,
+      isContainer: false,
+      layoutContainer: null,
+      enteredView: function() {
+        this.installControllerStyles();
+        this.layoutContainer = this.isContainer ? 
+            this : (this.parentNode.host || this.parentNode);
+        this.verticalChanged();
+        this.alignChanged();
+        this.justifyChanged();
+      },
+      leftView: function() {
+        this.layoutContainer = null;
+      },
+      layoutContainerChanged: function(old) {
+        if (old) {
+          old.classList.remove('flexbox');
+        }
+        this.style.display = this.layoutContainer === this ? '' : 'none';
+        if (this.layoutContainer) {
+          this.layoutContainer.classList.add('flexbox');
+        }
+      },
+      switchContainerClass: function(prefix, old, name) {
+        if (this.layoutContainer && name) {
+          this.layoutContainer.classList.switch(
+              prefix + old, prefix + name);
+        }
+      },
+      verticalChanged: function() {
+        if (this.layoutContainer) {
+          this.layoutContainer.classList.toggle('column', this.vertical);
+        }
+      },
+      alignChanged: function(old) {
+        this.switchContainerClass('align-', old, this.align);
+      },
+      justifyChanged: function(old) {
+        this.switchContainerClass('justify-', old, this.justify);
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+/**
+ * polymer-ui-toolbar is a horizontal bar containing elements that can perform actions.
+ *
+ * Example:
+ *
+ *     <polymer-ui-toolbar>
+ *       <polymer-ui-icon-button src="menu.png" on-click="{{menuAction}}"></polymer-ui-icon-button>
+ *       <div flex>Title</div>
+ *       <polymer-ui-icon-button src="more.png" on-click="{{moreAction}}"></polymer-ui-icon-button>
+ *     </polymer-ui-toolbar>
+ *
+ * polymer-ui-toolbar can adopt to smaller screen size.  If the attribute "responsive" is set
+ * and the screen size is less than the responsiveWidth (default to 800px), the toolbar will
+ * be moved to the bottom of the page.
+ *
+ * Example:
+ *
+ *     <polymer-ui-toolbar>
+ *       <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+ *       <div flex>Title</div>
+ *       <polymer-ui-toolbar responsive>
+ *         <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+ *         <polymer-ui-icon-button icon="trash"></polymer-ui-icon-button>
+ *         <polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
+ *       </polymer-ui-toolbar>
+ *     </polymer-ui-toolbar>
+ *
+ * @class polymer-ui-toolbar
+ */
+/**
+ * Max-width when element becomes responsive. 
+ *
+ * @attribute responsiveWidth
+ * @type string
+ * @default '800px'
+ */
+-->
+
+
+
+
+
+<polymer-element name="polymer-ui-toolbar" extends="polymer-ui-theme-aware" attributes="responsiveWidth" assetpath="../components/polymer-ui-toolbar/">
+  <template>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+:host {
+  /* technical */
+  display: block;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* border/shadow */
+	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+	/* size */
+  height: 60px;
+  font-size: 21px;
+	font-family: 'Helvetica Neue Medium', 'HelveticaNeue-Medium', Helvetica, sans-serif;
+	position: relative;
+}
+
+:host(.polymer-ui-light-theme:host) {
+  background: #f2f2f2 -webkit-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+  background: #f2f2f2 -moz-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+  background: #f2f2f2 -ms-linear-gradient(top, rgba(197,197,197,0), rgba(197,197,197,0.15));
+  color: #333333;
+}
+
+:host(.polymer-ui-dark-theme:host) {
+  background: #444444 none;
+  color: #f3f3f3;
+}
+  
+:host(.narrow-layout[responsive]:host) {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.28);
+}
+
+/* TODO(sorvell): use of !important due to inability to 
+  naturally win over an :host style */
+/*@polyfill :host > polymer-ui-icon-button */
+::content > polymer-ui-icon-button {
+  margin: 0px 8px 0 8px !important;
+}
+
+/*@polyfill :host > polymer-ui-menu-button */
+::content > polymer-ui-menu-button {
+  margin: 0px 8px 0 8px !important;
+}
+
+/*@polyfill :host > polymer-ui-toolbar */
+::content > polymer-ui-toolbar {
+  margin: 0;
+}
+
+/*@polyfill :host > polymer-ui-toolbar:not(.narrow-layout) */
+::content > polymer-ui-toolbar:not(.narrow-layout) {
+  border: 0;
+  background: transparent none;
+}
+</style>
+    <polymer-flex-layout align="center"></polymer-flex-layout>
+    <polymer-media-query query="max-width: {{responsiveWidth}}" querymatches="{{queryMatches}}"></polymer-media-query>
+    <content></content>
+  </template>
+  <script>
+    Polymer('polymer-ui-toolbar', {
+      responsiveWidth: '800px',
+      queryMatches: false,
+      defaultTheme: 'polymer-ui-light-theme',
+      queryMatchesChanged: function() {
+        this.classList.toggle('narrow-layout', this.queryMatches);
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-meta is used to manage metadata.  When an instance of polymer-meta
+ * is created, it's automatically registered and add to the metaData storage given an id
+ * is set on the element. Use byId() to retrive a specific polymer-meta and
+ * the property "list" to retrieve all registered polymer-meta's.
+ *
+ * @class polymer-meta
+ */
+-->
+
+
+<polymer-element name="polymer-meta" attributes="list label type" assetpath="../components/polymer-meta/">
+  <script>
+    (function() {
+      var SKIP_ID = 'meta';
+      var metaData = {}, metaArray = {};
+
+      Polymer('polymer-meta', {
+        alwaysPrepare: true,
+        type: 'default',
+        ready: function() {
+          this.idChanged();
+        },
+        get metaArray() {
+          var t = this.type;
+          if (!metaArray[t]) {
+            metaArray[t] = [];
+          }
+          return metaArray[t];
+        },
+        get metaData() {
+          var t = this.type;
+          if (!metaData[t]) {
+            metaData[t] = {};
+          }
+          return metaData[t];
+        },
+        idChanged: function(old) {
+          if (this.id && this.id !== SKIP_ID) {
+            this.unregister(this, old);
+            this.metaData[this.id] = this;
+            this.metaArray.push(this);
+          }
+        },
+        unregister: function(meta, id) {
+          delete this.metaData[id || meta.id];
+          var i = this.metaArray.indexOf(meta);
+          if (i >= 0) {
+            this.metaArray.splice(i, 1);
+          }
+        },
+        get list() {
+          return this.metaArray;
+        },
+        get archetype() {
+          return this.querySelector('template');
+        },
+        byId: function(id) {
+          return this.metaData[id];
+        },
+        get childMetas() {
+          return this.querySelectorAll(this.localName);
+        }
+      });
+    })();
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<!--
+/**
+* Polymer UI Elements
+*
+* @module Polymer UI Elements
+*/  
+/**
+ * polymer-ui-iconset allows users to define their own icon sets.
+ *
+ * Example:
+ *
+ *     <polymer-ui-iconset id="my-icons" src="my-icons.png" width="96" iconsize="24"
+ *         icons="location place starta stopb bus car train walk">
+ *     </polymer-ui-iconset>
+ *
+ * The above will automatically register the icon set "my-icons" to the iconset
+ * database.  To use the user-defined icon set, prefix the icon with
+ * the icon set e.g. "my-icons:clock"
+ *
+ * Example:
+ *
+ *     <polymer-ui-icon-button icon="my-icons:car"></polymer-ui-icon-button>
+ *
+ * @class polymer-ui-iconset
+ */
+-->
+
+
+<polymer-element name="polymer-ui-iconset" extends="polymer-meta" attributes="src width icons iconsize" assetpath="../components/polymer-ui-iconset/">
+  <script>
+    Polymer('polymer-ui-iconset', {
+      width: 0,
+      icons: '',
+      iconsize: 0,
+      offsetx: 0,
+      offsety: 0,
+      type: 'iconset',
+      ready: function() {
+        // TODO(sorvell): ensure iconset's src is always relative to the main
+        // document
+        if (this.src && (this.ownerDocument !== document)) {
+          this.src = this.resolvePath(this.src, this.ownerDocument.baseURI);
+        }
+        this.super();
+        this.iconsChanged();
+        this.updateThemes();
+      },
+      iconsChanged: function() {
+        this.iconMap = {};
+        var ox = this.offsetx;
+        var oy = this.offsety;
+        this.icons && this.icons.split(/\s+/g).forEach(function(name, i) {
+          this.iconMap[name] = {
+            offsetx: ox,
+            offsety: oy
+          }
+          if (ox + this.iconsize < this.width) {
+            ox += this.iconsize;
+          } else {
+            ox = this.offsetx;
+            oy += this.iconsize;
+          }
+        }, this);
+      },
+      updateThemes: function() {
+        this.themes = {};
+        var ts = this.querySelectorAll('property[theme]');
+        ts && ts.array().forEach(function(t) {
+          this.themes[t.getAttribute('theme')] = {
+            offsetx: parseInt(t.getAttribute('offsetx')) || 0,
+            offsety: parseInt(t.getAttribute('offsety')) || 0
+          };
+        }, this);
+      },
+      // TODO(ffu): support retrived by index e.g. getOffset(10);
+      getOffset: function(icon, theme) {
+        var i = this.iconMap[icon];
+        var t = this.themes[theme];
+        if (i && t) {
+          return {
+            offsetx: i.offsetx + t.offsetx,
+            offsety: i.offsety + t.offsety
+          }
+        }
+        return i;
+      }
+    });
+  </script>
+</polymer-element>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<polymer-ui-iconset id="polymer-ui-icons" src="../components/polymer-ui-action-icons/action-icons.png" width="24" iconsize="24" icons="drawer menu search dropdown close add trash refresh settings dialoga 
+           left right down up grid contact account plus time marker 
+           briefcase array columns list modules quilt stream maximize shrink sort 
+           shortcut dialog twitter facebook favorite gplus filter tag plusone dots">
+
+  <property theme="polymer-ui-light-theme" offsetx="24"></property>
+  <property theme="polymer-ui-dark-theme" offsetx="72"></property>
+</polymer-ui-iconset>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<!--
+/**
+* Polymer UI Elements
+*
+* @module Polymer UI Elements
+*/  
+/**
+ * polymer-ui-icon is a 24x24 glyph expressed as a background-image.
+ *
+ * Example:
+ *
+ *     <polymer-ui-icon src="star.png"></polymer-ui-icon>
+ *
+ * Optionally can use other size like 32x32 by setting the attribute "size" to "32":
+ *
+ *     <polymer-ui-icon src="big_star.png" size="32"></polymer-ui-icon>
+ *
+ * Polymer includes an icon set.  The property "icon" can be used
+ * to specify which icon to use.
+ *
+ * Example:
+ *
+ *     <polymer-ui-icon icon="menu"></polymer-ui-icon>
+ *
+ * See <a href="polymer-ui-iconset.html">polymer-ui-iconset</a> on how to use
+ * your own icon set.
+ *
+ * @class polymer-ui-icon
+ */
+-->
+
+
+
+
+
+<polymer-element name="polymer-ui-icon" extends="polymer-ui-theme-aware" attributes="src size index icon" assetpath="../components/polymer-ui-icon/">
+  <template>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+:host {
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+  background-repeat: no-repeat;
+}
+</style>
+    <polymer-ui-iconset id="meta"></polymer-ui-iconset>
+    <content></content>
+  </template>
+  <script>
+    Polymer('polymer-ui-icon', {
+      /**
+       * The URL of an image for the icon.
+       *
+       * @attribute src
+       * @type string
+       * @default ''
+       */
+      src: '',
+      /**
+       * Specifies the size of the icon.
+       *
+       * @attribute size
+       * @type string
+       * @default 24
+       */
+      size: 24,
+      /**
+       * Specifies the icon from the icon set.
+       *
+       * @attribute icon
+       * @type string
+       * @default ''
+       */
+      icon: '',
+      defaultIconset: 'polymer-ui-icons',
+      observe: {
+        icon: 'updateIcon',
+        activeTheme: 'updateIcon'
+      },
+      ready: function() {
+        this.sizeChanged();
+      },
+      sizeChanged: function() {
+        this.style.width = this.style.height = this.size + 'px';
+      },
+      srcChanged: function() {
+        this.style.backgroundImage = 'url(' + this.src + ')';
+        this.style.backgroundPosition = 'center';
+        this.style.backgroundSize = this.size + 'px ' + this.size + 'px';
+      },
+      getIconset: function(name) {
+        return this.$.meta.byId(name || this.defaultIconset);
+      },
+      updateIcon: function() {
+        if (!this.icon) {
+          return;
+        }
+        var a = this.icon.split(':');
+        var icon = a.pop();
+        var n = a.pop();
+        var s = this.getIconset(n);
+        if (s) {
+          var o = s.getOffset(icon, this.activeTheme);
+          if (o) {
+            var r = this.size / s.iconsize;
+            this.style.backgroundImage = 'url(' + s.src + ')';
+            this.style.backgroundPosition = 
+                (-o.offsetx * r + 'px') + ' ' + (-o.offsety * r + 'px');
+            this.style.backgroundSize = r === 1 ? 'auto' : s.width * r + 'px';
+          }
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+/**
+ * polymer-ui-icon-button enables you to place an image centered in a button.
+ *
+ * Example:
+ *
+ *     <polymer-ui-icon-button src="star.png"></polymer-ui-icon-button>
+ *
+ * Polymer includes an icon set.  The property "icon" can be used
+ * to specify which icon to use.
+ *
+ * Example:
+ *
+ *     <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+ *
+ * @class polymer-ui-icon-button
+ */
+-->
+
+
+
+<polymer-element name="polymer-ui-icon-button" extends="polymer-ui-theme-aware" attributes="src index icon active" assetpath="../components/polymer-ui-icon-button/">
+  <template>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+:host {
+  display: inline-block;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  width: 38px;
+  height: 38px;
+  background-image: none;
+  border-radius: 2px;
+  padding: 7px;
+  margin: 2px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+  
+:host(.outline:host) {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+:host(:hover:host) {
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+:host(.selected:host) {
+  background-color: rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 0 rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+:host(:active:host, .selected:active:host) {
+  background-color: rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 0 rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+  
+:host(.polymer-ui-dark-theme.outline:host) {
+  background-color: rgba(200, 200, 200, 0.05);
+  box-shadow: 0 0 0 1px rgba(200, 200, 200, 0.1);
+}
+
+:host(.polymer-ui-dark-theme:hover:host) {
+  background-color: rgba(200, 200, 200, 0.05);
+  box-shadow: 0 1px 0 0 rgba(200, 200, 200, 0.12), 0 0 0 1px rgba(200, 200, 200, 0.1);
+}
+
+:host(.polymer-ui-dark-theme.selected:host) {
+  background-color: rgba(220, 220, 220, 0.05);
+  box-shadow: inset 0 1px 0 0 rgba(200, 200, 200, 0.05), 0 0 0 1px rgba(200, 200, 200, 0.12);
+}
+
+:host(.polymer-ui-dark-theme:active:host, .polymer-ui-dark-theme.selected:active:host) {
+  background-color: rgba(200, 200, 200, 0.05);
+  box-shadow: inset 0 1px 0 0 rgba(200, 200, 200, 0.1), 0 0 0 1px rgba(200, 200, 200, 0.12);
+}
+
+polymer-ui-icon {
+  display: block !important;
+}</style>
+    <polymer-ui-icon src="{{src}}" index="{{index}}" icon="{{icon}}"><content></content></polymer-ui-icon>
+  </template>
+  <script>
+    Polymer('polymer-ui-icon-button', {
+      /**
+       * The URL of an image for the icon.
+       *
+       * @attribute src
+       * @type string
+       * @default ''
+       */
+      src: '',
+      /**
+       * If true, border is placed around the button to indicate
+       * active state.
+       *
+       * @attribute active
+       * @type boolean
+       * @default false
+       */
+      active: false,
+      /**
+       * Specifies the icon from the Polymer icon set.
+       *
+       * @attribute icon
+       * @type string
+       * @default ''
+       */
+      icon: '',
+      /**
+       * If a theme is applied that includes an icon set, the index of the 
+       * icon to display.
+       *
+       * @attribute index
+       * @type number
+       * @default -1
+       */     
+      index: -1,
+      activeChanged: function() {
+        // TODO(sjmiles): sugar this common case
+        this.classList.toggle('selected', this.active);
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+/**
+ * polymer-ui-menu-item is styled to look like a menu item.  It should be used
+ * in conjunction with polymer-ui-menu or polymer-ui-sibebar-menu.
+ *
+ * Example:
+ *
+ *     <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+ *
+ * @class polymer-ui-menu-item
+ */
+/**
+ * The URL of an image for the icon.
+ *
+ * @attribute src
+ * @type string
+ * @default ''
+ */
+/**
+ * Specifies the icon from the Polymer icon set.
+ *
+ * @attribute icon
+ * @type string
+ * @default ''
+ */
+/**
+ * Specifies the label for the menu item.
+ *
+ * @attribute label
+ * @type string
+ * @default ''
+ */
+/**
+ * Specifies the URL of the link it goes to when tapped on.
+ *
+ * Example:
+ *
+ *     <polymer-ui-menu-item icon="favorite" label="Favorite" href="http://www.polymer-project.org/"></polymer-ui-menu-item>
+ *
+ * If you want more control on the link, e.g. specify the target for where to
+ * open the linked document, you can put &lt;a> directly inside the menu-item.
+ *
+ * Example:
+ *
+ *     <polymer-ui-menu-item icon="favorite" label="Favorite">
+ *       <a href="http://www.polymer-project.org/" target="_self"></a>
+ *     </polymer-ui-menu-item>
+ *
+ * @attribute href
+ * @type string
+ * @default ''
+ */
+-->
+
+
+
+
+<polymer-element name="polymer-ui-menu-item" extends="polymer-ui-theme-aware" attributes="src label icon item href" assetpath="../components/polymer-ui-menu-item/">
+  <template>
+    <style>/*
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+:host { 
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 40px;
+  line-height: 35px;
+  font-size: 16px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+:host(:hover:host) {
+  opacity: 0.9;
+}
+
+:host(.polymer-selected:host, [active]:host) {
+  opacity: 1;
+}
+
+:host(.polymer-ui-light-theme.polymer-selected:host, .polymer-ui-light-theme[active]:host) {
+  background: #f2f2f2;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+:host(.polymer-ui-dark-theme:host) {
+  color: #b3b3b3;
+}
+	
+:host(.polymer-ui-dark-theme:hover:host) {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:host(.polymer-ui-dark-theme.polymer-selected:host, .polymer-ui-dark-theme[active]:host) {
+  background-color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:host([active].no-active-bg:host) {
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+
+/* icon and label */
+polymer-ui-icon:not([showing]) {
+  display: none !important;
+}
+
+polymer-ui-icon {
+  margin-right: 16px;
+}
+
+#label {
+  vertical-align: middle;
+  padding-right: 20px;
+}
+
+/*@polyfill :host #label > a, #link */
+::content > a, #link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: -1px;
+}
+
+#link[hidden] {
+  display: none;
+}
+</style>
+    <polymer-ui-icon src="{{src}}" icon="{{icon}}" showing?="{{icon || src}}"></polymer-ui-icon>
+    <span id="label">{{label}}<content></content></span>
+    <a id="link" href="{{href}}" hidden?="{{!href}}"></a>
+  </template>
+  <script>
+    Polymer('polymer-ui-menu-item', {
+      label: '',
+      // calc item's offset middle pos instead of using offsetTop/Height 
+      // directly which requires to wait for submenu's collapsing transition to 
+      // complete first before it can return the correct pos.
+      getOffsetMiddle: function() {
+        var p = this.parentNode;
+        if (p) {
+          var i = Array.prototype.indexOf.call(p.items, this);
+          var h = this.getItemHeight();
+          return i * h + h/2 + p.items[0].offsetTop;
+        }
+      },
+      getItemHeight: function() {
+        return this.offsetHeight;
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+-->
+<!--
+/**
+ * The polymer-selection element is used to manage selection state. It has no
+ * visual appearance and is typically used in conjuneciton with another element.
+ * For example, <a href="polymer-selector.html">polymer-selector</a>
+ * use a polymer-selection to manage selection.
+ *
+ * To mark an item as selected, call the select(item) method on 
+ * polymer-selection. Notice that the item itself is an argument to this method.
+ * The polymer-selection element manages selection state for any given set of
+ * items. When an item is selected, the `polymer-select` event is fired.
+ * The attribute "multi" indicates if multiple items can be selected at once.
+ * 
+ * Example:
+ *
+ *     <polymer-element name="selection-example">
+ *        <template>
+ *          <style>
+ *            ::-webkit-distributed(> .selected) {
+ *              font-weight: bold;
+ *              font-style: italic;
+ *            }
+ *          </style>
+ *          <ul on-tap="{{itemTapAction}}">
+ *            <content></content>
+ *          </ul>
+ *          <polymer-selection id="selection" multi on-polymer-select="{{selectAction}}"></polymer-selection>
+ *        </template>
+ *        <script>
+ *          Polymer('selection-example', {
+ *            itemTapAction: function(e) {
+ *              this.$.selection.select(e.target);
+ *            },
+ *            selectAction: function(e, detail) {
+ *              detail.item.classList.toggle('selected', detail.isSelected);
+ *            }
+ *          });
+ *        </script>
+ *     </polymer-element>
+ *
+ *     <selection-example>
+ *       <li>Red</li>
+ *       <li>Green</li>
+ *       <li>Blue</li>
+ *     </selection-example>
+ *
+ * @class polymer-selection
+ */
+ /**
+ * Fired when an item's selection state is changed. This event is fired both
+ * when an item is selected or deselected. The `isSelected` detail property
+ * contains the selection state.
+ * 
+ * @event polymer-select
+ * @param {Object} detail
+ *   @param {boolean} detail.isSelected true for selection and false for deselection
+ *   @param {Object} detail.item the item element
+ */
+-->
+
+
+<polymer-element name="polymer-selection" attributes="multi" assetpath="../components/polymer-selection/">
+  <template>
+    <style>
+      :host {
+        display: none !important;
+      }
+    </style>
+  </template>
+  <script>
+    Polymer('polymer-selection', {
+      /**
+       * If true, multiple selections are allowed.
+       *
+       * @attribute multi
+       * @type boolean
+       * @default false
+       */
+      multi: false,
+      ready: function() {
+        this.clear();
+      },
+      clear: function() {
+        this.selection = [];
+      },
+      /**
+       * Retrieves the selected item(s).
+       * @method getSelection
+       * @returns Returns the selected item(s). If the multi property is true,
+       * getSelection will return an array, otherwise it will return 
+       * the selected item or undefined if there is no selection.
+      */
+      getSelection: function() {
+        return this.multi ? this.selection : this.selection[0];
+      },
+      /**
+       * Indicates if a given item is selected.
+       * @method isSelected
+       * @param {any} item The item whose selection state should be checked.
+       * @returns Returns true if `item` is selected.
+      */
+      isSelected: function(item) {
+        return this.selection.indexOf(item) >= 0;
+      },
+      setItemSelected: function(item, isSelected) {
+        if (item !== undefined && item !== null) {
+          if (isSelected) {
+            this.selection.push(item);
+          } else {
+            var i = this.selection.indexOf(item);
+            if (i >= 0) {
+              this.selection.splice(i, 1);
+            }
+          }
+          this.fire("polymer-select", {isSelected: isSelected, item: item});
+        }
+      },
+      /**
+       * Set the selection state for a given `item`. If the multi property
+       * is true, then the selected state of `item` will be toggled; otherwise
+       * the `item` will be selected.
+       * @method select
+       * @param {any} item: The item to select.
+      */
+      select: function(item) {
+        if (this.multi) {
+          this.toggle(item);
+        } else if (this.getSelection() !== item) {
+          this.setItemSelected(this.getSelection(), false);
+          this.setItemSelected(item, true);
+        }
+      },
+      /**
+       * Toggles the selection state for `item`.
+       * @method toggle
+       * @param {any} item: The item to toggle.
+      */
+      toggle: function(item) {
+        this.setItemSelected(item, !this.isSelected(item));
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-selector is used to manage a list of elements that can be selected.
+ * The attribute "selected" indicates which item element is being selected.
+ * The attribute "multi" indicates if multiple items can be selected at once.
+ * Tapping on the item element would fire "polymer-activate" event. Use
+ * "polymer-select" event to listen for selection changes.
+ *
+ * Example:
+ *
+ *     <polymer-selector selected="0">
+ *       <div>Item 1</div>
+ *       <div>Item 2</div>
+ *       <div>Item 3</div>
+ *     </polymer-selector>
+ *
+ * polymer-selector is not styled.  So one needs to use "polymer-selected" CSS
+ * class to style the selected element.
+ * 
+ *     <style>
+ *       .item.polymer-selected {
+ *         background: #eee;
+ *       }
+ *     </style>
+ *     ...
+ *     <polymer-selector>
+ *       <div class="item">Item 1</div>
+ *       <div class="item">Item 2</div>
+ *       <div class="item">Item 3</div>
+ *     </polymer-selector>
+ *
+ * @class polymer-selector
+ */
+/**
+ * Fired when an item's selection state is changed. This event is fired both
+ * when an item is selected or deselected. The `isSelected` detail property
+ * contains the selection state.
+ * 
+ * @event polymer-select
+ * @param {Object} detail
+ *   @param {boolean} detail.isSelected true for selection and false for deselection
+ *   @param {Object} detail.item the item element
+ */
+/**
+ * Fired when an item element is tapped.
+ * 
+ * @event polymer-activate
+ * @param {Object} detail
+ *   @param {Object} detail.item the item element
+ */
+-->
+
+
+
+<polymer-element name="polymer-selector" attributes="selected multi valueattr selectedClass selectedProperty selectedItem selectedModel selectedIndex notap target itemsSelector activateEvent" assetpath="../components/polymer-selector/">
+  <template>
+    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="{{selectionSelect}}"></polymer-selection>
+    <content id="items" select="*"></content>
+  </template>
+  <script>
+    Polymer('polymer-selector', {
+      /**
+       * Gets or sets the selected element.  Default to use the index
+       * of the item element.
+       *
+       * If you want a specific attribute value of the element to be
+       * used instead of index, set "valueattr" to that attribute name.
+       *
+       * Example:
+       *
+       *     <polymer-selector valueattr="label" selected="foo">
+       *       <div label="foo"></div>
+       *       <div label="bar"></div>
+       *       <div label="zot"></div>
+       *     </polymer-selector>
+       *
+       * In multi-selection this should be an array of values.
+       *
+       * Example:
+       *
+       *     <polymer-selector id="selector" valueattr="label" multi>
+       *       <div label="foo"></div>
+       *       <div label="bar"></div>
+       *       <div label="zot"></div>
+       *     </polymer-selector>
+       *
+       *     this.$.selector.selected = ['foo', 'zot'];
+       *
+       * @attribute selected
+       * @type Object
+       * @default null
+       */
+      selected: null,
+      /**
+       * If true, multiple selections are allowed.
+       *
+       * @attribute multi
+       * @type boolean
+       * @default false
+       */
+      multi: false,
+      /**
+       * Specifies the attribute to be used for "selected" attribute.
+       *
+       * @attribute valueattr
+       * @type string
+       * @default 'name'
+       */
+      valueattr: 'name',
+      /**
+       * Specifies the CSS class to be used to add to the selected element.
+       * 
+       * @attribute selectedClass
+       * @type string
+       * @default 'polymer-selected'
+       */
+      selectedClass: 'polymer-selected',
+      /**
+       * Specifies the property to be used to set on the selected element
+       * to indicate its active state.
+       *
+       * @attribute selectedProperty
+       * @type string
+       * @default 'active'
+       */
+      selectedProperty: 'active',
+      /**
+       * Returns the currently selected element. In multi-selection this returns
+       * an array of selected elements.
+       * 
+       * @attribute selectedItem
+       * @type Object
+       * @default null
+       */
+      selectedItem: null,
+      /**
+       * In single selection, this returns the model associated with the
+       * selected element.
+       * 
+       * @attribute selectedModel
+       * @type Object
+       * @default null
+       */
+      selectedModel: null,
+      /**
+       * In single selection, this returns the selected index.
+       *
+       * @attribute selectedIndex
+       * @type number
+       * @default -1
+       */
+      selectedIndex: -1,
+      /**
+       * The target element that contains items.  If this is not set 
+       * polymer-selector is the container.
+       * 
+       * @attribute target
+       * @type Object
+       * @default null
+       */
+      target: null,
+      /**
+       * This can be used to query nodes from the target node to be used for 
+       * selection items.  Note this only works if the 'target' property is set.
+       *
+       * Example:
+       *
+       *     <polymer-selector target="{{$.myForm}}" itemsSelector="input[type=radio]"></polymer-selector>
+       *     <form id="myForm">
+       *       <label><input type="radio" name="color" value="red"> Red</label> <br>
+       *       <label><input type="radio" name="color" value="green"> Green</label> <br>
+       *       <label><input type="radio" name="color" value="blue"> Blue</label> <br>
+       *       <p>color = {{color}}</p>
+       *     </form>
+       * 
+       * @attribute itemSelector
+       * @type string
+       * @default ''
+       */
+      itemsSelector: '',
+      /**
+       * The event that would be fired from the item element to indicate
+       * it is being selected.
+       *
+       * @attribute activateEvent
+       * @type string
+       * @default 'tap'
+       */
+      activateEvent: 'tap',
+      notap: false,
+      ready: function() {
+        this.activateListener = this.activateHandler.bind(this);
+        this.observer = new MutationObserver(this.updateSelected.bind(this));
+        if (!this.target) {
+          this.target = this;
+        }
+      },
+      get items() {
+        var nodes = this.target !== this ? (this.itemsSelector ? 
+            this.target.querySelectorAll(this.itemsSelector) : 
+                this.target.children) : this.$.items.getDistributedNodes();
+        return Array.prototype.filter.call(nodes || [], function(n) {
+          return n && n.localName !== 'template';
+        });
+      },
+      targetChanged: function(old) {
+        if (old) {
+          this.removeListener(old);
+          this.observer.disconnect();
+        }
+        if (this.target) {
+          this.addListener(this.target);
+          this.observer.observe(this.target, {childList: true});
+        }
+      },
+      addListener: function(node) {
+        node.addEventListener(this.activateEvent, this.activateListener);
+      },
+      removeListener: function(node) {
+        node.removeEventListener(this.activateEvent, this.activateListener);
+      },
+      get selection() {
+        return this.$.selection.getSelection();
+      },
+      selectedChanged: function() {
+        this.updateSelected();
+      },
+      updateSelected: function() {
+        this.validateSelected();
+        if (this.multi) {
+          this.clearSelection();
+          this.selected && this.selected.forEach(function(s) {
+            this.valueToSelection(s);
+          }, this);
+        } else {
+          this.valueToSelection(this.selected);
+        }
+      },
+      validateSelected: function() {
+        // convert to an array for multi-selection
+        if (this.multi && !Array.isArray(this.selected) && 
+            this.selected !== null && this.selected !== undefined) {
+          this.selected = [this.selected];
+        }
+      },
+      clearSelection: function() {
+        if (this.multi) {
+          this.selection.slice().forEach(function(s) {
+            this.$.selection.setItemSelected(s, false);
+          }, this);
+        } else {
+          this.$.selection.setItemSelected(this.selection, false);
+        }
+        this.selectedItem = null;
+        this.$.selection.clear();
+      },
+      valueToSelection: function(value) {
+        var item = (value === null || value === undefined) ? 
+            null : this.items[this.valueToIndex(value)];
+        this.$.selection.select(item);
+      },
+      updateSelectedItem: function() {
+        this.selectedItem = this.selection;
+      },
+      selectedItemChanged: function() {
+        if (this.selectedItem) {
+          var t = this.selectedItem.templateInstance;
+          this.selectedModel = t ? t.model : undefined;
+        } else {
+          this.selectedModel = null;
+        }
+        this.selectedIndex = this.selectedItem ? 
+            parseInt(this.valueToIndex(this.selected)) : -1;
+      },
+      valueToIndex: function(value) {
+        // find an item with value == value and return it's index
+        for (var i=0, items=this.items, c; (c=items[i]); i++) {
+          if (this.valueForNode(c) == value) {
+            return i;
+          }
+        }
+        // if no item found, the value itself is probably the index
+        return value;
+      },
+      valueForNode: function(node) {
+        return node[this.valueattr] || node.getAttribute(this.valueattr);
+      },
+      // events fired from <polymer-selection> object
+      selectionSelect: function(e, detail) {
+        this.updateSelectedItem();
+        if (detail.item) {
+          this.applySelection(detail.item, detail.isSelected);
+        }
+      },
+      applySelection: function(item, isSelected) {
+        if (this.selectedClass) {
+          item.classList.toggle(this.selectedClass, isSelected);
+        }
+        if (this.selectedProperty) {
+          item[this.selectedProperty] = isSelected;
+        }
+      },
+      // event fired from host
+      activateHandler: function(e) {
+        if (!this.notap) {
+          var i = this.findDistributedTarget(e.target, this.items);
+          if (i >= 0) {
+            var item = this.items[i];
+            var s = this.valueForNode(item) || i;
+            if (this.multi) {
+              if (this.selected) {
+                this.addRemoveSelected(s);
+              } else {
+                this.selected = [s];
+              }
+            } else {
+              this.selected = s;
+            }
+            this.asyncFire('polymer-activate', {item: item});
+          }
+        }
+      },
+      addRemoveSelected: function(value) {
+        var i = this.selected.indexOf(value);
+        if (i >= 0) {
+          this.selected.splice(i, 1);
+        } else {
+          this.selected.push(value);
+        }
+        this.valueToSelection(value);
+      },
+      findDistributedTarget: function(target, nodes) {
+        // find first ancestor of target (including itself) that
+        // is in nodes, if any
+        while (target && target != this) {
+          var i = Array.prototype.indexOf.call(nodes, target);
+          if (i >= 0) {
+            return i;
+          }
+          target = target.parentNode;
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+/**
+ * polymer-ui-menu is a polymer-selector with theme propagation.  It styles to look like 
+ * a menu and should be used in conjunction with polymer-ui-menu-item.
+ *
+ * Example:
+ * 
+ *     <polymer-ui-menu selected="0">
+ *       <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="dialog" label="Dialog"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="search" label="Search"></polymer-ui-menu-item>
+ *     </polymer-ui-menu>
+ *
+ * The "selectedItem" property returns the currently selected item.
+ *
+ * Example:
+ *
+ *     <polymer-ui-menu selected="0" selectedItem="{{item}}">
+ *       <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="dialog" label="Dialog"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="search" label="Search"></polymer-ui-menu-item>
+ *     </polymer-ui-menu>
+ *
+ *     <div>selected label: {{item.label}}</div>
+ *
+ * The event "polymer-select" can also be used to listen for selection change.
+ *
+ * Example:
+ *
+ *     <polymer-ui-menu selected="0" on-polymer-select="{{selectAction}}">
+ *       <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="dialog" label="Dialog"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="search" label="Search"></polymer-ui-menu-item>
+ *     </polymer-ui-menu>
+ *
+ *     ...
+ *
+ *     selectAction: function(e, detail) {
+ *       if (detail.isSelected) {
+ *         var selectedItem = detail.item;
+ *         ...
+ *       }
+ *     }
+ *
+ * @class polymer-ui-menu
+ * @extends polymer-selector
+ */
+-->
+
+
+
+
+<polymer-element name="polymer-ui-menu" extends="polymer-selector" attributes="theme" on-polymer-select="{{selectionChange}}" assetpath="../components/polymer-ui-menu/">
+  <template>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+:host {
+  /* technical */
+  display: block;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* size */
+  padding: 0.4em;
+  font-weight: bold;
+}
+
+:host(.polymer-ui-light-theme:host) {
+  color: #333333;
+}
+
+:host(.polymer-ui-dark-theme:host) {
+  background: -webkit-linear-gradient(-60deg, #3d3d3d, #353535);
+  background: -moz-linear-gradient(-60deg, #3d3d3d, #353535);
+  background: -ms-linear-gradient(-60deg, #3d3d3d, #353535);
+  color: #ededed;
+}
+</style>
+    <shadow></shadow>
+  </template>
+  <script>
+    Polymer('polymer-ui-menu', {
+      activeTheme: '',
+      validateTheme: PolymerUI.validateTheme,
+      enteredView: function() {
+        this.validateTheme();
+      },
+      themeChanged: function() {
+        this.activeTheme = this.theme;
+      },
+      activeThemeChanged: function(old) {
+        this.classList.switch(old, this.activeTheme);
+      },
+      selectionChange: function(e, detail) {
+        if (detail.isSelected) {
+          var i = detail.item;
+          // find nested selected item
+          while (i.selectedItem) {
+            i = i.selectedItem;
+          }
+          this.selectedItem = i;
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-collapse is used to add collapsible behavior to the
+ * target element.  It adjusts the height or width of the target element
+ * to make the element collapse and expand.
+ *
+ * Example:
+ *
+ *     <button on-click="{{toggle}}">toggle collapse</button>
+ *     <div id="demo">
+ *       ...
+ *     </div>
+ *     <polymer-collapse id="collapse" targetId="demo"></polymer-collapse>
+ *
+ *     ...
+ *
+ *     toggle: function() {
+ *       this.$.collapse.toggle();
+ *     }
+ *
+ * @class polymer-collapse
+ */
+-->
+
+
+<polymer-element name="polymer-collapse" attributes="targetId target horizontal closed duration fixedSize size" assetpath="../components/polymer-collapse/">
+  <template>
+    <style polymer-scope="controller">/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+.polymer-collapse-closed {
+  display: none;
+}</style>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+.polymer-collapse-closed {
+  display: none;
+}</style>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+  </template>
+  <script>
+    Polymer('polymer-collapse', {
+      /**
+       * The id of the target element.
+       *
+       * @attribute targetId
+       * @type string
+       * @default ''
+       */
+      targetId: '',
+      /**
+       * The target element.
+       *
+       * @attribute target
+       * @type object
+       * @default null
+       */
+      target: null,
+      /**
+       * If true, the orientation is horizontal; otherwise is vertical.
+       *
+       * @attribute horizontal
+       * @type boolean
+       * @default false
+       */
+      horizontal: false,
+      /**
+       * If true, the target element is hidden/collapsed.
+       *
+       * @attribute closed
+       * @type boolean
+       * @default false
+       */
+      closed: false,
+      /**
+       * Collapsing/expanding animation duration in second.
+       *
+       * @attribute duration
+       * @type number
+       * @default 0.33
+       */
+      duration: 0.33,
+      /**
+       * If true, the size of the target element is fixed and is set
+       * on the element.  Otherwise it will try to 
+       * use auto to determine the natural size to use
+       * for collapsing/expanding.
+       *
+       * @attribute fixedSize
+       * @type boolean
+       * @default false
+       */
+      fixedSize: false,
+      size: null,
+      attached: function() {
+        this.installControllerStyles();
+        this.inDocument = true;
+        this.async(function() {
+          this.afterInitialUpdate = true;
+        });
+      },
+      detached: function() {
+        if (this.target) {
+          this.removeListeners(this.target);
+        }
+      },
+      targetIdChanged: function() {
+        var p = this.parentNode;
+        while (p.parentNode) {
+          p = p.parentNode;
+        }
+        this.target = p.querySelector('#' + this.targetId);
+      },
+      targetChanged: function(old) {
+        if (old) {
+          this.removeListeners(old);
+        }
+        this.horizontalChanged();
+        this.isTargetReady = !!this.target;
+        if (this.target) {
+          this.target.style.overflow = 'hidden';
+          this.addListeners(this.target);
+          // set polymer-collapse-closed class initially to hide the target
+          this.toggleClosedClass(true);
+        }
+        // don't need to update if the size is already set and it's opened
+        if (!this.fixedSize || !this.closed) {
+          this.update();
+        }
+      },
+      addListeners: function(node) {
+        this.transitionEndListener = this.transitionEndListener || 
+            this.transitionEnd.bind(this);
+        node.addEventListener('webkitTransitionEnd', this.transitionEndListener);
+        node.addEventListener('transitionend', this.transitionEndListener);
+      },
+      removeListeners: function(node) {
+        node.removeEventListener('webkitTransitionEnd', this.transitionEndListener);
+        node.removeEventListener('transitionend', this.transitionEndListener);
+      },
+      horizontalChanged: function() {
+        this.dimension = this.horizontal ? 'width' : 'height';
+      },
+      closedChanged: function() {
+        this.update();
+      },
+      /** 
+       * Toggle the closed state of the collapsible.
+       *
+       * @method toggle
+       */
+      toggle: function() {
+        this.closed = !this.closed;
+      },
+      setTransitionDuration: function(duration) {
+        var s = this.target.style;
+        s.webkitTransition = s.transition = duration ? 
+            (this.dimension + ' ' + duration + 's') : null;
+        if (duration === 0) {
+          this.async('transitionEnd');
+        }
+      },
+      transitionEnd: function() {
+        if (!this.closed && !this.fixedSize) {
+          this.updateSize('auto', null);
+        }
+        this.setTransitionDuration(null);
+        this.toggleClosedClass(this.closed);
+      },
+      toggleClosedClass: function(add) {
+        this.hasClosedClass = add;
+        this.target.classList.toggle('polymer-collapse-closed', add);
+      },
+      updateSize: function(size, duration, forceEnd) {
+        if (duration) {
+          this.calcSize();
+        }
+        this.setTransitionDuration(duration);
+        var s = this.target.style;
+        var nochange = s[this.dimension] === size;
+        s[this.dimension] = size;
+        // transitonEnd will not be called if the size has not changed
+        if (forceEnd && nochange) {
+          this.transitionEnd();
+        }
+      },
+      update: function() {
+        if (!this.target || !this.inDocument) {
+          return;
+        }
+        if (!this.isTargetReady) {
+          this.targetChanged(); 
+        }
+        this.horizontalChanged();
+        this[this.closed ? 'hide' : 'show']();
+      },
+      calcSize: function() {
+        return this.target.getBoundingClientRect()[this.dimension] + 'px';
+      },
+      getComputedSize: function() {
+        return getComputedStyle(this.target)[this.dimension];
+      },
+      show: function() {
+        this.toggleClosedClass(false);
+        // for initial update, skip the expanding animation to optimize
+        // performance e.g. skip calcSize
+        if (!this.afterInitialUpdate) {
+          this.transitionEnd();
+          return;
+        }
+        if (!this.fixedSize) {
+          this.updateSize('auto', null);
+          var s = this.calcSize();
+          this.updateSize(0, null);
+        }
+        this.async(function() {
+          this.updateSize(this.size || s, this.duration, true);
+        });
+      },
+      hide: function() {
+        // don't need to do anything if it's already hidden
+        if (this.hasClosedClass && !this.fixedSize) {
+          return;
+        }
+        if (this.fixedSize) {
+          // save the size before hiding it
+          this.size = this.getComputedSize();
+        } else {
+          this.updateSize(this.calcSize(), null);
+        }
+        this.async(function() {
+          this.updateSize(0, this.duration);
+        });
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+/**
+ * polymer-ui-submenu-item is a menu-item that can contains other menu-items.
+ * It should be used in conjunction with polymer-ui-menu or 
+ * polymer-ui-sibebar-menu.
+ *
+ * Example:
+ *
+ *     <polymer-ui-menu selected="0">
+ *       <polymer-ui-submenu-item icon="settings" label="Topics">
+ *         <polymer-ui-menu-item label="Topics 1"></polymer-ui-menu-item>
+ *         <polymer-ui-menu-item label="Topics 2"></polymer-ui-menu-item>
+ *       </polymer-ui-submenu-item>
+ *       <polymer-ui-submenu-item icon="settings" label="Favorites">
+ *         <polymer-ui-menu-item label="Favorites 1"></polymer-ui-menu-item>
+ *         <polymer-ui-menu-item label="Favorites 2"></polymer-ui-menu-item>
+ *         <polymer-ui-menu-item label="Favorites 3"></polymer-ui-menu-item>
+ *       </polymer-ui-submenu-item>
+ *     </polymer-ui-menu>
+ *
+ * @class polymer-ui-submenu-item
+ * @extends polymer-ui-menu-item
+ */
+-->
+
+
+
+
+
+
+<polymer-element name="polymer-ui-submenu-item" extends="polymer-ui-menu-item" attributes="active selected selectedItem" assetpath="../components/polymer-ui-submenu-item/">
+  <template>
+    <style>/*
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+:host { 
+  display: block;
+}
+
+/* menu */
+#menu {
+  margin-left: 44px;
+  height: 0;
+  /* override :host style on polymer-ui-menu */
+  background-image: none !important;
+  padding: 0 !important;
+}
+</style>
+    <polymer-ui-menu-item id="item" src="{{src}}" label="{{label}}" icon="{{icon}}" active?="{{active}}" on-tap="{{activate}}">
+      <content select=".item-content"></content>
+    </polymer-ui-menu-item>
+    <polymer-ui-menu id="menu" selected="{{selected}}" selecteditem="{{selectedItem}}">
+      <content></content>
+    </polymer-ui-menu>
+    <polymer-collapse targetid="menu" closed="{{collapsed}}"></polymer-collapse>
+  </template>
+  <script>
+    Polymer('polymer-ui-submenu-item', {
+      active: false,
+      collapsed: true,
+      get items() {
+        return this.$.menu.items;
+      },
+      hasItems: function() {
+        return !!this.items.length;
+      },
+      unselectAllItems: function() {
+        this.$.menu.selected = null;
+        this.$.menu.clearSelection();
+      },
+      activeChanged: function() {
+        if (this.hasItems()) {
+          this.collapsed = !this.active;
+        }
+        if (!this.active) {
+          this.unselectAllItems();
+        }
+        this.$.item.classList.toggle('no-active-bg', this.hasItems());
+      },
+      activate: function() {
+        if (this.hasItems() && this.active) {
+          this.collapsed = !this.collapsed;
+          this.unselectAllItems();
+          this.fire("polymer-select", {isSelected: true, item: this});
+        }
+      },
+      getItemHeight: function() {
+        return this.$ && this.$.item && this.$.item.offsetHeight;
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-anchor-point can be used to align two nodes. The node to
+ * use as the reference position is the anchor node, and the node to
+ * be positioned is the target node.
+ *
+ * Both the anchor and target nodes should have an anchor-point
+ * attribute. The target node is positioned such that its anchor-point
+ * aligns with the anchor node's anchor-point.
+ *
+ * Note: The target node is positioned with position: fixed, and will not
+ * scroll with the page.
+ *
+ * Note: This is meant to polyfill the `<dialog>` positioning behavior when
+ * an anchor is provided. Spec: http://www.whatwg.org/specs/web-apps/current-work/multipage/commands.html#the-dialog-element
+ *
+ * Example:
+ *
+ *     <div id="anchor" anchor-point="bottom left"></div>
+ *     <div id="target" anchor-point="top left"></div>
+ *     <polymer-anchor-point id="anchor-helper"></polymer-anchor-point>
+ *     <script>
+ *       var helper = document.querySelector('#anchor-helper');
+ *       helper.anchor = document.querySelector('#anchor');
+ *       helper.target = document.querySelector('#target');
+ *       helper.apply();
+ *     </script>
+ *
+ * @class polymer-anchor-point
+ */
+ -->
+
+ 
+<polymer-element name="polymer-anchor-point" attributes="target anchor" assetpath="../components/polymer-anchor-point/">
+  <script>
+    (function() {
+      var DEFAULT_ANCHOR_POINT = 'center center';
+
+      function getAnchorPoint(node) {
+        var anchorPt = node.getAttribute('anchor-point');
+        if (!anchorPt || anchorPt === 'none') {
+          anchorPt = DEFAULT_ANCHOR_POINT;
+        }
+        return anchorPt;
+      };
+
+      function lengthIsPx(length) {
+        return length.slice(-2) === 'px';
+      };
+
+      function lengthIsPercent(length) {
+        return length.slice(-1) === '%';
+      };
+
+      function computeLength(length, ref) {
+        var computed = 0;
+        if (lengthIsPx(length)) {
+          computed  = length.slice(0, -2);
+        } else if (lengthIsPercent(length)) {
+          computed = ref * length.slice(0, -1) / 100;
+        }
+        return computed;
+      };
+
+      function partIsX(part) {
+        return part === 'left' || part === 'right' || part === 'center';
+      };
+
+      function partIsY(part) {
+        return part === 'top' || part === 'bottom' || part === 'center';
+      };
+
+      function partIsKeyword(part) {
+        return part.slice(-1) !== '%' && part.slice(-2) !== 'px';
+      };
+
+      function parsePosition(position) {
+        var parsed = {};
+        var parts = position.split(' ');
+        var i = 0;
+        var lastEdgeX = true;
+        do {
+          if (partIsX(parts[i])) {
+            parsed.x = parts[i];
+            lastEdgeX = parts[i] !== 'center';
+          } else if (partIsY(parts[i])) {
+            parsed.y = parts[i];
+            lastEdgeX = false;
+          } else if (lastEdgeX) {
+            parsed.xOffset = parts[i];
+            lastEdgeX = false;
+          } else {
+            parsed.yOffset = parts[i];
+          }
+        } while (++i < parts.length);
+        return parsed;
+      };
+
+      function computeAnchorOffset(rect, anchorPt) {
+        var offset = {
+          left: 0,
+          top: 0
+        };
+        var parsed = parsePosition(anchorPt);
+        if (!parsed.x && !parsed.xOffset) {
+          offset.left = rect.width / 2;
+        } else if (parsed.x && !parsed.xOffset) {
+          switch (parsed.x) {
+            case 'left':
+              offset.left = 0;
+              break;
+            case 'right':
+              offset.left = rect.width;
+              break;
+            case 'center':
+              offset.left = rect.width / 2;
+              break;
+          }
+        } else {
+          var computed = computeLength(parsed.xOffset, rect.width);
+          if (parsed.x === 'right') {
+            offset.left = rect.width - computed;
+          } else if (!parsed.x || parsed.x === 'left') {
+            offset.left = computed;
+          }
+        }
+        if (!parsed.y && !parsed.yOffset) {
+          offset.top = rect.height / 2;
+        } else if (parsed.y && !parsed.yOffset) {
+          switch (parsed.y) {
+            case 'top':
+              offset.top = 0;
+              break;
+            case 'bottom':
+              offset.top = rect.height;
+              break;
+            case 'center':
+              offset.top = rect.height / 2;
+              break;
+          }
+        } else {
+          var computed = computeLength(parsed.yOffset, rect.height);
+          if (parsed.y === 'bottom') {
+            offset.top = rect.height - computed;
+          } else if (!parsed.y || parsed.y === 'top') {
+            offset.top = computed;
+          }
+        }
+        return offset;
+      };
+
+      Polymer('polymer-anchor-point', {
+        /**
+         * The node to be positioned.
+         * @attribute target
+         * @type Node
+         */
+        target: null,
+        /**
+         * The node to align the target to.
+         * @attribute anchor
+         * @type node
+         */
+        anchor: null,
+        canPosition: function() {
+          return this.target && this.anchor;
+        },
+        apply: function() {
+          if (!this.canPosition()) {
+            return;
+          }
+          var pos = this.computePosition();
+          this.target.style.position = 'fixed';
+          this.target.style.top = pos.top + 'px';
+          this.target.style.left = pos.left + 'px';
+        },
+        computePosition: function() {
+          var rect = this.anchor.getBoundingClientRect();
+          var anchorPt = getAnchorPoint(this.anchor);
+          var anchorOffset = computeAnchorOffset(rect, anchorPt);
+          var targetRect = this.target.getBoundingClientRect();
+          var targetAnchorPt = getAnchorPoint(this.target);
+          var targetOffset = computeAnchorOffset(targetRect, targetAnchorPt);
+          var pos = {
+            left: rect.left + anchorOffset.left - targetOffset.left,
+            top: rect.top + anchorOffset.top - targetOffset.top
+          };
+          return pos;
+        }
+      });
+    })();
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+
+<polymer-element name="polymer-key-helper" assetpath="../components/polymer-key-helper/">
+	<script>
+		Polymer('polymer-key-helper', {
+			ENTER_KEY: 13,
+			ESCAPE_KEY: 27
+		});
+	</script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+
+
+
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-overlay displays overlayed on top of other content. It starts
+ * out hidden and is displayed by setting it's opened property to true.
+ * A polymer-overlay's opened state can be toggled by calling the toggle
+ * method.
+ * 
+ * It's common to want a polymer-overlay to animate to its opened
+ * position. A number of helper css classes provide some basic open/close
+ * animations. For example, assigning the class polymer-overlay-fade to a
+ * polymer-overlay will make it fade into and out of view as it opens and
+ * closes. Note, if multiple polymer-overlay's are opened, they should
+ * stack on top of each other.
+ * 
+ * Styling: The size and position of a polymer-overlay should be setup
+ * via css.
+ * polymer-overlay is natually sized around its content. When a
+ * polymer-overlay is opened it is shown and the 'opened' class is added
+ * to it. This is typically where css transitions and animations are
+ * applied. When the polymer-overlay is closed, the 'opened' class is
+ * removed and a 'closing' class is added. Use 'closing' to customize
+ * the closing animation. 
+ * 
+ * Classes for animating polymer-overlay:
+ * 
+ * * polymer-overlay-fade: fade in/out when opened/closed
+ * * polymer-overlay-scale-slideup: open: fade in and shrink;
+ * close: slide up
+ * * polymer-overlay-shake: open: fly in and shake; close: shake and
+ * fly out.
+ *
+ * It's common to use polymer-overlay to gather user input, for example
+ * a login dialog. To facilitate this, polymer-overlay supports automatic
+ * focusing of a specific element when it's opened. The element to be
+ * focused should be given an autofocus attribute.
+ * 
+ * An element that should close the polymer-overlay will automatically
+ * do so if it is given the overlay-toggle attribute. Please note that
+ * polymer-overlay will close whenever the user taps outside it or
+ * presses the escape key. The behavior can be turned off via the
+ * autoCloseDisabled property.
+ * 
+ *     <div>
+ *       <polymer-overlay></polymer-overlay>
+ *       <h2>Dialog</h2>
+ *       <input placeholder="say something..." autofocus>
+ *       <div>I agree with this wholeheartedly.</div>
+ *       <button overlay-toggle>OK</button>
+ *     </div>
+ * 
+ * @class polymer-overlay
+ */
+/**
+ * Fired when the polymer-overlay opened property is set.
+ * 
+ * @event polymer-overlay-open
+ * @param {Object} inDetail
+ * @param {Object} inDetail.opened the opened state
+ */
+-->
+<polymer-element name="polymer-overlay" attributes="target opened autoCloseDisabled transitions" assetpath="../components/polymer-overlay/">
+  <template>
+    <style polymer-scope="controller">/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+/* Note that trbl: 0 + position: fixed will not 'fit to window'
+if a transform is applied to a parent of this element. That parent
+becomes the containing block; see:
+http://dev.w3.org/csswg/css3-transforms/#transform-rendering
+We address this by using script based positioning =(
+*/
+:host(.polymer-overlay:host) {
+	position: fixed;
+	z-index: 10;
+	outline: none;
+	display: none;
+	-webkit-transition: opacity 0.001s;
+	transition: opacity 0.001s;
+}
+
+:host(.revealed:host) {
+	display: block;
+	visibility: hidden;
+}
+
+:host(.revealed.opened:host) {
+	display: block;
+	visibility: visible;
+}
+
+.polymer-overlay {
+	position: fixed;
+	z-index: 10;
+	outline: none;
+	display: none;
+	-webkit-transition: opacity 0.001s;
+	transition: opacity 0.001s;
+}
+
+/*
+	The revealed class exists because it's necessary to 'show' a node
+	before applying a transition. When an overlay is opened, it is 
+	immediately revealed (display: block) and then asynchronously the 
+	opened or closing classes are added.
+
+	Because we don't want to actually show the node before a transition
+	or animation is applied, when the node is 
+	revealed, it is made display: block but visibility: hidden.
+	It is then made visibility: visible when it is opened.
+*/
+
+.revealed {
+	display: block;
+	visibility: hidden;
+}
+
+.revealed.opened {
+	display: block;
+	visibility: visible;
+}
+</style>
+    <style>/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+/* Note that trbl: 0 + position: fixed will not 'fit to window'
+if a transform is applied to a parent of this element. That parent
+becomes the containing block; see:
+http://dev.w3.org/csswg/css3-transforms/#transform-rendering
+We address this by using script based positioning =(
+*/
+:host(.polymer-overlay:host) {
+	position: fixed;
+	z-index: 10;
+	outline: none;
+	display: none;
+	-webkit-transition: opacity 0.001s;
+	transition: opacity 0.001s;
+}
+
+:host(.revealed:host) {
+	display: block;
+	visibility: hidden;
+}
+
+:host(.revealed.opened:host) {
+	display: block;
+	visibility: visible;
+}
+
+.polymer-overlay {
+	position: fixed;
+	z-index: 10;
+	outline: none;
+	display: none;
+	-webkit-transition: opacity 0.001s;
+	transition: opacity 0.001s;
+}
+
+/*
+	The revealed class exists because it's necessary to 'show' a node
+	before applying a transition. When an overlay is opened, it is 
+	immediately revealed (display: block) and then asynchronously the 
+	opened or closing classes are added.
+
+	Because we don't want to actually show the node before a transition
+	or animation is applied, when the node is 
+	revealed, it is made display: block but visibility: hidden.
+	It is then made visibility: visible when it is opened.
+*/
+
+.revealed {
+	display: block;
+	visibility: hidden;
+}
+
+.revealed.opened {
+	display: block;
+	visibility: visible;
+}
+</style>
+    <polymer-key-helper id="keyHelper"></polymer-key-helper>
+  </template>
+  <script>
+    (function() {
+      // track overlays for z-index and focus managemant
+      var overlays = [];
+      var trackOverlays = function(inOverlay) {
+        if (inOverlay.opened) {
+          //var overlayZ = window.getComputedStyle(inOverlay.target).zIndex;
+          //var z0 = Math.max(currentOverlayZ(), overlayZ);
+          var z0 = currentOverlayZ();
+          overlays.push(inOverlay);
+          var z1 = currentOverlayZ();
+          if (z1 <= z0) {
+            applyOverlayZ(inOverlay, z0);
+          } 
+        } else {
+          var i = overlays.indexOf(inOverlay);
+          if (i >= 0) {
+            overlays.splice(i, 1);
+            setZ(inOverlay, null);
+          }
+        }
+      }
+      
+      var applyOverlayZ = function(inOverlay, inAboveZ) {
+        setZ(inOverlay.target, inAboveZ + 2);
+      }
+      
+      var setZ = function(inNode, inZ) {
+        inNode.style.zIndex = inZ;
+      }
+    
+      var currentOverlay = function() {
+        return overlays[overlays.length-1];
+      }
+      
+      var DEFAULT_Z = 10;
+      
+      var currentOverlayZ = function() {
+        var z;
+        var current = currentOverlay();
+        if (current) {
+          var z1 = window.getComputedStyle(current.target).zIndex;
+          if (!isNaN(z1)) {
+            z = Number(z1);
+          }
+        }
+        return z || DEFAULT_Z;
+      }
+      
+      var focusOverlay = function() {
+        var current = currentOverlay();
+        if (current) {
+          current.applyFocus();
+        }
+      }
+    
+      Polymer('polymer-overlay', {
+        /**
+         * The target element.
+         *
+         * @attribute target
+         * @type Object
+         */
+        target: null,
+        /**
+         * Set opened to true to show an overlay and to false to hide it.
+         * A polymer-overlay may be made intially opened by setting its
+         * opened attribute.
+         * @attribute opened
+         * @type boolean
+         * @default false
+         */
+        opened: false,
+        /**
+         * By default an overlay will close automatically if the user
+         * taps outside it or presses the escape key. Disable this
+         * behavior by setting the autoCloseDisabled property to true.
+         * @attribute autoCloseDisabled
+         * @type boolean
+         * @default false
+         */
+        autoCloseDisabled: false,
+        /**
+         * This property specifies the animation to play when the overlay is
+         * opened/closed. It can be an array of two animations
+         * [opening, closing], a single animation, an array of two strings, or
+         * a string. The strings should the tag names of custom elements
+         * descending from a polymer-animation. In the case of a single
+         * animation the closing animation is the opening animation played
+         * backwards.
+         * @attribute transitions
+         * @type polymer-animation
+         * @type Array&lt;polymer-animation>
+         * @type string
+         * @type Array&lt;string>
+         */
+        transitions: null,
+        timeout: 1000,
+        captureEventType: 'tap',
+        ready: function() {
+          if (this.tabIndex === undefined) {
+            this.tabIndex = -1;
+          }
+          this.setAttribute('touch-action', 'none');
+        },
+        enteredView: function() {
+          this.installControllerStyles();
+        },
+        /** 
+         * Toggle the opened state of the overlay.
+         * @method toggle
+         */
+        toggle: function() {
+          this.opened = !this.opened;
+        },
+        targetChanged: function(old) {
+          if (this.target) {
+            if (this.target.tabIndex === undefined) {
+              this.target.tabIndex = -1;
+            }
+            this.target.classList.add('polymer-overlay');
+            this.addListeners(this.target);
+          }
+          if (old) {
+            old.classList.remove('polymer-overlay');
+            this.removeListeners(old);
+          }
+        },
+        listeners: {
+          'tap': 'tapHandler',
+          'keydown': 'keydownHandler'
+        },
+        addListeners: function(node) {
+          for (e in this.listeners) {
+            node.addEventListener(e, this[this.listeners[e]].bind(this));
+          }
+        },
+        removeListeners: function(node) {
+          for (e in this.listeners) {
+            node.removeEventListener(e, this[this.listeners[e]].bind(this));
+          }
+        },
+        openedChanged: function() {
+          this.renderOpened();
+          trackOverlays(this);
+          this.async(function() {
+            if (!this.autoCloseDisabled) {
+              this.enableCaptureHandler(this.opened);
+            }
+          });
+          this.enableResizeHandler(this.opened);
+          this.fire('polymer-overlay-open', this.opened);
+        },
+        enableHandler: function(inEnable, inMethodName, inNode, inEventName, inCapture) {
+          var m = 'bound' + inMethodName;
+          this[m] = this[m] || this[inMethodName].bind(this);
+          
+          inNode[inEnable ? 'addEventListener' : 'removeEventListener'](
+            inEventName, this[m], inCapture);
+        },
+        enableResizeHandler: function(inEnable) {
+          this.enableHandler(inEnable, 'resizeHandler', window, 
+            'resize');
+        },
+        enableCaptureHandler: function(inEnable) {
+          this.enableHandler(inEnable, 'captureHandler', document, 
+            this.captureEventType, true);
+        },
+        getFocusNode: function() {
+          return this.target.querySelector('[autofocus]') || this.target;
+        },
+        // TODO(sorvell): nodes stay focused when they become un-focusable
+        // due to an ancestory becoming display: none; file bug.
+        applyFocus: function() {
+          var focusNode = this.getFocusNode();
+          if (this.opened) {
+            focusNode.focus();
+          } else {
+            focusNode.blur();
+            focusOverlay();
+          }
+        },
+        positionTarget: function() {
+          if (this.opened) {
+            // vertically and horizontally center if not positioned
+            var computedStyle = getComputedStyle(this.target);
+            if (computedStyle.top === 'auto' && computedStyle.bottom === 'auto') {
+              this.target.style.top = ((window.innerHeight - this.target.getBoundingClientRect().height) / 2) + 'px';
+            }
+            if (computedStyle.left === 'auto' && computedStyle.right === 'auto') {
+              this.target.style.left = ((window.innerWidth - this.target.getBoundingClientRect().width) / 2) + 'px';
+            }
+          }
+        },
+        resetTargetPosition: function() {
+          this.target.style.top = this.target.style.left = null;
+        },
+        get transition() {
+          return (!Array.isArray(this.transitions) && this.transitions
+              || this.opened && this.transitions && this.transitions[0]
+              || !this.opened && this.transitions && this.transitions[1]);
+        },
+        applyTransition: function() {
+          var animation = typeof this.transition === 'string' ?
+              document.createElement(this.transition) : this.transition;
+          // FIXME: Apply a default duration.
+          if ((!animation.duration || animation.duration === 'auto') && !animation.type) {
+            animation.duration = 0.3;
+          }
+          if (!animation.hasTarget()) {
+            animation.target = this.target;
+          }
+          // Make the overlay visible while the animation is running.
+          var transition = new ParGroup([
+            animation.apply(),
+            new Animation(this.target, [{'visibility': 'visible', 'display':'block'}])
+          ], {fill: 'none'});
+          transition.onend = this.completeOpening.bind(this);
+          this.target.classList.add('animating');
+          document.timeline.play(transition);
+        },
+        renderOpened: function() {
+          this.target.classList.add('revealed');
+          // continue styling after delay so display state can change
+          // without aborting transitions
+          this.async('continueRenderOpened');
+        },
+        continueRenderOpened: function() {
+          this.positionTarget();
+          if (this.transition) {
+            this.applyTransition();
+            // FIXME: Apply the class after the animation starts playing to
+            // prevent a flicker at the end of the animation. Should be handled
+            // in polymer-animation-start event but not working in polyfill
+            this.async(function() {
+              this.target.classList.toggle('opened', this.opened);
+            }, null, 100);
+          } else {
+            this.target.classList.toggle('opened', this.opened);
+            this.async('completeOpening');
+          }
+        },
+        completeOpening: function() {
+          this.target.classList.remove('animating');
+          this.target.classList.toggle('revealed', this.opened);
+          if (!this.opened) {
+            this.resetTargetPosition();
+          }
+          this.applyFocus();
+        },
+        tapHandler: function(e) {
+          if (e.target && e.target.hasAttribute('overlay-toggle')) {
+            this.toggle();
+          } else {
+            if (this.autoCloseJob) {
+              this.autoCloseJob.stop();
+              this.autoCloseJob = null;
+            }
+          }
+        },
+        // TODO(sorvell): This approach will not work with modal. For
+        // this we need a scrim.
+        captureHandler: function(e) {
+          if (!this.autoCloseDisabled && (currentOverlay() == this) && (this 
+              != e.target) && !(this.contains(e.target))) {
+            this.autoCloseJob = this.job(this.autoCloseJob, function() {
+              this.opened = false;
+            });
+          }
+        },
+        keydownHandler: function(e) {
+          if (!this.autoCloseDisabled && (e.keyCode == this.$.keyHelper.ESCAPE_KEY)) {
+            this.opened = false;
+            e.stopPropagation();
+            e.cancelBubble = true;
+          }
+        },
+        /**
+         * Extensions of polymer-overlay should implement the resizeHandler
+         * method to adjust the size and position of the overlay when the 
+         * browser window resizes.
+         * @method resizeHandler
+         */
+        resizeHandler: function() {
+        }
+      });
+    })();
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+/**
+ * polymer-ui-arrow is styled to look like an arrow.
+ *
+ * Example:
+ *
+ *     <polymer-ui-arrow direction="up" size="20"></polymer-ui-arrow>
+ *
+ * @class polymer-ui-arrow
+ */
+-->
+
+
+<polymer-element name="polymer-ui-arrow" attributes="direction size color borderColor borderWidth" assetpath="../components/polymer-ui-arrow/">
+  <template>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+:host {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+  
+:host([hidden]:host, .hidden:host) {
+  display: none;
+}
+      
+.arrow {
+  border-color: transparent;
+  border-style: solid;
+}
+
+.arrow-inner {
+	position: absolute;
+}
+</style>
+    <div id="outer" class="arrow arrow-outer"></div>
+    <div id="inner" class="arrow arrow-inner"></div>
+  </template>
+  <script>
+    Polymer('polymer-ui-arrow', {
+      borders: {
+        up: 'Bottom',
+        down: 'Top',
+        left: 'Right',
+        right: 'Left'
+      },
+      tops: {
+        up: 1,
+        down: -1,
+        left: 0,
+        right: 0
+      },
+      lefts: {
+        up: 0,
+        down: 0,
+        left: 1,
+        right: -1
+      },
+      /**
+       * Direction of the arrow.  Possible values are 'up', 'down', 'left' 
+       * and 'right'.
+       *
+       * @attribute direction
+       * @type string
+       * @default 'up'
+       */
+      direction: 'up',
+      /**
+       * Size of the arrow.
+       *
+       * @attribute size
+       * @type number
+       * @default 10
+       */
+      size: 10,
+      /**
+       * Color of the arrow.
+       *
+       * @attribute color
+       * @type string
+       * @default '#fff'
+       */
+      color: '#fff',
+      /**
+       * Border color.
+       *
+       * @attribute borderColor
+       * @type string
+       * @default '#ccc'
+       */
+      borderColor: '#ccc',
+      /**
+       * Arrow border width.
+       *
+       * @attribute borderWidth
+       * @type number
+       * @default 1
+       */
+      borderWidth: 1,
+      ready: function() {
+        this.asyncUpdate();
+      },
+      directionChanged: function() {
+        this.asyncUpdate();
+      },
+      sizeChanged: function() {
+        this.asyncUpdate();
+      },
+      colorChanged: function() {
+        this.asyncUpdate();
+      },
+      borderColorChanged: function() {
+        this.asyncUpdate();
+      },
+      borderWidthChanged: function() {
+        this.asyncUpdate();
+      },
+      asyncUpdate: function() {
+        this.updateJob = this.job(this.updateJob, this.update, 1);
+      },
+      update: function() {
+        var os = this.$.outer.style;
+        var is = this.$.inner.style;
+        os.borderWidth = this.size + 'px';
+        is.borderWidth = this.size + 'px';
+        os.borderColor = 'transparent';
+        is.borderColor = 'transparent';
+        var bc = 'border' + this.borders[this.direction] + 'Color';
+        os[bc] = this.borderColor;
+        is[bc] = this.color;
+        is.top = this.tops[this.direction] * this.borderWidth + 'px';
+        is.left = this.lefts[this.direction] * this.borderWidth + 'px';
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * polymer-ui-menu-button is a polymer-ui-icon-button with a drop down menu
+ * that allows the user to select an option. The drop down menu is styled with
+ * an arrow pointing to the button, and can be positioned to the top or the
+ * bottom of the button with the valign property. The valign property aligns
+ * the menu to the left or right edge of the button.
+ *
+ * Example:
+ *
+ *     <polymer-ui-menu-button selected="0">
+ *       <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="dialog" label="Dialog"></polymer-ui-menu-item>
+ *       <polymer-ui-menu-item icon="search" label="Search"></polymer-ui-menu-item>
+ *     </polymer-ui-menu-button>
+ *
+ * @class polymer-ui-menu-button
+ */
+-->
+
+
+
+
+
+
+
+
+<polymer-element name="polymer-ui-menu-button" attributes="src icon opened responsive halign valign selected selectedItem selectedClass valueattr multi parallax" assetpath="../components/polymer-ui-menu-button/">
+  <template>
+    <style>/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+:host {
+  position: relative;
+  display: inline-block;
+}
+
+:host(.fullwidth:host) {
+  position: static;
+}
+
+#overlay {
+  position: absolute;
+  left: 0;
+  top: 42px;
+}
+
+#overlay[halign=right] {
+  left: auto;
+  right: 10px;
+}
+
+#overlay[valign=top] {
+  top: auto;
+  bottom: 48px;
+}
+
+#overlayMenu {
+  display: inline-block;
+  position: relative;
+  top: -1px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  margin: 7px 0 0 7px;
+}
+
+@media screen and (max-width: 800px) {
+  #overlay,
+  #overlay[align=right] {
+    left: 0;
+    width: 100%;
+    -webkit-transform: none;
+    transform: none;
+  }  
+}
+
+#arrow {
+  height: 18px;
+}
+</style>
+    <polymer-ui-icon-button id="button" on-tap="{{toggle}}" src="{{src}}" icon="{{icon}}" active="{{opened}}" anchor-point="{{valign}}"></polymer-ui-icon-button>
+    <div id="overlay" halign="{{halign}}" valign="{{valign}}">
+      <div id="overlayBackdrop" pseudo="x-backdrop" overlay-toggle=""></div>
+      <div id="overlayMenu">
+        <polymer-ui-menu id="menu" selected="{{selected}}" selecteditem="{{selectedItem}}" selectedclass="{{selectedClass}}" valueattr="{{valueattr}}" multi="{{multi}}" on-polymer-select="{{itemSelectAction}}">
+          <content select="*"></content>
+        </polymer-ui-menu>
+      </div>
+      <polymer-ui-arrow id="arrow" size="9" direction="{{valign == &apos;top&apos; ? &apos;down&apos; : &apos;up&apos;}}" anchor-point="center center"></polymer-ui-arrow>
+    </div>
+    <polymer-media-query query="{{mediaQuery}}" on-polymer-mediachange="{{mediaChangeAction}}"></polymer-media-query>
+    <polymer-anchor-point id="arrowPositionHelper" target="{{$.arrow}}" anchor="{{$.button}}"></polymer-anchor-point>
+    <polymer-overlay target="{{$.overlay}}" opened="{{opened}}"></polymer-overlay>
+  </template>
+  <script>
+    Polymer('polymer-ui-menu-button', {
+      /**
+       * The icon to display.
+       * @attribute icon
+       * @type string
+       */
+      icon: 'dots',
+      src: '',
+      /**
+       * The index of the selected menu item.
+       * @attribute selected
+       * @type number
+       */
+      selected: '',
+      /**
+       * Set to true to open the menu.
+       * @attribute opened
+       * @type boolean
+       */
+      opened: false,
+      /**
+       * Horizontally align the overlay with the button. Accepted values are
+       * ["left", "center", "right"].
+       * @attribute halign
+       * @type string
+       */
+      halign: 'center',
+      /**
+       * Display the overlay on top or below the button. Accepted values are
+       * ["top", "bottom"].
+       * @attribute valign
+       * @type string
+       */
+      valign: 'bottom',
+      multi: false,
+      parallax: false,
+      mediaQuery: 'max-width: 800px',
+      ready: function() {
+        this.boundParallaxAction = this.parallaxAction.bind(this);
+      },
+      openedChanged: function() {
+        this.async(function() {
+          this.$.arrowPositionHelper.apply();
+          this.tilt = null;
+          if (this.parallax) {
+            window.addEventListener('deviceorientation',
+                this.boundParallaxAction, false);
+          } else {
+            window.removeEventListener('deviceorientation',
+                this.boundParallaxAction, false);
+          }
+        });
+      },
+      parallaxAction: function(e) {
+        var tiltLR = Math.round(e.gamma);
+        var tiltTB = Math.round(e.beta);
+        if (!this.tilt) {
+          this.tilt = {
+            lr: tiltLR,
+            tb: tiltTB
+          };
+        } else {
+          var transX = ((tiltLR - this.tilt.lr) % 90) / 90 * 8;
+          var transY = ((tiltTB - this.tilt.tb) % 90) / 90 * 13;
+          this.$.overlayMenu.style['-webkit-transform'] = 'translate3d(' +
+              transX + 'px,' + transY + 'px,0)';
+          this.$.arrow.style['-webkit-transform'] = 'translate3d(' +
+              transX + 'px,' + transY + 'px,0)';
+        }
+      },
+      mediaChangeAction: function(e) {
+        if (e.detail.matches) {
+          this.classList.add('fullwidth');
+        } else {
+          this.classList.remove('fullwidth');
+        }
+      },
+      itemSelectAction: function() {
+        // TODO(sjmiles): needs to be more flexible
+        if (this.selectedItem.localName !== 'polymer-ui-submenu-item') {
+          this.closeAction();
+        }
+      },
+      closeAction: function() {
+        this.opened = false;
+      },
+      /**
+       * Toggle the opened state of the dropdown.
+       * @method toggle
+       */
+      toggle: function() {
+        this.opened = !this.opened;
+      },
+      /**
+       * The selected menu item.
+       * @property selection
+       * @type Node
+       */
+      get selection() {
+        return this.$.menu.selection;
+      }
+    });
+  </script>
+</polymer-element>
+<link rel="import" href="../components/polymer/polymer.html">
+
+
+
+
+
+
+<template id="main-html-template">
+
+  <style>
+
+    body {
+      background: none;
+    }
+
+    body > * {
+      opacity: 1;
+    }
+
+  </style>
+
+</template>
+
+<script>
+
+  var template = document._currentScript.ownerDocument.querySelector('#main-html-template');
+
+  Polymer.whenPolymerReady(function() {
+    document.body.appendChild(template.content.cloneNode(true));
+  });
+
+</script>

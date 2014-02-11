@@ -1,0 +1,16 @@
+﻿<link rel="import" href="../../async-import.html">
+
+<async-import href="elements/tasty-button.html"></async-import>
+
+<style>
+
+  tasty-button {
+    display: inline-block;
+    transition: opacity ease-in 600ms;
+  }
+
+  tasty-button:unresolved, tasty-button[unresolved] {
+    xopacity: 0;
+  }
+
+</style>

@@ -1,0 +1,31 @@
+<link rel="import" href="../components/polymer-ui-toolbar/polymer-ui-toolbar.html">
+<link rel="import" href="../components/polymer-ui-icon-button/polymer-ui-icon-button.html">
+<link rel="import" href="../components/polymer-ui-menu-item/polymer-ui-menu-item.html">
+<link rel="import" href="../components/polymer-ui-submenu-item/polymer-ui-submenu-item.html">
+<link rel="import" href="../components/polymer-ui-menu-button/polymer-ui-menu-button.html">
+
+<template id="main-html-template">
+
+  <style>
+
+    body {
+      background: none;
+    }
+
+    body > * {
+      opacity: 1;
+    }
+
+  </style>
+
+</template>
+
+<script>
+
+  var template = document._currentScript.ownerDocument.querySelector('#main-html-template');
+
+  Polymer.whenPolymerReady(function() {
+    document.body.appendChild(template.content.cloneNode(true));
+  });
+
+</script>

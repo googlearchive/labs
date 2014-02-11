@@ -4,7 +4,11 @@
   <script>
     Polymer('async-import', {
       ready: function() {
-        Polymer.import([ this.href ]);
+        var href = this.href;
+        Polymer.import([ this.href ], function() {
+          var link = document.querySelector('link[href$="' + href + '"]');
+          CustomElements.upgradeDocument(link.import);
+        });
       }
     });
   </script>
