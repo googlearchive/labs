@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>polymer::sheet</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="x-style.html">
+</head>
+<body unresolved>
+  
+  <x-test></x-test>
+  <x-test class="bold"></x-test>
+  <br><hr><br>
+  <x-test2></x-test2>
+  <x-test2 class="bold"></x-test2>
+
+  <polymer-element name="x-test" noscript>
+    <template>
+      <x-style ref="shared-sheet"></x-style>
+      <div class="colorful">test1</div>
+    </template>
+  </polymer-element> 
+
+  <polymer-element name="x-test2" noscript>
+    <template>
+      <x-style ref="shared-sheet"></x-style>
+      <div class="colorful">test2</div>
+    </template>
+  </polymer-element> 
+
+  <x-style id="shared-sheet" variables='{"bgColor": "Orange", "borderColor": "Red"}'>
+    @import url(sheet1.css);
+
+    .colorful {
+      padding: 10px;
+      background: {{bgColor}};
+    }
+  </x-style>
+
+  <script>
+    document.addEventListener('polymer-ready', function() {
+      var sheet = document.querySelector('x-style#shared-sheet');
+      variables = sheet.variables;
+    });
+  </script>
+
+
