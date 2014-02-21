@@ -1,0 +1,10 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="import.html">
+
+<script>
+  addEventListener('HTMLImportsLoaded', function() {
+    var port = document.querySelector('link');
+    var template = port.import.querySelector('template');
+    document.body.appendChild(template.createInstance());
+  });
+</script>
