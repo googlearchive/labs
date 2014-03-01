@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <title>async repeat</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+
+</head>
+<body>
+  <template bind>
+    Hello World
+    <template repeat="{{eager.list}}">
+      <div>{{}}</div>
+    </template>
+    <template repeat="{{lazy.list}}">
+      <div>{{}}</div>
+    </template>
+  </template>
+  <script>
+    var model = {};
+    document.addEventListener('DOMContentLoaded', function() {
+      model.eager = {list: [1, 2, 3, 4]};
+      document.querySelector('template').model = model;
+      setTimeout(function() {
+        model.lazy = {list: [1, 2, 3, 4]};
+      });
+    });
+  </script>
+  
+</body>
+</html>

@@ -31,7 +31,7 @@
 
       // TODO(sorvell): loading is 1x, it could be dynamic and contain bindings.
       loadContent: function() {
-        Platform.loader.xhrStyles([this], this.contentLoaded.bind(this));
+        Platform.styleResolver.loadStyles([this], this.contentLoaded.bind(this));
       },
 
       contentLoaded: function() {

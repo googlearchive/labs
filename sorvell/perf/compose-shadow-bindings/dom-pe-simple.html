@@ -1,0 +1,47 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+<polymer-element name="x-test">
+  <template>
+    <div header="{{header}}">{{header}}</div>
+    <button button="{{button}}">{{button}}</button>
+    <input type="checkbox" checked?="{{checked}}">
+    <input placeholder="{{placeholder}}">
+    <section content="{{content}}">{{content}}</section>
+    <footer footer="{{footer}}">{{footer}}</footer>
+    <hr>
+  </template>
+  <script>
+  (function() {
+    var template;
+    Polymer('x-test', {
+      header: 'Top',
+      button: 'go',
+      checked: true,
+      placeholder: 'Type here',
+      content: 'Content!',
+      footer: 'End',
+      parseDeclaration: function() {
+        var root = this.createShadowRoot();
+        root.appendChild(this.instanceTemplate(template));
+        //this.marshalNodeReferences(root);
+        //PointerGestures.register(root);
+      },
+      registerCallback: function() {
+        template = getTestTemplate();
+      }
+    });
+
+  })();  
+  </script>
+</polymer-element>
+<script>
+  /*
+    NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+    of polymer-elements by at least 2x. Why?
+  */
+  addEventListener('polymer-ready', function() {
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

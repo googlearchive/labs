@@ -1,0 +1,18 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+<script>
+  addEventListener('WebComponentsReady', function() {
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {};
+    proto.attachedCallback = function() {};
+    proto.detachedCallback = function() {};
+    proto.attributeChangedCallback = function(name, oldValue) {
+    };
+
+    document.registerElement('x-test', {prototype: proto});
+
+
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

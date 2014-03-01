@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <title>pages-lazy</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  <polymer-element name="x-thing" attributes="count list">
+    <script>
+      Polymer('x-thing', {
+        countChanged: function() {
+          this.list = [];
+          setTimeout(function() {
+            this.list.push(5);
+            this.list.push(5555);
+          }.bind(this))
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <host>
+    <x-thing count="5"></x-thing>
+    <template repeat="{{element.list}}">
+      <div>{{}}</div>
+    </template>
+    <template repeat="{{obj.list}}">
+      <div>{{}}</div>
+    </template>
+  </host>
+
+  <script>
+    document.addEventListener('polymer-ready', function() {
+      var template = document.createElement('template');
+      //var host = wrap(document).body;
+      var host = document.querySelector('host');
+      var c$ = host.childNodes.array();
+      for (var i=0, c; (c=c$[i]); i++) {
+        if (c.localName !== 'script' && c.localName !== 'polymer-element') {
+          template.content.appendChild(c);
+        }
+      }
+
+      var delegate = new PolymerExpressions()
+
+      var dom = template.createInstance(host, delegate);
+      host.appendChild(dom);
+
+      //document.querySelector('template').model = model;
+      setTimeout(function() {
+        host.element = document.querySelector('x-thing');
+        host.obj = {list: [1, 2, 3, 4]};
+      }, 500);
+
+    });
+  </script>
+  
+</body>
+</html>

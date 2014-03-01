@@ -1,0 +1,25 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+
+<script>
+  addEventListener('WebComponentsReady', function() {
+    var template = getTestTemplate()
+    var tag = 'div';
+    function createDom() {
+      var frag = document.createDocumentFragment();
+      for (var i = 0, n, e, r; i < count; i++) {
+        e = document.createElement(tag);
+        e.setAttribute('foo', '1');
+        e.setAttribute('bar', '2');
+        e.setAttribute('baz', '3');
+        e.setAttribute('qux', '4');
+        e.className = 'foo bar baz';
+        e.createShadowRoot().appendChild(template.createInstance());
+        frag.appendChild(e);
+      }
+      document.body.appendChild(frag);
+    }
+
+    test(createDom);
+  });
+</script>

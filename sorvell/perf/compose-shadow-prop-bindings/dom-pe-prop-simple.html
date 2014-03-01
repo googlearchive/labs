@@ -1,0 +1,21 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+<polymer-element name="x-test" attributes="foo bar zot qux">
+  <script>
+    Polymer('x-test', {
+      observeProperties: function() {},
+      attributeToProperty: function() {}
+    });
+  </script>
+</polymer-element>
+<script>
+  /*
+    NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+    of polymer-elements by at least 2x. Why?
+  */
+  addEventListener('polymer-ready', function() {
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

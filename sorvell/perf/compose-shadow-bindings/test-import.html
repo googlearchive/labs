@@ -1,0 +1,57 @@
+<template>
+  <div header="{{header}}">{{header}}</div>
+  <button button="{{button}}">{{button}}</button>
+  <input type="checkbox" checked?="{{checked}}">
+  <input placeholder="{{placeholder}}">
+  <section content="{{content}}">{{content}}</section>
+  <footer footer="{{footer}}">{{footer}}</footer>
+  <hr>
+</template>
+
+<script>
+  var count = 5000;
+
+  var template = document._currentScript.ownerDocument.querySelector('template');
+
+  function getTestTemplate() {
+    return template;
+  }
+
+  function createDom(tag) {
+    var frag = document.createDocumentFragment();
+    for (var i = 0, n, e; i < count; i++) {
+      frag.appendChild(document.createElement(tag));
+    }
+    document.body.appendChild(frag);
+  }
+
+  function createDomWithAttrs(tag) {
+    var frag = document.createDocumentFragment();
+    for (var i = 0, n, e; i < count; i++) {
+      e = document.createElement(tag);
+      frag.appendChild(e);
+    }
+    document.body.appendChild(frag);
+  }
+
+
+  function test(action) {
+    timeTest(action);
+  }
+
+  function timeTest(action) {
+    var start = performance.now();
+    action();
+    var end = performance.now();
+    var time = end - start;
+    var itemTime = (time / count).toFixed(3);
+    console.log('Time to generate ' + count + ' items: ' + time + 
+      ' ms, or ' + itemTime + 'ms/item');
+  }
+
+  function profileTest(action) {
+    console.profile('test');
+    timeTest(action);
+    console.profileEnd('test');
+  }
+</script>

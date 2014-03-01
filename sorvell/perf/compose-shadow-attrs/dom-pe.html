@@ -1,0 +1,24 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+<polymer-element name="x-test" noscript attributes="foo bar baz qux">
+  <template>
+    <div>Top</div>
+    <button>Go!</button>
+    <input type="checkbox" checked>
+    <input placeholder="Type here">
+    <section>Content!</section>
+    <footer>End</footer>
+    <hr>
+  </template>
+</polymer-element>
+<script>
+  /*
+    NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+    of polymer-elements by at least 2x. Why?
+  */
+  addEventListener('polymer-ready', function() {
+    test(createDomWithAttrs.bind(null, 'x-test'));
+  });
+</script>
