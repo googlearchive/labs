@@ -9,9 +9,12 @@ license that can be found in the LICENSE file.
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1.0">
   <title>layout (dynamic)</title>
+  
   <script src="../../components/platform/platform.js"></script>
-  <link rel="import" href="g-layout.html" />
+  <link rel="import" href="shadow-layout.html" />
+  
   <style>
+  
     html, body {
       height: 100%;
     }
@@ -20,7 +23,7 @@ license that can be found in the LICENSE file.
       margin: 0;
     }
     
-    g-layout {
+    shadow-layout {
       position: absolute;
       top: 0;
       right: 0;
@@ -58,18 +61,22 @@ license that can be found in the LICENSE file.
       min-height: 60px;
       background: yellow;
     }
+    
   </style>
+  
 </head>
 <body>
-  <g-layout>
+
+  <shadow-layout>
     <div id="header">Header</div>
     <div id="info">Info</div>
     <div id="toc">TOC</div>
     <div id="main">Main</div>
     <div id="footer">Footer</div>
-  </g-layout>
+  </shadow-layout>
   
   <script>
+  
     landscape =
       {flex: 1, flow: 'column', items: [
         {id: 'header'},
@@ -95,7 +102,7 @@ license that can be found in the LICENSE file.
         {id: 'footer'}
       ]};
     
-    myLayout = document.querySelector('g-layout');
+    myLayout = document.querySelector('shadow-layout');
     var mq = window.matchMedia('(max-width: 800px)');
     mq.addListener(layoutChange);
     layoutChange(mq);
@@ -103,6 +110,8 @@ license that can be found in the LICENSE file.
     function layoutChange(inQuery) {
       myLayout.layout = inQuery.matches ? portrait : landscape;
     }
+    
   </script>
+  
 </body>
 </html>
