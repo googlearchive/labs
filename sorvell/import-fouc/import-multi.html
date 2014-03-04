@@ -1,0 +1,10 @@
+<link rel="import" href="import-scripts.html" onload="console.log('import-scripts onload')">
+<script>
+  console.log('import1, inline script');
+</script>
+<script src="script.js" info="import1 remote script"  onload="console.log('script.js onload');"></script>
+<link rel="stylesheet" href="sheet.css" onload="console.log('sheet.css onload');">
+<template>
+    <link rel="stylesheet" href="css.css" onload="console.log('css.css onload from template');">
+</template>
+

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>import fouc</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+  <link rel="import" href="import-polymer-element.html">
+</head>
+<body>
+  <x-test></x-test>
+  <script>
+    var x = document.querySelector('x-test');
+    var port = x.shadowRoot.querySelector('style').sheet.cssRules[0];
+    console.log(port.cssText);
+    console.log(port.styleSheet);
+  </script>
+</body>
+</html>

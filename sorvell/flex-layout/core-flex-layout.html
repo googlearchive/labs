@@ -1,0 +1,179 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * core-flex-layout provides a helper to use CSS3 Flexible Boxes.  Placing a
+ * core-flex-layout inside an element allows it to use a set of css selectors
+ * to easily apply flexbox styling.
+ * 
+ * Apply the core-layout class to make an element a flexible box.
+ * 
+ * Apply the layout-v class to make the element a columnar box.
+ * 
+ * To make a particular element flexible, use the layout-flex class. This is the 
+ * same as making the element flex: 1. You'll need to create other css classes
+ * to apply other values of flex.
+ * 
+ * To effect alignment in the main axis, use layout-start, layout-center, 
+ * layout-end, and layout-between.
+ * 
+ * To effect alignment in the cross axis, use layout-x-start, layout-x-center, 
+ * layout-x-end.
+ *
+ * Examples:
+ *
+ *     <core-flex-layout></core-flex-layout>
+ *     <div class="core-layout">
+  *       <div>Left</div>
+ *       <div class="layout-flex">Main</div>
+ *       <div>Right</div>
+ *     </div>
+ *
+ *     ---------------------------------
+ *     |-------------------------------|
+ *     ||Left|       Main       |Right||
+ *     |-------------------------------|
+ *     ---------------------------------
+ *
+ *     <core-flex-layout></core-flex-layout>
+ *     <div class="core-layout layout-v">
+  *      <div>Header</div>
+ *       <div class="layout-flex">Body</div>
+ *       <div>Footer</div>
+ *     </div>
+ *
+ *     ----------
+ *     ||------||
+ *     ||Header||
+ *     ||------||
+ *     ||Body  ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||      ||
+ *     ||------||
+ *     ||Footer||
+ *     ||------||
+ *     ----------
+ *
+ *
+ * 
+ *
+ * @class core-flex-layout
+ */
+/**
+ * If true, the host element of the core-flex-layout element becomes a 
+ * flexbox. Apply additional layout classes to the host element to customize
+ * its styling.
+ *
+ * @attribute host
+ * @type boolean
+ * @default false
+ */
+/**
+ * Defines the default for how flex items are laid out along the cross axis on 
+ * the current line.  Possible values are 'start', 'center' and 'end'.
+ *
+ * @attribute align
+ * @type string
+ * @default ''
+ */
+/**
+ * Defines how flex items are laid out along the main axis on the current line.
+ * Possible values are 'start', 'center' and 'end'.
+ *
+ * @attribute justify
+ * @type string
+ * @default ''
+ */
+/**
+ * If true, core-flex-layout is the flex container.
+ *
+ * Example:
+ *
+ *     <core-flex-layout isContainer>
+ *       <div>Left</div>
+ *       <div flex>Main</div>
+ *       <div>Right</div>
+ *     </core-flex-layout>
+ *
+ *     ---------------------------------
+ *     |-------------------------------|
+ *     ||Left|       Main       |Right||
+ *     |-------------------------------|
+ *     ---------------------------------
+ *
+ * @attribute isContainer
+ * @type boolean
+ * @default false
+ */
+-->
+<!-- <link rel="import" href="../polymer/polymer.html"> -->
+
+<polymer-element name="core-flex-layout">
+  
+  <template>
+  
+    <link no-shim rel="stylesheet" href="core-flex-layout.css">
+    <link no-shim rel="stylesheet" href="core-flex-layout-host.css">
+  
+  </template>
+  
+  <script>
+  
+  (function() {
+  
+    Polymer('core-flex-layout', {
+  
+      // NOTE: include template so that styles are loaded, but remove
+      // so that we can decide dynamically what part to include
+      registerCallback: function(polymerElement) {
+        this.template = polymerElement.querySelector('template');
+      },
+  
+      fetchTemplate: function() {
+        return null;
+      },
+  
+      ready: function() {
+        var frag = document.createDocumentFragment()
+        var content = this.template.content;
+        frag.appendChild(content.firstElementChild.cloneNode(true));
+        if (this.hasAttribute('host')) {
+          frag.appendChild(content.lastElementChild.cloneNode(true));
+        }
+        if (!window.ShadowDOMPolyfill) {
+          this.appendChild(frag);
+        }
+        this.content = frag;
+      },
+      attached: function() {
+        if (window.ShadowDOMPolyfill) {
+          var attr = 'no-shim';
+          Array.prototype.forEach.call(this.content.children, function(n) {
+            n.removeAttribute(attr);
+          });
+          Platform.ShadowCSS.shimStyling(this.content, calcScopeName(this));
+        }
+      }
+    });
+
+    function calcScopeName(node) {
+      while (node.parentNode) {
+        node = node.parentNode;
+      }
+      return node.host ? node.host.localName : '';
+    }
+
+  })();
+  </script>
+
+</polymer-element>

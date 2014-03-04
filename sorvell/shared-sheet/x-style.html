@@ -20,7 +20,7 @@
       refMap: {},
 
       observe: {
-        'hasContent variables': 'invalidateContent'
+        'hasLoaded variables': 'invalidateContent'
       },
 
       attached: function() {
@@ -42,11 +42,11 @@
           subtree: true,
           characterData: true
         });
-        this.hasContent = true;
+        this.hasLoaded = true;
       },
 
       invalidateContent: function() {
-        if (this.hasContent) {
+        if (this.hasLoaded) {
           this.validateContent();
         }
       },
