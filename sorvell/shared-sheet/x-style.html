@@ -98,9 +98,8 @@
         this.ensureStyleElement();
         if (window.ShadowDOMPolyfill) {
           this.styleElement.textContent = cssText;
-          var info = this.getHostInfo(), styles = [this.styleElement];
-          cssText = Platform.ShadowCSS.stylesToShimmedCssText(styles,
-              styles, info.name, info.typeExtension);
+          cssText = Platform.ShadowCSS.shimStyle(this.styleElement,
+              this.getScopeSelector());
         }
         this.styleElement.textContent = cssText;
       },
@@ -136,14 +135,18 @@
         }
       },
 
-      getHostInfo: function() {
-        if (!this.hostInfo) {
-          var host = findHost(this);
-          var typeExtension = host.hasAttribute('is');
-          var name = typeExtension ? host.getAttribute('is') : host.localName;
-          this.hostInfo = {name: name, typeExtension: typeExtension};
+      getScopeSelector: function() {
+        if (!this._scopeSelector) {
+          var selector = '', host = findHost(this);
+          if (host) {
+            var typeExtension = host.hasAttribute('is');
+            var name = typeExtension ? host.getAttribute('is') : host.localName;
+            selector = Platform.ShadowCSS.makeScopeSelector(name, 
+                typeExtension);
+          }
+          this._scopeSelector = selector;
         }
-        return this.hostInfo;
+        return this._scopeSelector;
       }
 
     });
