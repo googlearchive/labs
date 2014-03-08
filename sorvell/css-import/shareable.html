@@ -3,7 +3,7 @@
 <body unresolved>
   <polymer-element name="radio-element" constructor="RadioElement" noscript>
     <template>
-      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+      <link rel="stylesheet" href="bootstrap.css">
       <input type="radio">Test
     </template>
   </polymer-element>
@@ -13,13 +13,13 @@
   document.addEventListener('polymer-ready', function(){
     var doc = document.createDocumentFragment(), el = null;
     console.time('append');
-    console.time('paint');
     for(var i=0; i < 1000; i++) {
        doc.appendChild(document.createElement('radio-element'));
     }
     
     document.body.appendChild(doc);
     console.timeEnd('append');
+    console.time('paint');
     requestAnimationFrame(function() {
       console.timeEnd('paint');
     });

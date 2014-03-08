@@ -1,10 +1,15 @@
-<link rel="import" href="../../../../components/polymer/polymer.html">
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="elements/test-item-simple.html">
+<link rel="import" href="elements/repeat-basic.html">
 
-<polymer-element name="test-item" attributes="data">
+<repeat-test></repeat-test>
 
-    <template>
-      <style>
-        .message {
+<polymer-element name="repeat-test" extends="repeat-basic" noscript>
+  
+  <template>
+    <shadow></shadow>
+    <style>
+        test-item /shadow/ .message {
           box-sizing: border-box;
           height: 80px;
           padding: 4px;
@@ -20,26 +25,26 @@
           border-bottom: 1px solid #ddd;
         }
         
-        .from {
+        test-item /shadow/ .from {
           display: inline;
           font-weight: bold;
         }
         
-        .timestamp {
+        test-item /shadow/ .timestamp {
           margin-left: 10px;
           font-size: 12px;
           opacity: 0.8;
         }
         
-        .body {
+        test-item /shadow/ .body {
           font-size: 12px;
           opacity: 0.8;
         }
         
-        .subject {
+        test-item /shadow/ .subject {
         }
         
-        .divider {
+        test-item /shadow/ .divider {
           background: grey;
           color: white;
           height: 30px;
@@ -48,24 +53,15 @@
           text-transform: uppercase;
         }
 
-        .polymer-selected {
+        test-item /shadow/ .polymer-selected {
           background-color: #333;
           color: whitesmoke;
         }
       </style>
-
-      <div class="message {{selected}}" style="background-image: url(images/{{data.index % 4}}.png);">
-        <span class="from">{{data.name}}</span>
-        <span class="timestamp">{{data.time}}</span>
-        <div class="subject">Infinite List. {{data.index}}</div>
-        <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
-      </div>
-
+    <template repeat="{{list}}">
+      <test-item data="{{}}"></test-item>
     </template>
+  </template>
 
-    <script>
-      Polymer('test-item', {
-      });
-    </script>
-    
-  </polymer-element>
+</polymer-element>
+
