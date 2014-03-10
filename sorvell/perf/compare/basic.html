@@ -1,0 +1,44 @@
+<!doctype html>
+<script src="../../../../components/platform/platform.js"></script>
+<link rel="import" href="../../../../components/polymer/polymer.html">
+<body>
+<template></template>
+
+<polymer-element name="x-foo" noscript>
+  <template></template>
+</polymer-element>
+
+
+
+<script>
+  document.addEventListener('polymer-ready', function() {
+    var template = document.querySelector('template');
+
+    var p = Object.create(HTMLElement.prototype);
+    p.syntax = new PolymerExpressions();
+    p.createdCallback = function() {
+      this.createShadowRoot();
+      this.shadowRoot.appendChild(template.createInstance(this, this.syntax));
+    }
+    p.attachedCallback = function() {}
+    document.registerElement('x-bar', {prototype: p});
+
+
+
+    t = performance.now();
+    var d = document.createElement('div');
+    document.body.appendChild(d);
+    for (var i = 0; i < 5000; ++i) {
+      //d.bind('a1', {open: function() {}, close: function() {}});
+      d.appendChild(document.createElement("x-foo")).textContent = "foo" + i;
+    }
+    console.log(performance.now() - t);
+
+    t = performance.now(); var d = document.createElement('div'); document.body.appendChild(d); for (var i = 0; i < 5000; ++i) d.appendChild(document.createElement("x-bar")).textContent = "foo" + i; console.log(performance.now() - t);
+
+
+    t = performance.now(); var d = document.createElement('div'); document.body.appendChild(d); for (var i = 0; i < 5000; ++i) d.appendChild(document.createElement("input")).value = "foo" + i; console.log(performance.now() - t);
+
+  });
+</script>
+</body>
