@@ -21,7 +21,7 @@ license that can be found in the LICENSE file.
 
   <polymer-element name="uses-style">
     <template>
-      <x-style variables="{{styling}}" perInstance>
+      <x-style variables="{{styling}}" ref="self" perInstance on-load="{{loaded}}">
         <template>
           @import url(sheet1.css);
 
@@ -35,9 +35,15 @@ license that can be found in the LICENSE file.
     </template>
     <script>
       Polymer('uses-style', {
-        styling: {
-          bgColor: 'salmon',
-          borderColor: 'seagreen'
+        created: function() {
+          this.styling = {
+            bgColor: 'salmon',
+            borderColor: 'seagreen'
+          }
+        },
+
+        loaded: function(e) {
+          console.log(e.type, e);
         }
       });
     </script>

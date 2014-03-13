@@ -1,14 +1,14 @@
-<link rel="import" href="../../../../components/polymer/polymer.html">
+<link rel="import" href="components/polymer/polymer.html">
 
 <polymer-element name="repeat-basic" attributes="count">
   
   <template>
-    <style>
+    <style id="style">
       :host {
         display: block;
       }
 
-      :host /shadow/ .output {
+      .output {
         position: fixed;
         top: calc(50% - 100px);
         left: calc(50% - 250px);
@@ -50,6 +50,7 @@
       count: 1000,
 
       ready: function() {
+        this.shadowRoot.appendChild(this.$.style);
         this.test();
       },
 

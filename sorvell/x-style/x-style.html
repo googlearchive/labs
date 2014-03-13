@@ -2,22 +2,25 @@
 
 <polymer-element name="x-style" extends="x-meta" attributes="ref variables perInstance">
 
-  <template>
-
-    <style>
-      :host {display: none};
-    </style>
-
-  </template>
-
   <script>
 
   (function() {
 
+    /*
+      x-styles are both producers and consumers of styles. All x-styles are 
+      producers of style. These styles may be consumed by other x-styles if the
+      x-style has an id. An x-style is a consumer of styles if it has a ref.
+      The ref can reference the id of another x-style or be "self" to reference
+      itself
+
+    */
     Polymer('x-style', {
-      // TODO(sorvell): we don't hear if part of variables changed.
+      /**
+        the model
+      */
       variables: {},
-      // static
+      /* static: keep track of all elements pointing to various 
+       other x-style elements for their source. */
       refMap: {},
       perInstance: false,
 
@@ -25,6 +28,13 @@
         'hasLoaded variables': 'invalidateContent'
       },
 
+      created: function() {
+        this.style.display = 'none';
+        this.type = this.localName;
+        this._needsLoad = true;
+      },
+
+      // TODO(sorvell): async, so we're gonna fouc =(
       attached: function() {
         this.loadContent();
       },
@@ -36,6 +46,17 @@
         var content = this.template.ref_.content;
         Platform.styleResolver.loadStyles([content],
             this.contentLoaded.bind(this));
+      },
+
+      ensureTemplate: function() {
+        if (this.template) {
+          return;
+        }
+        this.template = this.querySelector('template');
+        if (!this.template) {
+          this.template = document.createElement('template');
+          this.template.content.textContent = this.textContent;  
+        }
       },
 
       contentLoaded: function() {
@@ -53,17 +74,12 @@
         var model = this.variables || {};
         this.content = this.template.createInstance(model, this.syntax);
         this.notify();
-      },
-
-      ensureTemplate: function() {
-        if (this.template) {
-          return;
-        }
-        this.template = this.querySelector('template');
-        if (!this.template) {
-          this.template = document.createElement('template');
-          this.template.content.textContent = this.textContent;  
-        }
+        var observer = new MutationObserver(this.notify.bind(this));
+        observer.observe(this.content, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
       },
 
       hasCss: function() {
@@ -103,15 +119,20 @@
       },
 
       update: function() {
-        var ref = this.byId(this.ref) || this;
+        var ref = this.ref === SELF_REF ? this : this.byId(this.ref);
         if (ref && ref.hasCss()) {
           this.applyStyle(ref.getCss());
         }
       },
 
       applyStyle: function(cssText) {
-        console.log('applyStyle', this);
         this.ensureStyleElement();
+        // TODO(sorvell): solves a race condition between refChanged
+        // and another element notifying.
+        if (this.styleElement.textContent === cssText) {
+          return;
+        }
+        console.log('applyStyle', this);
         if (window.ShadowDOMPolyfill) {
           this.styleElement.textContent = cssText;
           var suffix = this._scope ? '[' + SCOPE + '=\'' + 
@@ -120,6 +141,10 @@
               this.getScopeSelector() + suffix);
         }
         this.styleElement.textContent = cssText;
+        if (this._needsLoad) {
+          this._needsLoad = false;
+          this.fire('load');
+        }
       },
 
       ensureStyleElement: function() {
@@ -182,6 +207,7 @@
     });
 
     var SCOPE = 'scope';
+    var SELF_REF = 'self';
 
     function findHost(node) {
       while (node.parentNode) {

@@ -18,11 +18,21 @@ license that can be found in the LICENSE file.
   <x-test2></x-test2>
   <x-test2 class="bold"></x-test2>
 
-  <polymer-element name="x-test" noscript>
+  <polymer-element name="x-test">
     <template>
-      <x-style ref="shared-sheet"></x-style>
+      <x-style ref="shared-sheet" on-load="{{load}}"></x-style>
       <div class="colorful">test1</div>
     </template>
+    <script>
+      Polymer('x-test', {
+        load: function(e) {
+          console.log(e.type, e.target.ref);
+        },
+        ready: function() {
+          console.log('x-test ready');
+        }
+      });
+    </script>
   </polymer-element> 
 
   <polymer-element name="x-test2" noscript>
