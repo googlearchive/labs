@@ -1,9 +1,75 @@
 <!doctype html>
 <script src="../../../components/platform/platform.js"></script>
-<link rel="import" href="elements/test-item.html">
+<link rel="import" href="../../../components/polymer/polymer.html">
 <link rel="import" href="elements/repeat-basic.html">
 
 <repeat-test></repeat-test>
+
+
+<polymer-element name="test-item" attributes="data" noscript>
+
+    <template>
+      <style>
+        .message {
+          box-sizing: border-box;
+          height: 80px;
+          padding: 4px;
+          padding-left: 77px;
+          line-height: 167%;
+          cursor: default;
+          background-color: white;
+          position: relative;
+          color: black;
+          background-repeat: no-repeat;
+          background-position: 10px 10px;
+          background-size: 60px;
+          border-bottom: 1px solid #ddd;
+        }
+        
+        .from {
+          display: inline;
+          font-weight: bold;
+        }
+        
+        .timestamp {
+          margin-left: 10px;
+          font-size: 12px;
+          opacity: 0.8;
+        }
+        
+        .body {
+          font-size: 12px;
+          opacity: 0.8;
+        }
+        
+        .subject {
+        }
+        
+        .divider {
+          background: grey;
+          color: white;
+          height: 30px;
+          line-height: 30px;
+          padding: 0 10px;
+          text-transform: uppercase;
+        }
+
+        .polymer-selected {
+          background-color: #333;
+          color: whitesmoke;
+        }
+      </style>
+
+      <div class="message {{selected}}" style="background-image: url(images/{{data.index % 4}}.png);">
+        <span class="from">{{data.name}}</span>
+        <span class="timestamp">{{data.time}}</span>
+        <div class="subject">Infinite List. {{data.index}}</div>
+        <div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+      </div>
+
+    </template>
+
+  </polymer-element>
 
 <polymer-element name="repeat-test" extends="repeat-basic" noscript>
   

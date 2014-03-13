@@ -1,0 +1,32 @@
+<!doctype html>
+<div id="log"></div>
+<script>
+    var p = Object.create(HTMLElement.prototype);
+    p.createdCallback = function() {
+      var root = this.createShadowRoot();
+      this.editor = document.createElement('div');
+      this.editor.id = 'inner_editor';
+      root.appendChild(this.editor);
+    }
+    p.attachedCallback = function() {};
+    p.attributeChangedCallback = function() {};
+    document.registerElement('x-input', {prototype: p});
+
+    var log = document.getElementById('log');
+
+    function test(tag) {
+      var d = document.createElement('div');
+      document.body.appendChild(d);
+      var start = performance.now();
+      for (var i = 0; i < 5000; ++i) {
+        d.appendChild(document.createElement(tag));
+      }
+      var time = (performance.now() - start);  
+      var report = document.createElement('div');
+      report.textContent = tag + ': ' + time.toFixed(4) + 'ms';
+      log.appendChild(report);
+    }
+
+    test('x-input');
+    test('input');
+</script>

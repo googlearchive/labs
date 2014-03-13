@@ -84,9 +84,11 @@
 
       measure: function() {
         var start = Date.now();
+        console.profile('create');
         this.onMutation(this.shadowRoot, function() {
           this.async(function() {
             var end = Date.now();
+            console.profileEnd('create');
             var d = document.createElement('div');
             d.textContent = end-start + 'ms';
             d.classList.add('output');
