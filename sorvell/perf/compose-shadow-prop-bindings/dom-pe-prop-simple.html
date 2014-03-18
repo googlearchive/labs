@@ -6,7 +6,10 @@
   <script>
     Polymer('x-test', {
       observeProperties: function() {},
-      attributeToProperty: function() {}
+      attributeToProperty: function() {},
+      registerCallback: function() {
+        this.bind = HTMLElement.prototype.bind;
+      }
     });
   </script>
 </polymer-element>

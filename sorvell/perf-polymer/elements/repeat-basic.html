@@ -1,5 +1,3 @@
-<link rel="import" href="components/polymer/polymer.html">
-
 <polymer-element name="repeat-basic" attributes="count">
   
   <template>
@@ -84,11 +82,11 @@
 
       measure: function() {
         var start = Date.now();
-        console.profile('create');
+        //console.profile('create');
         this.onMutation(this.shadowRoot, function() {
           this.async(function() {
             var end = Date.now();
-            console.profileEnd('create');
+            //console.profileEnd('create');
             var d = document.createElement('div');
             d.textContent = end-start + 'ms';
             d.classList.add('output');
