@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>polymer::sheet</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <script src="../../../components/platform/src/ShadowCSS.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+  <link rel="import" href="x-style-fixer.html">
+</head>
+<body unresolved>
+  <x-style-fixer fix="body /deep/ x-test::shadow" variables='{"bg": "red"}'>
+    <template>
+      .colorful {
+        background: {{bg}};
+      }
+    </template>
+  </x-style-fixer>
+
+  <x-style-fixer fix="x-test::shadow x-foo::shadow">
+    <template>
+      * {
+        background: green;
+      }
+    </template>
+  </x-style-fixer>
+
+
+  <x-test></x-test>
+  
+  <polymer-element name="x-test" noscript>
+    <template>
+      <div class="colorful">test1</div>
+      <x-foo></x-foo>
+    </template>
+  </polymer-element> 
+
+  <polymer-element name="x-foo" noscript>
+    <template>
+      <div>x-foo</div>
+    </template>
+  </polymer-element> 
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+<polymer-element name="x-style-fixer" attributes="variables fix">
+
+  <script>
+
+  (function() {
+
+    
+    Polymer('x-style-fixer', {
+      /**
+        the model
+      */
+      variables: {},
+      fix: '',
+
+      observe: {
+        'hasLoaded variables': 'invalidateContent'
+      },
+
+      created: function() {
+        this.style.display = 'none';
+        this.type = this.localName;
+        this._needsLoad = true;
+      },
+
+      // TODO(sorvell): async, so we're gonna fouc =(
+      attached: function() {
+        this.loadContent();
+      },
+
+      // TODO(sorvell): loading is 1x, it could be dynamic and contain bindings.
+      loadContent: function() {
+        this.ensureTemplate();
+        // TODO(sorvell): what's the deal with ref_?
+        var content = this.template.ref_.content;
+        Platform.styleResolver.loadStyles([content],
+            this.contentLoaded.bind(this));
+      },
+
+      ensureTemplate: function() {
+        if (this.template) {
+          return;
+        }
+        this.template = this.querySelector('template');
+        if (!this.template) {
+          this.template = document.createElement('template');
+          this.template.content.textContent = this.textContent;  
+        }
+      },
+
+      contentLoaded: function() {
+        this.hasLoaded = true;
+      },
+
+      invalidateContent: function() {
+        if (this.hasLoaded) {
+          this.validateContent();
+        }
+      },
+
+      validateContent: function() {
+        //this.textContent = '';
+        var model = this.variables || {};
+        this.content = this.template.createInstance(model, this.syntax);
+        this.applyStyle(this.getCss());
+      },
+
+      hasCss: function() {
+        return Boolean(this.content);
+      },
+
+      getCss: function() {
+        return this.hasCss() ? this.content.textContent : '';
+      },
+
+      applyStyle: function(cssText) {
+        this.ensureStyleElement();
+        // TODO(sorvell): solves a race condition between refChanged
+        // and another element notifying.
+        if (this.styleElement.textContent === cssText) {
+          return;
+        }
+        cssText = Platform.ShadowCSS.scopeCssText(cssText, this.fix);
+        console.log(cssText);
+        console.log('applyStyle', this);
+        if (window.ShadowDOMPolyfill) {
+          this.styleElement.textContent = cssText;
+          var suffix = this._scope ? '[' + SCOPE + '=\'' + 
+              this._scope + '\']' : '';
+          cssText = Platform.ShadowCSS.shimStyle(this.styleElement,
+              this.getScopeSelector() + suffix);
+        }
+        this.styleElement.textContent = cssText;
+        if (this._needsLoad) {
+          this._needsLoad = false;
+          this.fire('load');
+        }
+      },
+
+      ensureStyleElement: function() {
+        if (!this.styleElement) {
+          this.styleElement = window.ShadowDOMPolyfill ? 
+              this.makeShimStyle() :
+              this.makeRootStyle();
+        }
+        if (!this.styleElement) {
+          console.warn(this.localName, 'could not setup style.');
+        }
+      },
+
+      makeRootStyle: function() {
+        var style = document.createElement('style');
+        this.appendChild(style);
+        return style;
+      },
+
+      makeShimStyle: function() {
+        var host = this.getHost();
+        if (host) {
+          var name = host.localName;
+          if (this.perInstance) {
+            this._scope = Math.round(Math.random() * 1e9);
+            name += this._scope;
+            host.setAttribute(SCOPE, this._scope);
+          }
+          var style = document.querySelector('style[' + name + ']');
+          if (!style) {
+            style = document.createElement('style');
+            style.setAttribute(name, '');
+            document.head.appendChild(style);
+          }
+          return style;
+        }
+      },
+
+      getScopeSelector: function() {
+        if (!this._scopeSelector) {
+          var selector = '', host = this.getHost();
+          if (host) {
+            var typeExtension = host.hasAttribute('is');
+            var name = typeExtension ? host.getAttribute('is') : host.localName;
+            selector = Platform.ShadowCSS.makeScopeSelector(name, 
+                typeExtension);
+          }
+          this._scopeSelector = selector;
+        }
+        return this._scopeSelector;
+      },
+
+      getHost: function() {
+        if (!this._host) {
+          this._host = findHost(this);
+        }
+        return this._host;
+      }
+
+    });
+
+    var SCOPE = 'scope';
+    var SELF_REF = 'self';
+
+    function findHost(node) {
+      while (node.parentNode) {
+        if (node.lightDomController) {
+          return node;
+        }
+        node = node.parentNode;
+      }
+      return node.host || document.body;
+    };
+
+  })();
+
+  </script>
+
+</polymer-element>
