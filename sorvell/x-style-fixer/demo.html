@@ -13,6 +13,16 @@
       .colorful {
         background: {{bg}};
       }
+
+      .pretty {
+        color: orange;
+      }
+    </template>
+  </x-style-fixer>
+
+  <x-style-fixer fix="body /deep/ x-test.two::shadow" variables='{"bg": "red"}'>
+    <template>
+      @import sheet.css;
     </template>
   </x-style-fixer>
 
@@ -26,10 +36,14 @@
 
 
   <x-test></x-test>
+
+  <hr>
+
+  <x-test class="two"></x-test>
   
   <polymer-element name="x-test" noscript>
     <template>
-      <div class="colorful">test1</div>
+      <div class="colorful pretty">test1</div>
       <x-foo></x-foo>
     </template>
   </polymer-element> 
