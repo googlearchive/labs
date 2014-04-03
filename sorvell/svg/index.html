@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+</head>
+<body>
+  <object id="svg" data="http://localhost/polymer/components/core-action-icons/action-icons.svg" type="image/svg+xml"></object>
+  <script>
+    document.querySelector('#svg').addEventListener('load', function(e) {
+      var doc = this.getSVGDocument();
+      var svg = doc.querySelector('svg');
+      //console.log(doc);
+      //var rect = doc.querySelector("rect");
+      //svg.setAttribute("fill", "green");  
+      svg.style.stroke = 'orange';
+      //svg.style.fill = 'orange !important';
+    });
+    
+  </script>
+  <!-- <img src="http://localhost/polymer/components/core-action-icons/action-icons.svg"> -->
+</body>
+</html>

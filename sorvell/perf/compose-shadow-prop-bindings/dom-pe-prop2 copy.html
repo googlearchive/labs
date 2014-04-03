@@ -1,0 +1,51 @@
+<!doctype html>
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+
+<polymer-element name="x-test" attributes="foo bar zot qux">
+  <script>
+  (function() {
+
+    function defineProp(obj, prop) {
+    }
+
+    Polymer('x-test', {
+      observeProperties: function() {},
+      attributeToProperty: function() {},
+      reflectPropertyToAttribute: function() {},
+      bind: function(name, observable, oneTime) {
+        var property = this.propertyForAttribute(name);
+        if (!property) {
+          return this.mixinSuper(arguments);
+        } else {
+          // use n-way Polymer binding
+          //var observer = this.bindProperty(property, observable);
+          //this.reflectPropertyToAttribute(property);
+          return Observer.bindToInstance(this, property, observable);
+        }
+      },
+      registerCallback: function(element) {
+        console.log(this);
+        for (var i in this.publish) {
+          Observer.createBindablePrototypeAccessor(this, i);
+        }
+      },
+      propValueChanged_: function(prop, newValue, oldValue) {
+        console.log(arguments);
+      }
+    });
+
+  })();
+  </script>
+</polymer-element>
+<script>
+  /*
+    NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+    of polymer-elements by at least 2x. Why?
+  */
+  addEventListener('polymer-ready', function() {
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

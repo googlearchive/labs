@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>template upgrade</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+  <link rel="import" href="import.html">
+</head>
+<body>
+  <polymer-element name="x-a" attributes="a">
+    <script>
+      Polymer('x-a', {
+        created: function() {
+          console.log(this.localName, 'created');
+        },
+        ready: function() {
+          console.log(this.localName, 'ready!');
+        },
+        bind: function() {
+          console.log(this.localName, 'bind');
+          return this.super(arguments);
+        },
+        aChanged: function() {
+          console.log('aChanged', this.a);
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="x-test">
+    <template>
+      <x-a a="{{a}}"></x-a>
+    </template>
+    <script>
+      Polymer('x-test', {
+        a: 5,
+        ready: function() {
+          console.log(this.localName, 'ready!');
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <x-test></x-test>
+  <template>
+    <x-test></x-test>
+  </template>
+</body>
+</html>
