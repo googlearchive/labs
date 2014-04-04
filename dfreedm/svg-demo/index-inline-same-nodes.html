@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>SVG example</title>
+  <script src="../polymer/components/platform/platform.js"></script>
+  <link rel="import" href="../polymer/components/polymer/polymer.html">
+  <!-- <link rel="import" href="email.html"> -->
+  <!-- <link rel="import" href="../polymer/components/core-icon/core-icon.html"> -->
+</head>
+<body unresolved>
+  <polymer-element name="svg-container">
+    <template>
+      <style>
+        .item {
+          height: 32px;
+          border: 1px solid black;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+        }
+        .center {
+          flex: 1;
+        }
+        .middle {
+          border-top: 0px;
+        }
+        :host {
+          display: block;
+        }
+        .menu{
+          height: 24px; width: 24px; background-image: url(http://localhost:8080/~dfreedm/polymer/components/core-action-icons/action-icons.png); background-size: auto; background-position: 0px -24px;
+        }
+      </style>
+      <template repeat="{{i in items}}"><div class="[[ {item: true, middle: i != 0} | tokenList ]]">
+          <core-icon class="menu">
+          <aa>
+            <bb>
+              <cc></cc>
+              <dd></dd>
+            </bb>
+          </aa>
+          </core-icon>
+          <span class="center">Email item [[i]]</span>
+          <core-icon class="menu">
+          <aa>
+            <bb>
+              <cc></cc>
+              <dd></dd>
+            </bb>
+          </aa>
+          </core-icon>
+          <core-icon class="menu">
+          <aa>
+            <bb>
+              <cc></cc>
+              <dd></dd>
+            </bb>
+          </aa>
+          </core-icon>
+        </div></template>
+    </template>
+    <script>
+      Polymer('svg-container', {
+        ready: function() {
+          var ITEMS = 300;
+          this.items = new Array(ITEMS);
+          for (var i = 0; i < ITEMS; i++) this.items[i] = i;
+          var start = performance.now();
+          this.onMutation(this.shadowRoot, function() {
+            requestAnimationFrame(function() {
+              console.log(this.shadowRoot.childNodes.length, performance.now() - start);
+            }.bind(this));
+          });
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <svg-container></svg-container>
+</body>
+</html>

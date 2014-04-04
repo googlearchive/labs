@@ -1,0 +1,8 @@
+{
+  "name": "svg-demo",
+  "private": "true",
+  "dependencies": {
+    "core-icon": "Polymer/core-icon#~0.2.2",
+    "core-iconset-svg": "Polymer/core-iconset-svg"
+  }
+}
