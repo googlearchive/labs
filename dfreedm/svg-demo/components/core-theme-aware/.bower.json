@@ -1,0 +1,17 @@
+{
+  "name": "core-theme-aware",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master"
+  },
+  "homepage": "https://github.com/Polymer/core-theme-aware",
+  "_release": "3ad9432f9d",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "3ad9432f9d3bd61ce30c2bbe56ce639a60efc13d"
+  },
+  "_source": "git://github.com/Polymer/core-theme-aware.git",
+  "_target": "master",
+  "_originalSource": "Polymer/core-theme-aware"
+}
