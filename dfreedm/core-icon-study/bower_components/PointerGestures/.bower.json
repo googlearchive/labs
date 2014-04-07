@@ -1,0 +1,35 @@
+{
+  "name": "PointerGestures",
+  "main": "pointergestures.js",
+  "homepage": "https://github.com/Polymer/PointerGestures",
+  "authors": [
+    "The Polymer Authors"
+  ],
+  "description": "An intuitive set of gestures built on PointerEvents",
+  "keywords": [
+    "PointerEvents",
+    "gestures"
+  ],
+  "dependencies": {
+    "PointerEvents": "Polymer/PointerEvents#master",
+    "WeakMap": "Polymer/WeakMap#master"
+  },
+  "license": "BSD",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "e5ec43dcef",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "e5ec43dcef5a20d789c7e4c09dd206cdb6664a27"
+  },
+  "_source": "git://github.com/Polymer/PointerGestures.git",
+  "_target": "master",
+  "_originalSource": "Polymer/PointerGestures"
+}

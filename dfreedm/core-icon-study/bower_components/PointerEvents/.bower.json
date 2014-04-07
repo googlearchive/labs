@@ -1,0 +1,30 @@
+{
+  "name": "PointerEvents",
+  "main": "pointerevents.js",
+  "homepage": "https://github.com/Polymer/PointerEvents",
+  "authors": [
+    "The Polymer Authors"
+  ],
+  "description": "PointerEvents Polyfill: a unified event system for the web platform",
+  "keywords": [
+    "PointerEvents"
+  ],
+  "license": "BSD",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "86c341c7ef",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "86c341c7ef946dc295cb93a2b5ebebde69dbdcb7"
+  },
+  "_source": "git://github.com/Polymer/PointerEvents.git",
+  "_target": "master",
+  "_originalSource": "Polymer/PointerEvents"
+}

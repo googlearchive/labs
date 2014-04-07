@@ -1,7 +1,0 @@
-{
-  "name": "svg-demo",
-  "dependencies": {
-    "core-iconset-svg": "Polymer/core-iconset-svg#master",
-    "core-icon": "Polymer/core-icon#master"
-  }
-}
