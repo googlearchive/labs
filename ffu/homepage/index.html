@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+  <title>core-ajax</title>
+
+  <style>
+  
+    body {
+      font-family: "Open Sans", Helvetica, Arial, sans-serif;
+      background-color: #eee;
+      margin: 0;
+    }
+    
+    .main {
+      display: -webkit-flex;
+      display: flex;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 150px 16px;
+    }
+    
+    .main > img {
+      margin-right: 60px;
+    }
+    
+    .content {
+      -webkit-flex: 1;
+      flex: 1;
+    }
+    
+    .content > h1 {
+      margin: 10px 0 70px;
+      font-family: sans-serif;
+      font-size: 30px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+    
+    .content > a {
+      display: inline-block;
+      position: relative;
+      background: #fafafa;
+      box-shadow: rgba(0,0,0,0.14902) 0px 1px 1px 0px,rgba(0,0,0,0.09804) 0px 1px 2px 0px;
+      transition: box-shadow 0.2s, background 0.2s;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      margin: 0 10px 16px 0;
+      padding: 14px 14px 12px;
+      border-radius: 2px;
+      outline: none;
+      white-space: nowrap;
+      font-size: 13px;
+      line-height: 24px;
+      letter-spacing: 0.06em;
+      color: inherit;
+      vertical-align: middle;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    
+    .content > a:hover {
+      text-decoration: none;
+      background: #fff;
+      box-shadow: 0px 4px 10px 0 rgba(0,0,0,0.1),0px 2px 10px 0px rgba(0,0,0,0.1);
+    }
+    
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      padding: 20px 16px;
+      background-color: rgb(31, 32, 54);
+      color: #fff;
+    }
+    
+    footer > div {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    
+    footer a {
+      text-decoration: none;
+      color: #aaa;
+    }
+    
+    @media screen and (max-width: 860px) {
+      .main {
+        -webkit-flex-direction: column;
+        flex-direction: column;
+        -webkit-align-items: center;
+        align-items: center;
+      }
+      
+      .main > img {
+        margin: 0 0 88px;
+      }
+    }
+    
+    @media screen and (max-width: 420px) {
+      .main > img {
+        width: 100%;
+      }
+    }
+    
+  </style>
+</head>
+<body>
+
+  <div class="main">
+
+    <img src="http://www.polymer-project.org/images/logos/p-logo.svg">
+
+    <div class="content">
+    
+      <h1>&lt;core-ajax&gt;</h1>
+    
+      <a href="components/core-ajax/">Documentation</a>
+      <a href="components/core-ajax/demo.html">Demo</a>
+      <br>
+      <a href="https://github.com/Polymer/core-ajax">GitHub</a>
+      <a href="http://compound.selfip.net:3003/archive?core-ajax=Polymer/core-ajax">Download!</a>
+      
+    </div>
+
+  </div>
+  
+  <footer>
+  
+    <div>
+      <p id="copyright">&copy; 2014 Polymer Authors. Code licensed under the <a href="https://github.com/polymer/polymer/blob/master/LICENSE" target="_blank">BSD License</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>.</p>
+    </div>
+    
+  </footer>
+  
+</body>
+</html>
