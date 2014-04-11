@@ -1,0 +1,13 @@
+<polymer-element name="x-thingy">
+  <template>
+    <img id="thingy">
+    </template>
+  </template>
+  <script>
+    Polymer('x-thingy', {
+      ready: function() {
+        this.$.thingy.src = this.resolvePath('../resource/logo.png');
+      }
+    });
+  </script>
+</polymer-element>

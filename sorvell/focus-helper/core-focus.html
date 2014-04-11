@@ -1,0 +1,94 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+<polymer-element name="core-focus" attributes="target focusElement lastFocusElement">
+  
+  <script>
+    Polymer('core-focus', {
+      target: null,
+      focusClass: 'core-focus',
+      targetChanged: function(old) {
+        if (old) {
+          this.teardownTarget(old);
+        }
+        if (this.target) {
+          this.setupTarget(this.target);
+        }
+      },
+
+      targetDelegates: {
+        'focus': 'targetFocus'
+      },
+      rootDelegates: {
+        'DOMFocusIn': 'targetRootFocus', 
+        'DOMFocusOut': 'targetRootBlur'
+      },
+      
+      setupTarget: function(target) {
+        if (target.tabIndex < 0) {
+          target.tabIndex = 0;
+        }
+        this.addEvents(this.target, this.targetDelegates);
+        this.addEvents(this.target.shadowRoot, this.rootDelegates);
+      },
+
+      teardownTarget: function(target) {
+        this.removeEvents(this.target, this.targetDelegates);
+        this.removeEvents(this.target.shadowRoot, this.rootDelegates);
+      },
+
+      addEvents: function(node, listeners) {
+        for (var i in listeners) {
+          node.addEventListener(i, this[listeners[i]].bind(this));
+        }
+      },
+
+      removeEvents: function(node, listeners) {
+        for (var i in listeners) {
+          node.removeEventListener(i, this[listeners[i]].bind(this));
+        }
+      },
+
+      targetFocus: function(e) {
+        if (e.target.shadowRoot.activeElement) {
+          return;
+        }
+        var shouldFocusLast = this.target.compareDocumentPosition(
+            e.relatedTarget) === Node.DOCUMENT_POSITION_FOLLOWING;
+        this.lastFocusElement = this.lastFocusElement || this.focusElement;    
+        var focusElement = shouldFocusLast ? this.lastFocusElement : 
+            this.focusElement;
+        if (focusElement) {
+          focusElement.focus();
+        }
+      },
+
+      // e.relatedTarget is the element losing focus
+      targetRootFocus: function(e) {
+        // focus was previously outside the root
+        if (!this.target.shadowRoot.contains(e.relatedTarget)) {
+          this.target.classList.add(this.focusClass);
+          this.target.disabledTabIndex = this.target.tabIndex;
+          this.target.tabIndex = -1;
+        }
+      },
+
+      // e.relatedTarget is the element gaining focus
+      // TODO(sorvell): doesn't work with tabindex =(
+      targetRootBlur: function(e) {
+        // the target element is being focused
+        if (e.relatedTarget === this.target) {
+          this.focusElement.focus();
+          return;
+        }
+        if (!this.target.shadowRoot.contains(e.relatedTarget)) {
+          this.target.classList.remove(this.focusClass);
+          this.target.tabIndex = this.target.disabledTabIndex;
+          //console.log(this.target.tabIndex);
+        }
+      }
+
+    });
+ 
+  </script>
+
+</core-focus>

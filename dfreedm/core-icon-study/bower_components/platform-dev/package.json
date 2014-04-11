@@ -1,0 +1,21 @@
+{
+  "name": "Platform",
+  "version": "0.2.2",
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "grunt": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-uglify": "~0.3",
+    "grunt-contrib-yuidoc": "*",
+    "grunt-karma": "*",
+    "karma-mocha": "*",
+    "karma-ie-launcher": "*",
+    "karma-firefox-launcher": "*",
+    "karma-safari-launcher": "*",
+    "karma-script-launcher": "*",
+    "karma-crbot-reporter": "*",
+    "grunt-concat-sourcemap": "*",
+    "grunt-audit": "*"
+  }
+}

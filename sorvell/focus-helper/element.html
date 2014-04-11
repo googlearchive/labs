@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="core-focus.html">
+</head>
+<body>
+  <button onclick="focusElement()">Focus</button>
+  <script>
+    function focusElement() {
+      document.querySelector('x-input').focus();
+    }
+  </script>
+  <!-- <x-input tabIndex="4" label="Label 1" value="1"></x-input>
+  <x-input tabIndex="3" label="Label 2" value="2"></x-input>
+  <x-input tabIndex="2" label="Label 3" value="3"></x-input>
+  <x-input tabIndex="1" label="Label 4" value="4"></x-input> -->
+
+  <x-input label="Label 1" value="1"></x-input>
+  <x-input label="Label 2" value="2"></x-input>
+  <x-input label="Label 3" value="3"></x-input>
+  <x-input label="Label 4" value="4"></x-input>
+  
+  <polymer-element name="x-input" attributes="label value" noscript>
+    
+    <template>
+      <style>
+        :host {
+          display: block;
+          background-color: #eee;
+          border-bottom: 1px solid #eee;
+          padding: 10px;
+          margin: 10px;
+        }
+        :host(.core-focus) {
+          border-bottom: 1px solid black;
+        }
+
+        input {
+          -webkit-appearance: none;
+          outline: none;
+          border: 0;
+          background: transparent;
+        }
+      </style>
+      <div>{{label}}</div>
+      <input id="input" style="width:100%;" value="{{value}}"></input>
+      <!-- <input id="input2" style="width:100%;" value="{{value * 2}}"></input> -->
+      <core-focus target="{{}}" focusElement="{{$.input}}" lastFocusElement="{{$.input2}}"></core-focus>
+    </template>
+    
+  </polymer-element>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>template upgrade</title>
+  <script src="../../../../components/platform/platform.js"></script>
+  <link rel="import" href="import.html">
+</head>
+<body>
+  <script>
+    var x = Object.create(HTMLElement.prototype);
+    x.createdCallback = function() {
+      console.log('created!', this.parentNode);
+    }
+    document.registerElement('x-test', {prototype: x});
+  </script>
+
+  <x-test></x-test>
+  <template>
+    <x-test></x-test>
+  </template>
+</body>
+</html>

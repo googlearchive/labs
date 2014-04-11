@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<body>
+  
+  <input tabindex="1"></input>
+  <div tabindex="2"></div>
+  <input tabindex="3"></input>
+  
+<script>
+
+  // simulate a custom element with an internal element that should receive focus. Here, a div containing an input:
+  var host = document.querySelector('div');
+  var root = host.createShadowRoot();
+  root.innerHTML = '<div>before</div><input value="shadowy"></input><input value="shadowy2"></input><div>after</div>';
+
+  // give the host a tabIndex so it is focusable
+  if (host.tabIndex === -1) {
+    host.tabIndex = 0;
+  }
+
+  // apply some styling so we can see focus on the host.
+  root.innerHTML += '<style>:host(:focus) {border: 10px solid red;} :host(.container-focus) {border-bottom: 1px solid green;} </style>';
+  
+  // record focus nodes.
+  host.firstFocusNode = root.querySelector('input');
+  host.lastFocusNode = root.querySelector('input:last-of-type');
+
+  /*
+  gambit: when the host is focused, focus the `firstFocusNode` in its shadowRoot. 
+  NOTE: If there are multiple focusable elements in the shadowRoot, this would need more development. However, in this case, it may not make sense to consider the host element focusable.
+  */
+  host.addEventListener('focus', function(e) {
+    if (host.shadowRoot.activeElement) {
+      return;
+    }
+    console.log('host focus', e.relatedTarget);
+    var lastFirst = host.compareDocumentPosition(e.relatedTarget) === Node.DOCUMENT_POSITION_FOLLOWING;
+    if (lastFirst) {
+      host.lastFocusNode.focus();
+    } else {
+      host.firstFocusNode.focus();
+    }
+  });
+  
+  /*
+  gambit: remove tabIndex while focus is inside shadowRoot.
+  */
+  // when the shadowRoot is focused, apply a manual focus state to the host
+  root.addEventListener('DOMFocusIn', function(e) {
+    console.log('root focusin', e.target);
+    if (!root.contains(e.relatedTarget)) {
+      host.classList.add('container-focus');
+      host.disabledTabIndex = host.tabIndex;
+      host.tabIndex = -1;
+    }
+  });
+
+  // when the shadowRoot loses focus, we remove the host focus state,
+  // and we focus the previous focusable element from the host.
+  root.addEventListener('DOMFocusOut', function(e) {
+    console.log('root focusout', e.relatedTarget);
+    if (e.relatedTarget === host) {
+      host.firstFocusNode.focus();
+      return;
+    }
+    if (!root.contains(e.relatedTarget)) {
+      host.classList.remove('container-focus');
+      host.tabIndex = host.disabledTabIndex;
+    }
+  });
+
+  // TODO(sorvell): File bug! The host does not Blur when an internal node is focused; however, it does not match the :focus state.
+  host.addEventListener('blur', function(e) {
+    console.log('host blur');
+  });  
+    
+  </script>
+</body>
+</html>

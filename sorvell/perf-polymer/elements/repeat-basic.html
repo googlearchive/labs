@@ -1,0 +1,104 @@
+<polymer-element name="repeat-basic" attributes="count">
+  
+  <template>
+    <style id="style">
+      :host {
+        display: block;
+      }
+
+      .output {
+        position: fixed;
+        top: calc(50% - 100px);
+        left: calc(50% - 250px);
+        width: 500px;
+        background: white;
+        border: 2px solid black;
+        margin: 4px;
+        padding: 4px;
+        border-radius: 4px;
+        font-size: 100px;
+        text-align: center;
+      }
+    </style>
+  </template>
+  
+  <script>
+  (function() {
+    var strings = [
+      "PARKOUR!",
+      "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+    ];
+
+    var namegen = {
+      generateString: function(inLength) {
+        var s = '';
+        for (var i=0; i<inLength; i++) {
+          s += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+        }
+        return s;
+      },
+      generateName: function(inMin, inMax) {
+        return this.generateString(Math.floor(Math.random() * (inMax - inMin + 1) + inMin));
+      }
+    };
+
+    Polymer('repeat-basic', {
+
+      count: 1000,
+
+      ready: function() {
+        this.shadowRoot.appendChild(this.$.style);
+        this.test();
+      },
+
+      test: function() {
+        this.list = this.generateList();
+        this.measure();
+      },
+
+      generateList: function() {
+        var names = [], data = [];
+        for (var i=0; i<this.count; i++) {
+          names.push(namegen.generateName(4, 8));
+        }
+        names.sort();
+        for (var i=0; i<this.count; i++) {
+          var name = names[i];
+          var divider = name.charAt(0);
+          if (divider === (names[i-1] || '').charAt(0)) {
+            divider = null;
+          }
+          data.push({
+            index: i,
+            name: name,
+            divider: divider,
+            details: strings[i % 3],
+            time: '8:29pm'
+          });
+        }
+        return data;
+      },
+
+      measure: function() {
+        var start = Date.now();
+        //console.profile('create');
+        Platform.flush();
+        Platform.endOfMicrotask(function() {
+          this.async(function() {
+            var end = Date.now();
+            //console.profileEnd('create');
+            var d = document.createElement('div');
+            d.textContent = end-start + 'ms';
+            d.classList.add('output');
+            this.shadowRoot.appendChild(d);
+          });
+        }.bind(this));
+      }
+      
+    });
+
+  })();
+  </script>
+
+</polymer-element>

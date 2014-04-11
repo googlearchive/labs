@@ -1,3 +1,4 @@
+<!doctype html>
 <script src="../../../components/platform/platform.js"></script>
 <link rel="import" href="test-import.html">
 <link rel="import" href="../../../components/polymer/polymer.html">
@@ -88,6 +89,7 @@
           if (this[g]) {
             return this[g]();
           }
+          return null;
         },
         set: function(value) {
           if (this[s]) {

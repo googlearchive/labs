@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load</title>
+  <!--<script>
+    function loaded(element) {
+      console.log('LOADED IMPORT');
+      console.log(element.href, element.import);
+      var i = element.import;
+      if (i) {
+        var sub = i.querySelector('link');
+        console.log('sub import', sub, sub.import);
+      }
+    }
+    
+  </script>-->
+  <script src="observe.js"></script>
+</head>
+<body>
+  <link rel="import" href="import-import.html" Xonload="loaded(this)">
+</body>
+</html>

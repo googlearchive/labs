@@ -1,0 +1,69 @@
+<!doctype html>
+<script src="../../../../components/platform/platform.js"></script>
+<link rel="import" href="../../../../components/polymer/polymer.html">
+<body>
+<template></template>
+
+<polymer-element name="x-foo" attributes="a1" noscript>
+  <template></template>
+</polymer-element>
+
+
+
+<script>
+  document.addEventListener('polymer-ready', function() {
+    var template = document.querySelector('template');
+
+    var p = Object.create(HTMLElement.prototype);
+    p.syntax = new PolymerExpressions();
+    p.observe = {};
+    p.names = ['a1'];
+    p.createdCallback = function() {
+      this.createShadowRoot();
+      var o = this.observer = new CompoundObserver();
+      var pn$ = this.names;
+      for (var i=0, l=pn$.length, n; (i<l) && (n=pn$[i]); i++) {
+        if (!this.observe || (this.observe[n] === undefined)) {
+          o.addPath(this, n);
+        }
+      }
+      o.open(this.notifyPropertyChanges, this);
+      
+      this.shadowRoot.appendChild(template.createInstance(this, this.syntax));
+    }
+
+    p.notifyPropertyChanges = function() {}
+
+    /*
+    Object.defineProperty(p, 'foo', {
+      get: function() {
+        return this._foo;
+      },
+      set: function(value) {
+        this._foo = value;
+      }
+    });
+    */
+
+    p.attachedCallback = function() {}
+    document.registerElement('x-bar', {prototype: p});
+
+
+
+    t = performance.now();
+    var d = document.createElement('div');
+    document.body.appendChild(d);
+    for (var i = 0; i < 5000; ++i) {
+      //d.bind('a1', {open: function() {}, close: function() {}});
+      d.appendChild(document.createElement("x-foo")).textContent = "foo" + i;
+    }
+    console.log(performance.now() - t);
+
+    t = performance.now(); var d = document.createElement('div'); document.body.appendChild(d); for (var i = 0; i < 5000; ++i) d.appendChild(document.createElement("x-bar")).textContent = "foo" + i; console.log(performance.now() - t);
+
+
+    t = performance.now(); var d = document.createElement('div'); document.body.appendChild(d); for (var i = 0; i < 5000; ++i) d.appendChild(document.createElement("input")).value = "foo" + i; console.log(performance.now() - t);
+
+  });
+</script>
+</body>

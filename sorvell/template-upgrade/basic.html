@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>template upgrade</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+  <link rel="import" href="import.html">
+</head>
+<body>
+  <polymer-element name="x-test">
+    <script>
+      Polymer('x-test', {
+        alwaysPrepare: true,
+        ready: function() {
+          console.log('ready!');
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <x-test></x-test>
+  <template>
+    <x-test></x-test>
+  </template>
+</body>
+</html>
