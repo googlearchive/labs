@@ -1,0 +1,69 @@
+<!doctype html>
+<script src="less/less-1.7.0.min.js"></script>
+<style id="test">
+  @bg: #f938ab;
+
+  /* ShadowDOM syntax test */
+
+  x-foo::shadow {
+    .colorful {
+      background: @bg;
+    }
+  }
+
+  ::content {
+    .colorful {
+      background: @bg;
+    }
+  }
+
+  :host(.hello) {
+    .colorful {
+      background: @bg;
+    }
+  }
+
+  :host-context(.hello) {
+    .colorful {
+      background: @bg;
+    }
+  }
+
+  /*body /deep/ div {
+    .colorful {
+      background: {{test}};
+    }
+  }
+  */
+</style>
+<script>
+   (function() {
+    var parser = new less.Parser();
+    var deep = '/deep/', deepRe = /\/deep\//g;
+    var deepReplace = '::deep', deepReplaceRe = /\:\:deep/g;
+
+    function parseCss(cssText) {
+      var s = performance.now();
+      //cssText = cssText.replace(deepRe, deepReplace);
+      // yay, sync
+      parser.parse(cssText, function (e, tree) {
+        if (e) {
+          console.log(e);
+        } else {
+          //cssText = tree.toCSS().replace(deepReplaceRe, deep);
+        }
+      });
+      console.log(performance.now() - s);
+      return cssText;
+    }
+
+    window.parseCss = parseCss;
+  })();
+
+  test.textContent = parseCss(test.textContent);
+
+  
+</script>
+<div>
+  <div class="colorful">Hello!</div>
+</div>

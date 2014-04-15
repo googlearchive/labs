@@ -1,0 +1,51 @@
+<!doctype html>
+<script src="gonzales_in_browser.js"></script>
+<style id="test">
+  x-foo::shadow .colorful {
+    background: {{test}};
+  }
+
+  ::content .colorful {
+    background: black;
+  }
+
+  :host(.hello) .colorful {
+    background: black;
+  }
+
+  :host-context(.hello) .colorful {
+    background: black;
+  }
+
+  body /deep/ div .colorful {
+    background: black;
+  }
+</style>
+<script>
+  setTimeout(function() {
+   (function() {
+    var gonzales = require('gonzales');
+    var deep = '/deep/', deepRe = /\/deep\//g;
+    var deepReplace = '::deep', deepReplaceRe = /\:\:deep/g;
+
+    function parseCss(cssText) {
+      var s = performance.now();
+      cssText = cssText.replace(deepRe, deepReplace);
+      cssText = cssText.replace(/\{\{/g, '++').replace(/\}\}/g, '--');
+      var cssp = gonzales.srcToCSSP(cssText);
+      cssText = gonzales.csspToSrc(cssp).replace(deepReplaceRe, deep);
+      cssText = cssText.replace(/\+\+/g, '{{').replace(/\-\-/g, '}}');
+      console.log(performance.now() - s);
+      return cssText;
+    }
+
+    window.parseCss = parseCss;
+  })();
+
+  test.textContent = parseCss(test.textContent);
+
+  }, 500);
+</script>
+<div>
+  <div class="colorful">Hello!</div>
+</div>
