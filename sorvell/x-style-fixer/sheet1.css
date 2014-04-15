@@ -1,9 +1,7 @@
-:host {
-  display: block;
-  margin: 4px 0;
-  border: 3px solid {{borderColor}};
+.bordered {
+  border: 10px solid [[borderColor]];
 }
 
-:host(.bold) {
+.bold {
   font-weight: bold;
 }

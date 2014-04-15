@@ -11,7 +11,7 @@
   <x-style-fixer fix="body /deep/ x-test::shadow" variables='{"bg": "red"}'>
     <template>
       .colorful {
-        background: {{bg}};
+        background: [[bg]];
       }
 
       .pretty {
@@ -26,8 +26,10 @@
     </template>
   </x-style-fixer>
 
-  <x-style-fixer fix="x-test::shadow x-foo::shadow">
+  <x-style-fixer fix="x-test::shadow x-foo::shadow" variables='{"borderColor": "navy"}'>
     <template>
+      @import 'sheet1.css';
+
       * {
         background: green;
       }
@@ -50,7 +52,7 @@
 
   <polymer-element name="x-foo" noscript>
     <template>
-      <div>x-foo</div>
+      <div class="bordered">x-foo</div>
     </template>
   </polymer-element> 
 
