@@ -67,7 +67,7 @@
     margin: 4px;
     padding: 4px;
     border-radius: 4px;
-    font-size: 100px;
+    font-size: 50px;
     text-align: center;
   }
 </style>
@@ -143,19 +143,42 @@
       return data;
     }
 
-    function measure() {
-      var start = Date.now();
-      requestAnimationFrame(function() {
-        var end = Date.now();
-        var d = document.createElement('div');
-        d.textContent = end-start + 'ms';
-        d.classList.add('output');
-        document.body.appendChild(d);
-      });
+    function report(message) {
+      var d = document.createElement('div');
+      d.innerHTML = message;
+      d.classList.add('output');
+      document.body.appendChild(d);
     }
 
-    window.list = $scope.list = generateList();
-    measure();
+    var data = generateList();
+
+    var container = document.querySelector('[ng-controller]');
+
+    var time = {};
+
+    var d = document.createElement('div');
+    var observer = new MutationObserver(function() {
+      time.mutation = performance.now();
+      observer.disconnect();
+    }.bind(this));
+    observer.observe(d, {attributes: true});
+    d.setAttribute('foo', 'bar');
+
+    requestAnimationFrame(function() {
+      time.raf = performance.now();
+    });
+
+    setTimeout(function() {
+      time.timeout = performance.now();
+      report('dom: ' + (time.mutation - time.start).toFixed(0) + 'ms' +
+          '<br>raf: ' + (time.raf - time.start).toFixed(0) + 'ms' + 
+          '<br>timeout: ' + (time.timeout - time.start).toFixed(0) + 'ms');
+
+    }, 0);
+
+    time.start = performance.now();
+
+    $scope.list = data;
 
   });
 </script>

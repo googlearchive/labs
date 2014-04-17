@@ -16,7 +16,7 @@
         margin: 4px;
         padding: 4px;
         border-radius: 4px;
-        font-size: 100px;
+        font-size: 50px;
         text-align: center;
       }
     </style>
@@ -81,19 +81,34 @@
       },
 
       measure: function() {
-        var start = Date.now();
-        //console.profile('create');
-        Platform.flush();
-        Platform.endOfMicrotask(function() {
-          this.async(function() {
-            var end = Date.now();
-            //console.profileEnd('create');
-            var d = document.createElement('div');
-            d.textContent = end-start + 'ms';
-            d.classList.add('output');
-            this.shadowRoot.appendChild(d);
-          });
+        var time = {};
+        var self = this;
+        
+        var d = document.createElement('div');
+        var observer = new MutationObserver(function() {
+          time.mutation = performance.now();
+          observer.disconnect();
         }.bind(this));
+        observer.observe(d, {attributes: true});
+        d.setAttribute('foo', 'bar');
+        
+        requestAnimationFrame(function() {
+          time.raf = performance.now();
+        });
+        setTimeout(function() {
+          time.timeout = performance.now();
+          self.report('dom: ' + (time.mutation - time.start).toFixed(0) + 'ms' +
+              '<br>raf: ' + (time.raf - time.start).toFixed(0) + 'ms' + 
+              '<br>timeout: ' + (time.timeout - time.start).toFixed(0) + 'ms');
+        }, 0);
+        time.start = performance.now();
+      },
+
+      report: function(message) {
+        var d = document.createElement('div');
+        d.innerHTML = message;
+        d.classList.add('output');
+        this.shadowRoot.appendChild(d);
       }
       
     });
