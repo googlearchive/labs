@@ -1,5 +1,5 @@
 .bordered {
-  border: 10px solid [[borderColor]];
+  border: 10px solid black;
 }
 
 .bold {

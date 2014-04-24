@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    /*
+    var m = new MutationObserver(function(mxns) {
+      console.log(mxns);
+      for (var i=0, l=mxns.length, m, n; i < l; i++) {
+        m = mxns[i];
+        if (m.addedNodes) {
+          n = m.addedNodes[0];
+          if (n.getAttribute && n.getAttribute('href')) {
+            n.setAttribute('href', '')
+            n.setAttribute('rel', 'bogus');
+          }
+        }
+      }
+    });
+
+    m.observe(document, {childList: true, subtree: true});
+    */
+
+    var proto = Object.create(HTMLLinkElement.prototype);
+    proto.createdCallback = function() {
+      if (this.href.match('.html')) {
+        this.setAttribute('rel', 'import');
+        this.href = this.href;
+      }
+      if (this.href.match('.css')) {
+        this.setAttribute('rel', 'stylesheet');
+        this.href = this.href;
+      }
+    }
+
+    document.registerElement('x-link', {prototype: proto, extends: 'link'});
+
+  </script>
+  <link is="x-link" href="sheet.css">
+  <link is="x-link" href="stuff.html">
+</head>
+<body>
+  <div class="red">am I red?</div>
+</body>
+</html>

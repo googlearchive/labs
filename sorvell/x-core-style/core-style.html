@@ -1,0 +1,122 @@
+<script src="../../../components/platform/src/ShadowCSS.js"></script>
+<link rel="import" href="../../../components/core-meta/core-meta.html">
+
+<polymer-element name="core-style" attributes="provide use for fix">
+<script>
+(function() {
+
+var META_TYPE = 'style-loader';
+var refs = {};
+var madeStyle = {};
+
+Polymer('core-style', {
+
+  stylesLoading: false,
+  stylesLoaded: false,
+
+  ready: function() {
+    // do this imperatively since it seems weird to make an SR on a template.
+    this.makeMeta();
+    if (this.provide) {
+      this.provideStyle(this.provide);
+    }
+    if (this.use) {
+      this.requireStyle(this.use);
+    }
+  },
+
+  makeMeta: function() {
+    this.meta = document.createElement('core-meta');
+    this.meta.type = META_TYPE;
+    if (this.provide) {
+      this.meta.styleLoader = this;
+      this.meta.register(this.provide);
+    }
+  },
+
+  provideStyle: function(provide) {
+    Polymer.queue.wait(this, this.checkLoaded, this.loadComplete);
+    // TODO(sorvell): there's no good signal to know when/if we have children
+    // when we're in an import.
+    var self = this;
+    Platform.endOfMicrotask(function() {
+      self.load();
+    });
+  },
+
+  load: function() {
+    this.template = this.querySelector('template');
+    if (!this.template) {
+      this.loaded();
+      return;
+    }
+    if (this.stylesLoading) {
+      return;
+    }
+    this.stylesLoading = true;
+    var self = this;
+    Platform.styleResolver.loadStyles([this.template.content], 
+      this.ownerDocument.baseURI, function() { self.loaded(); });
+  },
+
+  loaded: function() {
+    this.stylesLoading = false;
+    this.stylesLoaded = true;
+    this.checkLoaded();
+  },
+
+  checkLoaded: function() {
+    if (this.stylesLoaded) {
+      Polymer.queue.go(this);
+    }
+  },
+
+  // TODO(sorvell): not actually how you'd use this.
+  loadComplete: function() {
+    console.log('loadComplete!', this.provide);
+  },
+
+  getCssText: function() {
+    return this.template && this.template.content.textContent;
+  },
+
+  requireStyle: function(use) {
+    if (this.for) {
+      this.fix = 'body /deep/ ' + this.for + '::shadow';
+    }
+    refs[use] = refs[use] || [];
+    refs[use].push(this.fix);
+
+    var self = this;
+    Polymer.whenPolymerReady(function() {
+      self.applyStyle(use);
+    });
+  },
+
+  applyStyle: function(use) {
+    if (madeStyle[use]) {
+      return;
+    }
+    var scopes = refs[use];
+    // use meta
+    var provider = this.meta.byId(use);
+    var cssText = provider && provider.styleLoader.getCssText();
+    if (cssText) {
+      cssText = Platform.ShadowCSS.scopeCssText(cssText, scopes);
+      //console.log('applying!!', this.fix, cssText);
+      var style = document.createElement('style');
+      style.textContent = cssText;
+      if (window.ShadowDOMPolyfill) {
+        style.textContent = Platform.ShadowCSS.shimStyle(style);
+      }
+      style.setAttribute('use', use);
+      document.head.appendChild(style);
+      madeStyle[use] = true;
+    }
+  }
+
+});
+
+})();
+</script>
+</polymer-element>
