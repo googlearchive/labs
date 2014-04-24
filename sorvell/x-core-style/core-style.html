@@ -81,12 +81,8 @@ Polymer('core-style', {
   },
 
   requireStyle: function(use) {
-    if (this.for) {
-      this.fix = 'body /deep/ ' + this.for + '::shadow';
-    }
     refs[use] = refs[use] || [];
-    refs[use].push(this.fix);
-
+    refs[use].push(this);
     var self = this;
     Polymer.whenPolymerReady(function() {
       self.applyStyle(use);
@@ -97,22 +93,50 @@ Polymer('core-style', {
     if (madeStyle[use]) {
       return;
     }
-    var scopes = refs[use];
     // use meta
     var provider = this.meta.byId(use);
     var cssText = provider && provider.styleLoader.getCssText();
     if (cssText) {
-      cssText = Platform.ShadowCSS.scopeCssText(cssText, scopes);
+      var cssText = this.scopeCssText(cssText, refs[use]);
       //console.log('applying!!', this.fix, cssText);
       var style = document.createElement('style');
       style.textContent = cssText;
-      if (window.ShadowDOMPolyfill) {
-        style.textContent = Platform.ShadowCSS.shimStyle(style);
-      }
+
       style.setAttribute('use', use);
       document.head.appendChild(style);
       madeStyle[use] = true;
     }
+  },
+
+  scopeCssText: function(cssText, scopes) {
+    var selectors = scopes.map(function(s) {
+      return s.for ? this.fixFromFor(s.for) : s.fix;
+    }, this);
+    //console.log(selectors);
+    cssText = Platform.ShadowCSS.scopeCssText(cssText, selectors);
+    cssText = this.scopeHostStyles(cssText, scopes);
+    if (window.ShadowDOMPolyfill) {
+      cssText = Platform.ShadowCSS.convertCombinators(cssText);
+    }
+    return cssText;
+  },
+
+  fixFromFor: function(forElement) {
+    return 'body /deep/ ' + forElement + '::shadow ';
+  },
+
+  // TODO(sorvell): hack to fix :host styles; should just use css parser here
+  // doesn't work with :host(...)
+  scopeHostStyles: function(cssText, scopes) {
+    for (var i=0, s, fix; i < scopes.length; i++) {
+      s = scopes[i];
+      if (s.for) {
+        fix = this.fixFromFor(s.for);
+        cssText = cssText.replace(new RegExp(fix + '[\\s]*([\\{,\\(])', 'g'), 
+            'body /deep/ ' + s.for + '$1');
+      }
+    }
+    return cssText;
   }
 
 });
