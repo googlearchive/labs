@@ -1,0 +1,123 @@
+<!doctype html>
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+<link rel="import" href="../../../components/polymer/polymer.html">
+<script>
+  function notifyFunction(object, name) {
+    if (typeof Object.observe !== 'function')
+      return;
+
+    var notifier = Object.getNotifier(object);
+    return function(type, oldValue) {
+      var changeRecord = {
+        object: object,
+        type: type,
+        name: name
+      };
+      if (arguments.length === 2)
+        changeRecord.oldValue = oldValue;
+      notifier.notify(changeRecord);
+    }
+  }
+
+  var PROP_UPDATE_TYPE = 'update';
+
+  Observer.defineComputedProperty = function(target, name, observable) {
+    var notify = notifyFunction(target, name);
+    var value = observable.open(function(newValue, oldValue) {
+      value = newValue;
+      if (notify)
+        notify(PROP_UPDATE_TYPE, oldValue);
+    });
+
+    /*
+    Object.defineProperty(target, name, {
+      get: function() {
+        observable.deliver();
+        return value;
+      },
+      set: function(newValue) {
+        observable.setValue(newValue);
+        return newValue;
+      },
+      configurable: true
+    });
+    */
+    
+    target['_get' + name] = function() {
+      //observable.deliver();
+      return value;
+    }
+
+    target['_set' + name] = function(newValue) {
+      //observable.setValue(newValue);
+      return newValue;
+    }
+    
+
+    return {
+      close: function() {
+        observable.close();
+        /*
+        Object.defineProperty(target, name, {
+          value: value,
+          writable: true,
+          configurable: true
+        });
+        */
+        target['_get' + name] = function() {};
+        target['_set' + name] = function() {};
+      }
+    };
+  }
+</script>
+
+
+<polymer-element name="x-test" attributes="foo bar zot qux">
+  <script>
+  (function() {
+    var setter = '_set';
+    var getter = '_get';
+
+    function defineProp(obj, prop) {
+      var s = setter + prop;
+      var g = getter + prop;
+      //obj[s] = null;
+      //obj[g] = null;
+      Object.defineProperty(obj, prop, {
+        get: function() {
+          if (this[g]) {
+            return this[g]();
+          }
+          return null;
+        },
+        set: function(value) {
+          if (this[s]) {
+            this[s](value);
+          }
+        },
+        configurable: true
+      });
+    }
+
+    Polymer('x-test', {
+      registerCallback: function() {
+        var props = ['foo', 'bar', 'zot', 'qux'];
+        for (var i=0, l=props.length; i<l; i++) {
+          defineProp(this, props[i]);
+        }
+      }
+    });
+
+  })();
+  </script>
+</polymer-element>
+<script>
+  /*
+    NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+    of polymer-elements by at least 2x. Why?
+  */
+  addEventListener('polymer-ready', function() {
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>SVG example</title>
+  <script src="bower_components/platform-dev/platform.js"></script>
+  <link rel="import" href="email.html">
+  <link rel="import" href="bower_components/core-icon/core-icon.html">
+</head>
+<body>
+  <polymer-element name="svg-container">
+    <template>
+      <style>
+        .item {
+          height: 32px;
+          border: 1px solid black;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+        }
+        .center {
+          flex: 1;
+        }
+        .middle {
+          border-top: 0px;
+        }
+        :host {
+          display: block;
+        }
+      </style>
+      <template repeat="{{i in items}}"><div class="[[ {item: true, middle: i != 0} | tokenList ]]">
+          <core-icon icon="email:archive"></core-icon>
+          <span class="center">Email item [[i]]</span>
+          <core-icon icon="email:archive" style="fill: red;"></core-icon>
+          <core-icon icon="email:archive" style="fill: blue;"></core-icon></div></template>
+    </template>
+    <script>
+      Polymer('svg-container', {
+        gc: function() {
+          if (window.gc) {
+            // repeat the mantra
+            for (var i = 0; i < 4; i++) {
+              window.gc();
+            }
+          } else {
+            console.warn('No exposed gc available');
+          }
+        },
+        ready: function() {
+          var ITEMS = 300;
+          this.items = new Array(ITEMS);
+          for (var i = 0; i < ITEMS; i++) {
+            this.items[i] = i;
+          }
+          this.gc();
+          var start = performance.now();
+          // time until after painting the stamped template
+          this.onMutation(this.shadowRoot, function() {
+            requestAnimationFrame(function() {
+              console.log(this.shadowRoot.childNodes.length, performance.now() - start);
+            }.bind(this));
+          });
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <svg-container></svg-container>
+</body>
+</html>

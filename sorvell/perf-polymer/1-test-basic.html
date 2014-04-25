@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="elements/repeat-basic.html">
+
+<repeat-test></repeat-test>
+
+<polymer-element name="repeat-test" extends="repeat-basic" noscript>
+  
+  <template>
+    <shadow></shadow>
+    <template repeat="{{list}}">
+      <div>Hello World</div>
+    </template>
+  </template>
+
+</polymer-element>

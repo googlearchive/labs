@@ -1,0 +1,28 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="../../../components/polymer/polymer.html">
+<style></style>
+<body unresolved>
+  <polymer-element name="radio-element" constructor="RadioElement" noscript>
+    <template>
+      <input type="radio">Test
+    </template>
+  </polymer-element>
+
+
+  <script>
+  document.addEventListener('polymer-ready', function(){
+    var doc = document.createDocumentFragment(), el = null;
+    console.time('append');
+    for(var i=0; i < 1000; i++) {
+       doc.appendChild(document.createElement('radio-element'));
+    }
+    
+    document.body.appendChild(doc);
+    console.timeEnd('append');
+    console.time('paint');
+    requestAnimationFrame(function() {
+      console.timeEnd('paint');
+    });
+  });
+  </script>
+</body>

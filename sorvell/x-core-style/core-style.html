@@ -1,0 +1,146 @@
+<script src="../../../components/platform/src/ShadowCSS.js"></script>
+<link rel="import" href="../../../components/core-meta/core-meta.html">
+
+<polymer-element name="core-style" attributes="provide use for fix">
+<script>
+(function() {
+
+var META_TYPE = 'style-loader';
+var refs = {};
+var madeStyle = {};
+
+Polymer('core-style', {
+
+  stylesLoading: false,
+  stylesLoaded: false,
+
+  ready: function() {
+    // do this imperatively since it seems weird to make an SR on a template.
+    this.makeMeta();
+    if (this.provide) {
+      this.provideStyle(this.provide);
+    }
+    if (this.use) {
+      this.requireStyle(this.use);
+    }
+  },
+
+  makeMeta: function() {
+    this.meta = document.createElement('core-meta');
+    this.meta.type = META_TYPE;
+    if (this.provide) {
+      this.meta.styleLoader = this;
+      this.meta.register(this.provide);
+    }
+  },
+
+  provideStyle: function(provide) {
+    Polymer.queue.wait(this, this.checkLoaded, this.loadComplete);
+    // TODO(sorvell): there's no good signal to know when/if we have children
+    // when we're in an import.
+    var self = this;
+    Platform.endOfMicrotask(function() {
+      self.load();
+    });
+  },
+
+  load: function() {
+    this.template = this.querySelector('template');
+    if (!this.template) {
+      this.loaded();
+      return;
+    }
+    if (this.stylesLoading) {
+      return;
+    }
+    this.stylesLoading = true;
+    var self = this;
+    Platform.styleResolver.loadStyles([this.template.content], 
+      this.ownerDocument.baseURI, function() { self.loaded(); });
+  },
+
+  loaded: function() {
+    this.stylesLoading = false;
+    this.stylesLoaded = true;
+    this.checkLoaded();
+  },
+
+  checkLoaded: function() {
+    if (this.stylesLoaded) {
+      Polymer.queue.go(this);
+    }
+  },
+
+  // TODO(sorvell): not actually how you'd use this.
+  loadComplete: function() {
+    console.log('loadComplete!', this.provide);
+  },
+
+  getCssText: function() {
+    return this.template && this.template.content.textContent;
+  },
+
+  requireStyle: function(use) {
+    refs[use] = refs[use] || [];
+    refs[use].push(this);
+    var self = this;
+    Polymer.whenPolymerReady(function() {
+      self.applyStyle(use);
+    });
+  },
+
+  applyStyle: function(use) {
+    if (madeStyle[use]) {
+      return;
+    }
+    // use meta
+    var provider = this.meta.byId(use);
+    var cssText = provider && provider.styleLoader.getCssText();
+    if (cssText) {
+      var cssText = this.scopeCssText(cssText, refs[use]);
+      //console.log('applying!!', this.fix, cssText);
+      var style = document.createElement('style');
+      style.textContent = cssText;
+
+      style.setAttribute('use', use);
+      document.head.appendChild(style);
+      madeStyle[use] = true;
+    }
+  },
+
+  scopeCssText: function(cssText, scopes) {
+    var selectors = scopes.map(function(s) {
+      return s.for ? this.fixFromFor(s.for) : s.fix;
+    }, this);
+    //console.log(selectors);
+    cssText = Platform.ShadowCSS.scopeCssText(cssText, selectors);
+    cssText = this.scopeHostStyles(cssText, scopes);
+    if (window.ShadowDOMPolyfill) {
+      cssText = Platform.ShadowCSS.convertCombinators(cssText);
+    }
+    return cssText;
+  },
+
+  fixFromFor: function(forElement) {
+    return 'body /deep/ ' + forElement + '::shadow ';
+  },
+
+  // TODO(sorvell): hack to fix :host styles; should just use css parser here
+  // doesn't work with :host(...)
+  scopeHostStyles: function(cssText, scopes) {
+    for (var i=0, s, fix; i < scopes.length; i++) {
+      s = scopes[i];
+      if (s.for) {
+        fix = this.fixFromFor(s.for);
+        cssText = cssText.replace(new RegExp(fix + '[\\s]*([\\{,\\(])', 'g'), 
+            'body /deep/ ' + s.for + '$1');
+      }
+    }
+    return cssText;
+  }
+
+});
+
+})();
+</script>
+</polymer-element>

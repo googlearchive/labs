@@ -1,0 +1,27 @@
+<!doctype html>
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+<script src="test.js"></script>
+<polymer-element name="x-test">
+  <script>
+    Polymer('x-test', {
+      prepareElement: function() {
+        if (!this.prepared_) {
+          this.prepared_ = true;
+          this.element.querySelector('template');
+          this.attributes;
+        }
+      }
+    });
+  </script>
+</polymer-element>
+<script>
+  /*
+    NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+    of polymer-elements by at least 2x. Why?
+  */
+  addEventListener('polymer-ready', function() {
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

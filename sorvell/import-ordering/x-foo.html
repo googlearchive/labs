@@ -1,0 +1,38 @@
+<script>
+  function getCandidates() {
+    var e = [];
+    var candidates = document.querySelector('#candidates');
+    var n = candidates;
+    while (n = n.firstElementChild || n.nextElementSibling || 
+      n.parentNode.nextElementSibling) {
+      e.push(n.localName);
+    }
+    return e;
+  }
+
+  function report(message) {
+    var d = document.createElement('div');
+    d.textContent = message;
+    log.appendChild(d);
+  }
+
+  function makeElementPrototype() {
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+      console.log('created', this.localName);
+      report('creating: ' + this.localName + ', candidates: ' + getCandidates());
+    }
+    return proto;
+  }
+
+  function makeElement(name) {
+    report('registering: ' + name + ', candidates: ' + getCandidates());
+    
+    console.group(name);
+    document.registerElement(name, {prototype: makeElementPrototype()});  
+    console.groupEnd(name);
+  }
+
+  makeElement('x-foo');
+  
+</script>

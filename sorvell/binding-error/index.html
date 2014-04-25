@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>stuff</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <polymer-element name="x-bar" attributes="value" noscript>
+    <template>
+      <div>{{value}}</div>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-foo" attributes="foo bar" noscript>
+    <template>
+      <x-bar value="{{foo}} {{bar}}"></x-bar>
+    </template>
+  </polymer-element>
+  
+  <x-foo foo="foo" bar="bar"></x-foo>
+</body>
+</html>

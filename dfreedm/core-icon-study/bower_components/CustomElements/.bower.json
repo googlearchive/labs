@@ -1,0 +1,36 @@
+{
+  "name": "CustomElements",
+  "homepage": "https://github.com/Polymer/CustomElements",
+  "authors": [
+    "The Polymer Authors"
+  ],
+  "description": "Custom Elements Polyfill",
+  "main": "custom-elements.js",
+  "keywords": [
+    "web",
+    "components"
+  ],
+  "dependencies": {
+    "MutationObservers": "Polymer/MutationObservers#master",
+    "tools": "Polymer/tools#master"
+  },
+  "license": "BSD",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "../",
+    "test",
+    "tests"
+  ],
+  "_release": "9b997ca975",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "9b997ca97533147f5f17bd666c06e5fa1a13219e"
+  },
+  "_source": "git://github.com/Polymer/CustomElements.git",
+  "_target": "master",
+  "_originalSource": "Polymer/CustomElements"
+}

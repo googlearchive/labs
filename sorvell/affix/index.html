@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <polymer-element name="x-test">
+    <template>
+      <style>
+        /*@import url(bootstrap.min.css);*/
+      </style>
+      <style>
+        :host {
+          display: block;
+          height: 2000px;
+        }
+        .affix {
+          position: absolute;
+          top: 100px;
+        }
+
+        .affix-top {
+          position: fixed;
+          top: 100px; 
+        }
+      </style>
+      <div id="affix">
+        I'm affixed!
+      </div>
+    </template>
+    <script>
+      Polymer('x-test', {
+        ready: function() {
+          $(this.$.affix).affix({
+            top: 100
+          });
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <x-test></x-test>
+</body>
+</html>

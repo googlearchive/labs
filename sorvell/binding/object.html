@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <title>binding issue</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+</head>
+<body>
+  
+  <template>
+    <div>assert(obj.foo === true) {{obj.foo}}</div>
+    <div>assert(obj.bar === true) {{obj.bar}}</div>
+  </template>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      var model = {};
+      var template = document.querySelector('template');
+      
+      // stamp template
+      var dom = template.createInstance(model);
+      document.body.appendChild(dom);
+
+      // make an object and observe it with a CompoundObserver
+      var obj = {};
+      var observer = new CompoundObserver();
+      observer.addPath(obj, 'foo');
+
+      // when the observed 'foo' property changes, set 'bar'
+      function change() {
+        // NOTE: delaying this via setTimeout fixes the problem.
+        obj.bar = true;
+        console.log('assert(obj.bar === true)', obj.bar);
+      }
+      observer.open(change, obj);
+
+      // include the observed object in the template model
+      model.obj = obj;
+      // mutate the observed property in that object
+      obj.foo = true;
+
+      // We expect foo changing to trigger bar to be set.
+      // We expect the template's model.obj.bar to update
+      // and the dom to reflect this change.
+    });
+  </script>
+  
+</body>
+</html>

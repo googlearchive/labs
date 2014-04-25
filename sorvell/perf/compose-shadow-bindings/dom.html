@@ -1,0 +1,28 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="test-import.html">
+
+<script>
+  addEventListener('WebComponentsReady', function() {
+    var template = getTestTemplate()
+    var tag = 'div';
+    function createDom() {
+      var frag = document.createDocumentFragment();
+      for (var i = 0, n, e, r, m; i < count; i++) {
+        e = document.createElement(tag);
+        m = {
+          header: 'Top',
+          button: 'go',
+          checked: true,
+          placeholder: 'Type here',
+          content: 'Content!',
+          footer: 'End'
+        }
+        e.createShadowRoot().appendChild(template.createInstance(m));
+        frag.appendChild(e);
+      }
+      document.body.appendChild(frag);
+    }
+
+    test(createDom);
+  });
+</script>

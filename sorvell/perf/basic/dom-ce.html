@@ -1,0 +1,15 @@
+<!doctype html>
+<script src="../../../components/platform/platform.js"></script>
+<script src="test.js"></script>
+<script>
+  var proto = Object.create(HTMLElement.prototype);
+  proto.createdCallback = function() {};
+  proto.attachedCallback = function() {};
+  proto.detachedCallback = function() {};
+  proto.attributeChangedCallback = function() {};
+  document.registerElement('x-test', {prototype: proto});
+  //
+  addEventListener('WebComponentsReady', function() {
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>polymer::compound-binding</title>
+  <meta charset="utf-8">
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <x-test firstName="Bob" lastName="Smith"></x-test>
+  
+  <polymer-element name="x-test" attributes="firstName lastName">
+    <template>
+      <div>{{fullName}}</div>
+      <div>{{ null | computeFullName(firstName, lastName) }}</div>
+    </template>
+    <script>
+      Polymer('x-test', {
+        observe: {
+          'firstName lastName': 'makeFullNameProperty'
+        },
+        instanceTemplate: function(template) {
+          var dom = this.super(arguments);
+          console.log('template made!');
+          return dom;
+        },
+        makeFullNameProperty: function() {
+          console.log('makeFullNameProperty');
+          this.fullName = this.makeName(this.firstName, this.lastName);
+        },
+        computeFullName: function(x, first, last) {
+          console.log('computeFullName');
+          return this.makeName(first, last);
+        },
+        makeName: function(first, last) {
+          return first + ' ' + last;
+        }
+      });
+    </script>
+  </polymer-element>
+</body>
+</html>

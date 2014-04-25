@@ -1,0 +1,191 @@
+<!doctype html>
+<script>
+  if (window.gc) {
+    gc();
+    gc();
+    gc();
+  }
+</script>
+<script src="angular.js"></script>
+<style>
+  .message {
+    box-sizing: border-box;
+    height: 80px;
+    padding: 4px;
+    padding-left: 77px;
+    line-height: 167%;
+    cursor: default;
+    background-color: white;
+    position: relative;
+    color: black;
+    background-repeat: no-repeat;
+    background-position: 10px 10px;
+    background-size: 60px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .from {
+    display: inline;
+    font-weight: bold;
+  }
+  
+  .timestamp {
+    margin-left: 10px;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  
+  .body {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  
+  .subject {
+  }
+  
+  .divider {
+    background: grey;
+    color: white;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    text-transform: uppercase;
+  }
+
+  .polymer-selected {
+    background-color: #333;
+    color: whitesmoke;
+  }
+
+  .output {
+    position: fixed;
+    top: calc(50% - 100px);
+    left: calc(50% - 250px);
+    width: 500px;
+    background: white;
+    border: 2px solid black;
+    margin: 4px;
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 50px;
+    text-align: center;
+  }
+</style>
+
+<script>
+  angular.module('components', []).directive('listItem', function() {
+
+    return {
+      restrict: 'E',
+      transclude: true,
+      scope: { item: '=' },
+      controller: function($scope, $element) {
+      },
+      template:
+        '<div class="message {{selected}}" style="background-image: url(images/{{item.index % 4}}.png);">' +
+          '<span class="from">{{item.name}}</span>' +
+          '<span class="timestamp">{{item.time}}</span>' +
+          '<div class="subject">Infinite List. {{item.index}}</div>' +
+          '<div class="body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>' +
+        '</div>',
+      replace: true
+    };
+  })
+
+</script>
+
+<script>
+  var testApp = angular.module('testApp', ['components']);
+
+  testApp.controller('TestCtrl', function($scope) {
+    
+    var count = 1000;
+
+    var strings = [
+      "PARKOUR!",
+      "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+    ];
+
+    var namegen = {
+      generateString: function(inLength) {
+        var s = '';
+        for (var i=0; i<inLength; i++) {
+          s += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+        }
+        return s;
+      },
+      generateName: function(inMin, inMax) {
+        return this.generateString(Math.floor(Math.random() * (inMax - inMin + 1) + inMin));
+      }
+    };
+
+    function generateList() {
+      var names = [], data = [];
+      for (var i=0; i<count; i++) {
+        names.push(namegen.generateName(4, 8));
+      }
+      names.sort();
+      for (var i=0; i<count; i++) {
+        var name = names[i];
+        var divider = name.charAt(0);
+        if (divider === (names[i-1] || '').charAt(0)) {
+          divider = null;
+        }
+        data.push({
+          index: i,
+          name: name,
+          divider: divider,
+          details: strings[i % 3],
+          time: '8:29pm'
+        });
+      }
+      return data;
+    }
+
+    function report(message) {
+      var d = document.createElement('div');
+      d.innerHTML = message;
+      d.classList.add('output');
+      document.body.appendChild(d);
+    }
+
+    var data = generateList();
+
+    var container = document.querySelector('[ng-controller]');
+
+    var time = {};
+
+    var d = document.createElement('div');
+    var observer = new MutationObserver(function() {
+      time.mutation = performance.now();
+      observer.disconnect();
+    }.bind(this));
+    observer.observe(d, {attributes: true});
+    d.setAttribute('foo', 'bar');
+
+    requestAnimationFrame(function() {
+      time.raf = performance.now();
+    });
+
+    setTimeout(function() {
+      time.timeout = performance.now();
+      report('dom: ' + (time.mutation - time.start).toFixed(0) + 'ms' +
+          '<br>raf: ' + (time.raf - time.start).toFixed(0) + 'ms' + 
+          '<br>timeout: ' + (time.timeout - time.start).toFixed(0) + 'ms');
+
+    }, 0);
+
+    time.start = performance.now();
+
+    $scope.list = data;
+
+  });
+</script>
+<body ng-app="testApp">
+  <div ng-controller="TestCtrl">
+    <div ng-repeat="item in list">
+      <list-item item="item"></list-item>
+    </div>
+  </div>
+</body>

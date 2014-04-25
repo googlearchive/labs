@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+  <script>
+    function testStyle() {
+      console.log('readyState', document.readyState);
+      var c = getComputedStyle(document.querySelector('.red')).backgroundColor;
+      console.log('div is', c);
+    }
+  </script>
+</body>
+</html>

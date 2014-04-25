@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load</title>
+  <script>
+    function loaded(element) {
+      console.log('loaded', element);
+      var sheet = element.import.querySelector('link');
+      console.log(sheet, sheet.styleSheet);
+      testStyle();
+    }
+    function testStyle() {
+      var c = getComputedStyle(document.querySelector('.red')).backgroundColor;
+      console.log('div is', c);
+    }
+  </script>
+</head>
+<body>
+  <div class="red">red?</div>
+  <link rel="import" href="import-sheet.html" Xonload="loaded(this)">
+  <script>
+    //console.log('script!');
+    //testStyle();
+  </script>
+</body>
+</html>

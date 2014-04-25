@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>core-flex-layout</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+  <link rel="import" href="core-flex-layout.html">
+  <style>
+    body {
+      font-size: 20px;
+    }
+
+    flex-demo1 {
+      height: 300px;
+    }
+  </style>
+</head>
+<body unresolved>
+  <polymer-element name="flex-demo1" noscript>
+    <template>
+      <style>
+        div {
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          border: 2px solid #ccc;
+        }
+
+        .contain {
+          position: relative;
+        }
+
+        .abs-pos {
+          border: 0;
+          position: absolute;
+          bottom: 30px;
+          right: 5%;
+          width: 50%;
+          height: 80px;
+          background: salmon;
+          border-radius: 20px;
+        }
+
+        .fit {
+          border: 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: seagreen; 
+        }
+      </style>
+      <core-flex-layout host></core-flex-layout>
+      <div class="flex h-box">
+        <div class="contain">
+          Hi I'm some content
+          <div class="abs-pos"></div>
+        </div>
+        <div class="flex v-box">
+          <div class="h-box align-center">
+            <h3>Title</h3>
+            <button>hello</button>
+          </div>
+          <div class="flex h-box">
+            <div class="flex contain">
+              <div class="fit">Fit</div>
+            </div>
+            <div class="contain">
+              Sidebar content
+              <div class="abs-pos h-box align-center justify-center">C</div>
+            </div>
+          </div>
+          <div>Some more stuffs...</div>
+          <div class="h-box justify-end">
+            <b>Footer</b>
+          </div>
+        </div>
+        <div class="contain" style="width: 150px;">
+          <div class="fit">A last bit, like a panel</div>
+        </div>
+      </div>
+    </template>
+  </polymer-element>
+
+  <h3>core-flex-layout element</h3>
+  <flex-demo1></flex-demo1>
+</body>
+</html>

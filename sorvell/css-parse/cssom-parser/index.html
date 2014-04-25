@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- <script src="CSSOM.js"></script> -->
+<script src="CSSOM/src/loader.js"></script>
+<style id="test">
+  x-foo::shadow .colorful {
+      background: {{test}};
+    }
+  }
+
+  ::content .colorful {
+    background: {{test}};
+  }
+
+  :host(.hello) .colorful {
+    background: {{test}};
+  }
+
+  :host-context(.hello) .colorful {
+      background: {{test}};
+    }
+  }
+
+  body /deep/ div .colorful {
+    background: {{test}};
+  }
+</style>
+<script>
+   (function() {
+
+    function parseCss(cssText) {
+      var s = performance.now();
+      cssText = cssText.replace('{{', '-^').replace('}}', '-$');
+      // yay, sync
+      var css = CSSOM.parse(cssText);
+      cssText = css.toString();
+      console.log(performance.now() - s);
+      return cssText;
+    }
+
+    window.parseCss = parseCss;
+  })();
+
+  test.textContent = parseCss(test.textContent);
+
+  
+</script>
+<div>
+  <div class="colorful">Hello!</div>
+</div>

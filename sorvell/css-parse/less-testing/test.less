@@ -1,0 +1,35 @@
+@bg: #f938ab;
+
+/* ShadowDOM syntax test */
+
+x-foo::shadow {
+  .colorful {
+    background: @bg;
+  }
+}
+
+::content {
+  .colorful {
+    background: @bg;
+  }
+}
+
+:host(.hello) {
+  .colorful {
+    background: @bg;
+  }
+}
+
+:host-context(.hello) {
+  .colorful {
+    background: @bg;
+  }
+}
+
+/*
+body /deep/ x-foo {
+  .colorful {
+    background: @bg;
+  }
+}
+*/

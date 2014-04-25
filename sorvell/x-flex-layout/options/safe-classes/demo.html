@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>core-flex-layout</title>
+  <script src="../platform/platform.js"></script>
+  <link rel="import" href="core-flex-layout.html">
+  <style>
+    body {
+      font-size: 20px;
+    }
+
+    flex-demo1 {
+      height: 300px;
+    }
+  </style>
+</head>
+<body unresolved>
+  <polymer-element name="flex-demo1" noscript>
+    <template>
+      <style>
+        div {
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          border: 2px solid #ccc;
+        }
+      </style>
+      <core-flex-layout host></core-flex-layout>
+      <div class="layout-flex core-layout">
+        <div>Hi I'm some content</div>
+        <div class="layout-flex core-layout layout-v">
+          <div class="core-layout layout-x-center">
+            <h3>Title</h3>
+            <button>hello</button>
+          </div>
+          <div class="layout-flex core-layout">
+            <div class="layout-flex">Main content</div>
+            <div>Sidebar content</div>
+          </div>
+          <div>Some more stuffs...</div>
+          <div class="core-layout layout-end">
+            <b>Footer</b>
+          </div>
+        </div>
+        <div>A last bit, like a panel</div>
+      </div>
+    </template>
+  </polymer-element>
+
+  <h3>core-flex-layout element</h3>
+  <flex-demo1></flex-demo1>
+</body>
+</html>

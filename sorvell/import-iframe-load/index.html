@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>polymer</title>
+</head>
+<body>
+  <!-- <iframe src="doc-with-import.html" onload="loaded(this)"></iframe> -->
+  <template>
+    <iframe src="http://localhost/polymer/projects/designer/designer.html" onload="loaded(this)"></iframe>
+    
+  </template>
+  <script>
+    function loaded(target) {
+      console.log('loaded:', target);
+    }
+    
+    addEventListener('DOMContentLoaded', function() {
+      var c = document.querySelector('template').content.cloneNode(true);
+      document.body.appendChild(c);
+      document.querySelector('iframe').addEventListener('load', function(e) {
+        console.log('loaded via listener: ', e.target);
+      });
+    })
+  </script>
+</body>
+</html>

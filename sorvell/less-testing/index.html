@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+<script src="less/less-1.7.0.min.js"></script>
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body unresolved>
+  
+<polymer-element name="less-styled">
+<template>
+  <style no-shim>
+    @import url('sheet.less');
+
+    @bg: steelblue;
+    @borderColor: orange;
+
+
+    .special {
+      border: 10px solid @borderColor;
+    }
+
+    polyfill-next-selector {
+      content: '.content > *';
+    }
+    ::content > * {
+      margin-top: 10px;
+      padding: 10px;
+      background: lighten(@bg, 20%);
+    };
+
+    
+
+  </style>
+  <div class="special">I am styled by less.</div>
+  <div class="content">
+    <content></content>
+  </div>
+</template>
+<script>
+(function() {
+  var parseStyles;
+  if (window.less) {
+    var parser = new less.Parser();
+    parseStyles = function(styles) {
+      for (var i=0, l=styles.length, s; (i<l) && (s=styles[i]); i++) {
+        parser.parse(s.textContent, function (e, tree) {
+          if (!e) {
+            s.textContent = tree.toCSS();
+          }
+        });
+      }
+    }
+  }
+
+  Polymer('less-styled', {
+    registerCallback: function(element) {
+      if (parseStyles) {
+        var content = element.templateContent();
+        var styles = content && content.querySelectorAll('style').array();
+        if (styles) {
+          parseStyles(styles);
+        }
+        styles.forEach(function(s) {
+          s.removeAttribute('no-shim');
+        })
+        if (window.ShadowDOMPolyfill) {
+          Platform.ShadowCSS.shimStyling(content, element.name, element.extendee);
+        }
+      }
+    }
+  });
+})();
+</script>
+</polymer-element>
+
+
+<less-styled>
+  <div>Child</div>
+</less-styled>
+</body>
+</html>

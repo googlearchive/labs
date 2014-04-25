@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load</title>
+  <script>
+    function loaded(element) {
+      console.log(element.sheet);
+      if (element.sheet) {
+        var importSheet = element.sheet.cssRules[0].styleSheet;
+        console.log(importSheet);
+      }
+    }
+    function testStyle() {
+      console.log('readyState', document.readyState);
+      var c = getComputedStyle(document.querySelector('.red')).backgroundColor;
+      console.log('div is', c);
+    }
+  </script>
+  <link rel="stylesheet" href="sheet.css" onload="loaded(this)">
+  <style onload="loaded(this)">
+    @import 'sheet.css';
+  </style>
+</head>
+<body>
+  <div class="red">red?</div>
+</body>
+</html>

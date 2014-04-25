@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>polymer</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <x-foo></x-foo>
+  <polymer-element name="x-foo">
+    <template>
+      <iframe src="http://localhost/polymer/projects/designer/designer.html" on-load="{{loaded}}"></iframe>
+    </template>
+    <script>
+      Polymer('x-foo', {
+        loaded: function(e) {
+          console.log('iframe loaded', e.target);
+        }
+      });
+    </script>
+  </polymer-element>
+</body>
+</html>

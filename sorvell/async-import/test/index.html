@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <title>Polymer Designer Test</title>
+
+  <script>
+    /* Outputs own ID to console */
+    Foo = function() {};
+    Foo.prototype = Object.create(HTMLElement.prototype);
+    Foo.prototype.createdCallback = function() {
+      console.log("instanced, my id is", this.id);
+    }
+    document.registerElement('x-foo', Foo);
+    
+    console.log("expecting instances a, b, and c");
+  </script>
+
+  <!-- should log 'a' -->
+  <link rel="import" href="a.html">
+  <!-- should log 'b' -->
+  <link rel="import" href="b.html" async>
+
+</head>
+<body>
+
+  Output in console.
+  
+  <script>
+
+    /* should log 'c' */
+    var l = document.createElement('link');
+    l.setAttribute('rel', 'import');
+    l.setAttribute('href', 'c.html');
+    document.head.appendChild(l);
+    
+  </script>
+
+</body>
+</html>

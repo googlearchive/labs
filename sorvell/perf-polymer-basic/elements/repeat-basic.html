@@ -1,0 +1,61 @@
+<link rel="import" href="../../../../components/polymer/polymer.html">
+
+<polymer-element name="repeat-basic" attributes="count">
+  
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host /shadow/ .output {
+        position: fixed;
+        top: calc(50% - 100px);
+        left: calc(50% - 250px);
+        width: 500px;
+        background: white;
+        border: 2px solid black;
+        margin: 4px;
+        padding: 4px;
+        border-radius: 4px;
+        font-size: 100px;
+        text-align: center;
+      }
+    </style>
+  </template>
+  
+  <script>
+
+    Polymer('repeat-basic', {
+  
+      count: 1000,
+  
+      ready: function() {
+        this.makeList();
+      },
+  
+      makeList: function() {
+        this.list = [];
+        for (var i=0; i < this.count; i++) {
+          this.list.push({message: 'unicorn-' + i});
+        }
+        this.measure();
+      },
+  
+      measure: function() {
+        var start = Date.now();
+        this.onMutation(this.shadowRoot, function() {
+          this.async(function() {
+            var end = Date.now();
+            var d = document.createElement('div');
+            d.textContent = end-start + 'ms';
+            d.classList.add('output');
+            this.shadowRoot.appendChild(d);
+          })
+        });
+      }
+      
+    });
+  </script>
+
+</polymer-element>

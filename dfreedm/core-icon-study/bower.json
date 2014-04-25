@@ -1,0 +1,9 @@
+{
+  "name": "svg-demo",
+  "dependencies": {
+    "polymer": "Polymer/polymer-dev#master",
+    "plaform-dev": "Polymer/platform-dev#master",
+    "core-icon": "Polymer/core-icon#master",
+    "core-iconset-svg": "Polymer/core-iconset-svg#master"
+  }
+}

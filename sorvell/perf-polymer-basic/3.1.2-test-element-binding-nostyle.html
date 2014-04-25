@@ -1,0 +1,30 @@
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="elements/repeat-basic.html">
+
+<repeat-test></repeat-test>
+
+
+<polymer-element name="x-element" noscript attributes="message">
+  
+  <template>
+    {{message}}
+  </template>
+
+</polymer-element>
+
+<polymer-element name="repeat-test" extends="repeat-basic" noscript>
+  
+  <template>
+    <style>
+      x-element {
+        display: block;
+      }
+    </style>
+    <shadow></shadow>
+    <template repeat="{{list}}">
+      <x-element message="{{message}}"></x-element>
+    </template>
+  </template>
+
+</polymer-element>
+

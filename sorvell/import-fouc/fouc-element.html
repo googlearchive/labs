@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>import fouc</title>
+  <link rel="import" href="import-element.html">
+</head>
+<body>
+  <x-test></x-test>
+  <script>
+    function test() {
+      var x = document.querySelector('x-test');
+      var port = x.shadowRoot.querySelector('style').sheet.cssRules[0];
+      console.log(port.cssText);
+      console.log(port.styleSheet);
+    }
+
+    test();
+  </script>
+</body>
+</html>

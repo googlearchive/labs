@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>polymer</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+</head>
+<body>
+  <x-test></x-test>
+  
+  <polymer-element name="x-test">
+    <template>
+      
+      <input id="input" value="foo"></input>
+      <div>Should show input value above: {{$.input.value}}</div>
+      <div>
+        <button on-tap="{{tapAction}}">Check actual value</button>
+        <div id="log"></div>
+      </div>
+    </template>
+    <script>
+      Polymer('x-test', {
+        tapAction: function() {
+          this.$.log.textContent = this.$.input.value;
+        }
+      });
+    </script>
+  </polymer-element>
+
+</body>
+</html>
