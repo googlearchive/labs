@@ -8,102 +8,77 @@
   <style>
     body {
       font-family: sans-serif;
-    }
-    form segment {
       background-color: whitesmoke;
+    }
+    form {
+      max-width: 720px;
+      min-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
     }
   </style>
   
   <script src="../components/platform/platform.js"></script>
   
-  <link rel="import" href="../components/core-input/core-input.html">
   <link rel="import" href="../components/paper-input/paper-input.html">
+  <link rel="import" href="../components/core-firebase/core-firebase.html">
+  <link rel="import" href="../components/core-bind/core-bind.html">
   
-  <!--<link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/collections/form.css">-->
   <link rel="stylesheet" type="text/css" href="columns.css">  
   
 </head>
 <body unresolved>
 
-<form segment>
+<xtemplate is="core-bind">
+<form>
 
-  <segment two columns>
-    <div column>
-      <label>First Name</label>
-      <input placeholder="First Name" type="text">
-    </div>
-    <div column>
-      <label>Last Name</label>
-      <input placeholder="Last Name" type="text">
-    </div>
-  </segment>
-
-  <segment three columns>
-    <div column>
-      <label>First Name</label>
-      <input placeholder="First Name" type="text">
-    </div>
-    <div column>
-      <label>Middle Name</label>
-      <input placeholder="Middle Name" type="text">
-    </div>
-    <div column>
-      <label>Last Name</label>
-      <input placeholder="Last Name" type="text">
-    </div>
-  </segment>
-
-  <segment three columns>
-    <div column>
-      <label>First Name</label>
-      <input placeholder="First Name" type="text">
-    </div>
-    <div column>
-      <label>Middle Name</label>
-      <input placeholder="Middle Name" type="text">
-    </div>
-    <div column>
-      <label>Last Name</label>
-      <input placeholder="Last Name" type="text">
-    </div>
-  </segment>
+  <core-firebase id="base" location="https://scorching-fire-4234.firebaseio.com/catalog" list="{{items}}"></core-firebase>
   
-  <segment columns>
-    <div four wide column>
-      <label>First Name</label>
-      <input placeholder="First Name" type="text">
-    </div>
-    <div four wide column>
-      <label>Middle Name</label>
-      <input placeholder="Middle Name" type="text">
-    </div>
-    <div eight wide column>
-      <label>Last Name</label>
-      <input placeholder="Last Name" type="text">
-    </div>
-  </segment>
+  <template repeat="{{items}}">
+  
+    <segment three columns>
+      <div column>
+        <paper-input floatingLabel label="First Name" type="text" inputValue="{{org}}">
+      </div>
+      <div column>
+        <paper-input floatingLabel label="Last Name" type="text" inputValue="{{repo}}">
+      </div>
+    </segment>
+  
+    <segment>
+      <div three wide column>
+        <paper-input floatingLabel label="Street Address 1" type="text">
+      </div>
+      <div column>
+        <paper-input floatingLabel label="Street Address 2" type="text">
+      </div>
+      <div columns>
+        <div seven wide column>
+          <paper-input floatingLabel label="City" type="text">
+        </div>
+        <div six wide column>
+          <paper-input floatingLabel label="State" type="text">
+        </div>
+        <div three wide column>
+          <paper-input floatingLabel label="Zip" type="text">
+        </div>
+      </div>
+    </segment>
+    
+  </template>
+  
+</form>
+</xtemplate>
 
-  <segment two columns>
-    <div column>
-      <label>First Name</label>
-      <core-input placeholder="First Name" type="text">
-    </div>
-    <div column>
-      <label>Last Name</label>
-      <core-input placeholder="Last Name" type="text">
-    </div>
-  </segment>
-
-  <segment two columns>
-    <div column>
-      <paper-input input floatingLabel label="First Name" type="text">
-    </div>
-    <div column>
-      <paper-input input floatingLabel label="Last Name" type="text">
-    </div>
-  </segment>
-      
-</form segment>
+<script>
+  var base = document.querySelector('core-firebase');
+  var t = document.querySelector('template');
+  addEventListener('items-added', function() {
+    t.model = {
+      items: base.list
+    };
+  });
+</script>
 
 </body>
 </html>

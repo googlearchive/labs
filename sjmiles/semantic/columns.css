@@ -58,11 +58,8 @@ segment {
 /*--------------------
         Inputs
 ---------------------*/
-[column] > [input], [column] > input {
-  margin: 0em 0em 0.3em;
-  display: block;
-  color: #555555;
-  font-size: 0.875em;
+[column] > input, [column] > [input], [column] > paper-input {
+  width: 100%;
 }
 
 /*--------------------
