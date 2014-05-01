@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <title>Form</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: whitesmoke;
+    }
+    form {
+      max-width: 720px;
+      min-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    paper-input {
+      display: block;
+      width: 95%;
+      margin-right: 2%;
+    }
+  </style>
+  
+  <script src="../components/platform/platform.js"></script>
+  
+  <link rel="import" href="../components/paper-input/paper-input.html">
+  <link rel="import" href="../components/core-firebase/core-firebase.html">
+  <link rel="import" href="../components/core-bind/core-bind.html">
+  
+  <!--<link rel="stylesheet" type="text/css" href="columns.css">-->  
+  <link rel="stylesheet" type="text/css" href="layout.css" shim-shadowdom>
+  
+</head>
+<body unresolved>
+
+<core-firebase id="base" location="https://scorching-fire-4234.firebaseio.com/catalog"></core-firebase>
+
+<form>
+
+  <template repeat="{{items}}">
+  
+    <segment flex layout horizontal shadow>
+
+      <paper-input flex one floatingLabel label="First Name" inputValue="{{org}}"></paper-input>
+
+      <paper-input flex one floatingLabel label="Last Name" inputValue="{{repo}}"></paper-input>
+
+    </segment>
+  
+    <segment shadow>
+
+      <paper-input column floatingLabel label="Street Address 1"></paper-input>
+
+      <paper-input column floatingLabel label="Street Address 2"></paper-input>
+
+      <div flex layout horizontal>
+
+        <paper-input flex four floatingLabel label="City"></paper-input>
+
+        <paper-input flex three floatingLabel label="State"></paper-input>
+
+        <paper-input flex one floatingLabel label="Zip"></paper-input>
+
+      </div>
+
+    </segment>
+    
+  </template>
+  
+</form>
+
+<script>
+  var base = document.querySelector('core-firebase');
+  var t = document.querySelector('template');
+  addEventListener('items-added', function() {
+    t.model = {
+      items: base.list
+    };
+  });
+</script>
+
+<polymer-element name="paper-input-field" attributes="floatingLabel label type" column noscript>
+<template>
+  <style>
+    :host { display: block; }
+    paper-input { width: 100%; }
+  </style>
+  <paper-input floatingLabel="{{floatingLabel}}" label="{{label}}" type="{{type}}"></paper-input>
+</template>
+</polymer-element>
+
+</body>
+</html>
