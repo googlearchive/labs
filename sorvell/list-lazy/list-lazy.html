@@ -1,0 +1,34 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+<polymer-element name="list-lazy" on-scroll="scrollHandler">
+<script>
+  Polymer('list-lazy', {
+    publish: {
+      margin: 500
+    },
+    created: function() {
+      this.style.overflow = 'auto';
+    },
+    attached: function() {
+      this.updateMetrics();
+    },
+    scrollHandler: function(e) {
+      if (!this.contentPending && this.scrollTop > this.maxScrollHeight -
+          this.margin) {
+        this.fire('needs-content');
+        this.updateMetrics();
+      }
+    },
+    updateMetrics: function() {
+      this.recordMetrics();
+      this.contentPending = true;
+      this.onMutation(this, function() {
+        this.recordMetrics();
+        this.contentPending = false;
+      });
+    }, 
+    recordMetrics: function() {
+      this.maxScrollHeight = this.scrollHeight - this.clientHeight;
+    }
+  });
+</script>
+</polymer-element>

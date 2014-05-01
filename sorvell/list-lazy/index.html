@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+  <title>list-lazy</title>
+  <script src="../../../components/platform-dev/platform.js"></script>
+  <link rel="import" href="list-lazy.html">
+  <style>
+    body {
+      font-family: "Helvetica Neue", Arial, Roboto, sans-serif;
+    }
+
+    x-foo {
+      background: white;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }    
+  </style>
+</head>
+<body unresolved>
+
+<x-foo></x-foo>
+
+<polymer-element name="x-foo">
+<template>
+  <style>
+    :host {
+      position: relative;
+    }
+
+    list-lazy {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .grid > .item {
+      height: 190px;
+      width: 190px;
+      margin: 8px;
+      float: left;
+      display: inline-block;
+      text-align: center;
+      line-height: 190px;
+      font-size: 50px;
+      background-color: #ececec;
+    }
+
+    .grid > .w2 {
+      width: 396px;
+    }
+
+    .grid > .h2 {
+      height: 396px;
+    }
+
+    #loading {
+      float: left;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px;
+      background-color: red;
+    }
+  </style>
+  <list-lazy class="grid" on-needs-content="{{nextChunk}}" margin="10000">
+    <template repeat="{{data}}">
+      <div class="item {{ {h2: tall, w2: wide} | tokenList }}">{{index}}</div>
+    </template>
+    <div id="loading">Loading...</div>
+  </list-lazy>
+</template>
+<script>
+  Polymer('x-foo', {
+    count: 50000,
+    chunk: 50,
+    ready: function() {
+      this.sourceData = this.makeData();
+      this.nextChunk();
+    },
+    makeData: function() {
+      var data = [], r=0.8, lw=0, lt=0, wc=0, tc=0, cols = 4;
+      for (var i=0, t, w; i<this.count; i++, wc++, tc++) {
+        w = false;
+        t = false;
+        if ((Math.random() > 0.8) && (wc % cols < 3)) {
+          w = true;
+          wc++;
+        }
+        /*
+        if ((Math.random() > 0.8) && (tc % cols === 0 && wc % cols === 0)) {
+          t = true;
+          tc++;
+        }
+        */
+        data.push({index: i, wide: w, tall: t});
+      }
+      return data;
+    },
+    nextChunk: function() {
+      this.data = this.data || [];
+      var s = this.data.length;
+      for (var i=0; i< this.chunk; i++) {
+        this.data.push(this.sourceData[s+i]);
+      }
+      console.log('nextChunk', this.data.length);
+    }
+  });
+</script>
+</polymer-element>
+
+</body>
+</html>
