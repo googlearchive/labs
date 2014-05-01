@@ -1,0 +1,18 @@
+﻿<!doctype html>
+<html>
+<head>
+
+  <title>test-upgrade-order-bug</title>
+
+  <script>
+    var time = Date.now() / 1e5;
+    console.log('body', Math.floor((time - Math.floor(time)) * 1e5));
+  </script>
+
+  <link rel="import" href="foo-import.html">
+
+</head>
+<body>
+
+</body>
+</html>

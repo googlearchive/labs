@@ -1,0 +1,223 @@
+input {
+  width: 100%;
+  margin: 0em;
+  padding: 0.65em 1em;
+  font-size: 1em;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  outline: none;
+  color: rgba(0, 0, 0, 0.7);
+  border-radius: 0.3125em;
+  -webkit-transition: background-color 0.3s ease-out, -webkit-box-shadow 0.2s ease, border-color 0.2s ease;
+  -moz-transition: background-color 0.3s ease-out, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.3s ease-out, box-shadow 0.2s ease, border-color 0.2s ease;
+  -webkit-box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0.3) inset;
+  box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0.3) inset;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none;
+}
+
+/*******************************
+            Segment
+*******************************/
+segment {
+  display: block;
+}
+[segment], segment {
+  position: relative;
+  background-color: #FFFFFF;
+  -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
+  margin: 1em 0em;
+  padding: 1em;
+  border-radius: 5px 5px 5px 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/*--------------------
+        Labels
+---------------------*/
+[column] > label {
+  margin: 0em 0em 0.3em;
+  display: block;
+  color: #555555;
+  font-size: 0.875em;
+}
+
+/*--------------------
+        Inputs
+---------------------*/
+[column] > [input], [column] > input {
+  margin: 0em 0em 0.3em;
+  display: block;
+  color: #555555;
+  font-size: 0.875em;
+}
+
+/*--------------------
+        Column
+---------------------*/
+[column] {
+  clear: both;
+  margin: 0em 0em 1em;
+}
+/*--------------------
+         Columns
+---------------------*/
+/* Split columns */
+[columns] {
+  clear: both;
+}
+[columns]:after {
+  content: ' ';
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+[columns] > [column]{
+  clear: none;
+  float: left;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+[columns] > [column]:first-child {
+  border-left: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+/* Other Combinations */
+[two][columns] > [columns],
+[two][columns] > [column] {
+  width: 50%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+[three][columns] > [columns],
+[three][columns] > [column] {
+  width: 33.333%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+[four][columns] > [columns],
+[four][columns] > [column] {
+  width: 25%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+[five][columns] > [columns],
+[five][columns] > [column] {
+  width: 20%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+[columns] [column]:first-child {
+  padding-left: 0%;
+}
+[columns] [column]:last-child {
+  padding-right: 0%;
+}
+/* Columns grid support */
+[columns] [wide][column] {
+  width: 6.25%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+[columns] [wide][column]:first-child {
+  padding-left: 0%;
+}
+[columns] [wide][column]:last-child {
+  padding-right: 0%;
+}
+[columns] > [one][wide][column] {
+  width: 6.25%;
+}
+[columns] > [two][wide][column] {
+  width: 12.5%;
+}
+[columns] > [three][wide][column] {
+  width: 18.75%;
+}
+[columns] > [four][wide][column] {
+  width: 25%;
+}
+[columns] > [five][wide][column] {
+  width: 31.25%;
+}
+[columns] > [six][wide][column] {
+  width: 37.5%;
+}
+[columns] > [seven][wide][column] {
+  width: 43.75%;
+}
+[columns] > [eight][wide][column] {
+  width: 50%;
+}
+[columns] > [nine][wide][column] {
+  width: 56.25%;
+}
+[columns] > [ten][wide][column] {
+  width: 62.5%;
+}
+[columns] > [eleven][wide][column] {
+  width: 68.75%;
+}
+[columns] > [twelve][wide][column] {
+  width: 75%;
+}
+[columns] > [thirteen][wide][column] {
+  width: 81.25%;
+}
+[columns] > [fourteen][wide][column] {
+  width: 87.5%;
+}
+[columns] > [fifteen][wide][column] {
+  width: 93.75%;
+}
+[columns] > [sixteen][wide][column] {
+  width: 100%;
+}
+/* Swap to full width on mobile */
+@media only screen and (max-width: 767px) {
+  [two][columns] > [columns],
+  [two][columns] > [column],
+  [three][columns] > [columns],
+  [three][columns] > [column],
+  [four][columns] > [columns],
+  [four][columns] > [column],
+  [five][columns] > [columns],
+  [five][columns] > [column],
+  [columns] > [two][wide][column],
+  [columns] > [three][wide][column],
+  [columns] > [four][wide][column],
+  [columns] > [five][wide][column],
+  [columns] > [six][wide][column],
+  [columns] > [seven][wide][column],
+  [columns] > [eight][wide][column],
+  [columns] > [nine][wide][column],
+  [columns] > [ten][wide][column],
+  [columns] > [eleven][wide][column],
+  [columns] > [twelve][wide][column],
+  [columns] > [thirteen][wide][column],
+  [columns] > [fourteen][wide][column],
+  [columns] > [fifteen][wide][column],
+  [columns] > [sixteen][wide][column] {
+    width: 100%;
+    padding-left: 0%;
+    padding-right: 0%;
+  }
+}

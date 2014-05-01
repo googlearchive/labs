@@ -1,0 +1,27 @@
+﻿<!doctype html>
+<html>
+<head>
+
+  <title>test-upgrade-order-1</title>
+
+  <script>
+    var time = Date.now() / 1e5;
+    console.log('body', Math.floor((time - Math.floor(time)) * 1e5));
+  </script>
+
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'import';
+    link.href = 'import.html';
+    document.head.appendChild(link);
+  </script>
+
+</head>
+<body>
+
+  <x-foo></x-foo>
+  <x-bar></x-bar>
+  <x-foo></x-foo>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+﻿<!doctype html>
+<html>
+<head>
+
+  <title></title>
+
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+
+  <link rel="import" href="phased-panels.html">
+
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+    }
+
+    phased-panels {
+      position: absolute;
+      top: 30px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    phased-panel {
+      display: block;
+      border: 4px solid orange;
+    }
+
+    [text] {
+      border: 2px solid silver;
+      display: inline-block;
+      padding: 32px;
+      position: relative;
+    }
+
+    [one] {
+      Xbackground-image: url(//lorempixel.com/256/256/people/5);
+      Xbackground-color: lightblue;
+    }
+
+    [two] {
+      Xbackground-image: url(//lorempixel.com/256/256/people/6);
+    }
+
+    [phase] {
+      opacity: 0;
+      transition: all 400ms ease-in, opacity 100ms ease-out 400ms;
+    }
+
+    [snap] {
+      transition: all 400ms ease-in, opacity 0ms ease-out 400ms;
+    }
+</style>
+
+</head>
+<body>
+
+  <button onclick="stuff()" style="z-index: 3">Do Stuff</button>
+
+  <phased-panels>
+
+    <phased-panel id="p0" top>
+
+      <background two></background>
+
+      <p>Some text.</p>
+
+      <img hero="fashion" phase Xsnap src="fashion-256.jpg" width="128">
+      <br>
+
+      <div hero="text" phase text style="padding: 256px;">
+        Now is the time for all good men to come to the aid of their party.
+      </div>
+
+    </phased-panel>
+
+    <phased-panel id="p1" xtop>
+      <background one></background>
+
+      <div style="float:right">
+
+        <img hero="fashion" phase Xsnap src="fashion-256.jpg">
+        <br>
+        <div hero="text" phase text>
+          Now is the time for all good men to come to the aid of their party.
+        </div>
+
+        <p>Just some junk.</p>
+
+      </div>
+
+    </phased-panel>
+
+  </phased-panels>
+
+  <script>
+
+    var pp = document.querySelector('phased-panels');
+    var b = document.querySelector('button');
+
+    function stuff() {
+      b.disabled = true;
+      pp.selected = pp.selected ? 0 : 1;
+    }
+
+    addEventListener('phase-done', function() {
+      b.disabled = false;
+    });
+    
+  </script>
+
+</body>
+</html>

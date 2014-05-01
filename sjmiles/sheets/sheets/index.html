@@ -4,25 +4,51 @@
 
 <head>
 
-  <title>import wrappers</title>
+  <title>css wrappers</title>
 
   <script src="components/platform-dev/platform.js"></script>
 
   <link rel="import" href="components/polymer/polymer.html">
 
-  <polymer-element name="sheet-store" noscript>
+  <link rel="stylesheet" href="styles.css">
+
+  <polymer-element name="sheet-store" attributes="href">
     <template>
-      <content></content>
     </template>
+    <script>
+      Polymer('sheet-store', {
+        hrefChanged: function() {
+          var link = document.createElement('link');
+          link.href = this.href;
+          link.rel = 'stylesheet';
+          this.shadowRoot.appendChild(link);
+          this.$.link = link;
+        },
+        sheet: function() {
+          return this.$.link.sheet.cloneNode(true);
+        }
+      });
+    </script>
   </polymer-element>
 
-  <sheet-store>
-    <link rel="stylesheet" href="styles.css">
-  </sheet-store>
+  <link rel="import" href="bind-able.html">
 
 </head>
 
-<body>
+<body xis="bind-able">
+
+  <sheet-store href="styles.css"></sheet-store>
+
+  <script>
+    addEventListener('polymer-ready', function() {
+      var sheet = document.querySelector('sheet-store');
+      setTimeout(function() {
+        sheet = sheet.async(sheet.sheet);
+      }, 1000);
+      console.dir(sheet);
+    });
+    //console.log(sheet.textContent);
+  </script>
 
 </body>
 

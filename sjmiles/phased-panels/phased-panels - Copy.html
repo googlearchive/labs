@@ -1,0 +1,144 @@
+﻿<link rel="import" href="components/core-selector/core-selector.html">
+
+<polymer-element name="phased-panels" extends="core-selector"notap>
+<template>
+
+  <style>
+    :host {
+      display: block;
+      position: relative;
+    }
+
+    /*@polyfill :host > * */
+    content::content > * {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    content::content *:not([top]) > * {
+      opacity: 0;
+    }
+
+    content::content [top] [phase] {
+      color: inherit;
+      opacity: 1;
+      transition: all 600ms ease-in, color 0ms, opacity 100ms ease-out 600ms;
+    }
+
+    content::content [phase] {
+      color: transparent;
+      transition: all 600ms ease-in, color 0ms, opacity 900ms ease-in;
+    }
+
+    /*
+    Xtransition: all 400ms ease-in, opacity 100ms ease-out 400ms;
+     
+    content::content [snap] {
+      Xtransition: all 400ms ease-in, opacity 0ms ease-out 400ms;
+    }
+
+    :host ::content *:not([top]) [text] {
+      color: transparent;
+    }
+    */
+
+  </style>
+
+  <shadow></shadow>
+
+</template>
+<script>
+
+  Polymer('phased-panels', {
+    eventDelegates: {
+       transitionend: 'transitionEnd'
+    },
+    
+    selected: 0,
+    
+    selectedItemChanged: function(old) {
+      if (old && this.selectedItem) {
+        //console.log(old, this.selectedItem);
+        this.transmute(old, this.selectedItem);
+      }
+    },
+
+    transmute: function(src, dst) {
+      var heroes = [];
+      var h$ = src.querySelectorAll('[hero]');
+      //
+      // two passes to reduce layouts: first pass gather information, second pass make changes
+      //
+      for (var i=0, h0; h0=h$[i]; i++) {
+        var v = h0.getAttribute('hero');
+        var h1 = dst.querySelector('[hero="' + v + '"]');
+        if (h1) {
+          heroes.push({
+            h0: h0,
+            b0: h0.getBoundingClientRect(),
+            h1: h1,
+            b1: h1.getBoundingClientRect()
+          });
+        }
+      }
+      //
+      // pass two, modify styles
+      //
+      heroes.forEach(function(h) {
+        //
+        //console.log(h);
+        //
+        var dl = h.b1.left - h.b0.left;
+        var dt = h.b1.top - h.b0.top;
+        var sw = h.b1.width / h.b0.width;
+        var sh = h.b1.height / h.b0.height;
+        //
+        var scaley = h.h0.hasAttribute('scaley');
+        if (!scaley) {
+          //sw = sh = 1;
+          //h.h0.style.width = h.b1.width + 'px';
+         // h.h0.style.height = h.b1.height + 'px';
+        }
+        //
+        //console.log('dl, dt:', dl, dt, 'sw, sh:', sw, sh);
+        //
+        h.h0.style.webkitTransform = 'translate(' + dl + 'px, ' + dt + 'px)' + ' scale(' + sw + ', ' + sh + ')';
+        h.h0.style.webkitTransformOrigin = '0 0';
+      });
+      //
+      dst.setAttribute('top', '');
+      src.removeAttribute('top');
+      //
+      // lazy mode 'transitionEnd'
+      //
+      this.heroes = heroes;
+      this.transitioning = true;
+    },
+
+    complete: function() {
+      this.heroes.forEach(function(h) {
+        h.h0.style.webkitTransform = '';
+        h.h0.style.width = '';
+        h.h0.style.height = '';
+      });
+      this.fire('phase-done');
+      this.transitioning = false;
+    },
+    
+    transitionEnd: function() {
+      if (this.transitioning) {
+        this.job('transitionWatch', function() {
+          this.complete();
+          //this.async('complete', null, 600);
+        }, 800);
+      }
+    }
+
+  });
+
+</script>
+
+</polymer-element>

@@ -1,0 +1,15 @@
+﻿<script>
+(function() {
+
+  var fn = function() {};
+  var p = fn.prototype = Object.create(HTMLElement.prototype);
+
+  p.createdCallback = function() {
+    var time = Date.now() / 1e5;
+    console.log('foo', Math.floor((time - Math.floor(time)) * 1e5));
+  };
+
+  XFoo = document.registerElement('x-foo', fn);
+
+})();
+</script>

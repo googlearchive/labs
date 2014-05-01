@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <title>Untitled Document</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+  </style>
+  
+  <script src="../components/platform/platform.js"></script>
+  
+  <link rel="import" href="../components/core-input/core-input.html">
+  <link rel="import" href="../components/paper-input/paper-input.html">
+  
+  <!--<link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/collections/form.css">-->
+  <link rel="stylesheet" type="text/css" href="columns.css">  
+  
+</head>
+<body Xunresolved>
+
+<div>
+
+  <div two columns segment>
+    <div column>
+      <label>First Name</label>
+      <input placeholder="First Name" type="text">
+    </div>
+    <div column>
+      <label>Last Name</label>
+      <input placeholder="Last Name" type="text">
+      <!--<u-i red pointing above label>Enter a last name</u-i>-->
+    </div>
+  </div>
+
+  <div three columns segment>
+    <div column>
+      <label>First Name</label>
+      <input placeholder="First Name" type="text">
+    </div>
+    <div column>
+      <label>Middle Name</label>
+      <input placeholder="Middle Name" type="text">
+    </div>
+    <div column>
+      <label>Last Name</label>
+      <input placeholder="Last Name" type="text">
+      <!--<u-i red pointing above label>Enter a last name</u-i>-->
+    </div>
+  </div>
+
+  <div columns segment>
+    <div four wide column>
+      <label>First Name</label>
+      <input placeholder="First Name" type="text">
+    </div>
+    <div four wide column>
+      <label>Middle Name</label>
+      <input placeholder="Middle Name" type="text">
+    </div>
+    <div eight wide column>
+      <label>Last Name</label>
+      <input placeholder="Last Name" type="text">
+    </div>
+  </div>
+
+  <div two columns segment>
+    <div column>
+      <label>First Name</label>
+      <core-input placeholder="First Name" type="text">
+    </div>
+    <div column>
+      <label>Last Name</label>
+      <core-input placeholder="Last Name" type="text">
+    </div>
+  </div>
+
+  <div two columns segment>
+    <div column>
+      <paper-input input floatingLabel label="First Name" type="text">
+    </div>
+    <div column>
+      <paper-input input floatingLabel label="Last Name" type="text">
+    </div>
+  </div>
+      
+</div>
+
+</body>
+</html>

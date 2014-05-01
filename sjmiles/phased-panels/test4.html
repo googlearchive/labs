@@ -1,0 +1,108 @@
+﻿<!doctype html>
+<html>
+<head>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  
+  <title>Phasing Test 4</title>
+
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+
+  <link rel="import" href="phased-panels.html">
+
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+    }
+
+    phased-panels {
+      position: absolute;
+      top: 30px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    phased-panel {
+      display: block;
+    }
+
+    #p0 {
+      border: 4px solid orange;
+    }
+    
+    #p1 {
+      border: 4px solid lightblue;
+    }
+
+    [text] {
+      border: 2px solid silver;
+      display: inline-block;
+      padding: 32px;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    #img0 {
+      width: 128px;
+    }
+</style>
+
+</head>
+<body>
+
+  <button onclick="stuff()" style="z-index: 3">Do Stuff</button>
+
+  <phased-panels selected="0">
+
+    <phased-panel id="p1" top>
+
+      <div phase style="position: absolute; top: 20px; right: 20px;">
+        <img hero="fashion" phase scaley src="fashion-256.jpg">
+      </div>
+        
+      <br>
+      
+      <div hero="text" phase text style="position: absolute; top: 300px; right: 20px;">
+        P1: Now is the time for all good men to come to the aid of their party.
+      </div>
+
+      <p>Just some junk.</p>
+                
+    </phased-panel>
+
+    <phased-panel id="p0">
+
+      <p>Some text.</p>
+
+      <img id="img0" hero="fashion" phase snap scaley src="fashion-256.jpg" style="position: absolute; top: 40px; left: 20px;">
+      <br>
+
+      <div hero="text" phase text style="padding: 10px; position: absolute; top: 180px; left: 20px;">
+        P0: Now is the time for all good men to come to the aid of their party.
+      </div>
+      
+    </phased-panel>
+
+  </phased-panels>
+
+  <script>
+
+    var pp = document.querySelector('phased-panels');
+    var b = document.querySelector('button');
+
+    function stuff() {
+      b.disabled = true;
+      pp.selected = pp.selected ? 0 : 1;
+    }
+
+    addEventListener('phase-done', function() {
+      b.disabled = false;
+    });
+
+  </script>
+
+</body>
+</html>

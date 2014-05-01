@@ -1,0 +1,159 @@
+<!doctype html>
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+
+  <title>themes?</title>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link rel="import" href="components/core-toolbar/core-toolbar.html">
+  <link rel="import" href="components/core-menu/core-menu.html">
+  <link rel="import" href="components/core-menu/core-submenu.html">
+  <link rel="import" href="components/core-item/core-item.html">
+  <link rel="import" href="components/core-range/core-range.html">
+  <link rel="import" href="components/core-field/core-field.html">
+  <link rel="import" href="components/core-input/core-input.html">
+  <link rel="import" href="components/core-button-bar/core-button-bar.html">
+  <link rel="import" href="components/core-slider-bar/core-slider-bar.html">
+  <link rel="import" href="components/core-style/core-style.html">
+
+  <core-style provide="butterscotch">
+    <template>
+      @import 'butterscotch/butterscotch-raw.css';
+    </template>
+  </core-style>
+
+  <core-style use="butterscotch" fix="body /deep/"></core-style>
+
+  <style>
+  
+    body {
+      font-family: sans-serif;
+      background: url(butterscotch/texture.png);
+    }
+
+    section {
+      width: 164px;
+    }
+
+    core-slider-bar {
+      width: 148px;
+    }
+
+  </style>
+
+</head>
+<body theme="core-dark-theme" unresolved>
+
+  <p>
+    <button onclick="themeit()">Toggle</button>
+    <script>
+      themeit = function() {
+        document.body.classList.toggle('butterscotch');
+        document.body.setAttribute('theme', 'core-dark-theme');
+      }
+    </script>
+  </p>
+
+  <core-button-bar selected="1">
+    <button><span>Menu</span></button>
+    <button class="core-selected"><span>Menu</span></button>
+    <button><span>Menu</span></button>
+    <button><span>Menu</span></button>
+    <button><span>Menu</span></button>
+  </core-button-bar>
+
+  <core-button-bar>
+    <button><core-icon icon="right"></core-icon></button>
+    <button>
+      <core-slider-bar></core-slider-bar>
+    </button>
+    <button>
+      <core-icon icon="time"></core-icon>
+      <core-slider-bar></core-slider-bar>
+    </button>
+  </core-button-bar>
+
+  <br>
+
+  <core-button-bar>
+    <button><core-icon icon="settings"></core-icon><core-icon icon="dropdown"></core-icon></button>
+  </core-button-bar>
+
+  <core-button-bar selected="2">
+    <button><core-icon icon="grid"></core-icon></button>
+    <button><core-icon icon="list"></core-icon></button>
+    <button class="core-selected"><core-icon icon="columns"></core-icon></button>
+    <button><core-icon icon="array"></core-icon></button>
+  </core-button-bar>
+
+  <core-button-bar>
+    <button><core-icon icon="left"></core-icon></button>
+  </core-button-bar>
+
+  <core-button-bar>
+    <button><core-icon icon="right"></core-icon></button>
+  </core-button-bar>
+
+  <core-button-bar>
+    <button><core-icon icon="tag"></core-icon></button>
+  </core-button-bar>
+
+  <core-button-bar>
+    <button><core-icon icon="marker"></core-icon></button>
+  </core-button-bar>
+
+  <core-button-bar>
+    <button><core-icon icon="left"></core-icon></button><button><core-icon icon="right"></core-icon></button>
+  </core-button-bar>
+
+  <core-button-bar>
+    <button><core-input style="width: 238px" placeholder="Search..."></core-input></button><button><core-icon icon="search"></core-icon></button>
+  </core-button-bar>
+
+  <section>
+
+    <core-menu selected="0">
+
+      <core-item label="Main 1"></core-item>
+      <core-item label="Main 2"></core-item>
+      <core-item label="Main 3"></core-item>
+
+      <core-submenu icon="settings" label="Topics">
+        <core-item label="Topic 1"></core-item>
+        <core-item label="Topic 2"></core-item>
+      </core-submenu>
+
+      <core-submenu icon="settings" label="Favorites">
+        <core-item label="Favorite 1"></core-item>
+        <core-item label="Favorite 2"></core-item>
+        <core-item label="Favorite 3"></core-item>
+      </core-submenu>
+
+    </core-menu>
+
+  </section>
+
+  <x-test></x-test>
+
+  <polymer-element name="x-test" noscript>
+  <template>
+    <core-button-bar selected="2">
+      <button><core-icon icon="grid"></core-icon></button>
+      <button><core-icon icon="list"></core-icon></button>
+      <button class="core-selected"><core-icon icon="columns"></core-icon></button>
+      <button><core-icon icon="array"></core-icon></button>
+    </core-button-bar>
+  </template>
+  </polymer-element>
+
+</body>
+</html>

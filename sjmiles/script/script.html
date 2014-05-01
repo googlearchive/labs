@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+  </style>
+  
+  <script>
+    var script = document.createElement('script');
+    script.src = "../../../components/platform/platform.js";
+    script.onload = function() {
+      console.log('script load');
+    }
+    document.head.appendChild(script);
+  </script>
+ 
+</head>
+<body unresolved>
+
+  <script>
+    console.log('page bottom');
+    addEventListener('DOMContentLoaded', function() {
+      console.log('DOMContentLoaded');
+    });
+  </script>
+
+</body>
+</html>

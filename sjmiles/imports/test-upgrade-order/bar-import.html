@@ -1,0 +1,18 @@
+﻿<script>
+(function() {
+
+  var time = Date.now() / 1e5;
+  console.log('bar script', Math.floor((time - Math.floor(time)) * 1e5));
+
+  var fn = function() {};
+  var p = fn.prototype = Object.create(HTMLElement.prototype);
+
+  p.createdCallback = function() {
+    var time = Date.now() / 1e5;
+    console.log('bar', Math.floor((time - Math.floor(time)) * 1e5));
+  };
+
+  XBar = document.registerElement('x-bar', fn);
+
+})();
+</script>

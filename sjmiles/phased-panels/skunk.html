@@ -1,0 +1,151 @@
+﻿<!doctype html>
+<html>
+<head>
+
+  <title></title>
+
+  <style>
+    body {
+      overflow: hidden;
+    }
+
+    phased-panel {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      Xpadding: 32px;
+      border: 4px solid orange;
+    }
+
+    background {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      opacity: 0.3;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    phased-panel:not([top]) > * {
+      opacity: 0;
+    }
+
+    phased-panel[top] [phase] {
+      opacity: 1;
+    }
+
+    [phase] {
+      opacity: 0;
+      transition: all 400ms ease-in, opacity 100ms ease-out 400ms;
+    }
+
+    [snap] {
+      transition: all 400ms ease-in, opacity 0ms ease-out 400ms;
+    }
+
+    phased-panel:not([top]) [text] {
+      color: transparent;
+    }
+
+    [text] {
+      border: 2px solid silver;
+      display: inline-block;
+      padding: 32px;
+      position: relative;
+    }
+
+    [one] {
+      Xbackground-image: url(//lorempixel.com/256/256/people/5);
+      Xbackground-color: lightblue;
+    }
+
+    [two] {
+      Xbackground-image: url(//lorempixel.com/256/256/people/6);
+    }
+</style>
+
+</head>
+<body>
+
+  <phased-panel id="p1">
+    <background one></background>
+      <div style="float:right">
+        <img hero="fashion" phase snap src="fashion-256.jpg">
+        <div hero="text" phase text>
+          Now is the time for all good men to come to the aid of their party.
+        </div>
+        <p>Just some junk.</p>
+      </div>
+  </phased-panel>
+
+  <phased-panel id="p0" top>
+    <background two></background>
+        <p>Some text.</p>
+    <img hero="fashion" phase snap src="fashion-256.jpg" width="128">
+    <br>
+    <div hero="text" phase text style="padding: 256px;">
+      Now is the time for all good men to come to the aid of their party.
+    </div>
+  </phased-panel>
+
+  <script>
+    function transmute(src, dst) {
+
+      // two passes to reduce layouts: first pass gather information, second pass make changes
+
+      var heroes = [];
+      var h$ = src.querySelectorAll('[hero]');
+      for (var i=0, h0; h0=h$[i]; i++) {
+        var v = h0.getAttribute('hero');
+        var h1 = dst.querySelector('[hero="' + v + '"]');
+        if (h1) {
+          heroes.push({
+            h0: h0,
+            b0: h0.getBoundingClientRect(),
+            h1: h1,
+            b1: h1.getBoundingClientRect()
+          });
+        }
+      }
+
+      // pass two, modify styles
+      heroes.forEach(function(h) {
+        console.log(h);
+        var dl = h.b1.left - h.b0.left; // + 64;
+        var dt = h.b1.top - h.b0.top; // + 64;
+        var sw = h.b1.width / h.b0.width;
+        var sh = h.b1.height / h.b0.height;
+        console.log(dl, dt, sw, sh);
+        //
+        h.h0.style.webkitTransform = 'translate(' + dl + 'px, ' + dt + 'px)' + ' scale(' + sw + ', ' + sh + ')';
+        h.h0.style.webkitTransformOrigin = '0 0';
+      });
+      dst.setAttribute('top', '');
+      src.removeAttribute('top');
+      //
+      setTimeout(function() {
+        heroes.forEach(function(h) {
+          h.h0.style.webkitTransform = '';
+        });
+      }, 1500);
+    }
+
+    function cycle() {
+      setTimeout(function() {
+        transmute(p0, p1);
+        setTimeout(function() {
+          transmute(p1, p0);
+          //cycle();
+        }, 2000);
+      }, 2000);
+    }
+    cycle();
+  </script>
+
+</body>
+</html>

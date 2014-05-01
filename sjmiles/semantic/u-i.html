@@ -1,0 +1,58 @@
+<link rel="import" href="../components/core-selector/core-selector.html">
+
+<polymer-element name="u-i">
+<template>
+
+  <style>:host { display: block; }</style>
+  <content></content>
+  
+</template>
+<script>
+
+  Polymer({
+    ready: function() {
+      this.classList.add('ui');
+      for (var i=0, a; a=this.attributes[i]; i++) {
+          switch (a.name) {
+            case 'class':
+              break;
+            default: 
+              //console.log('[' + a.name + ']');
+              if (a.value === '') {
+                this.classList.add(a.name);
+              }
+              break;
+          }
+      }
+    }
+  });
+  
+</script>
+</polymer-element>
+
+<polymer-element name="ui-select" attributes="text selected">
+<template>
+
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/elements/icon.css"> 
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/modules/dropdown-mod.css">
+  
+  <style>:host { display: block; }</style>
+  
+  <u-i simple selection dropdown>
+    <div class="text">{{selected}}</div>
+    <i class="dropdown icon"></i>
+    <core-selector class="menu" selectedClass="active" valueattr="textContent" selected="{{selected}}">
+      <content select=".item"></content>
+    </core-selector>
+  </u-i>
+
+</template>
+<script>
+
+  Polymer({
+    ready: function() {
+    }
+  });
+  
+</script>
+</polymer-element>

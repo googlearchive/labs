@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+  </style>
+  
+  <script src="../components/platform/platform.js"></script>
+  
+  <link rel="import" href="u-i.html">
+  <link rel="import" href="../components/core-selector/core-selector.html">
+  
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/elements/segment.css">
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/elements/button.css">
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/elements/icon.css"> 
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/collections/form.css">
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/collections/message.css">
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/modules/dropdown.css">
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/modules/checkbox.css">
+  <link rel="stylesheet" type="text/css" href="../components/semantic/uncompressed/elements/label.css">
+  
+</head>
+<body unresolved>
+
+<u-i form segment>
+
+  <u-i error message>
+    <div class="header">Action Forbidden</div>
+    <p>You may only verblate the Johnson-rod if you fumbled on the side.</p>
+  </u-i>
+  
+  <div class="two fields">
+    <div class="field">
+      <label>First Name</label>
+      <input placeholder="First Name" type="text">
+    </div>
+    <div class="field">
+      <label>Last Name</label>
+      <input placeholder="Last Name" type="text">
+      <!--<u-i red pointing above label>Enter a last name</u-i>-->
+    </div>
+  </div>
+
+  <ui-select selected="Male">
+    <div class="item" data-value="male">Male</div>
+    <div class="item" data-value="female">Female</div>
+  </ui-select>
+  
+  <br><br>
+  
+  <div class="field">
+    <u-i checkbox>
+      <input id="cb" type="checkbox">
+      <label for="cb">Checkbox</label>
+    </u-i>
+  </div>
+    
+  <u-i blue submit button onclick="login()">Login</u-i>
+  
+</u-i>
+
+<script>
+  var form = document.querySelector('[form]');
+  var login = function() {
+    form.classList.add('error');
+  }
+</script>
+</body>
+</html>

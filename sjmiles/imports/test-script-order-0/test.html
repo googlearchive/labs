@@ -1,0 +1,23 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>test-order-0</title>
+
+  <style>
+    body {
+      background-color: orange;
+    }
+  </style>
+
+  <!-- proves import scripts execute in creation order regardless of load time -->
+
+  <link rel="import" href="delay.php?url=test-import.html">
+  <link rel="import" href="test-import-2.html">
+
+</head>
+<body unresolved>
+
+</body>
+</html>

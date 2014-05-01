@@ -1,0 +1,23 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>test-order-2</title>
+
+  <style>
+    body {
+      background-color: orange;
+    }
+  </style>
+
+  <!-- proves transitive imports also execute in order, but
+       fails to block rendering on transitive style sheet (suggesting a bug) -->
+
+  <link rel="import" href="import.html">
+
+</head>
+<body unresolved>
+
+</body>
+</html>

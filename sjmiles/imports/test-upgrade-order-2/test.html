@@ -1,0 +1,25 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+
+  <title>test-upgrade-order-2</title>
+
+  <script>
+    var time = Date.now() / 1e5;
+    console.log('body', Math.floor((time - Math.floor(time)) * 1e5));
+  </script>
+
+  <script src="../core-import.js"></script>
+
+  <link is="html-import" href="delay.php?url=foo-import.html">
+  <link is="html-import" href="bar-import.html">
+
+</head>
+<body>
+
+  <x-foo></x-foo>
+  <x-bar></x-bar>
+  <x-foo></x-foo>
+
+</body>
+</html>

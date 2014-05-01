@@ -1,0 +1,32 @@
+<link rel="import" href="components/polymer/polymer.html">
+
+<polymer-element name="bind-able" extends="body">
+
+  <script>
+
+    Polymer('bind-able', {
+
+      created: function() {
+        this.template = document.createElement('template');
+        this.template.setAttribute('light', true);
+        var body = wrap(document).body;
+        while (body.firstChild) {
+          this.template.content.appendChild(body.firstChild);
+        }
+        body.textContent = '';
+        // snarf up user defined model
+        Platform.mixin(this, window.model);
+        window.model = this;
+      },
+
+      parseDeclaration: function(elementElement) {
+        // this.shadowFromTemplate(this.template);
+        // TODO(sjmiles): do this when events can handle it
+        this.lightFromTemplate(this.template);
+      }
+
+    });
+
+  </script>
+
+</polymer-element>

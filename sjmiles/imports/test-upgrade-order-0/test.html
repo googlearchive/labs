@@ -1,0 +1,23 @@
+﻿<!doctype html>
+<html>
+<head>
+
+  <title>test-upgrade-order-0</title>
+
+  <script>
+    var time = Date.now() / 1e5;
+    console.log('body', Math.floor((time - Math.floor(time)) * 1e5));
+  </script>
+
+  <link rel="import" href="foo-import.html">
+  <link rel="import" href="delay.php?url=bar-import.html">
+
+</head>
+<body>
+
+  <x-foo></x-foo>
+  <x-bar></x-bar>
+  <x-foo></x-foo>
+
+</body>
+</html>
