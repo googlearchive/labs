@@ -66,7 +66,7 @@
       background-color: red;
     }
   </style>
-  <list-lazy class="grid" on-needs-content="{{nextChunk}}" margin="10000">
+  <list-lazy class="grid" on-needs-content="{{nextChunk}}" margin="1000">
     <template repeat="{{data}}">
       <div class="item {{ {h2: tall, w2: wide} | tokenList }}">{{index}}</div>
     </template>
@@ -76,7 +76,7 @@
 <script>
   Polymer('x-foo', {
     count: 50000,
-    chunk: 50,
+    chunk: 200,
     ready: function() {
       this.sourceData = this.makeData();
       this.nextChunk();
@@ -90,12 +90,10 @@
           w = true;
           wc++;
         }
-        /*
         if ((Math.random() > 0.8) && (tc % cols === 0 && wc % cols === 0)) {
           t = true;
           tc++;
         }
-        */
         data.push({index: i, wide: w, tall: t});
       }
       return data;
