@@ -13,7 +13,8 @@
 
     #view {
       height: 100%;
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     #view::-webkit-scrollbar {
@@ -118,6 +119,16 @@
   })
 
   bottomize();
+
+  if (navigator.userAgent.match('Firefox')) {
+    view.style.width = 'calc(100% + 30px)';
+    var container = document.querySelector('#container');
+    function size() {
+      container.style.width = view.parentNode.offsetWidth + 'px';
+    }
+    window.addEventListener('resize', size);
+    size();
+  }
 </script>
 </body>
 </html>
