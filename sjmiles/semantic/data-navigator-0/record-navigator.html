@@ -1,0 +1,46 @@
+<polymer-element name="record-navigator" attributes="items index">
+<template>
+
+  <style>:host {display: block}</style>
+  
+  <button on-tap="{{previous}}">&lt;</button> <b>{{index}} / {{items.length}} </b> <button on-tap="{{next}}">&gt;</button>
+  
+</template>
+<script>
+
+  Polymer({
+    index: 0,
+    created: function() {
+      this.items = [];
+    },
+    itemsChanged: function() {
+      this.indexChanged();
+    },
+    indexChanged: function() {
+      if (this.validate()) {
+        this.item = this.items[this.index];
+      }
+    },
+    validate: function() {
+      if (isNaN(Number(this.index))) {
+        this.index = 0;
+      }
+      var index = Math.max(0, Math.min(this.index, this.items.length - 1));
+      if (this.index === index) {
+        return true;
+      }
+      this.index = index;
+    },
+    reset: function() {
+      this.index = 0;
+    },
+    next: function() {
+      this.index++;
+    },
+    previous: function() {
+      this.index--;
+    }
+  });
+  
+</script>
+</polymer-element>

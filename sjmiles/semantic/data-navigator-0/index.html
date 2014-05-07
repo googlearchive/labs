@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <title>Data Navigator</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: whitesmoke;
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+    }
+  </style>
+  
+  <script src="components/platform-dev/platform.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="../layout.css" shim-shadowdom>
+  
+  <link rel="import" href="components/paper-input/paper-input.html">
+  <link rel="import" href="components/core-firebase/core-firebase.html">
+  <link rel="import" href="components/core-ajax/core-ajax.html">
+  <link rel="import" href="components/context-free-parser/context-free-parser.html">
+
+  <link rel="import" href="record-view.html">
+  <link rel="import" href="record-navigator.html">
+  <link rel="import" href="data-view.html">
+
+  <link rel="import" href="components/core-bind/core-bind.html">
+  
+</head>
+<body unresolved layout vertical>
+
+<template is="core-bind">
+  <core-firebase location="https://scorching-fire-4234.firebaseio.com/catalog" list="{{items}}"></core-firebase>
+  <data-view flex items="{{items}}"></data-view>
+</template>
+
+</body>
+</html>

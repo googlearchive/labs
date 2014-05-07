@@ -1,0 +1,77 @@
+<link rel="import" href="components/core-header-panel/core-header-panel.html">
+<link rel="import" href="components/core-toolbar/core-toolbar.html">
+
+<polymer-element name="data-view" attributes="items" layout vertical>
+<template>
+
+  <style>
+  
+    :host { 
+      display: block; 
+      position: relative;
+    }
+    
+    core-toolbar {
+      background-color: #3367d6;
+    }
+    
+  </style>
+
+  <div style="position: absolute; left: 20px; top: 80px; width: 100px; font-size: xx-small; overflow: auto;">
+    {{jsoni}}
+  </div>
+  
+  <core-header-panel flex>
+
+    <core-toolbar>
+      <paper-input label="Search" inputValue="{{searchTerm}}"></paper-input>
+    </core-toolbar> 
+    
+    <core-toolbar>
+      <record-navigator items="{{filtered}}" index="{{index}}"></record-navigator>  
+    </core-toolbar>
+    
+    <template repeat="{{item in block}}">
+      <record-view item="{{item}}" meta="{{meta}}" on-meta-changed="{{metaChanged}}"></record-view> 
+    </template>
+    
+  </core-header-panel>
+  
+</template>
+<script>
+
+  Polymer({
+    meta: {},
+    itemsChanged: function() {
+      this.filter();
+    },
+    indexChanged: function() {
+      this.updateItem();
+    },
+    filteredChanged: function() {
+      this.updateItem();
+    },
+    updateItem: function() {
+      //this.item = this.filtered && this.filtered[this.index];
+      this.block = [];
+      for (var i=0; i<1; i++) {
+        var item = this.filtered && this.filtered[this.index + i];
+        item && this.block.push(item);
+      }
+    },
+    searchTermChanged: function() {
+      this.filter();
+    }, 
+    filter: function() {
+      this.filtered = this.items ? this.items.filter(this.itemFilter.bind(this)) : [];
+    },
+    itemFilter: function(item) {
+      return !this.searchTerm || item.org.indexOf(this.searchTerm) >= 0; 
+    },
+    metaChanged: function() {
+      this.jsoni = JSON.stringify(this.meta, null, '  ');
+    }
+  });
+  
+</script>
+</polymer-element>

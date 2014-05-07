@@ -1,0 +1,159 @@
+<link rel="import" href="components/core-menu-button/core-menu-button.html">
+<link rel="import" href="components/core-item/core-item.html">
+
+<polymer-element name="property-view" attributes="name value meta">
+<template>
+
+  <div horizontal layout>
+
+    <div flex id="view" style="line-height: 2em;"></div>
+
+    <core-menu-button selected="{{meta.kind}}" icon="dots">
+      <core-item>Default</core-item>
+      <core-item>Red</core-item>
+      <core-item>Date</core-item>
+      <core-item>JSON</core-item>
+    </core-menu-button>
+
+  </div>
+
+</template>
+<script>
+Polymer({
+
+  observe: {
+    'meta.kind': 'metaKindChanged'
+  },
+
+  created: function() {
+    this.meta = {};
+  },
+
+  ready: function() {
+    this.createView();
+  },
+
+  metaKindChanged: function() {
+    if (this.meta && this.meta.kind !== '') {
+      //console.log('metaKindChanged', this.meta.kind);
+      this.createView();
+      this.fire('meta-changed');
+    }
+  },
+
+  createView: function() {
+    var type = 'default';
+    if (this.name === 'date') {
+      type = 'date';
+    }
+    if (this.name === 'org') {
+      type = 'red';
+    }
+    if (typeof this.value === 'object') {
+      type = 'object';
+    }
+    switch (this.meta.kind) {
+      case 1:
+        type = 'red';
+        break;
+      case 2:
+        type = 'date';
+        break;
+      case 3:
+        type = 'json';
+        break;
+      default:
+        break;
+    }
+    //console.log(type, this.meta.kind);
+    var tag = type + '-view';
+    var html = '<' + tag + ' name="{{name}}" value="{{value}}" meta="{{meta}}"></' + 'tag' + '>';
+    Polymer.addHTML(this, html, this.$.view);
+  }
+
+});
+
+Polymer.addHTML = function(self, html, target) {
+  var template = document.createElement('template');
+  template.innerHTML = html;
+  var fragment = self.instanceTemplate(template);
+  if (target) {
+    target.textContent = '';
+    target.appendChild(fragment);
+  }
+  return fragment;
+}
+
+</script>
+</polymer-element>
+
+<polymer-element name="default-view" attributes="name value meta" noscript>
+<template>
+  {{name}}: <b>{{value}}</b>
+</template>
+</polymer-element>
+
+<polymer-element name="red-view" attributes="name value meta" noscript>
+<template>
+  {{name}}: <span style="color: red"><b>{{value}}</b></span>
+</template>
+</polymer-element>
+
+<polymer-element name="date-view" attributes="name value meta">
+<template>
+  <span style="color: blue; font-style: italic;">{{value | filter}}</span>
+</template>
+<script>
+  Polymer({
+    filter: function() {
+      return new Date(-this.value).toLocaleDateString();
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="object-view" attributes="name value meta">
+<template>
+  <style>
+    item-view {
+      display: block;
+      border: 1px dotted silver;
+      margin: 4px;
+      padding: 8px;
+    }
+  </style>
+  {{name}}:
+  <item-view item="{{value}}" meta="{{properties}}"></item-view>
+</template>
+<script>
+  Polymer({
+    properties: {},
+    created: function() {
+      this.properties = {};
+    },
+    metaChanged: function() {
+      if (this.meta) {
+        if (!this.meta.properties) {
+          this.meta.properties = this.properties;
+        }
+        this.properties = this.meta.properties;
+      }
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="json-view" attributes="name value meta" noscript>
+<template>
+  <b>{{name}}</b>
+  <pre>{{value | json}}</pre>
+</template>
+<script>
+  Polymer({
+    json: function(value) {
+      return JSON.stringify(value, null, '  ');
+    }
+  });
+</script>
+</polymer-element>
+

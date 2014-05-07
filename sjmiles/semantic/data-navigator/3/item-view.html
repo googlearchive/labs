@@ -1,0 +1,46 @@
+<link rel="import" href="property-view.html">
+
+<polymer-element name="item-view" attributes="item meta">
+<template>
+
+<!--  <template repeat="{{ {item: item, meta: meta} | reflect as name }}">-->
+  <template repeat="{{name in names}}">
+    
+    <property-view name="{{name}}" value="{{item[name]}}" meta="{{meta[name]}}"></property-view>
+
+  </template>
+  
+</template>
+<script>
+Polymer({
+
+  // type-hint only
+  item: {},
+  
+  observe: {
+    'item meta': 'reflect'
+  },
+  
+  reflect_: function(args) {
+    try {
+      var names = args.item ? Object.getOwnPropertyNames(args.item) : [];
+      return names;
+    } catch(x) {
+      console.warn('attempt to reflect:', args.item, args.meta);
+      return [];
+    }
+  },
+
+  reflect: function(args) {
+    this.names = this.reflect_(this);
+  },
+
+  refresh: function(args) {
+    // there is potentially new data in sub-objects, force rebuild here
+    this.names = [];
+    this.async('reflect');
+  }
+
+});
+</script>
+</polymer-element>

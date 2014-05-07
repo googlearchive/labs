@@ -4,7 +4,8 @@ Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 */
 
-body /deep/ [layout][horizontal], body /deep/ [layout][vertical] {
+[layout][horizontal], [layout][vertical],
+html /deep/ [layout][horizontal], html /deep/ [layout][vertical] {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: -moz-flex !important;
@@ -12,7 +13,7 @@ body /deep/ [layout][horizontal], body /deep/ [layout][vertical] {
   display: flex !important;
 }
 
-body /deep/ [layout][horizontal] {
+html /deep/ [layout][horizontal] {
   -webkit-box-orient: horizontal;
   -ms-flex-direction: row;
   -moz-flex-direction: row;
@@ -20,7 +21,7 @@ body /deep/ [layout][horizontal] {
   flex-direction: row;
 }
 
-body /deep/ [layout][horizontal][reverse] {
+html /deep/ [layout][horizontal][reverse] {
   -webkit-box-direction: reverse;
   -ms-flex-direction: row-reverse;
   -moz-flex-direction: row-reverse;
@@ -28,7 +29,7 @@ body /deep/ [layout][horizontal][reverse] {
   flex-direction: row-reverse;
 }
 
-body /deep/ [layout][vertical] {
+html /deep/ [layout][vertical] {
   -webkit-box-orient: vertical;
   -ms-flex-direction: column;
   -moz-flex-direction: column;
@@ -36,7 +37,7 @@ body /deep/ [layout][vertical] {
   flex-direction: column;
 }
 
-body /deep/ [layout][vertical][reverse] {
+html /deep/ [layout][vertical][reverse] {
   -webkit-box-direction: reverse;
   -ms-flex-direction: column-reverse;
   -moz-flex-direction: column-reverse;
@@ -44,7 +45,7 @@ body /deep/ [layout][vertical][reverse] {
   flex-direction: column-reverse;
 }
 
-body /deep/ [layout] [flex] {
+html /deep/ [flex] {
   -webkit-box-flex: 1;
   -ms-flex: 1;
   -moz-flex: 1;
@@ -52,7 +53,7 @@ body /deep/ [layout] [flex] {
   flex: 1;
 }
 
-body /deep/ [layout] [flex][auto] {
+html /deep/ [layout] [flex][auto] {
   -webkit-box-flex: 1;
   -ms-flex: 1 1 auto;
   -moz-flex: 1 1 auto;
@@ -60,7 +61,7 @@ body /deep/ [layout] [flex][auto] {
   flex: 1 1 auto;
 }
 
-body /deep/ [layout] [flex][none] {
+html /deep/ [layout] [flex][none] {
   -webkit-box-flex: none;
   -ms-flex: none;
   -moz-flex: none;
@@ -68,7 +69,7 @@ body /deep/ [layout] [flex][none] {
   flex: none;
 }
 
-body /deep/ [layout] [flex][one] {
+html /deep/ [layout] [flex][one] {
   -webkit-box-flex: 1;
   -ms-flex: 1;
   -moz-flex: 1;
@@ -76,7 +77,7 @@ body /deep/ [layout] [flex][one] {
   flex: 1;
 }
 
-body /deep/ [layout] [flex][two] {
+html /deep/ [layout] [flex][two] {
   -webkit-box-flex: 2;
   -ms-flex: 2;
   -moz-flex: 2;
@@ -84,7 +85,7 @@ body /deep/ [layout] [flex][two] {
   flex: 2;
 }
 
-body /deep/ [layout] [flex][three] {
+html /deep/ [layout] [flex][three] {
   -webkit-box-flex: 3;
   -ms-flex: 3;
   -moz-flex: 3;
@@ -92,12 +93,20 @@ body /deep/ [layout] [flex][three] {
   flex: 3;
 }
 
-body /deep/ [layout] [flex][four] {
+html /deep/ [layout] [flex][four] {
   -webkit-box-flex: 4;
   -ms-flex: 4;
   -moz-flex: 4;
   -webkit-flex: 4;
   flex: 4;
+}
+
+html /deep/ [layout][center] {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -moz-align-items: center;
+  -webkit-align-items: center;
+  align-items: center;
 }
 
 /* distributed elements */
@@ -215,19 +224,24 @@ body /deep/ [layout] [flex][four] {
 }
 */
 
-[xshadow] {
+/*******************************
+            Other
+*******************************/
+
+html /deep/ [block] {
+  display: block;
+}
+
+html /deep/ [shadow] {
   x-webkit-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),  0 1px 4px rgba(0, 0, 0, 0.3),  0 0 40px rgba(0, 0, 0, 0.1) inset;
   x-moz-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),  0 1px 4px rgba(0, 0, 0, 0.3),  0 0 40px rgba(0, 0, 0, 0.1) inset;
   box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.1),  0 1px 4px rgba(0, 0, 0, 0.2),  0 0 40px rgba(0, 0, 0, 0.05) inset;
 }
 
-/*******************************
-            Segment
-*******************************/
-segment {
+html /deep/ segment {
   display: block;
 }
-[segment], segment {
+html /deep/ [segment], html /deep/ segment {
   position: relative;
   background-color: #FFFFFF;
   -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);

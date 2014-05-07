@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" type="text/css" href="../../layout.css">
+  
+  <title>Data Navigator</title>
+  
+  <style>
+  
+    body {
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+    
+    body /deep/ pre {
+      font-family: sans-serif;
+    }
+    
+    [block] {
+      display: block;
+    }
+    
+    item-view {
+      display: block;
+      border: 1px solid silver;
+      border-radius: 3px;
+      padding: 8px;
+      margin: 8px;
+    }
+    
+  </style>
+  
+  <script src="components/platform/platform.js"></script>
+  
+  <link rel="import" href="components/firebase-element/firebase-element.html">
+  <link rel="import" href="components/core-localstorage/core-localstorage.html">
+  <link rel="import" href="item-view.html">
+  <link rel="import" href="catalog-item-view.html">
+  
+  <!-- must be last -->
+  <link rel="import" href="components/core-bind/core-bind.html">
+
+</head>
+<body unresolved>
+
+  <template is="core-bind">
+    <firebase-element location="https://scorching-fire-4234.firebaseio.com/catalog" list="{{items}}"></firebase-element>
+    <record-navigator items="{{items}}" index="{{index}}" item="{{item}}"></record-navigator>
+    <!-- using value="{{items[index]}}" inserts a null entry into the datastream at items[0] -->
+    <catalog-item-view name="Catalog Item" value="{{item}}" meta="{{meta}}">
+    <core-localstorage name="data-meta" value="{{meta}}"></core-localstorage>
+  </template>
+  
+  <script>
+    var model = document.querySelector("template");
+    model.index = 0;
+    model.meta = {};
+    addEventListener('meta-changed', function() {
+      document.querySelector("core-localstorage").save();
+    });
+  </script>
+
+</body>
+</html>

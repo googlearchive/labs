@@ -1,0 +1,81 @@
+<polymer-element name="catalog-thing">
+<template>
+  <style>
+    form {
+      max-width: 720px;
+      min-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    paper-input {
+      display: block;
+      width: 95%;
+      margin-right: 2%;
+    }
+    
+    pre {
+      overflow: hidden;
+    }
+  </style>
+  
+  <core-firebase id="base" location="https://scorching-fire-4234.firebaseio.com/catalog" list="{{items}}"></core-firebase>
+  
+  <form>
+  
+    <template repeat="{{item in items}}">
+    
+      <core-ajax handleAs="json" url="http://compound.selfip.net/bowertopia/php/git-scrape.php?{{item.org}}/{{item.repo}}/{{item.repo}}.html" on-core-response="{{scrapeDataReady}}" auto></core-ajax>
+      <context-free-parser text="{{item.scrapedHtml}}" data="{{item.data}}" on-data-ready="{{cellDataReady}}"></context-free-parser>
+
+      <segment flex layout horizontal shadow>
+  
+        <paper-input flex one floatingLabel label="GitHub Organization" inputValue="{{item.org}}"></paper-input>
+  
+        <paper-input flex one floatingLabel label="GitHub Repository" inputValue="{{item.repo}}"></paper-input>
+  
+      </segment>
+    
+      <segment shadow>
+  
+        Bower data
+        <segment>
+          <pre>{{item.meta.bower | stringify}}</pre>
+        </segment>
+        
+        Readme
+        <segment>
+          <pre>{{item.meta.readme}}</pre>
+        </segment>
+        
+        Import data
+        <segment>
+          <pre>{{item.meta.html}}</pre>
+        </segment>
+
+      </segment>
+      
+    </template>
+    
+  </form>
+  
+</template>
+<script>
+
+  Polymer('catalog-thing', {
+    stringify: function(data) {
+      return JSON.stringify(data, null, '&nbsp;&nbsp;');
+    },
+    scrapeDataReady: function(event) {
+      var data = event.detail.response;
+      var item = event.target.templateInstance.model.item;
+      item.meta = data;
+      //console.dir(data);
+      //this.cellBowerDataReady(event, {response: data.bower});
+      //this.cellReadmeReady(event, {response: data.readme});
+      //event.target.templateInstance.model.item.scrapedHtml = data.html;
+    }
+  });
+  
+</script>
+</polymer-element>

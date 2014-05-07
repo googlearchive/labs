@@ -1,0 +1,41 @@
+<link rel="import" href="components/context-free-parser/context-free-parser.html">
+<link rel="import" href="components/core-ajax/core-ajax.html">
+
+<polymer-element name="catalog-item-view" extends="object-view">
+<template>
+
+  <core-ajax id="scraper" handleAs="json" url="{{scraperUrl}}?{{value.org}}/{{value.repo}}/{{value.repo}}.html" on-core-response="{{scrapeDataReady}}"></core-ajax>
+  <context-free-parser id="parser" on-data-ready="{{parserDataReady}}"></context-free-parser>
+
+  <shadow></shadow>
+    
+</template>
+<script>
+
+  Polymer({
+    
+    scraperUrl: 'http://compound.selfip.net/bowertopia/php/git-scrape.php',
+    
+    valueChanged: function() {
+      if (this.value && this.value.org && this.value.repo && !this.value.meta) {
+        this.value.meta = { 'status': 'loading...' };
+        this.$.scraper.go();
+      }
+    },
+    
+    scrapeDataReady: function(event) {
+      var data = event.detail.response;
+      this.value.meta = data;
+      this.$.parser.text = data.html;
+      delete data.html;
+    },
+    
+    parserDataReady: function() {
+      this.value.meta.docs = this.$.parser.data;
+      this.$.view.refresh();
+    }
+    
+  });
+  
+</script>
+</polymer-element>

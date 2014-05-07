@@ -1,0 +1,123 @@
+<link rel="import" href="components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="components/core-menu-button/core-menu-button.html">
+<link rel="import" href="components/core-item/core-item.html">
+<link rel="import" href="components/marked-element/marked-element.html">
+
+<polymer-element name="property-view" attributes="name value meta">
+<template>
+
+  <style>
+    
+    core-toolbar {
+      background-color: #FF941D;
+    }
+    
+    pre {
+      xoverflow: hidden;
+      font-family: inherit;
+      font-size: 1.1em;
+      padding: 8px;
+      white-space: pre-wrap;
+    }
+    
+    core-header-panel {
+      background-color: white;
+      margin-bottom: 12px;
+    }
+    
+    [hide] {
+       display: none;
+    }
+    
+  </style>
+  
+  <core-header-panel shadow>
+  
+    <core-toolbar>
+      <span flex>{{name}}</span> 
+      <!--<paper-checkbox on-paper-radio-button-activate="{{activate}}" checked="{{meta.flag}}"></paper-checkbox>-->
+      <core-menu-button selected="{{type}}">
+        <core-item icon="stream" label="Text"></core-item>
+        <core-item icon="sort" label="Markdown"></core-item>
+        <core-item icon="contact" label="Image"></core-item>
+        <core-item icon="quit" label="Data"></core-item>
+        <core-item icon="sort" label="JSON"></core-item>
+      </core-menu-button>
+    </core-toolbar>
+    
+    <pre hide?="{{type == 3 || type == 1}}" id="output"></pre>
+    <marked-element id="marked"></marked-element>
+    
+    <div style="padding: 8px;" hide?="{{type != 3}}">
+      <record-view id="record"></record-view>
+    </div>
+  
+    <div style="padding: 8px;" hide?="{{type != 5}}">
+      <data-view id="data"></data-view>
+    </div>
+  
+  </core-header-panel>
+  
+</template>
+<script>
+
+  Polymer('property-view', {
+    
+    ready: function() {
+      this.metaChanged();
+    },
+    
+    typeChanged: function() {
+      if (this.type) {
+        this.meta.type = this.type;
+      }
+      this.format();
+    },
+    
+    metaChanged: function() {
+      this.type = this.meta.type;
+    },
+    
+    valueChanged: function() {
+      if (!this.type) {
+        if (typeof this.value == 'object') {
+          this.type = this.value.length ? 5 : 3;
+        }
+      }
+      this.format();
+    },
+    
+    format: function() {
+      var html = '';
+      switch (Number(this.meta.type)) {
+        case 1:
+          html = '';
+          this.$.marked.text = this.value;
+          break;
+        case 2:
+          html = '<img src="' + this.value + '">';
+          break;
+        case 3:
+          html = '';
+          this.$.record.meta = {};
+          this.$.record.item = this.value;
+          break;
+        case 4:
+          html = JSON.stringify(this.value, null, '  ');
+          break;
+        case 5:
+          html = '';
+          this.$.data.meta = {};
+          this.$.data.items = this.value;
+          break;
+        default:
+          html = String(this.value).replace(/</g, '&lt;').trim();
+          break;
+      }
+      this.$.output.innerHTML = html;
+    }  
+    
+  });
+  
+</script>
+</polymer-element>

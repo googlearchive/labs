@@ -32,6 +32,19 @@
       color: transparent;
       transition: width 200ms ease-in, height 200ms ease-in, -webkit-transform 200ms ease-in, opacity 300ms ease-out;
     }
+
+    /*
+    Xtransition: all 400ms ease-in, opacity 100ms ease-out 400ms;
+     
+    content::content [snap] {
+      Xtransition: all 400ms ease-in, opacity 0ms ease-out 400ms;
+    }
+
+    :host ::content *:not([top]) [text] {
+      color: transparent;
+    }
+    */
+
   </style>
 
   <shadow></shadow>
@@ -122,6 +135,7 @@
       if (this.transitioning) {
         this.job('transitionWatch', function() {
           this.complete();
+          //this.async('complete', null, 600);
         }, 500);
       }
     }

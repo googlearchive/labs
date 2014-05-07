@@ -1,0 +1,31 @@
+﻿<!doctype html>
+<html>
+<head>
+  
+  <title>Raw Native FOUC test w/@import</title>
+  
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, Roboto, Helvetica, sans-serif;
+    }
+  </style>
+  
+</head>
+<body>
+  
+  <x-foo><h1>Bad Bad World</h1></x-foo>
+  
+  <template>
+    <style>
+      <link rel="stylesheet" href="http://compound.selfip.net/bowertopia/pain/labs/sjmiles/FOUCtests/no-element.css">
+    </style>
+    Hello World
+  </template>
+  
+  <script>
+    var template = document.querySelector('template');
+    document.querySelector('x-foo').innerHTML = template.innerHTML;
+  </script>
+  
+</body>
+</html>

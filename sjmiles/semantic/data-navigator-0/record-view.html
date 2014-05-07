@@ -1,0 +1,106 @@
+<link rel="import" href="components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="components/core-menu-button/core-menu-button.html">
+<link rel="import" href="components/core-item/core-item.html">
+<link rel="import" href="property-view.html">
+
+<polymer-element name="record-view" attributes="item meta">
+<template>
+
+  <style>
+  
+    body {
+      font-family: sans-serif;
+    }
+    
+    core-toolbar {
+      background-color: #FF941D;
+    }
+    
+    form {
+      max-width: 920px;
+      min-width: 240px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    paper-input {
+      display: block;
+      width: 95%;
+      margin-right: 2%;
+    }
+    
+    pre {
+      overflow: hidden;
+      font-family: inherit;
+      font-size: 1.1em;
+      padding: 8px;
+      white-space: pre-wrap;
+    }
+    
+    core-header-panel {
+      background-color: white;
+      margin-bottom: 12px;
+    }
+    
+  </style>
+  
+  <form>
+  
+    <h2>{{item.repo}}</h2>
+        
+    <template repeat="{{name in names}}">
+  
+      <property-view name="{{name}}" value="{{item[name]}}" meta="{{meta[name]}}"></property-view>
+       
+    </template>
+    
+    <core-ajax id="scraper" handleAs="json" url="{{scraperUrl}}?{{item.org}}/{{item.repo}}/{{item.repo}}.html" on-core-response="{{scrapeDataReady}}"></core-ajax>
+    <context-free-parser id="parser" on-data-ready="{{parserDataReady}}"></context-free-parser>
+
+  </form>
+  
+</template>
+<script>
+
+  Polymer('record-view', {
+    
+    item: {},
+    type: 0,
+    
+    scraperUrl: 'http://compound.selfip.net/bowertopia/php/git-scrape.php',
+    
+    itemChanged: function() {
+      this.reflect();
+      if (this.item && this.item.org && this.item.repo && !this.item.meta) {
+        this.item.meta = {};
+        this.$.scraper.go();
+      }
+    },
+    
+    reflect: function() {
+      this.names = [];
+      this.async(function() {
+        this.names = this.item ? Object.getOwnPropertyNames(this.item) : null;
+        this.names.forEach(function(n) {
+          this.meta[n] = this.meta[n] || {};
+        }, this);
+      });
+    },
+    
+    scrapeDataReady: function(event) {
+      var data = event.detail.response;
+      this.item.meta = data;
+      this.$.parser.text = data.html;
+      delete data.html;
+      this.reflect();
+    },
+    
+    parserDataReady: function() {
+      this.item.meta.docs = this.$.parser.data;
+      this.reflect();
+    }
+    
+  });
+  
+</script>
+</polymer-element>

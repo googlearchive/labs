@@ -1,0 +1,17 @@
+﻿<!doctype html>
+<html>
+<head>
+
+  <title>Raw Native FOUC test w/@import</title>
+
+</head>
+<body>
+
+  <xfoo><h1>Bad Bad World</h1></xfoo>
+
+  <script>
+    document.querySelector('xfoo').innerHTML = '<style> @import url("http://compound.selfip.net/bowertopia/pain/labs/sjmiles/FOUCtests/no-element2.css");</style> Hello World';
+  </script>
+
+</body>
+</html>

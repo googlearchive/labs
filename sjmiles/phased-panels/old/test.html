@@ -4,7 +4,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   
-  <title>Phasing Test 4</title>
+  <title>Phasing Test 3</title>
 
   <script src="components/platform/platform.js"></script>
   <link rel="import" href="components/polymer/polymer.html">
@@ -42,12 +42,27 @@
       display: inline-block;
       padding: 32px;
       position: relative;
-      box-sizing: border-box;
     }
 
-    #img0 {
-      width: 128px;
+    [one] {
+      Xbackground-image: url(//lorempixel.com/256/256/people/5);
+      Xbackground-color: lightblue;
     }
+
+    [two] {
+      Xbackground-image: url(//lorempixel.com/256/256/people/6);
+    }
+
+/*
+    [phase] {
+      opacity: 0;
+      transition: all 400ms ease-in, opacity 100ms ease-out 400ms;
+    }
+
+    [snap] {
+      transition: all 400ms ease-in, opacity 0ms ease-out 400ms;
+    }
+ */
 </style>
 
 </head>
@@ -58,32 +73,38 @@
   <phased-panels selected="0">
 
     <phased-panel id="p1" top>
+    
+      <!--<background one></background>-->
 
-      <div phase style="position: absolute; top: 20px; right: 20px;">
-        <img hero="fashion" phase scaley src="fashion-256.jpg">
-      </div>
+      <div Xstyle="float:right">
+
+        <img hero="fashion" phase snap src="fashion-256.jpg">
         
-      <br>
-      
-      <div hero="text" phase text style="position: absolute; top: 300px; right: 20px;">
-        P1: Now is the time for all good men to come to the aid of their party.
+        <br>
+        
+        <div hero="text" phase text>
+          P1: Now is the time for all good men to come to the aid of their party.
+        </div>
+
+        <p>Just some junk.</p>
+
       </div>
 
-      <p>Just some junk.</p>
-                
     </phased-panel>
 
     <phased-panel id="p0">
 
+      <!--<background two></background>-->
+
       <p>Some text.</p>
 
-      <img id="img0" hero="fashion" phase snap scaley src="fashion-256.jpg" style="position: absolute; top: 40px; left: 20px;">
+      <img hero="fashion" phase snap src="fashion-256.jpg" width="128">
       <br>
 
-      <div hero="text" phase text style="padding: 10px; position: absolute; top: 180px; left: 20px;">
+      <div hero="text" phase text style="padding: 256px;">
         P0: Now is the time for all good men to come to the aid of their party.
       </div>
-      
+
     </phased-panel>
 
   </phased-panels>
