@@ -1,0 +1,29 @@
+<template>
+  <textarea></textarea>
+  <div></div>
+</template>
+<script>
+(function() {
+  var template = document.currentScript.ownerDocument.querySelector('template');
+  var proto = Object.create(HTMLElement.prototype);
+
+  proto.createdCallback = function() {
+    this.createShadowRoot().appendChild(template.content.cloneNode(true));
+  }
+
+  proto.test = function(message) {
+    var textarea = this.shadowRoot.querySelector('textarea')
+    var p = getComputedStyle(textarea).paddingTop;
+    this.shadowRoot.querySelector('div').innerHTML += message + ' paddingTop: '
+      + p + '<br>';
+  }
+
+  proto.attachedCallback = function() {
+    this.test('attached');
+    requestAnimationFrame(this.test.bind(this, 'attached, async'));
+  }
+
+  document.registerElement('test-imported-element', {prototype: proto});
+
+})();
+</script>

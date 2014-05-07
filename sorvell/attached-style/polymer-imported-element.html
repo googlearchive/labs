@@ -1,0 +1,22 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+<polymer-element name="test-imported-element">
+  <template>
+    <textarea></textarea>
+    <div></div>
+  </template>
+  <script>
+    Polymer('test-imported-element', {
+      attached: function() {
+        this.test('attached');
+        requestAnimationFrame(this.test.bind(this, 'attached, async'));
+      },
+      test: function(message) {
+        var textarea = this.shadowRoot.querySelector('textarea')
+        var p = getComputedStyle(textarea).paddingTop;
+        this.shadowRoot.querySelector('div').innerHTML += message + ' paddingTop: '
+          + p + '<br>';
+      }
+    });
+  </script>
+</polymer-element>
