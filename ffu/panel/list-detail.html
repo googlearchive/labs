@@ -4,11 +4,11 @@
   <title>list-detail</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width">
-  <script src="../../../polymer/polymer.js"></script>
+  <script src="../../../components/platform/platform.js"></script>
   <script src="src/contacts-data.js"></script>
   <link rel="import" href="src/contacts-detail.html">
-  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
-  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+  <link rel="import" href="../../../components/polymer-ui-icon-button/polymer-ui-icon-button.html">
+  <link rel="import" href="../../../components/polymer-ui-toolbar/polymer-ui-toolbar.html">
   <style>
     html, body {
       height: 100%;
@@ -141,7 +141,7 @@
             <template repeat="{{contacts}}">
               <div class="item" on-tap="{{itemTap}}">
                 <div class="avatar-container">
-                  <div id="avatar" class="{{favorite: isFavorite == 1}}">{{initials}}</div>
+                  <div id="avatar" class="{{isFavorite ? 'favorite' : ''}}">{{initials}}</div>
                 </div>
                 <div class="summary">
                   <div class="name">{{name}}</div>
