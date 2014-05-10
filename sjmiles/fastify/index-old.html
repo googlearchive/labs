@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+
+<script>
+  var time = Date.now();
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      time = Date.now() - time;
+      console.log(time);
+    });
+  });
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>fastify - old</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+</style>
+
+<script src="components/platform/platform.js"></script>
+
+<link rel="import" href="components/core-icons/core-icons.html">  
+<link rel="import" href="components/core-icon/core-icon.html">  
+<link rel="import" href="components/core-item/core-item.html">  
+
+</head>
+<body>
+
+<core-icon icon="settings"></core-icon>
+
+</body>
+</html>

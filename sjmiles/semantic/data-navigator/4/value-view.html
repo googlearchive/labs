@@ -1,0 +1,146 @@
+<link rel="import" href="components/marked-element/marked-element.html">
+<link rel="import" href="record-navigator.html">
+
+<script>
+  ValueViews = {
+    kinds: [],
+    register: function(polymerElement) {
+      var kind = polymerElement.getAttribute('kind');
+      if (kind) {
+        this.kinds.push(kind);
+        polymerElement.removeAttribute('kind');
+      }
+    }
+  };
+</script>
+
+<polymer-element name="value-view" attributes="name value meta">
+<script>
+  Polymer({
+    registerCallback: function(polymerElement) {
+      ValueViews.register(polymerElement);
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="default-view" extends="value-view" kind="default" noscript>
+<template>
+  <style>
+    :host {
+      line-height: 42px;
+      min-height: 42px;
+    }
+  </style>
+  {{name}}: <span><b>{{value}}</b></span>
+</template>
+</polymer-element>
+
+<polymer-element name="red-view" extends="default-view" kind="red" noscript>
+<template>
+  <style>
+    :host::shadow > span {
+      color: red;
+    }
+  </style>
+  <shadow></shadow>
+</template>
+</polymer-element>
+
+<polymer-element name="date-view" extends="value-view" kind="date">
+<template>
+  <span style="color: blue; font-style: italic;">{{value | filter}}</span>
+</template>
+<script>
+  Polymer({
+    filter: function() {
+      return new Date(-this.value).toLocaleDateString();
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="marked-view" extends="value-view" kind="marked" noscript>
+<template>
+  <style>
+   marked-element {
+      display: block;
+      xborder: 1px dotted lightblue;
+      margin: 4px;
+      padding: 8px;
+    }
+  </style>
+  <b>{{name}}</b>
+  <marked-element text="{{value}}"></marked-element>
+</template>
+</polymer-element>
+
+<polymer-element name="json-view" extends="value-view" kind="json">
+<template>
+  <b>{{name}}</b>
+  <pre>{{value | json}}</pre>
+</template>
+<script>
+  Polymer({
+    json: function(value) {
+      return JSON.stringify(value, null, '  ');
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="meta-view" extends="value-view">
+<script>
+  Polymer({
+    /*
+    properties: {},
+    created: function() {
+      this.properties = {};
+    },
+    */ 
+    metaChanged: function() {
+      if (this.meta) {
+        if (!this.meta.properties) {
+          this.meta.properties = this.properties;
+        }
+        this.properties = this.meta.properties;
+      }
+    }
+  });
+</script>
+</polymer-element>>
+
+<polymer-element name="object-view" extends="meta-view" kind="object" noscript>
+<template>
+  <style>
+    item-view {
+      display: block;
+      padding: 8px;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+  </style>
+  <label>{{name}}</label>
+  <item-view id="view" item="{{value}}" meta="{{properties}}"></item-view>
+</template>
+</polymer-element>
+
+<polymer-element name="array-view" extends="meta-view" kind="array" noscript>
+<template>
+  <style>
+    property-view {
+      display: block;
+      margin: 4px;
+      padding: 8px;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+  </style> 
+  <label>{{name}}: <record-navigator items="{{value}}" index="{{index}}"></record-navigator></label>
+  <property-view id="view" name="{{index}}" value="{{value[index]}}" meta="{{properties}}">
+</template>
+</polymer-element>

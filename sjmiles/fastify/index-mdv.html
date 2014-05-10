@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+
+<script>
+  var time = Date.now();
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      time = Date.now() - time;
+      console.log(time);
+    });
+  });
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>fastify - mdv</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+</style>
+
+<script src="components/platform/platform.js"></script>
+
+<link rel="import" href="core-icons/core-icons.html">  
+<link rel="import" href="core-icon/core-icon.html">  
+<link rel="import" href="core-item/core-item.html">  
+
+</head>
+<body unresolved>
+
+<core-icon icon="settings"></core-icon>
+<core-item icon="info" label="An Item"></core-item>
+<core-item label="An Item"></core-item>
+<core-item icon="info" label="An Item">[Some Content]</core-item>
+<core-item icon="info" label="An Item"><a href="javascript:void(alert('foo'))"></a>Other Content</core-item>
+
+<template repeat="{{}}">
+  <core-item icon="{{icon}}" label="{{label}}"></core-item>
+</template>
+<script>
+  var items = [];
+  for (var i=0; i<5000; i++) {
+    items.push({icon: 'info', label: 'item #' + i});
+  }
+  document.querySelector('template').model = items;
+</script>
+
+</body>
+</html>

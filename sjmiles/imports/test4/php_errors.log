@@ -1,0 +1,2 @@
+[24-Apr-2014 18:38:59] PHP Notice:  Undefined index:  url in E:\www\bowertopia\components-git\core-import\test4\delay.php on line 7
+[24-Apr-2014 18:38:59] PHP Warning:  readfile() [<a href='function.readfile'>function.readfile</a>]: Filename cannot be empty in E:\www\bowertopia\components-git\core-import\test4\delay.php on line 8

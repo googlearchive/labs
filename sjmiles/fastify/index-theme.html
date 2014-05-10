@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>themed fastify</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+  
+  html /deep/ core-menu {
+    width: 240px;
+  }
+  html /deep/ core-menu > * {
+    cursor: pointer;
+  }
+  
+  /* bubbles theme */
+  
+  html /deep/ core-menu.bubbles {
+    font-size: 13px;
+  }
+  html /deep/ core-menu.bubbles > * {
+    cursor: pointer;
+    border: 1px solid silver;
+    border-radius: 16px;
+    user-select: none;
+  }
+  html /deep/ core-menu.bubbles /deep/ core-icon {
+    fill: #6D7782;
+  }
+    
+  /* dark theme */
+  
+  html /deep/ core-menu.dark {
+    background-color: #1f1e23;
+    color: #474d54;
+    font-size: 14px;
+  }
+  html /deep/ core-menu.dark > * {
+    border: 1px inset #18181b;    
+  }
+  html /deep/ core-menu.dark /deep/ core-icon {
+    fill: #6D7782;
+  }
+  html /deep/ core-menu.dark > .core-selected {
+    background:#1f1e23 linear-gradient(45deg, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%);
+    font-weight: inherit;
+  }
+  
+  /* flat theme */
+  
+  html /deep/ core-menu.flat {
+    background-color: white;
+    font-size: 14px;
+    border: 1px solid whitesmoke;
+    border-radius: 4px;
+  }
+  html /deep/ core-menu.flat > * {
+    border-bottom: 1px solid whitesmoke;    
+  }
+  html /deep/ core-menu.flat /deep/ core-icon {
+    fill: #838C97;
+  }
+  html /deep/ core-menu.flat > .core-selected {
+    background: #9ea7b3;
+    color: whitesmoke;
+    font-weight: inherit;
+  }
+  html /deep/ core-menu.flat > .core-selected /deep/ core-icon {
+    fill: orange;
+  }
+</style>
+
+<script src="components/platform/platform.js"></script>
+
+<link rel="import" href="core-icons/core-icons.html">  
+<link rel="import" href="core-icon/core-icon.html">  
+<link rel="import" href="core-item/core-item.html">  
+<link rel="import" href="core-menu/core-menu.html">  
+
+</head>
+<body unresolved>
+
+<div style="background-color: #3C3B43; padding: 16px;">
+  <core-menu class="dark" selected="0">
+    <core-item icon="info" label="An Item"></core-item>
+    <core-item icon="book" label="An Item"></core-item>
+    <core-item icon="work" label="An Item"> [and some content]</core-item>
+    <core-item icon="home" label="An Item"><a href="javascript:void(console.log('foo'))"></a> w/Anchor</core-item>
+  </core-menu>
+</div>
+
+<div style="padding: 16px;">
+  <core-menu class="flat" selected="0">
+    <core-item icon="info" label="An Item"></core-item>
+    <core-item icon="book" label="An Item"></core-item>
+    <core-item icon="work" label="An Item"> [and some content]</core-item>
+    <core-item icon="home" label="An Item"><a href="javascript:void(console.log('foo'))"></a> w/Anchor</core-item>
+  </core-menu>
+</div>
+
+<div style="padding: 16px;">
+  <core-menu class="bubbles" selected="0">
+    <core-item icon="info" label="An Item"></core-item>
+    <core-item icon="book" label="An Item"></core-item>
+    <core-item icon="work" label="An Item"> [and some content]</core-item>
+    <core-item icon="home" label="An Item"><a href="javascript:void(console.log('foo'))"></a> w/Anchor</core-item>
+  </core-menu>
+</div>
+
+</body>
+</html>

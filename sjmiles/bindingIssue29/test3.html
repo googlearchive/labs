@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+
+<title>Binding Test</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+    font-size: xx-large;
+  }
+</style>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/polymer/polymer.html">  
+
+</head>
+<body onclick="clack()">
+
+<div style="background-color: lightblue; padding: 16px;">
+  <template bind id="template">
+    <template bind="{{items[index] as item}}">
+      items[{{index}}] = {{item}}
+    </template>
+  </template>
+</div>
+
+<hr>
+
+Click to see changes.
+
+<hr>
+
+<div id="msg"></div>
+
+<script>
+  addEventListener('WebComponentsReady', function() {
+    
+    template = document.querySelector('#template');
+    
+    template.bindingDelegate = new PolymerExpressions();
+    
+    var model = {
+      items: [3, 5],
+      index: 0
+    };
+    template.model = model;
+    
+    clacked = 0;
+    window.clack = function() {
+      switch (clacked++) {
+        case 0:
+          model.items[0] = 42;
+          msg.innerHTML += 'set items[0] to 42</br>';
+          break;
+        case 1:
+          model.index++;
+          msg.innerHTML += 'increment index (items[1] is 5)</br>';
+          break;
+        case 2:
+          model.items[1] = -23;
+          msg.innerHTML += '<span style="color: red;">set items[1] to -23</span></br>';
+          break;
+      }
+    };
+    
+  });
+  
+</script>
+
+</body>
+</html>

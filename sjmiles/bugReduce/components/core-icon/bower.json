@@ -1,0 +1,9 @@
+{
+  "name": "core-icon",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-theme-aware": "Polymer/core-theme-aware#master",
+    "core-iconset": "Polymer/core-iconset#master"
+  }
+}
