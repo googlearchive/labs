@@ -81,13 +81,14 @@ The default set of includes these icons:
 
 <link rel="import" href="../core-iconset/core-iconset.html">
 
-<link rel="stylesheet" href="core-icon.css">
+<link rel="stylesheet" href="core-icon.css" shim-shadowdom>
 
 <polymer-element name="core-icon" attributes="src size icon">
 <script>
 (function() {
   
-  var meta = document.createElement('core-iconset');
+  // mono-state
+  var meta;
   
   Polymer('core-icon', {
 
@@ -124,6 +125,9 @@ The default set of includes these icons:
     defaultIconset: 'icons',
 
     ready: function() {
+      if (!meta) {
+        meta = document.createElement('core-iconset');
+      }
       this.sizeChanged();
     },
 
