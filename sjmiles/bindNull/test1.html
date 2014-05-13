@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Untitled Document</title>
+
+<script src="components/platform/platform.js"></script>
+
+</head>
+<body>
+
+<template bind>
+  <input value="{{foo.squid}}">
+  <input value="{{bar.squid}}">
+  <hr>
+  {{bar['squid']}}
+  <br>
+  {{zot['squid']}}
+  <br>
+  {{zot.squid}}
+</template>
+
+<script>
+  var t = document.querySelector('template');
+  t.model = {
+    bar: {
+    },
+    zot: {
+      squid: 99
+    }
+  };
+</script>
+
+</body>
+</html>

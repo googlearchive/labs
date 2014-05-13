@@ -1,0 +1,65 @@
+<script src="iscroll-master/build/iscroll.js"></script>
+
+<style shim-shadowdom>
+
+  html /deep/ i-scroll {
+    display: block;
+    position: relative;
+    overflow: hidden;
+  
+    /* Prevent native touch events on Windows */
+    -ms-touch-action: none;
+  
+    /* Prevent the callout on tap-hold and text selection */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  
+    /* Prevent text resize on orientation change, useful for web-apps */
+    -webkit-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+    -o-text-size-adjust: none;
+    text-size-adjust: none;
+  }
+  
+  html /deep/ i-scroll::shadow scroller {
+    position: absolute;
+  
+    /* Prevent elements to be highlighted on tap */
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  
+    /* Put the scroller into the HW Compositing layer right from the start */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+</style>
+
+<polymer-element name="i-scroll" on-touchmove="{{notouch}}">
+<template>
+
+  <scroller id="scroller">
+    <content></content>
+  </scroller>
+  
+</template>
+<script>
+  Polymer({
+    
+    domReady: function() {
+      this.iscroll = new IScroll(this, { scroller: this.$.scroller, useTransition: false });
+    },
+    
+    notouch: function(e) {
+      e.preventDefault();
+    }
+    
+  })
+</script>
+</polymer-element>

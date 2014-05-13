@@ -92,20 +92,18 @@
 <polymer-element name="meta-view" extends="value-view">
 <script>
   Polymer({
-    /*
-    properties: {},
+    
     created: function() {
       this.properties = {};
     },
-    */ 
+    
     metaChanged: function() {
-      if (this.meta) {
-        if (!this.meta.properties) {
-          this.meta.properties = this.properties;
-        }
-        this.properties = this.meta.properties;
+      if (!this.meta.properties) {
+        this.meta.properties = this.properties;
       }
+      this.properties = this.meta.properties;
     }
+    
   });
 </script>
 </polymer-element>>

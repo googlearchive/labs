@@ -5,25 +5,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Untitled Document</title>
+<title>Canvas Based Virtual Scrolling</title>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/polymer/polymer.html">
+<link rel="import" href="i-scroll.html">
 
 </head>
-<body style="margin: 0; height: 100vh;">
-
-  <div id="scroller" style="position: absolute; right: 0; top: 0; height: 100vh; overflow: auto; width: 32px;" onscroll="scrill(event)">
-    <div style="height: 180004px;"></div>
-  </div>
-  
-  <button onclick="animight()">Scroll It</button><br>
-
-  <canvas id="canvas" width="260" height="440" style="border: 1px solid lightblue;"></canvas>
+<body>
 
   <div style="display: none;">
     <img id="face" src="face.png">
     <img id="important" src="important.png">
     <img id="favorite" src="favorite.png">
   </div>
-  
+
+  <canvas id="canvas" width="260" height="440" style="position: absolute; top: 2px; right: 2px; bottom: 2px; left: 2px; border: 1px solid lightblue;"></canvas>
+
+  <i-scroll id="scroller" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0;" onscroll="scrill(event)">
+    <div style="height: 180004px;"></div>
+  </i-scroll>
+
   <script>
   
     var items = [];
@@ -42,8 +44,8 @@
     var width, height;
     
     window.onload = function() {
-      height = document.body.offsetHeight;
-      width = document.body.offsetWidth;
+      height = scroller.offsetHeight;
+      width = scroller.offsetWidth;
       canvas.height = height - 32;
       canvas.width = width - 32;
       drawFrame();
@@ -85,9 +87,15 @@
       drawFrame();
     }
     
+    function scrillit(sy) {
+      //console.log(sy);
+      y = -sy;
+      drawFrame();
+    }
+    
     var animating = false;
     
-    function animight() {
+    function animate() {
       animating = !animating;
       if (!animating) {
         return;

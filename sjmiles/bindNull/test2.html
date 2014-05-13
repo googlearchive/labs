@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Binding Tests</title>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/polymer/polymer.html">
+
+</head>
+<body>
+
+<polymer-element name="bind-test">
+<template>
+  Squid: {{squid}}<br>
+  Octopus: {{octopus}}
+</template>
+<script>
+  Polymer('bind-test', {
+    publish: {
+      squid: 3,
+      octopus: 5
+    }
+  });
+</script>
+</polymer-element>
+
+<template bind>
+
+  <!-- squid, octopus remain at default, foo object never is created -->
+  <bind-test squid="{{foo.squid}}" octopus="{{foo['squid']}}"></bind-test>
+  <hr>
+  <!-- squid, octopus remain at default, bar object never is created -->
+  <bind-test squid="{{bar[name]}}"></bind-test>
+  <hr>
+
+  <!-- objects never created, so now explore pre-made objects (zot exists a-priori) -->
+
+  <!-- zot.mollusk acquires 3; octopus remains 5, should be 3 -->
+  <bind-test squid="{{zot.mollusk}}" octopus="{{zot['mollusk']}}"></bind-test>
+  <hr>
+  
+  <!-- zot.mollusk acquires 3; octopus remains 5, should be 3 -->
+  <!-- when name becomes 'mollusk', squid never updates (p-expr issue #29) -->
+  <bind-test squid="{{zot[name]}}"></bind-test>
+  <hr>
+
+  <!-- array -->
+
+  <!-- zot.mollusk acquires 3; octopus remains 5, should be 3 -->
+  <!-- when name becomes 'mollusk', squid never updates (p-expr issue #29) -->
+  <bind-test squid="{{baz[index]}}"></bind-test>
+  <hr>
+
+  <p>{{zot.mollusk}}<p>
+  <p>{{zot['mollusk']}}</p>
+  
+</template>
+
+<hr>
+
+<button onclick="dostuff()">Do Stuff</button>
+
+<hr>
+
+<pre id="msg"></pre>
+
+<script>
+  addEventListener('polymer-ready', function() {
+    var t = document.querySelector('[bind]');
+    t.bindingDelegate = new PolymerExpressions();
+    t.model = {
+      name: 'creature',
+      zot: {
+      },
+      index: 0
+    };
+    
+    function dump() {
+      msg.innerHTML = JSON.stringify(t.model, null, ' ');
+    }
+    
+    dump();
+  
+    dostuff = function() {
+      t.model.zot.mollusk = 42;
+      t.model.name = 'mollusk';
+      t.model.baz = [];
+      setTimeout(dump, 300);
+    };
+  });
+</script>
+
+</body>
+</html>

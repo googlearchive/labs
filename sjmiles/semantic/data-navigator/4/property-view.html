@@ -2,19 +2,6 @@
 <link rel="import" href="components/core-item/core-item.html">
 <link rel="import" href="value-view.html">
 
-<script>
-  Polymer.addHTML = function(self, html, target) {
-    var template = document.createElement('template');
-    template.innerHTML = html;
-    var fragment = self.instanceTemplate(template);
-    if (target) {
-      target.textContent = '';
-      target.appendChild(fragment);
-    }
-    return fragment;
-  }
-</script>
-
 <polymer-element name="property-view" attributes="name value meta" block>
 <template>
 
@@ -47,6 +34,7 @@
 Polymer({
 
   created: function() {
+    //this.meta = undefined;
     this.kinds = ValueViews.kinds;
   },
 
@@ -69,41 +57,22 @@ Polymer({
   },
 
   createView: function() {
-    var type = 'default';
-    if (this.name === 'date') {
-      type = 'date';
-    }
-    if (this.name === 'org') {
-      type = 'red';
-    }
-    if (typeof this.value === 'object') {
-      type = 'object';
-    }
-    if (this.value instanceof Array) {
-      type = 'array';
-    }
-    /*
-    switch (this.kind) {
-      case 0:
-        break;
-      case 1:
-        type = 'red';
-        break;
-      case 2:
+    var type = this.kind;
+    if (!type) {
+      type = 'default';
+      if (this.name === 'date') {
         type = 'date';
-        break;
-      case 3:
-        type = 'json';
-        break;
-      case 4:
-        type = 'marked';
-        break;
-      default:
-        type = this.kind || type;
-        break;
+      }
+      if (this.name === 'org') {
+        type = 'red';
+      }
+      if (typeof this.value === 'object') {
+        type = 'object';
+      }
+      if (this.value instanceof Array) {
+        type = 'array';
+      }
     }
-    */
-    //console.log(type, this.meta.kind);
     var tag = type + '-view';
     var html = '<' + tag + ' name="{{name}}" value="{{value}}" meta="{{meta}}"></' + 'tag' + '>';
     Polymer.addHTML(this, html, this.$.view);
@@ -112,3 +81,17 @@ Polymer({
 });
 </script>
 </polymer-element>
+
+<script>
+  Polymer.addHTML = function(self, html, target) {
+    var template = document.createElement('template');
+    template.innerHTML = html;
+    var fragment = self.instanceTemplate(template);
+    if (target) {
+      target.textContent = '';
+      target.appendChild(fragment);
+    }
+    return fragment;
+  }
+</script>
+

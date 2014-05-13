@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Binding Tests</title>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/polymer/polymer.html">
+
+</head>
+<body>
+
+<polymer-element name="bind-test">
+<template>
+
+  Squid: {{squid}}
+
+</template>
+<script>
+
+  Polymer('bind-test', {
+    publish: {
+      squid: 3
+    }
+  });
+  
+</script>
+</polymer-element>
+
+<template bind>
+
+  <!-- squid unchanged, foo object never is created -->
+  <bind-test squid="{{foo.squid}}"></bind-test>
+  <hr>
+
+  <!-- squid unchanged, foo object never is created -->
+  <bind-test squid="{{foo['squid']}}"></bind-test>
+  <hr>
+  
+  <bind-test squid="{{bar[name]}}"></bind-test>
+  <hr>
+
+</template>
+
+<button onclick="dostuff()">Do Stuff</button>
+
+<hr>
+
+<pre id="msg"></pre>
+
+<script>
+  addEventListener('polymer-ready', function() {
+    t = document.querySelector('[bind]');
+    t.bindingDelegate = new PolymerExpressions();
+    
+    t.model = {
+      name: 'mollusk',
+      bar: {
+      }
+    };
+    
+    dostuff = function() {
+      t.model.name = 'octopus';
+      setTimeout(function() {
+        t.model.bar.octopus = 256;
+        dump();
+      }, 300);
+    };
+
+    dump = function() {
+      setTimeout(function() {
+        msg.innerHTML = JSON.stringify(t.model, null, ' ');
+      }, 100);
+    }
+    
+    dump();
+  
+  });
+</script>
+
+</body>
+</html>

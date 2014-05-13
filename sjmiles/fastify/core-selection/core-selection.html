@@ -69,6 +69,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../polymer/polymer.html">
 
+<style shim-shadowdom>
+  html /deep/ core-selection {
+    display: none;
+  }
+</style>
+
 <polymer-element name="core-selection" attributes="multi">
 <script>
 
