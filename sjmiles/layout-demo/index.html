@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Untitled Document</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+    background-color: whitesmoke;
+  }
+</style>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/polymer/polymer.html">
+
+</head>
+<body>
+
+<segment><span>segment</span></segment>
+
+<br>
+
+<span>horizontal layout</span>
+<segment horizontal layout>
+  <segment></segment>
+  <segment flex>flex</segment>
+  <segment></segment>
+</segment>
+
+<br>
+
+<span>horizontal layout</span>
+<segment horizontal layout>
+  <segment flex two>flex two</segment>
+  <segment flex two>flex two</segment>
+  <segment flex one>flex one</segment>
+</segment>
+
+<br>
+
+<span>horizontal center-justified center layout</span>
+<segment horizontal center-justified center layout style="height: 140px">
+  <segment>Center</segment>
+</segment>
+
+<span>horizontal end-justified end layout</span>
+<segment horizontal end-justified end layout style="height: 140px">
+  <segment>Bottom Right</segment>
+</segment>
+
+<br>
+
+<span>vertical layout</span>
+<segment vertical layout style="height: 300px">
+  <segment></segment>
+  <segment flex>flex</segment>
+  <segment></segment>
+</segment>
+
+</body>
+</html>
