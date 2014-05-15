@@ -1,7 +1,7 @@
 <link rel="import" href="components/context-free-parser/context-free-parser.html">
 <link rel="import" href="components/core-ajax/core-ajax.html">
 
-<polymer-element name="catalog-item-view" extends="object-view" block>
+<polymer-element name="catalog-item-view" extends="object-view">
 <template>
 
   <core-ajax id="scraper" handleAs="json" url="{{scraperUrl}}?{{value.org}}/{{value.repo}}/{{value.repo}}.html" on-core-response="{{scrapeDataReady}}"></core-ajax>
@@ -12,31 +12,29 @@
 </template>
 <script>
 
-  Polymer({    
+  Polymer({
+    
     scraperUrl: 'http://compound.selfip.net/bowertopia/php/git-scrape.php',
     
     valueChanged: function() {
-      this.$.scraper.abort();
-      this.scrapedData = null;
-      if (this.value && this.value.org && this.value.repo && !this.value.info) {
-        this.value.info = { 'status': 'loading...' };
+      if (this.value && this.value.org && this.value.repo && !this.value.meta) {
+        this.value.meta = { 'status': 'loading...' };
         this.$.scraper.go();
       }
     },
     
     scrapeDataReady: function(event) {
       var data = event.detail.response;
+      this.value.meta = data;
       this.$.parser.text = data.html;
       delete data.html;
-      this.scrapedData = data;
     },
     
     parserDataReady: function() {
-      //console.log('parserDataReady', this.value.info, this.scrapedData);
-      this.value.info = this.scrapedData;
-      this.value.info.docs = this.$.parser.data;
-      //this.$.view.refresh();
+      this.value.meta.docs = this.$.parser.data;
+      this.$.view.refresh();
     }
+    
   });
   
 </script>

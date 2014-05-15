@@ -46,6 +46,12 @@
 </template>
 </polymer-element>
 
+<polymer-element name="collapsed-view" extends="default-view" kind="collapsed" noscript>
+<template>
+  {{name}}
+</template>
+</polymer-element>
+
 <polymer-element name="date-view" extends="value-view" kind="date">
 <template>
   <span style="color: blue; font-style: italic;">{{value | filter}}</span>
@@ -64,7 +70,6 @@
   <style>
    marked-element {
       display: block;
-      xborder: 1px dotted lightblue;
       margin: 4px;
       padding: 8px;
     }

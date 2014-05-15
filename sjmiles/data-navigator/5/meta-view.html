@@ -1,0 +1,63 @@
+<link rel="import" href="value-view.html">
+<link rel="import" href="record-navigator.html">
+
+<polymer-element name="meta-view" extends="value-view">
+<script>
+  Polymer({
+    
+    created: function() {
+      this.properties = {};
+    },
+    
+    metaChanged: function() {
+      if (!this.meta.properties) {
+        this.meta.properties = this.properties;
+      }
+      this.properties = this.meta.properties;
+    }
+    
+  });
+</script>
+</polymer-element>>
+
+<polymer-element name="object-view" extends="meta-view" kind="object" noscript>
+<template>
+
+  <style>
+    item-view {
+      display: block;
+      padding: 8px;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+  </style>
+  
+  <label>{{name}}</label>
+  <item-view id="view" item="{{value}}" meta="{{properties}}"></item-view>
+  
+</template>
+</polymer-element>
+
+<polymer-element name="array-view" extends="meta-view" kind="array" noscript>
+<template>
+
+  <style>
+    property-view {
+      display: block;
+      margin: 4px;
+      padding: 8px;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+  </style> 
+  
+  <label>{{name}}: <record-navigator items="{{value}}" index="{{index}}"></record-navigator></label>
+  <property-view id="view" name="{{index}}" value="{{value[index]}}" meta="{{properties}}"></property-view>
+  
+</template>
+</polymer-element>
+>

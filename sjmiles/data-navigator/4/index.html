@@ -22,8 +22,6 @@
   
   <script src="components/platform-dev/platform.js"></script>
   
-  <link rel="stylesheet" type="text/css" href="../../layout.css" shim-shadowdom>
-  
   <link rel="import" href="components/firebase-element/firebase-element.html">
   <link rel="import" href="components/core-icons/core-icons.html">
   <link rel="import" href="components/core-localstorage/core-localstorage.html">
@@ -32,24 +30,31 @@
   <link rel="import" href="table-view.html">
   <link rel="import" href="catalog-item-view.html">
   
-  <!-- must be last -->
-  <link rel="import" href="components/core-bind/core-bind.html">
-
 </head>
 <body unresolved>
 
-  <template is="core-bind">
+  <template is="auto-binding">
+  
     <firebase-element location="https://scorching-fire-4234.firebaseio.com/catalog" list="{{items}}"></firebase-element>
+  
     <record-navigator items="{{items}}" index="{{index}}" item="{{item}}"></record-navigator>
+  
     <catalog-item-view name="Catalog Item" value="{{item}}" meta="{{meta}}"></catalog-item-view>
+  
     <core-localstorage name="data-meta" value="{{meta}}"></core-localstorage>
+      
   </template>
   
   <script>
-    document.querySelector('template').meta = {};
+  
+    var model = document.querySelector('template');
+    
+    model.meta = {};
+    
     addEventListener('meta-changed', function() {
       document.querySelector('core-localstorage').save();
     });
+
   </script>
 
 </body>

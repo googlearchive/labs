@@ -37,18 +37,7 @@ Polymer({
   },
 
   reflect: function() {
-    //console.group(this.tag, 'reflect', this.item, this.meta);
     this.names = this.reflect_(this);
-    //this.async(function() {
-      //console.groupEnd();
-    //});
-  },
-
-  refresh: function(args) {
-    //console.log(this.tag, 'refresh');
-    // there is potentially new data in sub-objects, force rebuild here
-    //this.names = [];
-    //this.async('reflect');
   }
 
 });

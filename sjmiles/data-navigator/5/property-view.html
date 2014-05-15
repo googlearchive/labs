@@ -2,7 +2,7 @@
 <link rel="import" href="components/core-item/core-item.html">
 <link rel="import" href="value-view.html">
 
-<polymer-element name="property-view" attributes="name value meta" block>
+<polymer-element name="property-view" attributes="name value meta" layout vertical>
 <template>
 
   <style>
@@ -14,16 +14,18 @@
     }
     #view {
       transition: height ease-out 300ms;
+      /*
       overflow-y: hidden;
       overflow-x: auto;
+      */
     }
   </style>
   
-  <div horizontal layout id="box">
+  <div flex horizontal layout id="box">
 
     <div flex id="view"></div>
 
-    <core-menu-button selected="{{kind}}" valueattr="kind" icon="more-vert">
+    <core-menu-button selected="{{meta.kind}}" valueattr="kind" icon="more-vert">
       <template repeat="{{kind in kinds}}">
         <core-item kind="{{kind}}">{{kind}}</core-item>
       </template>
@@ -42,7 +44,8 @@
 Polymer({
 
   observe: {
-    'meta.layout': 'metaLayoutChanged'
+    'meta.layout': 'metaLayoutChanged',
+    'meta.kind': 'metaKindChanged'
   },
   
   created: function() {
@@ -77,42 +80,28 @@ Polymer({
     this.kind = this.meta.kind;
   },
   
-  kindChanged: function(old) {
-    if (this.kind || this.kind === 0) {
+  metaKindChanged: function(old) {
+    if (this.meta.kind) {
       //console.log('kindChanged', this.kind, old, this.meta.kind);
-      this.meta.kind = this.kind;
-      this.createView();
-      this.fire('meta-changed');
-    }
-  },
-
-  kindChanged: function(old) {
-    if (this.kind || this.kind === 0) {
-      //console.log('kindChanged', this.kind, old, this.meta.kind);
-      this.meta.kind = this.kind;
       this.createView();
       this.fire('meta-changed');
     }
   },
 
   createView: function() {
-    var type = this.kind;
+    var type = this.meta.kind;
     if (!type) {
       type = 'default';
       if (this.name === 'date') {
         type = 'date';
       }
-      if (this.name === 'org') {
-        type = 'red';
-      }
       if (typeof this.value === 'object') {
-        //type = 'object';
+        type = 'object';
       }
       if (this.value instanceof Array) {
-        //type = 'array';
+        type = 'array';
       }
     }
-    //type = 'red';
     var tag = type + '-view';
     var html = '<' + tag + ' name="{{name}}" value="{{value}}" meta="{{meta}}"></' + 'tag' + '>';
     Polymer.addHTML(this, html, this.$.view);

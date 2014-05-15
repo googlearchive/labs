@@ -1,0 +1,22 @@
+<polymer-element name="state-router" attributes="route enabled">
+<script>
+  Polymer({
+    enabled: false,
+    enabledChanged: function() {
+      if (this.enabled) {
+        this.parseLocationHash();
+        window.addEventListener('hashchange', this.parseLocationHash.bind(this));
+      }
+    },
+    parseLocationHash: function() {
+      this.route = window.location.hash.slice(1);
+    },
+    routeChanged: function() {
+      if (this.enabled) {
+        window.location.hash = '#' + this.route;
+        this.fire('route-changed');
+      }
+    }
+  });
+</script>
+</polymer-element>

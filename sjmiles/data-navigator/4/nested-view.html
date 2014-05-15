@@ -1,0 +1,57 @@
+<link rel="import" href="value-view.html">
+<link rel="import" href="record-navigator.html">
+
+<polymer-element name="nested-view" extends="meta-view" kind="nested">
+<template>
+  <style>
+    item-view {
+      display: block;
+      padding: 8px;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+  </style>
+  <label>{{name}}</label>
+  <item-view id="view" item="{{object}}" meta="{{properties}}"></item-view>
+</template>
+<script>
+Polymer({
+
+  valueChanged: function() {
+    
+    var crumbs = [];
+    var item = this.value;
+    while (item) {
+      var keys = Object.keys(item);
+      if (keys.length > 1) {
+        this.object = item;
+        break;
+      } else {
+        var key = keys[0];
+        this.crumbs.push(key);
+        item = item[key];
+      }
+    }
+    
+    var item = this.value && this.value[0];
+    if (item && typeof item === 'object') {
+      this.headers = Object.keys(item);
+      this.cells = this.value.map(function(v) {
+        return { 
+          values: Object.keys(v).map(function(k) {
+            return v[k];
+          }) 
+        };
+      });
+    } else {
+      this.headers = ['no headings'];
+      this.cells = [];
+    }
+  }
+
+});
+</script>
+</polymer-element>
+>

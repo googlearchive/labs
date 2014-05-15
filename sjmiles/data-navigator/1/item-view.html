@@ -1,0 +1,51 @@
+<polymer-element name="item-view" attributes="item">
+<template>
+
+  <template repeat="{{ {item: item, meta: meta} | reflect as name }}">
+    
+    <div>
+      {{name}}: <b>{{item[name]}}</b>
+    </div>
+
+  </template>
+  
+  <!--
+  <hr>
+
+  <template repeat="{{name in names}}">
+    <div>
+      {{name}}: <b>{{item[name]}}</b>
+    </div>
+  </template>
+  -->
+  
+</template>
+<script>
+Polymer({
+
+  // type-hint only
+  item: {},
+  
+  created: function() {
+    this.meta = {};
+  },
+  
+  /*
+  itemChanged: function() {
+    //console.log('itemChanged', this.item);
+    this.names = this.reflect({item: this.item, meta: this.meta});
+  },
+  */
+
+  reflect: function(args) {
+    //console.log('properties', item);
+    var names = args.item ? Object.getOwnPropertyNames(args.item) : [];
+    for (var i=0, n; (n=names[i]); i++) {
+      args.meta[n] = args.meta[n] || {};
+    }
+    return names;
+  }
+
+});
+</script>
+</polymer-element>

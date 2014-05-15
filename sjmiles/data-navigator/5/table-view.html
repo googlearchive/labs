@@ -1,0 +1,70 @@
+<polymer-element name="table-view" extends="meta-view" kind="table">
+<template>
+
+  <style>
+    property-view {
+      display: block;
+      margin: 4px;
+      padding: 8px;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+    table {
+      border-right: 1px solid silver;
+    }
+    table th {
+      background-color: whitesmoke;
+      border: 1px solid silver;
+      min-width: 128px;
+      padding: 8px 16px;
+    }
+    table td {
+      border: 1px solid silver;
+      border-top: none;
+      border-right: none;
+      min-width: 128px;
+      padding: 8px 16px;
+    }
+  </style>
+  
+  <label>{{name}}</label>
+  
+  <table id="table" cellspacing="0">
+    <tr>
+      <th template repeat="{{header in headers}}">
+        {{header}}
+      </th>
+    <tr>
+    <tr template repeat="{{cell in cells}}">
+      <td template repeat="{{valo in cell.values}}">
+        {{valo}}
+      </td>
+    <tr>
+  </table>
+
+</template>
+<script>
+Polymer({
+
+  valueChanged: function() {
+    var item = this.value && this.value[0];
+    if (item && typeof item === 'object') {
+      this.headers = Object.keys(item);
+      this.cells = this.value.map(function(v) {
+        return { 
+          values: Object.keys(v).map(function(k) {
+            return v[k];
+          }) 
+        };
+      });
+    } else {
+      this.headers = ['no headings'];
+      this.cells = [];
+    }
+  }
+
+});
+</script>
+</polymer-element

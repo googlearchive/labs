@@ -1,0 +1,25 @@
+<link rel="import" href="property-view.html">
+
+<polymer-element name="item-view" attributes="item meta">
+<template>
+
+  <template repeat="{{ {item: item, meta: meta} | reflect as name }}">
+    
+    <property-view name="{{name}}" value="{{item[name]}}" meta="{{meta[name]}}"></property-view>
+
+  </template>
+  
+</template>
+<script>
+Polymer({
+
+  // type-hint only
+  item: {},
+  
+  reflect: function(args) {
+    return args.item ? Object.getOwnPropertyNames(args.item) : [];
+  }
+
+});
+</script>
+</polymer-element>
