@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link href="components/polymer/polymer.html" rel="import">
+  <link href="components/core-icon/core-icon.html" rel="import">
+  <link href="components/core-icons/core-icons.html" rel="import">
+  <link href="components/core-icons/iconsets/communication-icons.html" rel="import">
+  <link href="components/core-icons/iconsets/maps-icons.html" rel="import">
+
+  <link href="phased-panels-2.html" rel="import">
+
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+    }
+
+    phased-panels-2 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 320px;
+    }
+
+    .toolbar {
+      background: #3f51b5;
+      padding: 0 16px;
+    }
+
+    .toolbar > core-icon {
+      fill: #fff;
+      margin-right: 16px;
+    }
+
+    .toolbar > div {
+      padding: 16px 0;
+      color: #fff;
+    }
+
+    .list-container {
+      padding-top: 8px;
+      background: #fff;
+    }
+
+    .item {
+      padding: 0 16px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+      margin-right: 16px;
+    }
+
+    .name {
+      padding: 16px 0;
+    }
+
+    .heading {
+      /*background: #f4b400;*/
+      box-sizing: border-box;
+      padding: 16px;
+      height: 260px;
+    }
+
+    .avatar-large {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #ccc;
+      margin-right: 16px;
+    }
+
+    .name-large {
+      font-size: 20px;
+      color: #fff;
+    }
+
+    .item-container {
+      background: #fff;
+      padding-top: 8px;
+    }
+
+    .item-group {
+      border-bottom: 1px solid #ccc;
+    }
+
+    .icon {
+      padding: 24px 24px 16px;
+    }
+
+    .item {
+      padding: 16px;
+    }
+
+    .item-data {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .item-more {
+      font-size: 14px;
+      color: #ccc;
+    }
+  </style>
+
+</head>
+<body>
+  <phased-panels-2 selected="0">
+
+    <section id="list" top>
+
+      <div class="toolbar" layout horizontal center>
+        <core-icon icon="menu"></core-icon>
+        <div flex>All Contacts</div>
+      </div>
+
+      <div class="list-container">
+        <div class="item" layout horizontal center onclick="stuff();">
+          <div class="avatar" hero="avatar" phase scaley></div>
+          <div class="name" hero="name" phase text>Scott Miles</div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="detail">
+
+      <div class="heading" layout horizontal end>
+        <div layout horizontal center>
+          <div class="avatar-large" hero="avatar" phase scaley></div>
+          <div class="name-large" hero="name" phase text>Scott Miles</div>
+        </div>
+      </div>
+
+      <div class="item-container">
+
+        <div class="item-group" layout horizontal top>
+          <div class="icon">
+            <core-icon icon="communication:phone"></core-icon>
+          </div>
+          <div flex>
+            <div class="item">
+              <div class="item-data">(123) 123-1234</div>
+              <div class="item-more">Home</div>
+            </div>
+            <div class="item">
+              <div class="item-data">(123) 123-1234</div>
+              <div class="item-more">Mobile</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item-group" layout horizontal top>
+          <div class="icon">
+            <core-icon icon="mail"></core-icon>
+          </div>
+          <div flex>
+            <div class="item">
+              <div class="item-data">sjmiles@google.com</div>
+              <div class="item-more">Work</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item-group" layout horizontal top>
+          <div class="icon">
+            <core-icon icon="maps:map"></core-icon>
+          </div>
+          <div flex>
+            <div class="item">
+              <div class="item-data">345 Spear St, Fl 4 San Francisco CA</div>
+              <div class="item-more">Work</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </phased-panels-2>
+
+  <script>
+
+    function stuff() {
+      var p = document.querySelector('phased-panels-2');
+      p.selected = p.selected ? 0 : 1;
+    }
+  </script>
+</body>
+</html>

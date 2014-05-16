@@ -1,0 +1,66 @@
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="components/core-transition/core-transition.html">
+
+<polymer-element name="hero-transition" extends="core-transition">
+  
+  <script>
+    Polymer('hero-transition', {
+      
+      type: 'transition',
+
+      go: function(node, state) {
+        var h0 = state.src;
+        var h1 = node;
+        var h = {
+          h0: h0,
+          b0: h0.getBoundingClientRect(),
+          h1: h1,
+          b1: h1.getBoundingClientRect()
+        };
+
+        var dl = h.b0.left - h.b1.left;
+        var dt = h.b0.top - h.b1.top;
+        var sw = h.b0.width / h.b1.width;
+        var sh = h.b0.height / h.b1.height;
+
+        h.scaley = h.h0.hasAttribute('scaley');
+        if (!h.scaley && (sw !== 1 || sh !== 1)) {
+          sw = sh = 1;
+          h.h0.style.width = h.b1.width + 'px';
+          h.h0.style.height = h.b1.height + 'px';
+        }
+        console.log(h);
+
+        h.h1.style.webkitTransform = 'translate(' + dl + 'px,' + dt + 'px)' + ' scale(' + sw + ',' + sh + ')';
+        h.h1.style.webkitTransformOrigin = '0 0';
+        console.log(h.h1.style.webkitTransform);
+        requestAnimationFrame(function() {
+          // h.h1.style.webkitTransition = '-webkit-transform 2s';
+          // h.h1.style.webkitTransform = 'none';
+        });
+      },
+
+      setup: function(node) {
+      },
+
+      teardown: function(node) {
+      },
+
+      complete: function(node) {
+        this.fire('hero-transitionend', null, node);
+      }
+
+
+    });
+  </script>
+</polymer-element>
+
+<hero-transition id="hero-transition"></hero-transition>

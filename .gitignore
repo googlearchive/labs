@@ -1,4 +1,5 @@
 node_modules
+yvonne/*/components
 
 /sjmiles/maker/maker2/editions
 sjmiles/requirejs-test/components
