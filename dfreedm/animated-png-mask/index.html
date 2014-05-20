@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    #checkbox {
+      height: 48px;
+      width: 48px;
+      background-color: orange;
+      /*background-image: url(checkbox-sprite.png);*/
+      -webkit-mask: url(checkbox-sprite.png);
+    }
+    .go #checkbox{
+      animation: check 300ms steps(15) both;
+    }
+    .backwards #checkbox{
+      animation-direction: reverse;
+    }
+    @keyframes check{
+      from {
+        -webkit-mask-position: 0px 0px;
+        background-position: 0px 0px;
+      }
+      to {
+        -webkit-mask-position: 0px -720px;
+        background-position: 0px -720px;
+      }
+    }
+  </style>
+  <script>
+    var forwards = true;
+    function go() {
+      var db = document.body.classList;
+      db.remove('go');
+      requestAnimationFrame(function() {
+        db.add('go');
+        db.toggle('backwards', !forwards);
+        forwards = !forwards;
+      });
+    }
+  </script>
+</head>
+<body>
+  <!-- <img src="checkbox-sprite.png" alt=""> -->
+  <button onclick="go()">Go!</button>
+  <div id="checkbox"></div>
+</body>
+</html>
