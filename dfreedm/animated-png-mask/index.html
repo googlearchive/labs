@@ -8,8 +8,11 @@
       height: 48px;
       width: 48px;
       background-color: orange;
-      /*background-image: url(checkbox-sprite.png);*/
       -webkit-mask: url(checkbox-sprite.png);
+    }
+    .nope #checkbox{
+      background-image: url(checkbox-sprite.png);
+      background-color: transparent;
     }
     .go #checkbox{
       animation: check 300ms steps(15) both;
@@ -30,6 +33,12 @@
   </style>
   <script>
     var forwards = true;
+    var nope = typeof document.head.style.webkitMaskPosition === 'string';
+    if (!nope) {
+      addEventListener('DOMContentLoaded', function() {
+        document.body.classList.add('nope');
+      });
+    }
     function go() {
       var db = document.body.classList;
       db.remove('go');
