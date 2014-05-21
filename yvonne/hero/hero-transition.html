@@ -34,8 +34,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         h.scaley = h.h0.hasAttribute('scaley');
         if (!h.scaley && (sw !== 1 || sh !== 1)) {
           sw = sh = 1;
-          h.h0.style.width = h.b1.width + 'px';
-          h.h0.style.height = h.b1.height + 'px';
+          h.h1.style.width = h.b0.width + 'px';
+          h.h1.style.height = h.b0.height + 'px';
         }
         console.log(h);
 
@@ -43,8 +43,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         h.h1.style.webkitTransformOrigin = '0 0';
         console.log(h.h1.style.webkitTransform);
         requestAnimationFrame(function() {
-          // h.h1.style.webkitTransition = '-webkit-transform 2s';
-          // h.h1.style.webkitTransform = 'none';
+          h.h1.style.webkitTransition = 'width 200ms ease-in, height 200ms ease-in, -webkit-transform 200ms ease-in, opacity 50ms ease-out 180ms';
+          h.h1.style.webkitTransform = 'none';
         });
       },
 
