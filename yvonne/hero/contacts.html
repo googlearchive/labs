@@ -113,12 +113,12 @@
 
     <section id="list" top>
 
-      <div class="toolbar" layout horizontal center>
+      <div class="toolbar" layout horizontal center phase="phased-transition-up">
         <core-icon icon="menu"></core-icon>
         <div flex>All Contacts</div>
       </div>
 
-      <div class="list-container">
+      <div class="list-container" onclick="stuff()">
         <div class="item" layout horizontal center onclick="stuff();">
           <div class="avatar" hero="avatar" phase scaley></div>
           <div class="name" hero="name" phase scaley>Scott Miles</div>
@@ -129,14 +129,14 @@
 
     <section id="detail">
 
-      <div class="heading" layout horizontal end>
+      <div class="heading" layout horizontal end phase onclick="stuff();">
         <div layout horizontal center>
           <div class="avatar-large" hero="avatar" phase scaley></div>
           <div class="name-large" hero="name" phase scaley>Scott Miles</div>
         </div>
       </div>
 
-      <div class="item-container">
+      <div class="item-container" phase>
 
         <div class="item-group" layout horizontal top>
           <div class="icon">

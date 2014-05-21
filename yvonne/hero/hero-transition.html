@@ -37,11 +37,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           h.h1.style.width = h.b0.width + 'px';
           h.h1.style.height = h.b0.height + 'px';
         }
-        console.log(h);
 
         h.h1.style.webkitTransform = 'translate(' + dl + 'px,' + dt + 'px)' + ' scale(' + sw + ',' + sh + ')';
         h.h1.style.webkitTransformOrigin = '0 0';
-        console.log(h.h1.style.webkitTransform);
         requestAnimationFrame(function() {
           h.h1.style.webkitTransition = 'width 200ms ease-in, height 200ms ease-in, -webkit-transform 200ms ease-in, opacity 50ms ease-out 180ms';
           h.h1.style.webkitTransform = 'none';
