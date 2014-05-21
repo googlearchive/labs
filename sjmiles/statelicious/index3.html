@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>State?</title>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/polymer/polymer.html">
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+</style>
+  
+</head>
+<body>
+
+<app-ish></app-ish>
+
+<hr>
+
+<button onclick="dumpState()">Dump State</button>
+
+<script>
+  var dumpState = function() {
+    var app = document.querySelector('app-ish');
+    console.log('  ');
+    console.log(JSON.stringify(app.state, null, '  '));
+  };
+</script>
+
+<polymer-element name="form-ish" attributes="ok" noscript>
+<template>
+  Ok? <input type="checkbox" checked="{{ok}}">
+</template>
+</polymer-element>
+
+<polymer-element name="app-ish" extends="prop-ful">
+<template>
+  <form-ish id="form" ok="{{state.form.ok}}"></form-ish>
+</template>
+<script>
+  Polymer('app-ish', {
+    state: {
+      form: {
+        ok: true
+      }
+    }
+  });
+</script>
+</polymer-element>
+
+</body>
+</html>

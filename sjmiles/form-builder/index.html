@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <title>Data Navigator</title>
+  <title>Form Builder</title>
   
   <style>
   
@@ -22,14 +22,20 @@
   
   <script src="components/platform-dev/platform.js"></script>
   
-  <link rel="import" href="components/firebase-element/firebase-element.html">
   <link rel="import" href="components/core-icons/core-icons.html">
   <link rel="import" href="components/core-localstorage/core-localstorage.html">
+  <link rel="import" href="components/paper-input/paper-input.html">
+  <link rel="import" href="property-view.html">
+  <link rel="import" href="value-view.html">
+  <link rel="import" href="item-view.html">
+  <link rel="import" href="input-view.html">
+<!--  
   <link rel="import" href="item-view.html">
   <link rel="import" href="meta-view.html">
   <link rel="import" href="table-view.html">
   <link rel="import" href="catalog-item-view.html">
   <link rel="import" href="state-router.html">
+-->
   
 </head>
 <body unresolved>
@@ -39,45 +45,39 @@
   <polymer-element name="data-navigator">
   <template>
   
-    <firebase-element location="https://scorching-fire-4234.firebaseio.com/catalog" list="{{items}}"></firebase-element>
+    <core-localstorage id="metaStore" name="form-meta" value="{{meta}}"></core-localstorage>
+    <core-localstorage id="dataStore" name="form-fields" value="{{fields}}"></core-localstorage>
   
-    <core-localstorage id="storage" name="data-meta" value="{{meta}}"></core-localstorage>
+    <item-view item="{{fields}}" meta="{{meta}}"></item-view>
 
-    <state-router route="{{route}}" enabled></state-router>
-      
-    <record-navigator items="{{items}}" index="{{index}}" item="{{item}}"></record-navigator>
-  
-    <catalog-item-view name="Catalog Item" value="{{item}}" meta="{{meta}}"></catalog-item-view>
-  
   </template>
   <script>
   
     Polymer('data-navigator', {
       
-      eventDelegates: {
-        metaChanged: "metaChangedEvent"
+      fields: {
+        'First Name': '',
+        'Last Name': '',
+        'Address': '',
+        'Address Line 2': '',
+        'Foo': ''
       },
-
+            
+      eventDelegates: {
+        'meta-change': 'metaChange'
+      },
+  
       created: function() {
         this.meta = {};
       },
-
-      itemsChanged: function() {
-        this.index = Number(this.route) || 0;
-      },
-
-      indexChanged: function() {
-        if (this.list) {
-          this.route = this.index;
-        }
-      },
-
-      metaChangedEvent: function() {
-        this.$.storage.save();
+  
+      metaChange: function() {
+        this.$.metaStore.save();
+        this.$.dataStore.save();
       }
-
+  
     });
-    
+
   </script>
   </polymer-element>
   

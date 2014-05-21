@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>State?</title>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="state-ful.html">
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+</style>
+  
+</head>
+<body>
+
+<app-ish></app-ish>
+
+<hr>
+<button onclick="dumpState()">Dump State</button>
+
+<script>
+  var dumpState = function() {
+    var app = document.querySelector('app-ish');
+    console.log('  ');
+    console.log(JSON.stringify(app.props, null, '  '));
+  };
+</script>
+
+<polymer-element name="check-box" extends="prop-ful">
+<template>
+  <input type="checkbox" checked="{{checked}}">
+</template>
+<script>
+  Polymer('check-box', {
+    stateProps: ['checked'],
+    checked: false,
+    checkedChanged: function() {
+      this.upstreamState('checked');
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="form-ish" extends="prop-ful" noscript>
+<template>
+  Ok? <check-box id="ok"></check-box>
+</template>
+</polymer-element>
+
+<polymer-element name="app-ish" extends="prop-ful">
+<template>
+  <form-ish id="form"></form-ish>
+</template>
+<script>
+  Polymer('app-ish', {
+    setup: {
+      form: {
+        ok: {
+          checked: true
+        }
+      }
+    },
+    domReady: function() {
+      this.setProps(this.setup);
+    }
+  });
+</script>
+</polymer-element>
+
+</body>
+</html>

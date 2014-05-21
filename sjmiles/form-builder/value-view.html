@@ -1,0 +1,95 @@
+<link rel="import" href="components/marked-element/marked-element.html">
+
+<script>
+  ValueViews = {
+    kinds: [],
+    register: function(polymerElement) {
+      var kind = polymerElement.getAttribute('kind');
+      if (kind) {
+        this.kinds.push(kind);
+        polymerElement.removeAttribute('kind');
+      }
+    }
+  };
+</script>
+
+<polymer-element name="value-view" attributes="name value meta">
+<script>
+  Polymer({
+    registerCallback: function(polymerElement) {
+      ValueViews.register(polymerElement);
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="default-view" extends="value-view" kind="default" noscript>
+<template>
+  <style>
+    :host {
+      line-height: 42px;
+      min-height: 42px;
+    }
+  </style>
+  {{name}}: <span><b>{{value}}</b></span>
+</template>
+</polymer-element>
+
+<polymer-element name="red-view" extends="default-view" kind="red" noscript>
+<template>
+  <style>
+    :host::shadow > span {
+      color: red;
+    }
+  </style>
+  <shadow></shadow>
+</template>
+</polymer-element>
+
+<polymer-element name="collapsed-view" extends="default-view" kind="collapsed" noscript>
+<template>
+  {{name}}
+</template>
+</polymer-element>
+
+<polymer-element name="date-view" extends="value-view" kind="date">
+<template>
+  <span style="color: blue; font-style: italic;">{{value | filter}}</span>
+</template>
+<script>
+  Polymer({
+    filter: function() {
+      return new Date(-this.value).toLocaleDateString();
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="marked-view" extends="value-view" kind="marked" noscript>
+<template>
+  <style>
+   marked-element {
+      display: block;
+      margin: 4px;
+      padding: 8px;
+    }
+  </style>
+  <b>{{name}}</b>
+  <marked-element text="{{value}}"></marked-element>
+</template>
+</polymer-element>
+
+<polymer-element name="json-view" extends="value-view" kind="json">
+<template>
+  <b>{{name}}</b>
+  <pre>{{value | json}}</pre>
+</template>
+<script>
+  Polymer({
+    json: function(value) {
+      return JSON.stringify(value, null, '  ');
+    }
+  });
+</script>
+</polymer-element>
+

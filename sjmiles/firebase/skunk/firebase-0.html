@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Firebase 0</title>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/firebase-element/firebase-element.html">
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+</style>
+  
+</head>
+<body>
+
+<polymer-element name="quote-editor" attributes="attribution quote" block>
+<template>
+  <p><b>{{attribution}}</b>:</p>
+  <textarea cols="60" rows="4" value="{{quote}}" on-change="{{commit}}"></textarea>
+</template>
+<script>
+  Polymer('quote-editor', {
+    commit: function() {
+      console.log('chain-ged!');
+      this.fire('item-changed');
+    }
+  });
+</script>
+</polymer-element>
+
+<template is="auto-binding">
+
+  <firebase-list location="https://polymerdemo.firebaseio.com/quotes" data="{{items}}"></firebase-list>
+  
+  <div on-item-changed="{{itemChanged}}">
+    <template repeat="{{item in items}}">
+      <quote-editor attribution="{{item.value.attribution}}" quote="{{item.value.quote}}"></quote-editor>
+    </template>
+  </div>
+  
+</template>
+<script>
+
+  var m = document.querySelector('[is]');
+  m.itemChanged= function(e) {
+    var item = e.target.templateInstance.model.item;
+    console.log(item);
+    item.update();
+  };
+  
+</script>
+
+</body>
+</html>

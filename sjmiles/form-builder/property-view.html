@@ -1,0 +1,116 @@
+<link rel="import" href="components/core-menu-button/core-menu-button.html">
+<link rel="import" href="components/core-item/core-item.html">
+<link rel="import" href="components/core-menu/core-submenu.html">
+<link rel="import" href="value-view.html">
+
+<polymer-element name="property-view" attributes="name value meta" vertical layout>
+<template>
+
+  <style>
+    :host {
+      min-width: 160px;
+    }
+    #xbox {
+      border: 1px dotted whitesmoke;
+      border-radius: 6px;
+      xpadding: 8px;
+      xmargin: 3px;
+    }
+    #view {
+      transition: height ease-out 300ms;
+      /*
+      overflow-y: hidden;
+      overflow-x: auto;
+      */
+    }
+  </style>
+  
+  <div flex horizontal center layout id="box">
+
+    <div flex id="view"></div>
+
+  </div>
+
+</template>
+<script>
+
+  Polymer({
+  
+    observe: {
+      'meta.layout': 'metaLayoutChanged',
+      'meta.kind': 'metaKindChanged'
+    },
+    
+    created: function() {
+      this.meta = {};
+    },
+  
+    ready: function() {
+      this.createView();
+      this.metaLayoutChanged();
+    },
+    
+    metaLayoutChanged: function() {
+      switch (this.meta.layout) {
+        case 'one-column':
+          this.style.width = '25%';
+          break;
+        case 'two-columns':
+          this.style.width = '50%';
+          break;
+        case 'three-columns':
+          this.style.width = '75%';
+          break;
+        case 'four-columns':
+        default: 
+          this.style.width = '100%';
+      }
+    },
+    
+    metaChanged: function() {
+      this.kind = this.meta.kind;
+    },
+    
+    metaKindChanged: function(old) {
+      if (this.meta.kind) {
+        this.createView();
+      }
+    },
+  
+    createView: function() {
+      var type = this.meta.kind;
+      if (!type) {
+        type = 'input';
+        if (this.name === 'date') {
+          type = 'date';
+        }
+        if (typeof this.value === 'object') {
+          type = 'object';
+        }
+        if (this.value instanceof Array) {
+          type = 'array';
+        }
+      }
+      var tag = type + '-view';
+      var html = '<' + tag + ' name="{{name}}" value="{{value}}" meta="{{meta}}"></' + 'tag' + '>';
+      Polymer.addHTML(this, html, this.$.view);
+    }
+  
+  });
+  
+</script>
+</polymer-element>
+
+<script>
+  Polymer.addHTML = function(self, html, target) {
+    var template = document.createElement('template');
+    template.innerHTML = html;
+    var fragment = self.instanceTemplate(template);
+    if (target) {
+      target.textContent = '';
+      target.appendChild(fragment);
+    }
+    return fragment;
+  }
+</script>
+

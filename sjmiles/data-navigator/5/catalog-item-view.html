@@ -16,7 +16,7 @@
     scraperUrl: 'http://compound.selfip.net/bowertopia/php/git-scrape.php',
     
     valueChanged: function() {
-      this.$.scraper.abort();
+      //this.$.scraper.abort();
       this.scrapedData = null;
       if (this.value && this.value.org && this.value.repo && !this.value.info) {
         this.value.info = { 'status': 'loading...' };

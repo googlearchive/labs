@@ -1,0 +1,123 @@
+<link rel="import" href="property-view.html">
+<link rel="import" href="value-view.html">
+
+<polymer-element name="item-view" attributes="item meta" layout horizontal>
+<template>
+
+  <core-selector style="max-width: 700px; margin: 12px auto;" segment layout horizontal wrap selected="{{property}}">
+    <template repeat="{{name in names}}">
+      <property-view name="{{name}}" value="{{item[name]}}" meta="{{meta[name]}}"></property-view>
+    </template>
+  </core-selector>
+  <div segment style="width: 220px; margin: 0 16px;">
+    <h2>{{property}}</h2>
+    <core-menu-button selected="{{propertyKind}}" valueattr="kind" icon="more-vert">
+      <template repeat="{{kind in kinds}}">
+        <core-item kind="{{kind}}">{{kind}}</core-item>
+      </template>
+    </core-menu-button>
+    <core-menu-button selected="{{propertyLayout}}" valueattr="layout" icon="apps">
+      <core-item layout="default">default</core-item>
+      <core-item layout="one-column">one column</core-item>
+      <core-item layout="two-columns">two columns</core-item>
+      <core-item layout="three-columns">three columns</core-item>
+      <core-item layout="four-columns">four columns</core-item>
+    </core-menu-button>
+    <core-icon-button icon="expand-more" on-tap="{{demoteProperty}}"></core-icon-button>
+    <core-icon-button icon="expand-less" on-tap="{{promoteProperty}}"></core-icon-button>
+    <br>
+    <paper-input style="width: 70%;" value="{{propertyName}}" floatinglabel label="New Property Name"></paper-input>
+    <core-icon-button icon="add" on-tap="{{addProperty}}"></core-icon-button>
+  </div>
+      
+</template>
+<script>
+Polymer({
+
+  propertyLayout: 'default',
+  
+  observe: {
+    'item meta': 'reflect'
+  },
+  
+  created: function() {
+    this.kinds = ValueViews.kinds;
+  },
+  
+  reflect_: function(args) {
+    try {
+      var names = args.item ? Object.getOwnPropertyNames(args.item) : [];
+      return names;
+    } catch(x) {
+      console.warn('reflect_: cannot getOwnPropertyNames from', args.item, args.meta);
+      return [];
+    }
+  },
+
+  reflect: function() {
+    var meta = this.meta;
+    var names = this.reflect_(this);
+    names.sort();
+    names.forEach(function(n, i) {
+      if (!meta[n]) {
+        meta[n] = {priority: i};
+      }
+    });
+    names.sort(function(a, b) {
+      var p0 = meta[a].priority, p1 = meta[b].priority;
+      if (p0 < p1) {
+        return -1;
+      } 
+      if (p0 > p1) {
+        return 1;
+      }
+      return 0;
+    });
+    this.names = names;
+  },
+    
+  promoteProperty: function() {
+    this.meta[this.property].priority--;
+    this.priorityChange();
+  },
+  
+  demoteProperty: function() {
+    this.meta[this.property].priority++;
+    this.priorityChange();
+  },
+    
+  priorityChange: function() {
+    this.reflect();
+    this.metaChange();
+  },
+  
+  propertyLayoutChanged: function() {
+    this.meta[this.property].layout = this.propertyLayout;
+    this.metaChange();
+  },
+  
+  propertyKindChanged: function() {
+    if (this.property) {
+      this.meta[this.property].kind = this.propertyKind;
+      this.metaChange();
+    }
+  },  
+
+  addProperty: function() {
+    var name = this.propertyName;
+    if (name && !(name in this.item)) {
+      this.item[name] = '';
+      this.meta[name] = { priority: 0 };
+      this.propertyName = '';
+      this.property = name;
+    }
+    this.reflect();
+    this.metaChange();
+  },
+  
+  metaChange: function() {
+    this.fire('meta-change');
+  }
+});
+</script>
+</polymer-element>

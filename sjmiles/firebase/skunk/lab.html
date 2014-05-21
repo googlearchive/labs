@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Firebase Lab</title>
+
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/firebase-element/firebase-element.html">
+
+</head>
+<body>
+
+<script>
+  FbObject = {
+    defaultLimit: 50,
+    create: function(ref) {
+      return this.setRef({}, ref);
+    },
+    setRef: function(object, ref) {
+      var name = ref.name();
+      console.log('setRef() for', name);
+      // by default we only fetch N children
+      this.setQuery(object, name, ref, ref.limit(FbObject.defaultLimit));
+      return object;
+    },
+    setQuery: function(object, name, ref, query) {
+      var value;
+      // asynchronous data acquisition
+      // invoked initially, and if children added on the server
+      query.on('child_added', function(snapshot) {
+        if (value === undefined) {
+          value = this.initializeValue(ref, object, name, snapshot);
+        }
+        var childValue = snapshot.val();
+        if (value.isArray) {
+          //console.log('pushing: ', childValue);
+          value.push(childValue);
+        } else {
+          value[snapshot.name()] = childValue;
+        }
+      }.bind(this));
+      // invoked initially, and if 'value' changes on the server
+      query.on('value', 
+        function(snapshot) {
+          if (value === undefined) {
+            object[name] = snapshot.val();
+          }
+        }
+      );
+    },
+    initializeValue: function(ref, object, name, snapshot) {
+      var value;
+      // get key
+      var n = snapshot.name();
+      // if key is numeric, or starts with '-' (Firebase autoindex keys) ...
+      // firebase keys are always strings (?)
+      if ((n[0] === '-') || (n === String(Number(n)))) {
+        // value is an array
+        value = [];
+        value.isArray = true;
+      } else {
+        value = {};
+      }
+      // to acquire more than defaultLimit children, call 'relimit'
+      value.relimit = FbObject.curriedRelimit(ref, object, name, value);
+      console.log('[%s] initialized value from snapshot:', name, value);
+      // make value available on object
+      object[name] = value;
+      return value;
+    },
+    curriedRelimit: function(ref, object, name, value) {
+      return function(limit) {
+        // create a new query
+        FbObject.setQuery(object, name, ref, ref.limit(limit));
+      }
+    }
+  };
+</script>
+  
+<template id="comments" repeat="{{comments}}">
+  <p>{{author}}: {{comment}}</p>
+</template>
+
+<script>
+  commentsDemo = FbObject.create(new Firebase("https://comments-demo.firebaseio.com/comments"));
+  document.querySelector('#comments').model = commentsDemo;
+</script>
+
+<hr>
+
+<template id="tree" bind>
+  <template repeat="{{items}}">
+    <p>{{value}}</p>
+  </template>
+  <template repeat="{{items.2.subitems}}">
+    <p>{{label}}</p>
+  </template>
+</template>
+
+<script>
+  treeDemo = FbObject.create(new Firebase("https://treedata-demo.firebaseio.com/items"));
+  document.querySelector('#tree').model = treeDemo;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<polymer-element name="formatted-text" extends="pre" attributes="object kind">
+<template>{{stringified}}</template>
+<script>
+  Polymer({
+    objectChanged: function() {
+      this.stringify();
+    },
+    stringify: function() {
+      this.stringified = this.stringifyObject(this.object, this.kind);
+    },
+    stringifyObject: function(object, kind) {
+      switch (kind) {
+        case 'json':
+          return JSON.stringify(object, null, '  ');
+          break;
+         default:
+          return this.object;
+      }
+    }
+  });
+</script>
+</polymer-element>

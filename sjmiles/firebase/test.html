@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Firebase Lab</title>
+  
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+    }
+    pre {
+      font-size: 12px;
+    }
+  </style>
+  
+  <script src="components/platform/platform.js"></script>
+  
+  <link rel="import" href="firebase-data.html">
+  <link rel="import" href="formatted-text.html">
+
+</head>
+<body>
+  <template is="auto-binding">
+    
+    <segment>
+      <button onclick="dump()">Dump Database to Console</button>
+      <script>
+        $ = document.querySelector.bind(document);
+        dump = function() {
+          firebase.on('value', function(s) { console.log(s.val()); });
+        }
+      </script>
+    
+      <br><br>
+      
+      <input id="answerInput" value="99"><button onclick="setAnswer()">Set Answer</button>
+      <script>
+        setAnswer = function() {
+          $('#base').data.answer = $('#answerInput').value;
+        }
+      </script>
+  
+      <br><br>
+      
+      <button onclick="replaceMore()">Replace More</button>
+      <script>
+        replaceMore = function() {
+          // switching from array to map is bad news
+          //more.set(['Theta', 'Sigma', 'Chi']);
+          more.set({a: 'Theta', b:'Sigma', c:'Chi'});
+        }
+      </script>
+  
+      <br><br>
+      
+      <input id="stuffInput" value="Gloop"><button onclick="addStuff()">Add to Stuff</button>
+      <script>
+        addStuff = function() {
+          $('#stuff').data.push($('#stuffInput').value);
+        }
+      </script>
+  
+      <br><br>
+
+      <button onclick="removeFromStuff()">Remove From Stuff</button>
+      <select id="select">
+        <option template repeat="{{stuff}}">{{}}</option>
+      </select>
+      <script>
+        removeFromStuff = function() {
+          var data = $('#stuff').data;
+          data.splice(data.indexOf($('#select').value), 1);
+        }
+      </script>
+    </segment>
+      
+    <segment>
+      <firebase-data id="base" data="{{base}}" location="https://treedata-demo.firebaseio.com/"></firebase-data>
+      <h2>Base</h2>
+      <pre is="formatted-text" kind="json" object="{{base}}"></pre>
+      
+      <firebase-data id="stuff" data="{{stuff}}" location="https://treedata-demo.firebaseio.com/stuff"></firebase-data>
+      <h2>Stuff</h2>
+      <pre is="formatted-text" kind="json" object="{{stuff}}"></pre>
+  
+      <firebase-data id="more" data="{{more}}" location="https://treedata-demo.firebaseio.com/more"></firebase-data>
+      <h2>More</h2>
+      <pre is="formatted-text" kind="json" object="{{more}}"></pre>
+    </segment>
+    
+  </template>
+  
+  <script>
+    addEventListener('polymer-ready', function() {
+      firebase = new Firebase('https://treedata-demo.firebaseio.com/');
+      firebase.set({
+        stuff: [
+          'Alpha',
+          'Beta',
+          'Gamma'
+        ],
+        answer: 43,
+        info: {
+          name: 'test',
+          contents: 'letters'
+        },
+        more: [
+        ]
+      });
+      more = firebase.child('more');
+      more.push('Delta');
+      more.push('Eta');
+      more.push('Zeta');
+      more.push('Iota');
+    });
+  
+    addEventListener('firebase-changed', function(event) {
+      console.log('firebase-changed:', JSON.stringify(event.target.data, null, '\t'));
+      document.querySelectorAll('[kind=json]').array().forEach(function(e) {
+        e.stringify();
+      });
+    });
+  </script>
+
+</body>
+</html>

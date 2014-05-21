@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Firebase Lab</title>
+  
+  <style>
+    body, button, code, input {
+      font-family: sans-serif;
+    }
+  </style>
+  
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/firebase-element/firebase-import.html">
+  <link rel="import" href="components/polymer/polymer.html">
+
+</head>
+<body>
+  
+  <segment>
+    <button onclick="dump()">Dump Database to Console</button>
+    <script>
+      dump = function() {
+        firebase.on('value', function(s) { console.log(s.val()); });
+      }
+    </script>
+  <segment>  
+  
+  <script>
+    addEventListener('polymer-ready', function() {
+      firebase = new Firebase('https://treedata-demo.firebaseio.com/');
+      firebase.set({
+        stuff: [
+          'Alpha',
+          'Beta',
+          'Gamma'
+        ],
+        answer: 43,
+        info: {
+          name: 'test',
+          contents: 'letters'
+        },
+        more: [
+        ]
+      });
+      more = firebase.child('more');
+      more.push('Delta');
+      more.push('Eta');
+      more.push('Zeta');
+      more.push('Iota');
+    });
+  </script>
+  
+</body>
+</html>

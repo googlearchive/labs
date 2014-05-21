@@ -1,0 +1,53 @@
+<link rel="import" href="components/polymer/polymer.html">
+
+<polymer-element name="state-ful">
+<script>
+  Polymer('state-ful', {
+    getState: function() {
+      var state = {};
+      this.stateProps && this.stateProps.forEach(function(key) {
+        state[key] = this[key];
+      });
+      return state;
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="prop-ful" extends="state-ful">
+<script>
+  Polymer('prop-ful', {
+    setProps: function(props) {
+      //console.group('[%s]#[%s] got props:', this.localName, this.id, props);
+      this.props = props;
+      this.render();
+      //console.groupEnd();
+    },
+    render: function() {
+      var names = Object.keys(this.props);
+      names.forEach(function(name) {
+        var target = this.$[name];
+        var prop = this.props[name];
+        if (target) {
+          //console.log('found object #' + name + ', propagating:', prop);
+          var self = this;
+          prop.upstreamState = function(key) {
+            //console.log('[%s]#[%s] is upstreaming state [%s]=[%s] to [%s]', this.localName, this.id, key, this[key], self.localName);
+            self.stateUpstreamed(this.id, key, this[key]);
+          };
+          target.setProps(prop);
+        } else {
+          this[name] = prop;
+        }
+      }, this);
+    },
+    stateUpstreamed: function(name, key, value) {
+      this.props[name][key] = value;
+      // pretend to generate a new virtual tree
+      // except this doesn't actually do anything 
+      // but take time
+      this.render();
+    }
+  });
+</script>
+</polymer-element>

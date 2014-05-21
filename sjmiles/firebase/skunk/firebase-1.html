@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Firebase 1</title>
+
+<script src="components/platform/platform.js"></script>
+
+<link rel="import" href="components/firebase-element/firebase-element.html">
+<link rel="import" href="components/core-icon-button/core-icon-button.html">
+<link rel="import" href="components/core-icons/core-icons.html">
+
+<style>
+  body {
+    font-family: sans-serif;
+    overflow: hidden;
+    margin: 0;
+  }
+</style>
+  
+</head>
+<body>
+
+<polymer-element name="comment-editor" attributes="author comment" block>
+<template>
+  <b style="display: inline-block; text-align: right; vertical-align: middle; min-width: 128px; padding-right: 4px;">{{author}}:</b>
+  <textarea style="vertical-align: middle;" cols="60" rows="3" value="{{comment}}" on-change="{{commit}}"></textarea>
+  <core-icon-button icon="close" on-tap="{{remove}}"></core-icon-button>
+</template>
+<script>
+  Polymer('comment-editor', {
+    commit: function() {
+      console.log('chain-ged!');
+      this.fire('item-changed');
+    },
+    remove: function() {
+      this.fire('item-remove');
+    }
+  });
+</script>
+</polymer-element>
+
+<template is="auto-binding">
+
+  <firebase-list id="base" location="https://comments-demo.firebaseio.com/comments" data="{{items}}"></firebase-list>
+  
+  <div style="height: 100vh; padding: 0 12px;" vertical layout>
+    <div>
+      Author: <input value="{{author}}"><br>
+      <textarea cols="60" rows="4" value="{{comment}}"></textarea><br>
+      <button on-tap="{{send}}">Send</button>
+    </div>
+  
+    <hr>
+  
+    <div flex style="overflow: auto;" on-item-changed="{{itemChanged}}" on-item-remove="{{itemRemove}}">
+      <template repeat="{{item in items}}">
+        <comment-editor author="{{item.value.author}}" comment="{{item.value.comment}}"></comment-editor>
+      </template>
+    </div>
+  </div>  
+  
+</template>
+<script>
+
+  var m = document.querySelector('[is]');
+  m.author = "Me";
+  m.comment = "Say something pithy.";
+  
+  m.itemChanged = function(e) {
+    e.target.templateInstance.model.item.update();
+  };
+  m.itemRemove = function(e) {
+    e.target.templateInstance.model.item.remove();
+  };
+  m.send = function(e) {
+    this.$.base.push({
+      author: this.author,
+      comment: this.comment
+    });
+  };
+
+</script>
+
+</body>
+</html>

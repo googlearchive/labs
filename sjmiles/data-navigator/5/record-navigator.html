@@ -2,12 +2,12 @@
 <template>
 
   <style>
-    :host > * {
+    button, b {
       vertical-align: middle;
     }
    </style>
   
-  <button on-tap="{{previous}}">&lt;</button> <b>{{index + 1}} / {{items.length}} </b> <button on-tap="{{next}}">&gt;</button>
+  <button on-tap="{{previous}}">&lt;</button> <b>{{index + 1}} / {{items.length}}</b> <button on-tap="{{next}}">&gt;</button>
   
 </template>
 <script>

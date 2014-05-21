@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Cascading Elements Test</title>
+  
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+    }
+    core-item {
+      transition: -webkit-transform 600ms ease-in;
+      font-size: 12px;
+      -webkit-transform: translateY(0);
+    }
+    [away] {
+      -webkit-transform: translateY(1000px);
+    }
+  </style>
+  
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+  <link rel="import" href="components/core-icons/core-icons.html">
+  <link rel="import" href="components/core-item/core-item.html">
+
+</head>
+<body>
+
+  <template is="auto-binding">
+    
+    <template repeat="{{item, i in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']}}">
+      <core-item away style="transition-delay: {{75 * i}}ms;" label="{{item}} - {{i}}" icon="home"></core-item>
+    </template>
+      
+  </template>
+  <script>
+  
+    addEventListener('template-bound', function() {
+      document.querySelectorAll('core-item').array().forEach(function(i) {
+        i.removeAttribute('away');
+      });
+    });
+
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,34 @@
+<link rel="import" href="components/paper-input/paper-input.html">
+<link rel="import" href="components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="components/paper-slider/paper-slider.html">
+
+<polymer-element name="input-view" extends="value-view" kind="input" noscript>
+<template>
+  <paper-input style="width: 100%; padding-right: 26px; box-sizing: border-box;" label="{{name}}" floatinglabel inputValue="{{value}}"></paper-input>
+  <!--
+  {{name}}<br>
+  <input style="width: 100%; padding-right: 26px; box-sizing: border-box;" value="{{value}}"></input>
+  -->
+</template>
+</polymer-element>
+
+<polymer-element name="checkbox-view" extends="value-view" kind="checkbox" noscript>
+<template>
+  <paper-checkbox style="margin: 10px 0;" label="{{name}}" value="{{value}}"></paper-checkbox>
+</template>
+</polymer-element>
+
+<polymer-element name="toggle-view" extends="value-view" kind="toggle" noscript>
+<template>
+  <div style="color: silver; padding: 12px 0px;">{{name}}</div>
+  <paper-toggle-button value="{{value}}"></paper-toggle-button>
+</template>
+</polymer-element>
+
+<polymer-element name="slider-view" extends="value-view" kind="slider" noscript>
+<template>
+  <div style="color: silver; padding: 8px 0px;">{{name}}</div>
+  <paper-slider style="width: 100%; Xpadding-right: 26px; box-sizing: border-box; Xmargin-left: -16px;" value="{{value}}"></paper-slider>
+</template>
+</polymer-element>

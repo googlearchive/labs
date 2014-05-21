@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Comments</title>
+
+<script src="components/platform/platform.js"></script>
+
+<link rel="import" href="components/core-icon-button/core-icon-button.html">
+<link rel="import" href="components/core-icons/core-icons.html">
+<link rel="import" href="firebase-data.html">
+
+<style>
+  body {
+    font-family: sans-serif;
+    overflow: hidden;
+    margin: 0;
+  }
+</style>
+  
+</head>
+<body>
+
+<template is="auto-binding">
+
+  <!--<firebase-data id="base" location="https://comments-demo.firebaseio.com/comments" data="{{items}}" keys="{{keys}}"></firebase-data>-->
+  
+  <div style="height: 100vh; padding: 0 12px;" vertical layout>
+  
+    <div>
+      Author: <input value="{{author}}"><br>
+      <textarea cols="60" rows="4" value="{{comment}}"></textarea><br>
+      <button on-tap="{{send}}">Send</button>
+    </div>
+  
+    <hr>
+  
+    <div flex style="overflow: auto;" on-item-change="{{itemChange}}" on-item-remove="{{itemRemove}}">
+      <template repeat="{{key in keys}}">
+        <comment-editor key="{{key}}" item="{{items[key]}}"></comment-editor>
+      </template>
+    </div>
+    
+  </div>  
+  
+</template>
+<script>
+
+  var m = document.querySelector('[is]');
+  m.author = "Me";
+  m.comment = "Say something pithy.";
+  
+  m.items = {"0":{"author":"Scott J. Miles","comment":"Is this thing on? Boy are my arms tired.\n"},"-JMxwfney6DxKOc1eVfE":{"author":"Scott J. Miles","comment":"Now is the time for all good men to come to the aid of their party. Boy are my arms tired. X"},"-JN79-NA42_-hF-XLnMI":{"author":"Me","comment":"Say something plinthy. An obelisk walks into bar..."},"-JN79i8jBkWpTMOgOjEG":{"author":"ebidel","comment":"hello scott ... hooray, it works. test test st"},"-JN79lGrrEb7cZG_IF35":{"author":"Greg","comment":"yo yo yo ... oy oy oy"},"-JN79msGGNsQyRwIdcNE":{"author":"Me","comment":"Say something pithy.\n\nNot pithy enough."},"-JN79qaEMyR7bWfAFCFG":{"author":"slightlyoff","comment":"OH HAI ... I can mess with this too. Oh and this. "},"-JN7A0vX-NuCf55OeehZ":{"author":"ebidel","comment":"when is http://www.chromestatus.com/features/5812155903377408 going to land. it would be nice for this"},"-JN7AuLG9TUrjAdhO07_":{"author":"Kenji","comment":"Guten Tag ... or Guten Abend"},"-JN7Dw6dbInLzUFbdxdH":{"author":"Floon","comment":"Squids in the mirror are closer than they appear."},"-JN7TGpXmD8DQHK-jMGC":{"author":"mike","comment":"Pith helmets are coming back."},"-JN7ToR_7R8_GOlspsMo":{"author":"Lars","comment":"Wave is back baby!"},"-JNNbtCINadlqQeeivTr":{"author":"Me","comment":"Say something pithy."}};
+  m.keys = ["0", "-JMxwfney6DxKOc1eVfE", "-JN79-NA42_-hF-XLnMI", "-JN79i8jBkWpTMOgOjEG", "-JN79lGrrEb7cZG_IF35", "-JN79msGGNsQyRwIdcNE", "-JN79qaEMyR7bWfAFCFG", "-JN7A0vX-NuCf55OeehZ", "-JN7AuLG9TUrjAdhO07_", "-JN7Dw6dbInLzUFbdxdH", "-JN7TGpXmD8DQHK-jMGC", "-JN7ToR_7R8_GOlspsMo", "-JNNbtCINadlqQeeivTr"];
+
+  m.itemChange = function(e, key) {
+    console.log(this.items[key], e.target.item);
+    //this.items[key] = e.target.item;
+    //this.$.base.commitProperty(key);
+  };
+  
+  m.itemRemove = function(e, key) {
+    //this.$.base.remove(key);
+  };
+  
+  m.send = function(e) {
+    /*this.$.base.push({
+      author: this.author,
+      comment: this.comment
+    });*/
+  };
+
+</script>
+
+<polymer-element name="comment-editor" attributes="key item" block>
+<template>
+  <b style="display: inline-block; text-align: right; vertical-align: middle; min-width: 128px; padding-right: 4px;">{{item.author}}:</b>
+  <textarea style="vertical-align: middle;" cols="60" rows="3" value="{{item.comment}}" on-change="{{commit}}"></textarea>
+  <core-icon-button icon="close" on-tap="{{remove}}"></core-icon-button>
+</template>
+<script>
+  Polymer('comment-editor', {
+    commit: function() {
+      this.fire('item-change', this.key);
+    },
+    remove: function() {
+      this.fire('item-remove', this.key);
+    }
+  });
+</script>
+</polymer-element>
+
+</body>
+</html>
