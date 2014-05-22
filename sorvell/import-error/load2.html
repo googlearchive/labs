@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load</title>
+  <script src="observe.js"></script>
+  <script>
+    function load(e) {
+      console.log(e.type, e.target.import);
+    }
+
+    function error(e) {
+      console.log(e.type, e.target.import);
+    }
+  </script>
+  <link rel="import" href="bar.html" onload="load(event)" onerror="error(event)">
+  <link rel="import" href="foo.html" onload="load(event)" onerror="error(event)">
+  <link rel="import" href="import.html" onload="load(event)" onerror="error(event)">
+  <script>
+     document.querySelector('[rel=import]').addEventListener('error', function(e) {
+       console.log('addEventListener', e.type, e.import);
+     });
+  </script>
+  
+</head>
+<body>
+
+</body>
+</html>

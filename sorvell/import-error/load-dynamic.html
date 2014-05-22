@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load dynamic</title>
+  <script>
+    setTimeout(function() {
+      var l = document.createElement('link');
+      l.rel = 'import';
+      l.href = 'foo.html';
+      document.head.appendChild(l);
+
+      document.querySelector('[rel=import]').addEventListener('error', function(e) {
+        console.log('addEventListener', e.type, e.import);
+      });
+    }, 1000);
+  </script>
+</head>
+<body>
+
+</body>
+</html>

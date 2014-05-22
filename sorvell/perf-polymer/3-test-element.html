@@ -12,7 +12,7 @@
 
 <repeat-test></repeat-test>
 
-<polymer-element name="test-item" attributes="data" noscript>
+<polymer-element name="test-item" attributes="data">
 
     <template>
       <style>
@@ -74,6 +74,9 @@
       </div>
 
     </template>
+    <script>
+      Polymer('test-item');
+    </script>
 
   </polymer-element>
 

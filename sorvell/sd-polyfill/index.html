@@ -2,46 +2,33 @@
 <html>
 <head>
   <title></title>
-  <script src="../../../components/platform/platform.js"></script>
-  <link rel="import" href="../../../components/polymer/polymer.html">
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+  <link rel="import" href="components/core-drag-drop/core-drag-drop.html">
 </head>
-<body unresolved>
+<body>
+  <button onclick="addElement()">Add</button><button onclick="removeElement()">Remove</button>
+  <designer></designer>
 
-  <polymer-element name="x-bar" noscript>
-    <template></template>
-  </polymer-element>
-  
-  <polymer-element name="x-zot" noscript>
-    <template>
-    
-      <content></content>
-    
-    </template>
-  </polymer-element>
-  
-  <polymer-element name="x-foo" extends="x-bar" noscript>
-    <template>
-    
-      <style>
-        :host {
-          display: block;
-          background: red;
-          
-        }
-      </style>
-    
-      <x-zot>
-        <content></content>
-      </x-zot>
-      
-      <shadow></shadow>
-      
-    </template>
-  </polymer-element>
-  
-  <x-foo>
-    <div>Hello</div>
-  </x-foo>
+  <script>
+    var root = document.querySelector('designer').createShadowRoot();
+    root.innerHTML = '<style>designer {display: block; }</style><x-canvas><host><style> </style></host></x-canvas>';
+    var canvasRoot = root.querySelector('x-canvas').createShadowRoot();
+    canvasRoot.innerHTML = '<core-drag-drop></core-drag-drop><content></content>';
+
+    var host = root.querySelector('host');
+
+    var count = 0;
+    function addElement() {
+      var d = document.createElement('div');
+      d.innerHTML = ++count;
+      host.appendChild(d)
+    }
+
+    function removeElement() {
+      host.removeChild(host.children[host.children.length-1]);
+    }
+  </script>
   
 </body>
 </html>

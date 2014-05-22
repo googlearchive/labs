@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>polymer</title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+</head>
+
+<body unresolved>
+
+  <test-view id="test"></test-view>
+
+  <polymer-element name="comment-view" attributes="comment" noscript>
+  <template>
+      <b>{{comment.author}}</b>: {{comment.text}}
+  </template>
+  </polymer-element>
+
+  <polymer-element name="test-view">
+  <template>
+    <button on-tap="{{mutateComment}}">Mutate Comment</button>
+    <template repeat="{{key in keys}}">
+      <comment-view comment="{{comments[key]}}"></comment-view>
+     </template>
+  </template>
+  <script>
+    Polymer('test-view', {
+      comments: {
+        'ga-h': {
+          author: 'Me',
+          text: 'Text'
+        }
+      },
+      keys: ['ga-h'],
+      mutateComment: function() {
+        this.comments[this.keys[0]] = {
+          author: 'Me2',
+          text: '2'
+        };
+        console.log(this.comments);
+      }
+    });
+  </script>
+  </polymer-element>
+
+</body>
+
+</html>

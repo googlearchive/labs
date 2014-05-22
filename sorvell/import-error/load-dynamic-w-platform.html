@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load dynamic</title>
+  <script src="components/platform/platform.js"></script>
+  <script>
+    setTimeout(function() {
+      var l = document.createElement('link');
+      l.rel = 'import';
+      l.href = 'foo.html';
+      document.head.appendChild(l);
+
+      var l = document.createElement('link');
+      l.rel = 'import';
+      l.href = 'bar.html';
+      document.head.appendChild(l);
+
+      HTMLImports.whenImportsReady(function() {
+        console.log('imports ready');
+      })
+
+    }, 1000);
+  </script>
+</head>
+<body>
+
+</body>
+</html>

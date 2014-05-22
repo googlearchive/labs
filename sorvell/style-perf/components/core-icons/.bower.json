@@ -1,0 +1,20 @@
+{
+  "name": "core-icons",
+  "private": true,
+  "dependencies": {
+    "core-action-icons": "Polymer/core-action-icons#master",
+    "core-icon": "Polymer/core-icon#master",
+    "core-iconset-svg": "Polymer/core-iconset-svg#master",
+    "polymer": "Polymer/polymer#master"
+  },
+  "homepage": "https://github.com/Polymer/core-icons",
+  "_release": "3f434c63b0",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "3f434c63b02729d86786c1826270c02a612e51ff"
+  },
+  "_source": "git://github.com/Polymer/core-icons.git",
+  "_target": "master",
+  "_originalSource": "Polymer/core-icons"
+}

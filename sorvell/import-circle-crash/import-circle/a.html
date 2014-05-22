@@ -1,0 +1,10 @@
+<link rel="import" href="b.html">
+
+<script>
+  var proto = Object.create(HTMLElement.prototype);
+  proto.createdCallback = function() {
+    this.innerHTML = this.localName;
+  }
+
+  document.registerElement('x-a', {prototype: proto});
+</script>

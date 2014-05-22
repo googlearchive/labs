@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>form</title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/font-roboto2/roboto2.html">
+  <link rel="import" href="components/core-header-panel/core-header-panel.html">
+  <link rel="import" href="components/core-toolbar/core-toolbar.html">
+  <link rel="import" href="components/paper-input/paper-input.html">
+  <link rel="import" href="components/core-icons/core-icons.html">
+  <link rel="import" href="components/core-icon-button/core-icon-button.html">
+  <link rel="import" href="components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="components/paper-checkbox/paper-checkbox.html">
+  <link rel="import" href="components/paper-radio-group/paper-radio-group.html">
+  <link rel="import" href="components/paper-radio-button/paper-radio-button.html">
+  <link rel="import" href="components/paper-button/paper-button.html">
+  <link rel="import" href="components/paper-slider/paper-slider.html">
+  <link rel="import" href="components/paper-toggle-button/paper-toggle-button.html">
+  <style>
+
+    body, html {
+      margin: 0;
+      height: 100%;
+      background: gray;
+    }
+
+    body, h2 {
+      font-family: 'Roboto2', sans-serif;
+      font-weight: 400;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      padding: 8px 16px;
+      font-weight: 400;
+    }
+
+    h2:not(:first-of-type) {
+      padding-top: 24px;
+    }
+
+    .container {
+      width: 512px;
+      margin: auto;
+      height: 100%;
+      background: white;
+      position: relative;
+    }
+
+    [form-image] {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url(form.png);
+    }
+
+    core-header-panel {
+      position: absolute;
+      box-sizing: border-box;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      opacity: 0.9;
+      background: white;
+    }
+
+    core-toolbar {
+      background-color: #4F7DC9;
+      color: #f1f1f1;
+      fill: #f1f1f1;
+      height: 54px;
+    }
+
+    core-toolbar .mainLabel {
+      padding-left: 8px;
+    }
+
+    .content {
+      padding: 0 8px;
+    }
+
+    section {
+      padding: 0 8px;
+    }
+
+    section > * {
+      padding: 0 8px;
+    }
+
+    /* paper-input needs to be sized */
+    paper-input {
+      width: 100%;
+      /*border: 1px solid black;*/
+      display: block;
+      box-sizing: border-box;
+    }
+
+    paper-input[flex] {
+      width: auto;
+    }
+
+    [narrow] {
+      width: 80px;
+    }
+
+    [medium] {
+      width: 160px;
+    }
+
+    [label] {
+      color: rgb(204, 204, 204);
+      fill: rgb(204, 204, 204);
+    }
+
+    [label][text] {
+      font-size: 0.8rem;
+    }
+
+    [affirmative] {
+      color: #4F7DC9;
+    }
+
+    [negative] {
+      color: tomato;
+    }
+
+    [inline] {
+      padding-top: 22px;
+      /*font-size: 0.8em;*/
+    }
+
+    [controls] {
+      padding-top: 200px;
+    }
+
+    [spaced] {
+      padding: 16px 0;
+    }
+
+    [crush] {
+      margin-top: -16px;
+    }
+
+  </style>
+</head>
+<body unresolved>
+  <div class="container">
+    <div form-image></div>
+    <core-header-panel>
+      <core-toolbar>
+        <!-- <core-icon-button icon="menu"></core-icon-button> -->
+        <!-- height is wrong -->
+        <!-- <paper-icon-button icon="menu"></paper-icon-button> -->
+        <span class="mainLabel">Polymer DMV Application</span>
+      </core-toolbar>
+      <div class="content">
+        
+        <h2>Personal Info</h2>
+        <section>
+          <paper-input floatingLabel label="Legal first name" value="Cool Hunting"></paper-input>
+        </section>
+
+        <section>
+          <paper-input floatingLabel label="Legal middle name - leave blank if you don't have one" value="Rabbit"></paper-input>
+        </section>
+
+        <section horizontal layout>
+          <paper-input flex floatingLabel label="Legal last name" value="Williams"></paper-input>
+          <paper-input narrow floatingLabel label="Suffix" value="Ms"></paper-input>
+        </section>
+
+        <section horizontal layout>
+          <paper-input medium floatingLabel label="Date of birth" value="01/15/1986" validate="^[/0-9]*$"></paper-input>
+          <div flex></div>
+          <!-- lining up these sub-inputs was not easy, see label -->
+          <paper-input narrow floatingLabel label="Social Security #" value="620" validate="^[0-9]*$"></paper-input> 
+          <span inline>&mdash; </span>
+          <paper-input narrow floatingLabel label="&nbsp;" value="555" validate="^[0-9]*$"></paper-input> 
+          <span inline>&mdash; </span>
+          <paper-input narrow floatingLabel label="&nbsp;" value="9822" validate="^[0-9]*$"></paper-input>
+        </section>
+        <!-- this line is too low -->
+        <section layout center horizontal crush>
+          <span medium label text>MM/DD/YYYY</span>
+          <paper-checkbox label="I don't have a Social Security #"></paper-checkbox>
+        </section>
+
+        <h2>Residence address</h2>
+        <section>
+          <!-- can we do multiline + have rules on the lines? -->
+          <div>
+            <paper-input floatingLabel label="Street address" value="421-5 Lexington Ave"></paper-input>
+          </div>
+          <div crush>
+            <paper-input value="APT# 1195"></paper-input>
+          </div>
+          <div horizontal end-justified layout crush>
+            <paper-button affirmative>Add Line</paper-button>
+          </div>
+        </section>
+
+        <section horizontal layout>
+          <paper-input flex floatingLabel label="City" value="New York"></paper-input>
+          <paper-input narrow floatingLabel label="State" value="NY"></paper-input>
+          <paper-input medium floatingLabel label="Zip code" value="10093" validate="^[0-9]*$"></paper-input>
+        </section>
+
+        <section>
+          <paper-input medium floatingLabel label="Country" value="United States"></paper-input>
+        </section>
+
+        <h2>Mailing address</h2>
+
+        <section>
+          <paper-checkbox label="Same as residence address" checked></paper-checkbox>
+        </section>
+
+        <h2>Sign up</h2>
+
+        <section>
+          <paper-input flex floatingLabel label="Username" value="coolrabbit"></paper-input>
+          <div flex></div>
+        </section>
+
+        <section horizontal layout>
+          <paper-input flex floatingLabel label="Email" value="leesehee@google.com"></paper-input>
+          <paper-input flex floatingLabel label="Email" value="leesehe@google.com"></paper-input>
+        </section>
+
+        <section>
+          <paper-input floatingLabel label="Security Question" value="What is your favorite restaurant?"></paper-input>
+        </section>
+
+        <section>
+          <paper-input floatingLabel label="Answer" value="Carrot Express"></paper-input>
+        </section>
+
+        <section horizontal layout>
+          <paper-radio-group flex vertical layout valueattr="label" selected="No">
+            <div label text>Are you a twin or triplet?</div>
+            <paper-radio-button label="Yes"></paper-radio-button>
+            <paper-radio-button label="No"></paper-radio-button>
+          </paper-radio-group>
+          <paper-radio-group flex vertical layout valueattr="label" selected="Male">
+            <div label text>Gender</div>
+            <paper-radio-button label="Male"></paper-radio-button>
+            <paper-radio-button label="Female"></paper-radio-button>
+          </paper-radio-group>
+        </section>
+
+        <section horizontal layout>
+          <!-- note problem lining up labels -->
+          <paper-input medium floatingLabel label="Height" value="5"></paper-input>
+          <span inline>Feet</span>
+          <paper-input medium floatingLabel label="&nbsp;" value="3"></paper-input>
+          <span inline>Inches</span>
+        </section>
+
+        <section horizontal layout>
+          <!-- note problem lining up label -->
+          <paper-input medium floatingLabel label="Weight" value="130"></paper-input>
+          <span inline>Pounds(lbs)</span>
+          <paper-input medium floatingLabel label="Eye Color" value="Amber"></paper-input>
+        </section>
+
+        <section>
+          <paper-radio-group vertical layout valueattr="label" selected="Male">
+            <div label text>Gender</div>
+            <paper-radio-button label="Male"></paper-radio-button>
+            <paper-radio-button label="Female"></paper-radio-button>
+          </paper-radio-group>
+        </section>
+
+        <!-- needs spacing -->
+        <section spaced>
+          <div label text>Rate your driving skill</div>
+          <div horizontal center layout>
+            <span label text>Poor</span><paper-slider value="50"></paper-slider>
+          </div>
+        </section>
+
+        <section>
+          <paper-input floatingLabel multiline maxrows="4" label="Tell me about yourself" value="I am very glad to introduce myself. I'm rabbit. I'm from forest. I am studying B.tech. I am very ambitious and I want to learn new things. I am a good driver with a positive attituude. I will drive hard for myself if you give a driver licence to me. I have more things to say, and am ru"></paper-input>
+          <div label text negative end-justified horizontal layout>121 / 120</div>
+        </section>
+
+        <section horizontal layout>
+          <section vertical layout>
+            <div label text>Auto save</div>
+            <paper-toggle-button spaced label="On" checked></paper-toggle-button>
+          </section>
+          <section vertical layout>
+            <div label text>Spell check</div>
+            <paper-toggle-button spaced label="Off"></paper-toggle-button>
+          </section>
+        </section>
+
+        <section spaced>
+          <div label text>Type the numbers</div>
+          <div>127980</div>
+        </section>
+
+        <section horizontal center layout label text>
+            <core-icon icon="refresh"></core-icon>Refresh
+            <core-icon icon="audio"></core-icon>Hear set of words
+        </section>
+
+        <section>
+          <paper-input medium value="127890"></paper-input>
+          <div medium end-justified horizontal layout affirmative label>Correct</div>
+        </section>
+
+        <section controls end-justified horizontal layout>
+          <paper-button>Cancel</paper-button>
+          <paper-button affirmative>Submit</paper-button>
+        </section>
+
+      </div>
+
+    </core-header-panel>
+  </div>
+</body>
+</html>

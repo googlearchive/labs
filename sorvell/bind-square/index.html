@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+</head>
+<body>
+  <template bind>
+    <div foo="{{ myArray[myIndex] }}">
+  </template>
+  <script>
+  addEventListener('WebComponentsReady', function() {
+    var t = document.querySelector('template');
+    t.bindingDelegate = new PolymerExpressions();
+    t.model = {
+      myArray: ['baz', 'bar'],
+      myIndex: 1
+    };  
+  });
+  </script>
+</body>
+</html>

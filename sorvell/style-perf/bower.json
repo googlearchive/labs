@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-item": "Polymer/core-item#master",
+    "core-icons": "Polymer/core-icons#master"
+  }
+}

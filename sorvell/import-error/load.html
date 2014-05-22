@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load</title>
+  <link rel="import" href="bar.html">
+  <link rel="import" href="foo.html">
+  <script>
+
+    document.querySelector('[rel=import]').addEventListener('error', function(e) {
+      console.log('addEventListener', e.type, e.import);
+    });
+  </script>
+</head>
+<body>
+
+</body>
+</html>

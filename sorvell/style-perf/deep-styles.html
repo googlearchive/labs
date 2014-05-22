@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>deep-styles</title>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link rel="import" href="components/core-icons/core-icons.html">
+  <link rel="import" href="components/core-icon/core-icon.html">
+  <link rel="import" href="components/core-theme-aware/core-theme-aware.html">
+  <link rel="import" href="simpler-item/core-item.html">
+
+  <style>
+  
+    body {
+      font-family: sans-serif;
+    }
+  
+  </style>
+
+</head>
+<body unresolved>
+
+  <template repeat="{{ }}">
+    <template repeat="{{ icon in icons }}">
+      <core-item icon="{{ icon }}" label="{{ icon }}"></core-icon>
+    </template>
+  </template>
+
+  <core-meta id="meta" type="iconset"></core-meta>
+
+  <script>
+    addEventListener('polymer-ready', function() {
+      var meta = document.querySelector('#meta')
+      var template = document.querySelector('template');
+      var iconsets = meta.metaArray;
+      var model = iconsets.map(function(ic) {
+        return {set: ic.id, icons: ic.iconNames};
+      });
+      template.bindingDelegate = new PolymerExpressions();
+      template.model = model;
+
+      new MutationObserver(function() {
+        //console.timeline('render');
+        console.time('render');
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            console.timeEnd('render');
+            //console.timelineEnd('render');
+          });
+        });
+      }).observe(document.body, {childList: true, subtree: true});
+    });
+  </script>
+
+</body>
+</html>

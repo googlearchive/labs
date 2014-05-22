@@ -1,33 +1,36 @@
-function handleLinks(element) {
-  if (element.localName === 'link') {
-    handleLink(element);
+function isImport(element) {
+  return element.localName === 'link' && element.rel === 'import';
+}
+
+function handleImports(element) {
+  if (isImport(element)) {
+    handleImport(element);
   }
   var e = element.firstElementChild;
   while(e) {
-    handleLinks(e);
+    handleImports(e);
     e = e.nextElementSibling;
   }
 }
 
-function handleLink(link) {
-  var loaded = (link.rel === 'stylesheet' && link.sheet) ||
-      (link.rel === 'import' && link.import);
+function handleImport(element) {
+  var loaded = element.import;
   if (loaded) {
-    console.log('observer: already loaded', link, 'resource', link.import || link.sheet);
+    console.log('observer: already loaded', element, 'resource', element.import);
   } else {
-    link.addEventListener('load', function(e) {
-      console.log('observer: loaded', e.target, 'resource', link.import || link.sheet);
+    element.addEventListener('load', function(e) {
+      console.log('observer: loaded', e.target, 'resource', element.import);
     });
-    link.addEventListener('error', function(e) {
-      console.log('observer: error', e.target, 'resource', link.import || link.sheet);
+    element.addEventListener('error', function(e) {
+      console.log('observer: error', e.target, 'resource', element.import);
     });
   }
 }
 
 function handleAddedNodes(nodes) {
   for (var i=0, l=nodes.length, n; (i<l) && (n=nodes[i]); i++) {
-    if (n.localName === 'link') {
-      handleLinks(n);  
+    if (isImport(n)) {
+      handleImports(n);  
     }
     
   }

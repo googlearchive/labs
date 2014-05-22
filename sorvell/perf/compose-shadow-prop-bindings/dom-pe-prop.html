@@ -12,7 +12,14 @@
 
 <polymer-element name="x-test" attributes="foo bar zot qux">
   <script>
-    Polymer('x-test', {});
+    Polymer('x-test', {
+      ready: function() {
+        this.deliverChanges();
+      },
+      fooChanged: function() {
+
+      }
+    });
   </script>
 </polymer-element>
 <script>
@@ -21,6 +28,6 @@
     of polymer-elements by at least 2x. Why?
   */
   addEventListener('polymer-ready', function() {
-    test(createDom.bind(null, 'x-test'));
+    test(createDom.bind(null));
   });
 </script>

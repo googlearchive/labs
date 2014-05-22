@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>importz load</title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="foo.html">
+  <link rel="import" href="bar.html">
+  <script>
+    setTimeout(function() {
+      HTMLImports.whenImportsReady(function() {
+        console.log('imports ready');
+      })
+    }, 500);
+  </script>
+</head>
+<body>
+
+</body>
+</html>

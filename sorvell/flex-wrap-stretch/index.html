@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+  <style>
+    body, html {
+      margin: 0;
+      height: 100%;
+    }
+
+    div {
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    [wrap] {
+      border: 2px solid orange;
+      height: 100%;
+    }
+
+    [wrap] > * {
+      display: inline-block;
+      border: 1px solid black;
+      margin: 2em;
+      width: 5em;
+    }
+
+    .stretch {
+      height: 100%;
+      background: orange;
+    }
+  </style>
+</head>
+<body unresolved layout horizontal>
+  <div flex none>
+    Beginning
+  </div>
+  <div flex none wrap vertical layout>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div class="stretch">FULL WIDTH</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div class="stretch">FULL WIDTH</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+    <div>Hiya</div><div>Hiya</div><div>Hiya</div><div class="stretch">FULL WIDTH</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div><div>Hiya</div>
+  </div>
+  <div flex none>End</div>
+</body>
+</html>

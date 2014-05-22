@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/core-media-query/core-media-query.html">
+  <link rel="import" href="components/core-layout/core-layout.html">
+  <link rel="import" href="components/core-menu-button/core-menu-button.html">
+  <link rel="import" href="components/core-icons/core-icons.html">
+  <link rel="import" href="components/core-item/core-item.html">
+ 
+</head>
+<body>
+  <polymer-element name="collapse-toolbar" attributes="query" noscript>
+  <template>
+
+    <core-media-query query="{{query}}" queryMatches="{{smallScreen}}">
+    </core-media-query>
+
+    <core-layout id="toolbar" align="center">
+      <content select=".logo"></content>
+      <template if="{{smallScreen}}">
+        <div flex></div>
+        <core-menu-button icon="menu" halign="right" valign="bottom">
+          <content></content>
+        </core-menu-button>
+      </template>
+      <content></content>
+    </core-layout>
+
+  </template>
+</polymer-element>
+
+<collapse-toolbar query="max-width: 600px">
+  <core-item icon="settings" label="go"></core-item>
+  <core-item icon="settings" label="go"></core-item>
+  <core-item icon="settings" label="go"></core-item>
+  <core-item icon="settings" label="go"></core-item>
+  <core-item icon="settings" label="go"></core-item>
+  <core-item icon="settings" label="go"></core-item>
+  <core-item icon="settings" label="go"></core-item>
+  <core-item icon="settings" label="go"></core-item>
+</collapse-toolbar>
+
+</body>
+</html>

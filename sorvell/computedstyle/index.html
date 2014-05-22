@@ -1,0 +1,28 @@
+<!doctype html>
+<head>
+  <style>
+    .happy {
+      position: absolute;
+      left: 40px;
+    }
+  </style>
+  <script src="components/platform/platform.js"></script>
+</head>
+<body>
+  <div class="happy">Hi</div>
+  <button onclick="hide()">Hide</button>
+  <button onclick="measure()">Measure</button>
+  <script>
+    var d = document.querySelector('div');
+    function hide() {
+      d.style.display = 'none';
+    }
+
+    function measure() {
+      d.style.display = null;
+      console.log(getComputedStyle(d).left);
+      d.style.display = 'none';
+    }
+  </script>
+</body>  
+
