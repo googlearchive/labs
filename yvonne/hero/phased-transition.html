@@ -1,0 +1,38 @@
+<link href="components/polymer/polymer.html" rel="import">
+<link href="components/core-transition/core-transition-css.html" rel="import">
+
+<polymer-element name="phased-transition" extends="core-transition-css">
+<template>
+  <style>
+
+    :host(.phased-transition) {
+      outline: none;
+      overflow: hidden;
+      opacity: 1;
+      transition: transform 0.2s ease-in-out, opacity 0.2s ease-in;
+      /*-webkit-transition: -webkit-transform 0.2s ease-in-out, opacity 0.2s ease-in;*/
+      transform: none;
+      -webkit-transform: none;
+    }
+
+    :host(.phased-transition.core-opened) {
+      opacity: 0;
+/*      transform: none;
+      -webkit-transform: none;
+*/    }
+
+    :host(.phased-transition-up.core-opened) {
+      transform: translateY(-100%);
+      -webkit-transform: translateY(-100%);
+    }
+
+  </style>
+</template>
+<script>
+  Polymer({
+    baseClass: 'phased-transition'
+  });
+</script>
+</polymer-element>
+
+<phased-transition id="phased-transition-up" transitionType="up"></phased-transition>
