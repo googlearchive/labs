@@ -1,0 +1,43 @@
+<link href="components/polymer/polymer.html" rel="import">
+<link href="components/core-transition/core-transition-css.html" rel="import">
+
+<polymer-element name="card-transition" extends="core-transition-css">
+<template>
+
+  <style>
+    :host(.card-transition) {
+      outline: none;
+      overflow: hidden;
+      opacity: 0;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-transition: -webkit-transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    :host(.card-transition.core-opened) {
+      opacity: 1;
+      transform: none;
+      -webkit-transform: none;
+    }
+
+    :host(.card-transition-rotate-up) {
+      transform: translateY(50%) rotateZ(5deg);
+      -webkit-transform: translateY(50%) rotateZ(5deg);
+    }
+  </style>
+
+</template>
+<script>
+  Polymer({
+    baseClass: 'card-transition',
+
+    setup: function(node) {
+      this.super(arguments);
+      var delay = 0.1;
+      node.style.webkitTransition = 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) ' + delay + 's, ' +
+        'opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1) ' + delay + 's';
+    }
+  });
+</script>
+</polymer-element>
+
+<card-transition id="card-transition-rotate-up" transitionType="rotate-up"></card-transition>

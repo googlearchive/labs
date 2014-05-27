@@ -8,6 +8,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="components/core-transition/core-transition.html">
+<link rel="import" href="components/core-overlay/core-overlay-layer.html">
 
 <polymer-element name="hero-transition" extends="core-transition">
   
@@ -17,13 +18,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       type: 'transition',
 
       go: function(node, state) {
+        var duration = '200ms';
+        var easing = 'cubic-bezier(0.4, 0, 0.2, 1)';
         var h0 = state.src;
         var h1 = node;
+        var c0 = getComputedStyle(h0);
+        var c1 = getComputedStyle(h1);
         var h = {
           h0: h0,
           b0: h0.getBoundingClientRect(),
+          r0: c0.borderRadius,
           h1: h1,
-          b1: h1.getBoundingClientRect()
+          b1: h1.getBoundingClientRect(),
+          r1: c1.borderRadius
         };
 
         var dl = h.b0.left - h.b1.left;
@@ -38,21 +45,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           h.h1.style.height = h.b0.height + 'px';
         }
 
+        if (h.r0 !== h.r1) {
+          h.h1.style.borderRadius = h.r0;
+        }
+
+        console.log(h);
+
         h.h1.style.webkitTransform = 'translate(' + dl + 'px,' + dt + 'px)' + ' scale(' + sw + ',' + sh + ')';
         h.h1.style.webkitTransformOrigin = '0 0';
+
+        h.h1.style.zIndex = 1000;
+        h.h1.cachedZ = c1.zIndex;
+
+        // this.layer.addElement(h.h1);
+        // this.layer.opened = true;
+
         requestAnimationFrame(function() {
-          h.h1.style.webkitTransition = 'width 200ms ease-in, height 200ms ease-in, -webkit-transform 200ms ease-in, opacity 50ms ease-out 180ms';
+          h.h1.style.webkitTransition = 'border-radius ' + duration + ' ' + easing + ', ' +
+            'width ' + duration + ' ' + easing + ', height ' + duration + ' ' + easing + ', ' +
+            '-webkit-transform ' + duration + ' ' + easing + ', opacity 50ms ease-out 180ms';
+          h.h1.style.borderRadius = h.r1;
           h.h1.style.webkitTransform = 'none';
         });
       },
 
       setup: function(node) {
+        if (!this.layer) {
+          this.layer = document.createElement('core-overlay-layer');
+        }
       },
 
       teardown: function(node) {
       },
 
       complete: function(node) {
+        // this.layer.opened = false;
+        // this.layer.removeElement(node);
+        node.style.zIndex = node.cachedZ;
         this.fire('hero-transitionend', null, node);
       }
 

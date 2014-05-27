@@ -1,7 +1,6 @@
 <link href="components/polymer/polymer.html" rel="import">
 <link href="components/core-selector/core-selector.html" rel="import">
 <link href="hero-transition.html" rel="import">
-<link href="phased-transition.html" rel="import">
 
 <polymer-element name="phased-panels-2" extends="core-selector">
 
@@ -68,6 +67,7 @@
         var v = h0.getAttribute('hero');
         var h1 = dst.querySelector('[hero="' + v + '"]');
         if (h1) {
+          transition.setup(h1);
           transition.go(h1, {src: h0});
         }
       }
@@ -78,6 +78,21 @@
         var tt = this.meta.byId(t);
         if (tt) {
           tt.setup(t0);
+          requestAnimationFrame(function(tt, t0) {
+            tt.go(t0, {opened: true});
+          }.bind(this, tt, t0));
+        }
+      }
+
+      var t$ = dst.querySelectorAll('[phase]');
+      for (var j=0, t0; t0=t$[j]; j++) {
+        var t = t0.getAttribute('phase');
+        var tt = this.meta.byId(t);
+        if (tt) {
+          tt.setup(t0);
+          // setTimeout(function(tt, t0) {
+          //   tt.go(t0, {opened: true});
+          // }.bind(this, tt, t0), 500);
           requestAnimationFrame(function(tt, t0) {
             tt.go(t0, {opened: true});
           }.bind(this, tt, t0));
