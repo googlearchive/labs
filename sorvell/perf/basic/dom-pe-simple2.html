@@ -1,0 +1,34 @@
+<!doctype html>
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="../../../components/polymer/polymer.html">
+
+<script src="test.js"></script>
+<polymer-element name="x-test">
+  <template></template>
+  <script>
+    Polymer('x-test', {
+      // 80 (no shadowRoot)
+      // 145
+      /*shadowRootReady: function(root) {
+        // 155 (10ms)
+        this.marshalNodeReferences(root);
+        // set up polymer gestures
+        // no-op 165 (without bind, 155?)
+        // no testing of ShadowDOMPolyfill 220
+        // 250 (95ms)
+        PolymerGestures.register(root);
+      }*/
+
+      
+    });
+  </script>
+</polymer-element>
+<script>
+  /*
+    NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+    of polymer-elements by at least 2x. Why?
+  */
+  addEventListener('polymer-ready', function() {
+    test(createDom.bind(null, 'x-test'));
+  });
+</script>

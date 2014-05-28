@@ -1,0 +1,17 @@
+<core-style id="toolbar-theme">
+  :host {
+    background-color: {{backgroundColor}};
+    border-bottom: 1px solid {{borderColor}};
+    font-size: {{fontSize}};
+  }
+</core-style>
+
+<script>
+  themer = document._currentScript.ownerDocument.getElementById('toolbar-theme');
+
+  themer.model = {
+    backgroundColor: 'orange',
+    borderColor: 'navy',
+    fontSize: '1.2rem'
+  }
+</script>

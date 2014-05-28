@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>core-style</title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+  <link rel="import" href="core-style.html">
+  <link rel="import" href="toolbar-theme.html">
+  <link rel="import" href="components/core-toolbar/core-toolbar.html">
+</head>
+<body unresolved>
+  <polymer-element name="themed-toolbar" extends="core-toolbar" noscript>
+    <template>
+      <core-style ref="toolbar-theme"></core-style>
+      <shadow></shadow>
+    </template>
+  </polymer-element>
+
+  <themed-toolbar>
+    This is a themed toolbar.
+  </themed-toolbar>
+</body>
+</html>
+
+

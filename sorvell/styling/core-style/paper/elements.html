@@ -1,0 +1,40 @@
+<link rel="import" href="components/core-icons/core-icons.html">
+<link rel="import" href="components/core-icon-button/core-icon-button.html">
+<link rel="import" href="components/core-toolbar/core-toolbar.html">
+<link rel="import" href="components/paper-input/paper-input.html">
+<link rel="import" href="components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="components/paper-slider/paper-slider.html">
+
+<polymer-element name="themed-toolbar" extends="core-toolbar" noscript>
+  <template>
+    <shadow></shadow>
+    <core-style ref="common"></core-style>
+  </template>
+</polymer-element>
+
+  <core-toolbar>
+    <core-icon-button icon="menu" title="Menu"></core-icon-button>
+    <span>Toolbar</span>
+  </core-toolbar>
+
+  <segment>
+    <paper-checkbox></paper-checkbox>
+  </segment>
+
+  <segment>
+    <paper-radio-button></paper-radio-button>
+  </segment>
+
+  <segment>
+    <paper-input></paper-input>
+  </segment>
+
+  <segment>
+    <paper-slider></paper-slider>
+  </segment>
+
+</body>
+</html>
+
+

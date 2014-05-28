@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>polymer::sheet</title>
+  <script src="../../../components/platform/platform.js"></script>
+  <script src="../../../components/platform/src/ShadowCSS.js"></script>
+  <link rel="import" href="../../../components/polymer/polymer.html">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body unresolved>
+  <h3>
+    What's happening here:
+  </h3>
+  <ol>
+    <li>We're defining a set of styles that's intended for re-use. For loading simplicity
+      we define an element `fancy-styles` containing the styles and make an instance of it with an id. This should be done with `core-meta`.</li>
+    <li>The instance of `fancy-styles` supports one-time binding. The binding is one-time because
+      the styles are copied and not re-bound.</li>
+    <li>An element called `style-applier` is used to emit the styles. This element has a ref which should
+      be the id of the provider. It also has a `fix` property which will apply a prefix to each rule. Note that a single style element will be produced for all `style-applier` instances that use the same ref.
+    </li>
+  </ol>
+  <h3>
+    Todo
+  </h3>
+  <ol>
+    <li>Don't require creating an element definition to provide styles. It's tricky to avoid this
+      becuase of loading issues.</li>
+    <li>Use core-meta to aggregate provided styles.</li>
+    <li>Consider if dynamic binding is required. (This needs a css parser.)</li>
+    <li>Currently the binding data is connected with the styles. Should we avoid that? How?</li>
+    <li>Provide styles in the scope of the applier rather than only in the global scope.</li>
+    <li>Consider if this system should be made compatible with pre-processing.</li>
+  </ol>
+  <h3>Example</h3>
+  <!-- these can be element definitions and instances for now for simplicity -->
+  <polymer-element name="fancy-styles">
+  <template>
+    <style no-shim>
+      .fancyBg {
+        background: {{bgColor}};
+      }
+
+      .fancyBorder {
+        border: 10px dashed {{borderColor}};
+      }
+    </style>
+  </template>
+  <script>
+    Polymer('fancy-styles', {
+      bgColor: 'steelblue',
+      borderColor: 'orange'
+    });
+  </script>
+  </polymer-element>
+
+  <fancy-styles id="foo"></fancy-styles>
+
+
+  <!-- 
+    In domReady, applier creates a stylesheet in scope if one does not already exist.
+    That stylesheet has rules scoped
+  -->
+  <polymer-element name="style-applier" attributes="ref fix">
+  <script>
+  (function() {
+    var scope = document;
+    refs = {};
+    Polymer('style-applier', {
+      ready: function() {
+        if (this.ref) {
+          refs[this.ref] = refs[this.ref] || [];
+          refs[this.ref].push(this.fix);
+        }
+      },
+      domReady: function() {
+        if (!scope.querySelector('style[ref=' + this.ref + ']')) {
+          this.makeStyle(this.ref);
+        }
+      },
+      makeStyle: function(ref) {
+        var scopes = refs[ref];
+        // use meta
+        var source = document.getElementById(ref);
+        if (source) {
+          var s = source.shadowRoot.querySelector('style');
+          cssText = Platform.ShadowCSS.scopeCssText(s.textContent, scopes);
+          var style = document.createElement('style');
+          style.textContent = cssText;
+          if (window.ShadowDOMPolyfill) {
+            Platform.ShadowCSS.shimStyle(style);
+          }
+          style.setAttribute('ref', ref);
+          this.appendChild(style);
+        }
+      }
+    });
+  })();
+  </script>
+  </polymer-element>
+
+
+  <!-- if we aggregate into a single style, style-applier cannot be a binding context -->
+  <style-applier fix="body /deep/ x-test2::shadow" ref="foo"></style-applier>
+  <style-applier fix="body /deep/ x-test::shadow" ref="foo"></style-applier>  
+
+  <polymer-element name="x-test" noscript>
+    <template>
+      <div class="fancyBg">x-test1</div>
+    </template>
+  </polymer-element> 
+
+  <polymer-element name="x-test2" noscript>
+    <template>
+      <div class="fancyBorder">x-test2</div>
+    </template>
+  </polymer-element>
+
+  <x-test></x-test>
+  <x-test2></x-test2>
+
+</body>
+</html>

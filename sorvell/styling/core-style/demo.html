@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>core-style</title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+  <link rel="import" href="core-style.html">
+  <link rel="import" href="common-styles.html">
+</head>
+<body unresolved>
+
+  <!-- <core-style id="common">
+    @import 'sheet1.css';
+
+    .colorful {
+      background-color: {{color}};
+    }
+  </core-style> -->
+
+  <!--<core-style id="common">
+    :host {
+      display: block;
+      margin: 4px 0;
+      border: 3px solid {{borderColor}};
+    }
+
+    :host(.bold) {
+      font-weight: bold;
+    }
+
+    .colorful {
+      background-color: {{color}};
+    }
+  </core-style>
+
+  <script>
+    document.querySelector('core-style').model = {
+      color: 'yellow',
+      borderColor: 'orange'
+    }
+  </script>-->
+
+  <template is="auto-binding">
+    <template repeat="{{thing in stuff}}">
+      <x-test>{{thing}}</x-test>
+      <x-test2>{{thing}}</x-test2>
+    </template>
+  </template>
+  <script>
+    var stuff = [], count = 100;
+    for (var i=0; i< count; i++) {
+      stuff.push(i);
+    }
+    addEventListener('polymer-ready', function() {
+      document.querySelector('template').stuff = stuff;
+      console.time('make');
+      new MutationObserver(function() {
+        requestAnimationFrame(function() {
+          console.timeEnd('make');
+        })
+      }).observe(document.body, {childList: true});
+    });
+  </script>
+
+  <polymer-element name="x-test" noscript>
+    <template>
+      <core-style ref="common"></core-style>
+      <div class="colorful">x-test: <content></content></div>
+    </template>
+  </polymer-element> 
+
+  <polymer-element name="x-test2" noscript>
+    <template>
+      <core-style ref="common"></core-style>
+      <div class="colorful">x-test2: <content></content></div>
+    </template>
+  </polymer-element> 
+</body>
+</html>
+
+
