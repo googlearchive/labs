@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Firebase Leaderboard</title>
+  
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+      font-size: small;
+      -webkit-user-select: none;
+    }
+    
+    pre {
+      font-size: 12px;
+    }
+        
+    .dot {
+      border-radius: 32px;
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+    }   
+ 
+    segment {
+      position: relative;
+      height: 240px;
+    }
+    
+    .item {
+      position: absolute;
+      left: 10px;
+      transition: top 1000ms ease-out;
+    }
+
+  </style>
+  
+  <script src="../components/platform/platform.js"></script>
+  
+  <link rel="import" href="../components/core-localstorage/core-localstorage.html">
+  <link rel="import" href="../components/firebase-element/firebase-element.html">
+
+</head>
+<body fullbleed vertical layout>
+
+  <template is="auto-binding">
+    <firebase-data id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="'https://polygame.firebaseio.com/players/"></firebase-data>
+    
+    <segment>
+      <template repeat="{{name, i in names}}">
+        <p class="item" on-tap="{{points}}" style="top: {{i*40}}px;" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+      </template>
+    </segment>
+    
+    <segment>
+      <template repeat="{{name in pnames}}">
+        <p class="item" on-tap="{{points}}" style="top: {{indices[name]*40}}px;" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+      </template>
+    </segment>
+
+  </template>
+  
+  <script>
+    
+    addEventListener('template-bound', function(e) {
+
+      var scope = e.target;
+      
+      /*
+      scope.players = {
+        'Steve': {score: Math.floor(Math.random() * 1e9) + 1e4},
+        'Frankie': {score: Math.floor(Math.random() * 100) + 500},
+        'Daniel': {score: Math.floor(Math.random() * 100) + 500},
+        'Yvonne': {score: Math.floor(Math.random() * 100) + 500},
+        'Scott': {score: Math.floor(Math.random() * 100)}
+      };
+      scope.$.gameData.commit();
+      */
+     
+      scope.dataChange = function() {
+        this.names = Object.keys(this.players);
+        var players = this.players;
+        this.names.sort(function(n0, n1) {
+          var s0 = players[n0].score, s1 = players[n1].score;
+          return s1 - s0;
+        });
+        var indices = this.indices = [];
+        this.names.forEach(function(n, i) {
+          indices[n] = i;
+        });
+        this.pnames = Object.keys(this.players);
+      };
+     
+      scope.points = function(event) {
+        var name = event.target.templateInstance.model.name;
+        this.players[name].score++;
+        this.$.gameData.commit();
+      };
+      
+    });
+  </script>
+
+</body>
+</html>
