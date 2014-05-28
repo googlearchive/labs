@@ -135,10 +135,10 @@
         var time = times.shift() || 500;
         var key = keyframes.shift();
         if (key) {
-          key.apply(this, args);
+          key.apply(this, args.concat([time]));
           setTimeout(function() {
             sequence(args, times, keyframes);
-          }, time);
+          }, time + 10);
         }
       };
       
@@ -157,8 +157,8 @@
           return i;
         });
         
-        sequence([items], [510, 510, 10], [
-          function(items) {
+        sequence([items], [500, 500, 0], [
+          function(items, time) {
             b.setAttribute('inviso', '');
             items.forEach(function(i) {
               if (i.t1 != i.t0) {
@@ -166,7 +166,7 @@
                 var s = (i.dy < 0) ? 2.0 : 1.0;
                 var x = (i.dy < 0) ? 150 : 0;
                 i.e0.style.webkitTransform = 'translate(' + x + 'px, ' + i.dy + 'px) scale(' + s + ')';
-                i.e0.style.transition = '-webkit-transform 500ms ease-out';
+                i.e0.style.transition = '-webkit-transform ' + time + 'ms ease-out';
               }
             });
           }, 
