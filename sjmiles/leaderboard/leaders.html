@@ -27,7 +27,7 @@
  
     segment {
       position: relative;
-      height: 204px;
+      xheight: 204px;
     }
     
     [inviso] {
@@ -46,6 +46,10 @@
       Xtransition: -webkit-transform 500ms ease-out;
       Xbackground-color: white;
     }
+    
+    #a, #b {
+      font-size: large;
+    }
   </style>
   
   <script src="../components/platform/platform.js"></script>
@@ -61,13 +65,13 @@
     
     <segment abs id="a">
       <template repeat="{{name in cached}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
       </template>
     </segment>
  
     <segment abs id="b">
       <template repeat="{{name in names}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
       </template>
     </segment>
        
