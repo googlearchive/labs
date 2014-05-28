@@ -21,7 +21,13 @@
       'ref limit start end': 'requery'
     },
     locationChanged: function() {
-      this.ref = new Firebase(this.location);
+      if (this.query) {
+        this.query.off();
+      }
+      this.closeObserver();
+      if (this.location) {
+        this.ref = new Firebase(this.location);
+      }
     },
     requery: function() {
       var query = this.ref;
@@ -37,8 +43,9 @@
       this.query = query;
     },
     queryChanged: function() {
-      this.data = null;
       // data acquisition
+      this.closeObserver();
+      this.data = null;
       this.query.once('value', this.valueLoaded, this);
       // server side dynamics
       this.query.on('child_added', this.childAdded, this);
@@ -46,11 +53,14 @@
       this.query.on('child_removed', this.childRemoved, this);
     },
     valueLoaded: function(snapshot) {
+      if (this.ref.name() !== snapshot.name()) {
+        console.warn('squelching stale response [%s]', snapshot.name());
+        return;
+      }
       console.log('acquired value ' + this.location);
-      this.data = snapshot.val();
+      this.data = snapshot.val() || {};
       this.dataChange();
       // client-side dynamics
-      /*
       if (this.data instanceof Array) {
         this.observer = new ArrayObserver(this.data);
         this.observer.open(this.observeArray.bind(this));
@@ -58,16 +68,21 @@
         this.observer = new ObjectObserver(this.data);
         this.observer.open(this.observeObject.bind(this));
       }
-      */
+    },
+    closeObserver: function() {
+      if (this.observer) {
+        this.observer.close();
+        this.observer = null;
+      }
     },
     // server-side effects
     childAdded: function(snapshot) {
-      if (!this.data) {
-        // ignore the initial adds, we'll take the 'value' instead
-        return;
+      // ignore initial adds, we'll take the 'value' instead
+      if (this.data) {
+        this.updateData(snapshot);
       }
-      this.updateData(snapshot);
       console.log('child-added ' + snapshot.name());
+      this.fire('child-added', {name: snapshot.name(), value: snapshot.val()});
     },
     childChanged: function(snapshot) {
       this.updateData(snapshot);
@@ -79,7 +94,7 @@
     },
     updateData: function(snapshot) {
       this.data[snapshot.name()] = snapshot.val();
-      this.discardObservations();
+      //this.discardObservations();
       this.dataChange();
     },
     removeData: function(key) {
@@ -88,19 +103,16 @@
       } else {
         delete this.data[key];
       }
-      this.discardObservations();
+      //this.discardObservations();
       this.dataChange();
     },
     dataChange: function() {
       this.job('change', function() {
-        this.keys = Object.keys(this.data);
+        this.keys = this.data ? Object.keys(this.data) : [];
         this.fire('data-change');
       });
     },
     // client-side effects
-    closeObserver: function() {
-      this.observer.close();
-    },
     discardObservations: function() {
       if (this.observer) {
         this.observer.discardChanges();
@@ -128,9 +140,11 @@
     },
     // api for manual commits
     commitProperty: function(key) {
+      console.log('commitProperty ' + key);
       this.ref.child(key).set(this.data[key]);
     },
     commit: function() {
+      console.log('commit');
       this.ref.set(this.data);
     },
     push: function(item) {

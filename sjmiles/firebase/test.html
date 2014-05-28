@@ -117,8 +117,8 @@
       more.push('Iota');
     });
   
-    addEventListener('firebase-changed', function(event) {
-      console.log('firebase-changed:', JSON.stringify(event.target.data, null, '\t'));
+    addEventListener('data-change', function(event) {
+      console.log('data-change:', JSON.stringify(event.target.data, null, '\t'));
       document.querySelectorAll('[kind=json]').array().forEach(function(e) {
         e.stringify();
       });

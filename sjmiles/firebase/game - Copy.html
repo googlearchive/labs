@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Firebase Lab</title>
+  
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+    }
+    
+    pre {
+      font-size: 12px;
+    }
+    
+    #field {
+      position: relative;
+    }
+    
+    .spot {
+      position: absolute;
+      border-radius: 32px;
+      width: 32px;
+      height: 32px;
+      background-color: lightblue;
+    }
+  </style>
+  
+  <script src="components/platform/platform.js"></script>
+  
+  <link rel="import" href="firebase-data.html">
+  <link rel="import" href="formatted-text.html">
+
+</head>
+<body fullbleed vertical layout>
+
+  <template is="auto-binding">
+    <firebase-data id="playerBase" keys="{{players}}" location="'https://polygame.firebaseio.com/players" on-data-change="{{dataChange}}"></firebase-data>
+    <firebase-datax data="{{game}}" location="'https://polygame.firebaseio.com/hits/{{name}}"></firebase-datax>
+    
+    <template repeat="{{players}}">
+      {{}}
+    </template>
+    
+    <segment>
+      Name: <input value="{{name}}">
+      <button on-tap="{{login}}">Log In</button>
+    </segment>
+
+    <segment id="field" flex on-tap="{{hit}}">
+    </segment>
+    
+  </template>
+  
+  <script>
+    
+    addEventListener('template-bound', function(e) {
+
+      var scope = e.target;
+      
+      var box = scope.$.field.getBoundingClientRect();
+      
+      scope.name = 'Scott';
+      scope.playerBases = {};
+            
+      scope.login = function(e) {
+        console.log(this.name);
+        if (this.players.indexOf(this.name) >= 0) {
+          base = this.playerBases[this.name];
+          base.data = {}; //set({});
+        } else {
+          //var base = document.createElement('firebase-data');
+          //base.location = 'https://polygame.firebaseio.com/hits/' + this.name;
+          //base.set({});
+          this.$.playerBase.data[this.name] = 0;
+        }
+      }
+
+      scope.add = function(x, y, color) {
+        var spot = document.createElement('div');
+        spot.className = 'spot';
+        spot.style.left = x + 'px';
+        spot.style.top = y + 'px';
+        spot.style.backgroundColor = color;
+        this.$.field.appendChild(spot);
+        return spot;
+      }
+
+      scope.hit = function(e) {
+        var x = e.x - box.left - 16;
+        var y = e.y - box.top - 16;
+        var base = this.playerBases[this.name];
+        if (base) {
+          this.add(x, y, base.color);
+          base.push({x: x, y:y});
+        }
+      }
+
+      scope.dataChange = function(e) {
+        console.log('data-change:', JSON.stringify(e.target.data, null, '\t'));
+        this.players.forEach(function(n) {
+          if (!this.playerBases[n]) {
+            var base = document.createElement('firebase-data');
+            base.location = 'https://polygame.firebaseio.com/hits/' + n;
+            base.color = '#'+Math.floor(Math.random()*16777215).toString(16)
+            base.childAdded = function(snapshot) {
+              var p = snapshot.val();
+              console.log(p);
+              scope.add(p.x, p.y, base.color);
+              this.super(arguments);
+            };
+            this.playerBases[n] = base;
+          }
+        }, this);
+      }
+    });
+  </script>
+
+</body>
+</html>
