@@ -30,10 +30,23 @@
       height: 204px;
     }
     
+    .animate > .item {
+      transition: top 1000ms ease-out;
+    }
+
+    .item {
+      position: absolute;
+      left: 10px;
+    }
+
+    [inline] {
+      display: inline-block;
+      width: 300px;
+    }
+
     [inviso] {
       opacity: 0.0 !important;
     }
-
     [abs] {
       position: absolute;
       left: 10px;
@@ -41,9 +54,11 @@
       opacity: 1.0;
       width: 300px;
     }
-
-    #a .item {
-      Xtransition: -webkit-transform 500ms ease-out;
+    [trans] {
+      transition: opacity 1000ms ease-out;
+    }
+    #a .xitem {
+      transition: -webkit-transform 500ms ease-out;
       Xbackground-color: white;
     }
   </style>
@@ -60,23 +75,23 @@
     <firebase-data id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="'https://polygame.firebaseio.com/players/"></firebase-data>
     
     <segment abs id="a">
-      <template repeat="{{name in cached}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+      <template repeat="{{name, i in cached}}">
+        <p class="xitem" on-tap="{{points}}" key="{{name}}" xstyle="top: {{i*40}}px;" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
       </template>
     </segment>
  
-    <segment abs id="b">
-      <template repeat="{{name in names}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+    <segment abs id="b" xstyle="left: 50px;">
+      <template repeat="{{name, i in names}}">
+        <p class="xitem" on-tap="{{points}}" key="{{name}}" xstyle="top: {{i*40}}px;" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
       </template>
     </segment>
        
     <div style="height: 300px"></div>
     <hr>
     
-    <segment>
+    <segment class="animate">
       <template repeat="{{name in pnames}}">
-        <p class="item" on-tap="{{points}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+        <p class="item" on-tap="{{points}}" style="top: {{indices[name]*40}}px;" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
       </template>
     </segment>
 
@@ -103,31 +118,29 @@
      
       scope.dataChange = function() {
         if (animating) {
-          console.log('jobbing...');
-          this.job('dataJob', this.dataChange, 500);
+          this.job('dataJob', this.dataChange);
           return;
         }
-        //
-        console.log('animating...');
         if (this.names) {
           // will be rendered by next raf
           this.cached = this.names;
+          // will be rendered by next raf
+          //b.removeAttribute('trans');
+          b.setAttribute('inviso', '');
+          // ...
           this.async(this.transition);
-          animating = true;
         }
         //
+        this.names = Object.keys(this.players);
         var players = this.players;
-        this.names = Object.keys(players);
         this.names.sort(function(n0, n1) {
           var s0 = players[n0].score, s1 = players[n1].score;
           return s1 - s0;
         });
-        //
         var indices = this.indices = [];
         this.names.forEach(function(n, i) {
           indices[n] = i;
         });
-        //
         this.pnames = Object.keys(this.players);
       };
      
@@ -157,16 +170,16 @@
           return i;
         });
         
-        sequence([items], [510, 510, 10], [
+        sequence([items], [510, 510, 510], [
           function(items) {
+            animating = true;
             b.setAttribute('inviso', '');
             items.forEach(function(i) {
               if (i.t1 != i.t0) {
                 i.dy = i.t1 - i.t0;
-                var s = (i.dy < 0) ? 2.0 : 1.0;
-                var x = (i.dy < 0) ? 150 : 0;
+                var s = (i.dy < 0) ? 1.5 : 1.0;
+                var x = (i.dy < 0) ? 50 : 0;
                 i.e0.style.webkitTransform = 'translate(' + x + 'px, ' + i.dy + 'px) scale(' + s + ')';
-                i.e0.style.transition = '-webkit-transform 500ms ease-out';
               }
             });
           }, 
@@ -182,7 +195,6 @@
             items.forEach(function(i) {
               if (i.dy) {
                 i.e0.style.webkitTransform = null;
-                i.e0.style.transition = 'none'; 
               }
             });
           },
@@ -196,11 +208,9 @@
         var name = event.target.templateInstance.model.name;
         this.players[name].score++;
         //
-        /*
         var irand = function(n) { return Math.floor(Math.random() * n); }
         var name = this.names[irand(this.names.length)];
         this.players[name].score++;
-        */
         //
         this.$.gameData.commit();
       };
