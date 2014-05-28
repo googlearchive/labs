@@ -27,7 +27,6 @@
  
     segment {
       position: relative;
-      xheight: 204px;
     }
     
     [inviso] {
@@ -43,7 +42,6 @@
     }
 
     #a .item {
-      Xtransition: -webkit-transform 500ms ease-out;
       Xbackground-color: white;
     }
     
@@ -107,12 +105,12 @@
      
       scope.dataChange = function() {
         if (animating) {
-          console.log('jobbing...');
+          //console.log('jobbing...');
           this.job('dataJob', this.dataChange, 500);
           return;
         }
         //
-        console.log('animating...');
+        //console.log('animating...');
         if (this.names) {
           // will be rendered by next raf
           this.cached = this.names;
