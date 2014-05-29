@@ -20,6 +20,21 @@ license that can be found in the LICENSE file.
       <x-test2>{{thing}}</x-test2>
     </template>
   </template>
+
+  <polymer-element name="x-test" noscript>
+    <template>
+      <core-style ref="common"></core-style>
+      <div class="colorful">x-test: <content></content></div>
+    </template>
+  </polymer-element> 
+
+  <polymer-element name="x-test2" noscript>
+    <template>
+      <core-style ref="common"></core-style>
+      <div class="colorful">x-test2: <content></content></div>
+    </template>
+  </polymer-element> 
+
   <script>
     var stuff = [], count = 100;
     for (var i=0; i< count; i++) {
@@ -35,20 +50,6 @@ license that can be found in the LICENSE file.
       }).observe(document.body, {childList: true});
     });
   </script>
-
-  <polymer-element name="x-test" noscript>
-    <template>
-      <core-style ref="common"></core-style>
-      <div class="colorful">x-test: <content></content></div>
-    </template>
-  </polymer-element> 
-
-  <polymer-element name="x-test2" noscript>
-    <template>
-      <core-style ref="common"></core-style>
-      <div class="colorful">x-test2: <content></content></div>
-    </template>
-  </polymer-element> 
 </body>
 </html>
 

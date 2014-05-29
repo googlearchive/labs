@@ -2,25 +2,10 @@
   :host {
     display: block;
     margin: 4px 0;
-    border: 3px solid {{borderColor}};
-  }
-
-  :host(.bold) {
-    font-weight: bold;
+    border: 3px solid yellow;
   }
 
   .colorful {
-    background-color: {{color}};
+    background-color: orange;
   }
 </core-style>
-
-<script>
-  styleProperties = {
-    color: 'yellow',
-    borderColor: 'orange'
-  };
-
-  commonStyles = document._currentScript.ownerDocument.getElementById('common');
-
-  commonStyles.model = styleProperties;
-</script>

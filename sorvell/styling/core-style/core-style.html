@@ -62,11 +62,15 @@ Polymer('core-style', {
     // make Polymer wait until this element is finished until allowing other
     // elements to register
 
-    Polymer.queue.wait(this, this.checkLoaded, this.provided);
+    //Polymer.queue.wait(this, this.checkLoaded, this.provided);
 
     // TODO(sorvell): there's no good signal to know when/if we have children
     // when we're in an import.
-    this.async(this.load);
+    if (this.textContent) {
+      this.load();
+    } else {
+      this.async(this.load);
+    }
   },
 
   load: function() {
@@ -87,7 +91,7 @@ Polymer('core-style', {
 
   checkLoaded: function() {
     if (this.hasLoaded) {
-      Polymer.queue.go(this);
+      //Polymer.queue.go(this);
     }
   },
 
@@ -212,7 +216,7 @@ element.setAttribute('hidden', '');
 element.init();
 
 // force core-style to register
-Polymer.queue.force(element);
+//Polymer.queue.force(element);
 
 })();
 </script>
