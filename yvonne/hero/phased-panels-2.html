@@ -30,9 +30,9 @@
       color: inherit;
     }
 
-    content::content [phase=''] {
-      color: transparent;
-      -webkit-transition: opacity 300ms ease-out;
+    content::content *:not([phase]):not([hero]) {
+      xcolor: transparent;
+      -webkit-transition: opacity 1s ease-out;
     }
   </style>
 
@@ -89,7 +89,9 @@
         var t = t0.getAttribute('phase');
         var tt = this.meta.byId(t);
         if (tt) {
-          tt.setup(t0);
+          tt.setup(t0, {
+            delay: t0.hasAttribute('delay') ? t0.getAttribute('delay') : 0
+          });
           // setTimeout(function(tt, t0) {
           //   tt.go(t0, {opened: true});
           // }.bind(this, tt, t0), 500);

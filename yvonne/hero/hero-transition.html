@@ -18,7 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       type: 'transition',
 
       go: function(node, state) {
-        var duration = '200ms';
+        var duration = '1s';
         var easing = 'cubic-bezier(0.4, 0, 0.2, 1)';
         var h0 = state.src;
         var h1 = node;
@@ -54,6 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         h.h1.style.webkitTransform = 'translate(' + dl + 'px,' + dt + 'px)' + ' scale(' + sw + ',' + sh + ')';
         h.h1.style.webkitTransformOrigin = '0 0';
 
+        h.h1.style.opacity = 1;
         h.h1.style.zIndex = 1000;
         h.h1.cachedZ = c1.zIndex;
 

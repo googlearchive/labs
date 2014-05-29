@@ -129,6 +129,7 @@
     }
 
     .tile {
+      position: relative;
       display: inline-block;
       width: 85px;
       height: 85px;
@@ -147,7 +148,7 @@
 
     <section id="first" top>
 
-      <core-toolbar class="tall toolbar" phase>
+      <core-toolbar class="tall toolbar">
         <core-icon icon="menu"></core-icon>
         <div flex>Highlights</div>
         <core-icon icon="social:share"></core-icon>
@@ -155,7 +156,7 @@
         <core-icon icon="more-vert"></core-icon>
       </core-toolbar>
 
-      <div class="container" phase>
+      <div class="container">
 
         <div class="card paper-shadow-top paper-shadow-top-z-1" onclick="stuff()">
           <div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div>
@@ -198,16 +199,16 @@
 
     <section id="second" xtop>
 
-      <core-toolbar class="tall">
+      <core-toolbar class="tall" hero>
 
         <core-toolbar class="tall toolbar-2" hero="icon-header" scaley>
-          <div flex class="middle">T</div>
+          <div flex class="middle" hero>T</div>
         </core-toolbar>
       </core-toolbar>
 
       <div class="container">
 
-        <div class="card paper-shadow-top paper-shadow-top-z-1" phase="card-transition-rotate-up">
+        <div class="card paper-shadow-top paper-shadow-top-z-1" xphase="card-transition-rotate-up">
           <div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div>
           <div class="card-top-2"></div>
           <div class="card-bottom">
@@ -224,19 +225,19 @@
 
         <div class="tiles-container" layout horizontal justified>
 
-          <div class="tile paper-shadow-top paper-shadow-top-z-1" phase="card-transition-rotate-up">
+          <div class="tile paper-shadow-top paper-shadow-top-z-1" xphase="card-transition-rotate-up" delay="0.05">
             <div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div>
           </div>
 
-          <div class="tile paper-shadow-top paper-shadow-top-z-1" phase="card-transition-rotate-up">
+          <div class="tile paper-shadow-top paper-shadow-top-z-1" xphase="card-transition-rotate-up" delay="0.1">
             <div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div>
           </div>
 
-          <div class="tile paper-shadow-top paper-shadow-top-z-1" phase="card-transition-rotate-up">
+          <div class="tile paper-shadow-top paper-shadow-top-z-1" xphase="card-transition-rotate-up" delay="0.15">
             <div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div>
           </div>
 
-          <div class="tile paper-shadow-top paper-shadow-top-z-1" phase="card-transition-rotate-up">
+          <div class="tile paper-shadow-top paper-shadow-top-z-1" xphase="card-transition-rotate-up" delay="0.2">
             <div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div>
           </div>
 
