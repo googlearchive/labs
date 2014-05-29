@@ -59,7 +59,8 @@
 <body>
 
   <template is="auto-binding">
-    <firebase-data id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="'https://polygame.firebaseio.com/players/"></firebase-data>
+  
+    <firebase-element id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="'https://polygame.firebaseio.com/players/"></firebase-element>
     
     <segment abs id="a">
       <template repeat="{{name in cached}}">
