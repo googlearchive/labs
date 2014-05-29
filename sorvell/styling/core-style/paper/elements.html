@@ -1,5 +1,7 @@
 <link rel="import" href="components/core-icons/core-icons.html">
 <link rel="import" href="components/core-icon-button/core-icon-button.html">
+<link rel="import" href="components/core-menu-button/core-menu-button.html">
+<link rel="import" href="components/core-item/core-item.html">
 <link rel="import" href="components/core-toolbar/core-toolbar.html">
 <link rel="import" href="components/paper-input/paper-input.html">
 <link rel="import" href="components/paper-checkbox/paper-checkbox.html">
@@ -9,32 +11,34 @@
 <polymer-element name="themed-toolbar" extends="core-toolbar" noscript>
   <template>
     <shadow></shadow>
-    <core-style ref="common"></core-style>
+    <core-style ref="core-toolbar"></core-style>
   </template>
 </polymer-element>
 
-  <core-toolbar>
-    <core-icon-button icon="menu" title="Menu"></core-icon-button>
-    <span>Toolbar</span>
-  </core-toolbar>
+<polymer-element name="themed-paper-input" extends="paper-input" noscript>
+  <template>
+    <shadow></shadow>
+    <core-style ref="paper-input"></core-style>
+  </template>
+</polymer-element>
 
-  <segment>
-    <paper-checkbox></paper-checkbox>
-  </segment>
+<polymer-element name="themed-paper-checkbox" extends="paper-checkbox" noscript>
+  <template>
+    <shadow></shadow>
+    <core-style ref="paper-checkbox"></core-style>
+  </template>
+</polymer-element>
 
-  <segment>
-    <paper-radio-button></paper-radio-button>
-  </segment>
+<polymer-element name="themed-paper-radio-button" extends="paper-radio-button" noscript>
+  <template>
+    <shadow></shadow>
+    <core-style ref="paper-radio-button"></core-style>
+  </template>
+</polymer-element>
 
-  <segment>
-    <paper-input></paper-input>
-  </segment>
-
-  <segment>
-    <paper-slider></paper-slider>
-  </segment>
-
-</body>
-</html>
-
-
+<polymer-element name="themed-paper-slider" extends="paper-slider" noscript>
+  <template>
+    <shadow></shadow>
+    <core-style ref="paper-slider"></core-style>
+  </template>
+</polymer-element>

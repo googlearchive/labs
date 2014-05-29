@@ -1,0 +1,101 @@
+<link rel="import" href="components/polymer/polymer.html">
+<link rel="import" href="../core-style.html">
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+</style>
+
+<core-style id="core-toolbar">
+  @import 'common.css';
+
+  :host {
+    background-color: {{primaryColor}};
+    color: {{secondaryTextColor}};
+    fill: {{secondaryTextColor}};
+  }
+
+</core-style>
+
+<!-- note, when theming via extending, must use :host::shadow -->
+<core-style id="paper-checkbox">
+  :host::shadow #ink {
+    color: {{primaryColor}};
+  }
+
+  :host::shadow #ink[checked] {
+    color: {{secondaryColor}};
+  }
+
+  :host::shadow #checkbox {
+    border-color: {{secondaryColor}} !important;
+  }
+</core-style>
+
+<core-style id="paper-radio-button">
+  
+  :host::shadow #ink {
+    color: {{primaryColor}};
+  }
+
+  :host::shadow #ink[checked] {
+    color: {{secondaryColor}};
+  }
+
+  :host::shadow #offRadio {
+    border-color: {{secondaryColor}};
+  }
+
+  :host::shadow #onRadio {
+    background-color: {{secondaryColor}};
+  }
+</core-style>
+
+<core-style id="paper-input">
+  
+  :host {
+    color: {{primaryTextColor}};
+  }
+
+  :host::shadow .focusedColor {
+    color: {{secondaryColor}};
+    background: {{secondaryColor}};
+  }
+</core-style>
+
+<core-style id="paper-slider">
+  
+  :host::shadow #sliderBar::shadow #activeProgress {
+    background-color: {{secondaryColor}};
+  }
+
+  :host::shadow #sliderKnobInner {
+    background-color: {{secondaryColor}};
+  }
+
+
+  :host::shadow #sliderKnobInner::before {
+    background-color: {{secondaryColor}};
+  }
+</core-style>
+
+<script>
+(function() {
+  
+  var paperTheme = window.paperTheme = {
+    primaryColor: 'steelblue',
+    secondaryColor: 'pink',
+    primaryTextColor: 'rgb(82, 110, 156)',
+    secondaryTextColor: '#fff'
+  };
+
+  var s$ = document._currentScript.ownerDocument.querySelectorAll('core-style');
+  for (var i=0, l=s$.length; i<l; i++) {
+    s$[i].model = paperTheme;
+  }
+
+  window.coreStyles = s$;
+
+})();
+</script>

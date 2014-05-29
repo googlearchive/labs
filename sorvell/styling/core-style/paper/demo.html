@@ -8,38 +8,49 @@ license that can be found in the LICENSE file.
 <head>
   <title>core-style</title>
   <script src="components/platform/platform.js"></script>
-  <link rel="import" href="components/polymer/polymer.html">
-  <link rel="import" href="../core-style.html">
-  <!-- <link rel="import" href="paper-theme.html"> -->
-  <link rel="import" href="components/core-icons/core-icons.html">
-  <link rel="import" href="components/core-icon-button/core-icon-button.html">
-  <link rel="import" href="components/core-toolbar/core-toolbar.html">
-  <link rel="import" href="components/paper-input/paper-input.html">
-  <link rel="import" href="components/paper-checkbox/paper-checkbox.html">
-  <link rel="import" href="components/paper-radio-button/paper-radio-button.html">
-  <link rel="import" href="components/paper-slider/paper-slider.html">
+  <link rel="import" href="paper-theme.html">
+  <link rel="import" href="elements.html">
 </head>
 <body unresolved>
-
-  <core-toolbar>
+  <themed-toolbar>
     <core-icon-button icon="menu" title="Menu"></core-icon-button>
-    <span>Toolbar</span>
-  </core-toolbar>
+    <span flex>Toolbar</span>
+    <template is="auto-binding">
+      <core-menu-button icon="more-vert" halign="right" valueattr="label" selected="{{paperTheme.primaryColor}}">
+        <core-item label="steelblue"></core-item>
+        <core-item label="orange"></core-item>
+        <core-item label="black"></core-item>
+        <core-item label="gray"></core-item>
+      </core-menu-button>
+      <core-menu-button icon="more-vert" halign="right" valueattr="label" selected="{{paperTheme.secondaryColor}}">
+        <core-item label="pink"></core-item>
+        <core-item label="red"></core-item>
+        <core-item label="yellow"></core-item>
+        <core-item label="green"></core-item>
+      </core-menu-button>
+    </template>
+  </themed-toolbar>
+
+  <script>
+    addEventListener('template-bound', function(e) {
+      e.target.paperTheme = paperTheme;
+    })
+  </script>
 
   <segment>
-    <paper-checkbox></paper-checkbox>
+    <themed-paper-checkbox></themed-paper-checkbox>
   </segment>
 
   <segment>
-    <paper-radio-button></paper-radio-button>
+    <themed-paper-radio-button></themed-paper-radio-button>
   </segment>
 
   <segment>
-    <paper-input></paper-input>
+    <themed-paper-input></themed-paper-input>
   </segment>
 
   <segment>
-    <paper-slider></paper-slider>
+    <themed-paper-slider></themed-paper-slider>
   </segment>
 
 </body>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>core-style</title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="paper-theme.html">
+  <link rel="import" href="elements.html">
+</head>
+<body unresolved>
+  <core-toolbar>
+    <core-icon-button icon="menu" title="Menu"></core-icon-button>
+    <span flex>Toolbar</span>
+    <template is="auto-binding">
+      <core-menu-button icon="more-vert" halign="right" valueattr="label" selected="{{paperTheme.primaryColor}}">
+        <core-item label="steelblue"></core-item>
+        <core-item label="orange"></core-item>
+        <core-item label="black"></core-item>
+        <core-item label="gray"></core-item>
+      </core-menu-button>
+      <core-menu-button icon="more-vert" halign="right" valueattr="label" selected="{{paperTheme.secondaryColor}}">
+        <core-item label="pink"></core-item>
+        <core-item label="red"></core-item>
+        <core-item label="yellow"></core-item>
+        <core-item label="green"></core-item>
+      </core-menu-button>
+    </template>
+  </core-toolbar>
+
+  <template is="auto-binding" id="paper-stuff">
+    <segment>
+      <paper-checkbox></paper-checkbox>
+    </segment>
+
+    <segment>
+      <paper-radio-button></paper-radio-button>
+    </segment>
+
+    <segment>
+      <paper-input></paper-input>
+    </segment>
+
+    <segment>
+      <paper-slider></paper-slider>
+    </segment>
+  </template>
+
+  <script>
+  (function() {
+    addEventListener('template-bound', function(e) {
+      e.target.paperTheme = paperTheme;
+    });
+
+    var elements = ['core-toolbar', 'paper-checkbox', 'paper-radio-button', 
+        'paper-input', 'paper-slider'];
+
+    function blast() {
+      for (var i=0, l=elements.length, e; (i<l) && (e=elements[i]); i++) {
+        blastTo(e);
+      }
+    }
+
+    function blastTo(name) {
+      var e$ = document.querySelectorAll('html /deep/ ' + name);
+      for (var i=0, l=e$.length, e; (i<l) && (e=e$[i]); i++) {
+        var root = e.shadowRoot || e.createShadowRoot();
+        var style = makeStyle(name);
+        root.appendChild(style);
+        style.require();
+        var t = e.element && e.element.querySelector('template');
+        if (t) {
+          t.clear();
+          t.content.appendChild(makeStyle(name));
+          t.bindingDelegate = e.element.syntax;
+        }
+      }
+    }
+
+    function makeStyle(name) {
+      var s = document.createElement('core-style');
+      s.setAttribute('ref', name);
+      s.ref = name;
+      // TODO(sorvell): fix this
+      s.registerRef(s.ref);
+      return s;
+    }
+
+    document.querySelector('#paper-stuff').addEventListener('template-bound', function(e) {
+      blast();
+      var target = e.target;
+      document.body.appendChild(target.cloneNode(true));
+    });
+
+  })();
+  </script>
+
+
+</body>
+</html>
+
+
