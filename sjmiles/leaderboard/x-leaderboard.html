@@ -1,0 +1,267 @@
+<link href="../components/polymer/polymer.html" rel="import">
+<link href="../components/core-layout/core-layout.html" rel="import">
+<link href="../components/firebase-element/firebase-element.html" rel="import">
+<link href="../components/polymer-animation/web-animations.html" rel="import">
+
+<polymer-element name="x-leaderboard">
+
+  <template>
+
+    <link href="x-leaderboard.css" rel="stylesheet">
+
+    <firebase-element
+      id="gameData"
+      location="{{firebaseRoot}}"
+      data="{{players}}"
+      on-data-change="{{onDataChange}}">
+    </firebase-element>
+
+    <ul id="ranks">
+      <template repeat="{{rank in rankLabels}}">
+        <li>{{rank}}</li>
+      </template>
+    </ul>
+
+    <template repeat="{{name, i in displayOrder}}">
+      <div class="row">
+        <div class="shadow"></div>
+        <x-leaderboard-item
+          firebaseRoot="{{firebaseRoot}}"
+          name="{{name}}"
+          on-tap="{{onRowTapped}}">
+        </x-leaderboard-item>
+      </div>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer('x-leaderboard', {
+      publish: {
+        firebaseRoot: ''
+      },
+      fadeDuration: 280,
+      moveDuration: 500,
+      onDataChange: function() {
+        console.debug('onDataChange', this.players);
+
+        this.liveOrder = Object.keys(this.players).sort(function(n0, n1) {
+          return this.players[n1].score - this.players[n0].score;
+        }.bind(this));
+        // We *don't* want the ranks to reorder; it gets confusing as hell.
+        // (i.e. we can't use repeat="{{name, i in displayOrder}}")
+        this.rankLabels = this.liveOrder.map(function(name, i) {
+          return i + 1;
+        });
+
+        if (!this.displayOrder) {
+          this.onInitialLoad();
+        } else {
+          this.reorderOne();
+        }
+      },
+      onInitialLoad: function() {
+        this.displayOrder = this.liveOrder;
+      },
+      onRowTapped: function(event) {
+        var name = event.target.templateInstance.model.name;
+        var bump = event.shiftKey ? 10 : 1;
+        this.players[name].score = this.players[name].score + bump;
+        this.$.gameData.commit();
+      },
+      /**
+       * We reorder one row at a time; the animation starts to look really funky
+       * when multiple rows are flying around.
+       */
+      reorderOne: function() {
+        if (this.animating) return;
+
+        // So, we find the highest ranking row that needs to move up (e.g. the
+        // focus row), and transition it into place.
+        var focusRow = null;
+        var toIndex = 0;
+        for (var i = 0; i < this.liveOrder.length; i++) {
+          if (this.liveOrder[i] != this.displayOrder[i]) {
+            focusRow = this.liveOrder[i];
+            toIndex = i;
+            break;
+          }
+        }
+        if (!focusRow) return;  // No change.
+        // In all cases, we animate.
+        this.animating = true;
+
+        var fromIndex = this.displayOrder.indexOf(focusRow);
+        if (fromIndex < 0) {
+          console.info(focusRow, 'joins the fray at:', toIndex + 1);
+          this.insertRow(focusRow, toIndex);
+        } else {
+          console.info(focusRow, 'is moving up in the world. from:', fromIndex + 1, 'to:', toIndex + 1);
+          this.moveRow(focusRow, fromIndex, toIndex);
+        }
+      },
+      /**
+       * Handle animation of an existing "focus" row.
+       */
+      moveRow: function(name, fromIndex, toIndex) {
+        var rows = this.rows(), ranks = this.ranks();
+        var fromRow = rows[fromIndex];
+        var shadow = fromRow.getElementsByClassName('shadow')[0];
+        if (this.displayOrder[fromIndex] != name || fromRow.item.name != name) {
+          console.error('Something is wrong. Expected', name, 'to be at index', fromIndex);
+          return;
+        }
+        if (fromIndex < toIndex) {
+          console.error('moveRow() only supports moving rows up ranks');
+          return;
+        }
+
+        // Phase 1: Raise the row.
+
+        var raiseAnim = new AnimationGroup([
+          this.fadeInAnim(shadow)
+        ], {fill: 'forwards'});
+
+        // Phase 2: Move all the affected rows.
+
+        var moveAnim = new AnimationGroup([
+          this.translateAnim(fromRow, rows[toIndex].offsetTop - fromRow.offsetTop),
+        ], {fill: 'forwards'});
+        for (var i = toIndex; i < fromIndex; i++) {
+          moveAnim.append(this.translateAnim(rows[i], fromRow.offsetHeight));
+        }
+        // Make sure that the focused row is on top of everything...
+        moveAnim.addEventListener('start', function() {
+          fromRow.style.zIndex = 10;
+          ranks[fromIndex].style.opacity = 1;
+        });
+        // ..and that it stays above neighbors, but below ranks while fading.
+        moveAnim.addEventListener('end', function() {
+          fromRow.style.zIndex = 2;
+        });
+
+        // Phase 3: Commit ordering changes out to the DOM.
+
+        moveAnim.addEventListener('end', function() {
+          // Update our display order to match the new reality.
+          this.displayOrder.splice(fromIndex, 1);
+          this.displayOrder.splice(toIndex, 0, name);
+
+          // Drop filled transitions.
+          moveAnim.clear();
+          // Annoyingly, clear() kills the entire animation sequence, so we need
+          // to manage the rest of the sequence ourselves.
+          document.timeline.play(lowerAnim);
+
+          // Give the bindings a chance to resolve.
+          this.async(function() {
+            this.animating = false;
+            this.reorderOne();  // In case there are any pending changes.
+          });
+        }.bind(this));
+
+        // Phase 4: Fade the focus row out.
+
+        var lowerAnim = new AnimationGroup([
+          this.fadeOutAnim(shadow), this.fadeInAnim(ranks[toIndex])
+        ], {fill: 'forwards'});
+        lowerAnim.addEventListener('end', function() {
+          fromRow.style.zIndex = null;
+        });
+
+        document.timeline.play(new AnimationSequence([
+          new AnimationGroup([raiseAnim, moveAnim])
+        ]));
+      },
+      /**
+       * Handle/animate insertion of a brand new row.
+       *
+       * For now, we just insert without any fanfare.
+       */
+      insertRow: function(name, index) {
+        this.displayOrder.splice(index, 0, name);
+
+        this.async(function() {
+          this.animating = false;
+          this.reorderOne();  // In case there are any pending changes.
+        });
+      },
+      fadeInAnim: function(node) {
+        return new Animation(node, [{opacity: 0}, {opacity: 1}],
+            {duration: this.fadeDuration, fill: 'forwards', easing: 'ease-out'});
+      },
+      fadeOutAnim: function(node) {
+        return new Animation(node, [{opacity: 1}, {opacity: 0}],
+            {duration: this.fadeDuration, fill: 'forwards', easing: 'ease-out'});
+      },
+      translateAnim: function(node, deltaY) {
+        return new Animation(node,
+            [{transform: 'translate3d(0,0,0)'}, {transform: 'translate3d(0,' + deltaY + 'px,0)'}],
+            {duration: this.moveDuration, fill: 'forwards', easing: 'ease-in-out'});
+      },
+      rows: function() {
+        var rows = Array.prototype.slice.call(this.shadowRoot.getElementsByClassName('row'), 0);
+        for (var i = 0; i < rows.length; i++) {
+          var row = rows[i];
+          if (!row.item) {
+            row.item = row.getElementsByTagName('x-leaderboard-item')[0];
+          }
+        }
+
+        return rows;
+      },
+      ranks: function() {
+        return Array.prototype.slice.call(this.$.ranks.getElementsByTagName('li'), 0);
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="x-leaderboard-item">
+
+  <template>
+
+    <link href="x-leaderboard-item.css" rel="stylesheet">
+
+    <firebase-element
+      id="playerData"
+      location="{{firebaseRoot}}/{{name}}"
+      data="{{player}}"
+      on-data-change="{{onDataChange}}">
+    </firebase-element>
+
+    <core-layout>
+      <div id="rank-placeholder"></div>
+      <div id="icon" style="background-image:url('{{player.image}}')"></div>
+      <div id="name" flex>{{name}}</div>
+      <div id="score">{{player.score}}</div>
+    </core-layout>
+
+  </template>
+
+  <script>
+    Polymer('x-leaderboard-item', {
+      publish: {
+        name: '',
+        rank: 0,
+        firebaseRoot: ''
+      },
+      previousScore: -1,
+      onDataChange: function() {
+        var score = Number(this.player.score);
+        if (this.previousScore >= 0) {
+          var delta = score - this.previousScore;
+          if (delta > 0) {
+            this.bounceDelta(delta);
+          }
+        }
+        this.previousScore = score;
+      },
+      bounceDelta: function(delta) {
+        document.timeline.play(new Animation(this.$.score,
+            [{transform: 'scale(1)'}, {transform: 'scale(1.2)'}, {transform: 'scale(1)'}],
+            {duration: 280, easing:  'ease-in-out'}));
+      }
+    });
+  </script>
+</polymer-element>
