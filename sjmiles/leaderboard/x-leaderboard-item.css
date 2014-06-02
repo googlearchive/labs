@@ -1,0 +1,42 @@
+:host {
+  background: #fafafa;
+  display: block;
+  overflow: hidden;
+  padding: 8px 16px;
+  position: relative;
+}
+
+:host > * {
+  height: 40px;
+  line-height: 40px;
+}
+
+#rank {
+  transition: opacity 150ms ease-out;
+  width: 30px;
+}
+
+#icon {
+  background-size: cover;
+  border-radius: 20px;
+  width: 40px;
+}
+
+#name {
+  overflow: hidden;
+  padding: 0 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@-webkit-keyframes bounce {
+  0% {
+    transform: scale(1.0);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1.0);
+  }
+}

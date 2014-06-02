@@ -4,94 +4,178 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
+
   <title>Firebase Leaderboard</title>
-  
+
   <style>
-    body, button, pre, input {
-      font-family: sans-serif;
-      font-size: small;
+    html, body, body > core-layout {
+      height: 100%;
+    }
+
+    body {
+      background: #fafafa;
+      font-family: "Helvetica Neue", Helvetica, sans-serif;
+      margin: 0;
       -webkit-user-select: none;
     }
-    
-    pre {
-      font-size: 12px;
+
+    header {
+      -webkit-font-smoothing: antialiased;
+      background: #7e57c2;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: -.012em;
+      line-height: 32px;
+      text-rendering: optimizeLegibility;
+      padding: 16px;
     }
-        
-    .dot {
-      border-radius: 32px;
-      width: 16px;
-      height: 16px;
-      display: inline-block;
-    }   
- 
-    segment {
+
+    .scroll-container {
+      overflow-y: auto;
+      padding: 8px 0;
       position: relative;
     }
-    
+
+    section {
+      position: relative;
+    }
+
     [inviso] {
       opacity: 0.0 !important;
     }
 
     [abs] {
+      left: 0;
       position: absolute;
-      left: 10px;
-      top: 10px;
-      opacity: 1.0;
-      width: 300px;
+      top: 8px;
+      width: 100%;
     }
 
-    #a .item {
-      Xbackground-color: white;
+    .focused {
+      box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19), 0 8px 17px 0 rgba(0, 0, 0, 0.2);
     }
-    
-    #a, #b {
-      font-size: large;
+
+    .moving::shadow #rank {
+      opacity: 0;
     }
   </style>
-  
+
   <script src="../components/platform/platform.js"></script>
-  
+
+  <link rel="import" href="../components/core-layout/core-layout.html">
   <link rel="import" href="../components/core-localstorage/core-localstorage.html">
   <link rel="import" href="../components/firebase-element/firebase-element.html">
+
+  <script>
+    sequence = function(args, times, keyframes) {
+      var time = times.shift() || 500;
+      var key = keyframes.shift();
+      if (key) {
+        key.apply(this, args.concat([time]));
+        setTimeout(function() {
+          sequence(args, times, keyframes);
+        }, time + 10);
+      }
+    };
+  </script>
+
+  <polymer-element name="x-leaderboard-item">
+
+    <template>
+
+      <link href="x-leaderboard-item.css" rel="stylesheet">
+
+      <firebase-element
+        id="playerData"
+        location="{{firebaseRoot}}/{{name}}"
+        data="{{player}}"
+        on-data-change="{{onDataChange}}">
+      </firebase-element>
+
+      <core-layout>
+        <div id="rank">{{rank}}</div>
+        <div id="icon" style="background-image:url('{{player.image}}')"></div>
+        <div id="name" flex>{{name}}</div>
+        <div id="score">{{player.score}}</div>
+      </core-layout>
+
+    </template>
+
+    <script>
+      Polymer('x-leaderboard-item', {
+        publish: {
+          name: {value: '', reflect: true},
+          rank: 0,
+          firebaseRoot: ''
+        },
+        previousScore: -1,
+        onDataChange: function() {
+          var score = Number(this.player.score);
+          if (this.previousScore >= 0) {
+            var delta = score - this.previousScore;
+            if (delta > 0) {
+              this.bounceDelta(delta);
+            }
+          }
+          this.previousScore = score;
+        },
+        bounceDelta: function(delta) {
+          // TODO(nevir): Why is it not bouncing on the first iteration?
+          sequence([this.$.score], [280, 0], [
+            function(score, time) {
+              score.style.webkitAnimation = 'bounce ' + time + 'ms ease-in-out';
+            },
+            function(score) {
+              score.style.webkitAnimation = null;
+            }
+          ]);
+        }
+      });
+    </script>
+  </polymer-element>
 
 </head>
 <body>
 
-  <template is="auto-binding">
-  
-    <firebase-element id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="'https://polygame.firebaseio.com/players/"></firebase-element>
-    
-    <segment abs id="a">
-      <template repeat="{{name in cached}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
-      </template>
-    </segment>
- 
-    <segment abs id="b">
-      <template repeat="{{name in names}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
-      </template>
-    </segment>
-       
-    <div style="height: 300px"></div>
-    <hr>
-    
-    <segment>
-      <template repeat="{{name in pnames}}">
-        <p class="item" on-tap="{{points}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
-      </template>
-    </segment>
+  <core-layout vertical>
+    <header>It's a leaderboard!</header>
+    <div class="scroll-container" flex>
+      <template is="auto-binding">
 
-  </template>
-  
+      <firebase-element id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="https://polygame.firebaseio.com/players/"></firebase-element>
+
+      <section abs id="a">
+        <template repeat="{{name, i in cached}}">
+          <x-leaderboard-item on-tap="{{points}}" firebaseRoot="https://polygame.firebaseio.com/players" name="{{name}}" rank="{{i + 1}}"></x-leaderboard-item>
+        </template>
+      </section>
+
+      <section id="b">
+        <template repeat="{{name, i in names}}">
+          <x-leaderboard-item on-tap="{{points}}" firebaseRoot="https://polygame.firebaseio.com/players" name="{{name}}" rank="{{i + 1}}"></x-leaderboard-item>
+        </template>
+      </section>
+
+<!-- For debugging?
+      <section>
+        <template repeat="{{name in pnames}}">
+          <p class="item" on-tap="{{points}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: {{players[name].score}}</span></p>
+        </template>
+      </section>
+-->
+
+    </template>
+    </div>
+  </core-layout>
+
   <script>
-    
+
     addEventListener('template-bound', function(e) {
 
       var scope = e.target;
       var animating = false;
-      
+
       reset = function() {
         var irand = function(n) { return Math.floor(Math.random() * n); }
         scope.players = {
@@ -103,7 +187,7 @@
         };
         scope.$.gameData.commit();
       };
-     
+
       scope.dataChange = function() {
         if (animating) {
           //console.log('jobbing...');
@@ -133,22 +217,11 @@
         //
         this.pnames = Object.keys(this.players);
       };
-     
-      sequence = function(args, times, keyframes) {
-        var time = times.shift() || 500;
-        var key = keyframes.shift();
-        if (key) {
-          key.apply(this, args.concat([time]));
-          setTimeout(function() {
-            sequence(args, times, keyframes);
-          }, time + 10);
-        }
-      };
-      
+
       scope.transition = function() {
-        
+
         var items = this.names.map(function(n) {
-          var slctr = '[key="' + n + '"]';
+          var slctr = '[name="' + n + '"]';
           var e0 = a.querySelector(slctr), e1 = b.querySelector(slctr);
           var i = {
             n: n,
@@ -159,33 +232,37 @@
           };
           return i;
         });
-        
+
         sequence([items], [500, 500, 0], [
           function(items, time) {
             b.setAttribute('inviso', '');
             items.forEach(function(i) {
               if (i.t1 != i.t0) {
                 i.dy = i.t1 - i.t0;
-                var s = (i.dy < 0) ? 2.0 : 1.0;
-                var x = (i.dy < 0) ? 150 : 0;
-                i.e0.style.webkitTransform = 'translate(' + x + 'px, ' + i.dy + 'px) scale(' + s + ')';
-                i.e0.style.transition = '-webkit-transform ' + time + 'ms ease-out';
+                i.e0.classList.add('moving');
+                if (i.dy < 0) {
+                  i.e0.classList.add('focused');
+                }
+                i.e0.style.webkitTransform = 'translate(0px, ' + i.dy + 'px)';
+                i.e0.style.transition = '-webkit-transform ' + time + 'ms ease-out, box-shadow ' + time + 'ms ease-out';
               }
             });
-          }, 
+          },
           function(items) {
             items.forEach(function(i) {
+              i.e0.classList.remove('focused');
               if (i.dy) {
-                i.e0.style.webkitTransform = 'translate(0px, ' + i.dy + 'px) scale(1.0)';
+                i.e0.style.webkitTransform = 'translate(0px, ' + i.dy + 'px)';
               }
             });
           },
           function(items) {
             b.removeAttribute('inviso');
             items.forEach(function(i) {
+              i.e0.classList.remove('moving');
               if (i.dy) {
                 i.e0.style.webkitTransform = null;
-                i.e0.style.transition = 'none'; 
+                i.e0.style.transition = 'none';
               }
             });
           },
@@ -194,7 +271,7 @@
           }
         ]);
       };
-       
+
       scope.points = function(event) {
         var name = event.target.templateInstance.model.name;
         this.players[name].score++;
@@ -207,7 +284,7 @@
         //
         this.$.gameData.commit();
       };
-      
+
     });
   </script>
 
