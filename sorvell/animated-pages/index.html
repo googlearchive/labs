@@ -27,13 +27,13 @@
       width: 150px;
       font-size: 50px;
       margin: 8px;
-      background-color: #ccc;
+      background-color: tomato;
       border-radius: 4px;
     }
 
     .view {
       font-size: 250px;
-      background-color: #ddd;
+      background-color: tomato;
     }
 
   </style>
@@ -59,7 +59,9 @@
       </section>
 
       <template repeat="{{item in items}}">
-        <section class="view" vertical center center-justified layout hero="item-{{item}}">{{item}}</section>
+        <section vertical layout>
+          <div class="view" flex vertical center center-justified layout hero="item-{{item}}">{{item}}</div>
+        </section>
       </template>
 
 
