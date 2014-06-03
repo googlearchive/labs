@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+
+  <link rel="import" href="components/core-icons/core-icons.html">
+  <link rel="import" href="components/core-icon/core-icon.html">
+
+  <link rel="import" href="components/core-style/core-style.html">
+
+  <link rel="import" href="components/paper-input/paper-input.html">
+
+  <script src="test.js"></script>
+</head>
+<body unresolved>
+  <polymer-element name="x-test" noscript></polymer-element>
+
+  <polymer-element name="x-style" noscript>
+    <template>
+      <style>
+        :host { display: block; }
+      </style>
+    </template>
+
+  </polymer-element>
+
+  <core-style id="common">
+    :host { display: block; }
+  </core-style>
+
+  <polymer-element name="x-core-style" noscript>
+    <template>
+      <core-style>
+      </core-style>
+    </template>
+
+  </polymer-element>
+
+  <!-- 0.09ms -->
+  <!-- <template id="testTemplate"><div></div></template> -->
+
+  <!-- 0.113ms -->
+  <!-- <template id="testTemplate"><x-test></x-test></template> -->
+
+  <!-- 0.196ms -->
+  <!-- <template id="testTemplate"><core-style ref="common"></core-style></template>   -->
+
+  <!-- 0.123ms -->
+  <template id="testTemplate"><style></style></template>
+
+  <!-- 0.300ms -->
+  <!-- <core-style id="common">
+    .foo {
+      display: block;
+    }
+  </core-style>
+  <template id="testTemplate"><core-style ref="common"></core-style></template>   -->
+
+
+  <!-- 0.150ms -->
+  <!-- <template id="testTemplate"><x-style></x-style></template> -->
+
+  <!-- 0.290ms -->
+  <!-- <template id="testTemplate"><x-core-style></x-core-style></template> -->
+
+
+  <!-- 0.267ms -->
+  <!-- <template id="testTemplate"><core-icon></core-icon></template> -->
+  
+  <!-- 0.619ms -->
+  <!-- <template id="testTemplate"><core-icon icon="more-vert"></core-icon></template> -->
+
+  <!-- 0.961ms -->
+  <!-- <template id="testTemplate"><core-input value="hi"></core-input></template> -->
+
+  <!-- 2.916ms -->
+  <!-- <template id="testTemplate"><paper-input value="hi"></paper-input></template> -->
+
+  
+  <script>
+    /*
+      NOTE: do *not* have dev tools open to elements tab; this nerfs performance
+      of polymer-elements by at least 2x. Why?
+    */
+    addEventListener('polymer-ready', function() {
+      test(document.getElementById('testTemplate'), 500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<div></div>
+<script>
+  document.currentScript.ownerDocument.querySelector('div').foo = {bar: true};
+
+  if (window.gc()) {
+    gc();
+  }
+ console.log(document.currentScript.ownerDocument.querySelector('div').foo);
+</script>
