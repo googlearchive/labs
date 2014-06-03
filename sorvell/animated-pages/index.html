@@ -18,7 +18,7 @@
       background-color: steelblue;
     }
 
-    .container {
+    #container {
       overflow: auto;
     }
 
@@ -29,6 +29,7 @@
       margin: 8px;
       background-color: tomato;
       border-radius: 4px;
+      cursor: default;
     }
 
     .view {
@@ -46,13 +47,13 @@
       <div flex>Stuff</div>
       <core-icon-button icon="more-vert"></core-icon-button>
     </core-toolbar>
-    <core-animated-pages id="pages" flex selected="0">
+    <core-animated-pages id="pages" flex selected="0" on-core-animated-pages-transition-end="{{transitionend}}">
 
       <section vertical layout>
 
-        <div class="container" flex horizontal wrap around-justified layout>
+        <div id="container" flex horizontal wrap around-justified layout>
           <template repeat="{{item in items}}">
-            <div class="card" vertical center center-justified layout on-tap="{{selectView}}" hero="item-{{item}}">{{item}}</div>
+            <div class="card" vertical center center-justified layout on-tap="{{selectView}}">{{item}}</div>
           </template>
         </div>
 
@@ -82,11 +83,21 @@
 
       scope.selectView = function(e) {
         var i = e.target.templateInstance.model.item;
+        // need to make hero dynamic or all the hero elements will hide
+        e.target.setAttribute('hero', 'item-' + i);
         this.$.pages.selected = i+1;
       }
 
       scope.back = function() {
+        this.lastSelected = this.$.pages.selected;
         this.$.pages.selected = 0;
+      }
+
+      scope.transitionend = function() {
+        if (this.lastSelected) {
+          this.$.container.children[this.lastSelected].removeAttribute('hero');
+          this.lastSelected = null;
+        }
       }
     })
 
