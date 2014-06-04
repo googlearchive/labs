@@ -33,12 +33,24 @@
       opacity: 0.0 !important;
     }
 
+    #leaderboard {
+      width: 300px;
+      position: relative;
+    }
+    
     [abs] {
       position: absolute;
+      top: 13px;
+      right: 13px;
+      bottom: 13px;
+      left: 13px;
+      box-sizing: border-box;
+      /*
       left: 10px;
       top: 10px;
-      opacity: 1.0;
       width: 300px;
+      opacity: 1.0;
+      */
     }
 
     #a .item {
@@ -47,6 +59,11 @@
     
     #a, #b {
       font-size: large;
+      background-color: white;
+    }
+    
+    #b {
+      position: relative;
     }
   </style>
   
@@ -62,19 +79,21 @@
   
     <firebase-element id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="'https://polygame.firebaseio.com/players/"></firebase-element>
     
-    <segment abs id="a">
-      <template repeat="{{name in cached}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
-      </template>
-    </segment>
- 
-    <segment abs id="b">
-      <template repeat="{{name in names}}">
-        <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
-      </template>
+    <segment id="leaderboard">
+      <div abs id="a">
+        <template repeat="{{name in cached}}">
+          <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
+        </template>
+      </div>
+   
+      <div id="b">
+        <template repeat="{{name in names}}">
+          <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
+        </template>
+      </div>
     </segment>
        
-    <div style="height: 300px"></div>
+    <!--<div style="height: 300px"></div>-->
     <hr>
     
     <segment>

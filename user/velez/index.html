@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  
+  <title>Web Components</title>
+  
+  <script src="//www.polymer-project.org/components/platform/platform.js"></script>
+  <link rel="import" href="//www.polymer-project.org/components/polymer/polymer.html">
+
+</head>
+<body>
+
+  <!-- 
+  
+  randgen using mono-state 
+  
+  -->
+  
+  <polymer-element name="x-mono-randgen" attributes="max">
+    <script>
+      (function() {
+        // all x-mono-randgens share this 'max' value (monostate pattern)
+        var max = 10;
+        Polymer('x-mono-randgen', {
+          n: 3,
+          maxChanged: function() {
+            max = this.max;            
+          },
+          next: function () {
+            return Math.floor(max * Math.random());
+          }
+        });
+      })();
+    </script>  
+  </polymer-element>
+  
+  <polymer-element name="x-foo-use-mono">
+    <template>
+      <button on-click="{{doRand}}">Next Random</button> {{n}}
+    </template>
+    <script>
+      Polymer('x-foo-use-mono', {
+        ready: function () { 
+          this.n = 0;
+          this.randgen = document.createElement('x-mono-randgen');
+        },
+        doRand: function () {
+          this.n = this.randgen.next();
+        }
+      });
+    </script>
+  </polymer-element>
+        
+  <h1>Using x-mono-randgen</h1>
+  <x-randgen max="10"></x-randgen>
+  <x-foo-use-mono></x-foo-use-mono>
+  
+  <!-- 
+  
+  randgen using controller 
+  
+  -->
+  
+  <polymer-element name="x-randgen" attributes="max">
+    <script>
+      Polymer('x-randgen', {
+        n: 3,
+        next: function () {
+          return Math.floor(this.max * Math.random());
+        }
+      });
+    </script>  
+  </polymer-element>
+  
+  <polymer-element name="x-controller-randgen">
+    <template>
+      <button on-click="{{doRand}}">Next Random</button> {{n}}
+    </template>
+    <script>
+      Polymer('x-controller-randgen', {
+        n: 0,
+        doRand: function () {
+          this.n = this.fire('get-randgen').detail.randgen.next();
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <polymer-element name="x-controller">
+    <template>
+      <x-controller-randgen on-get-randgen="{{getRandgen}}"></x-controller-randgen>
+      <x-randgen id="randgen" max="1000"></x-randgen>
+    </template>
+    <script>
+      Polymer('x-controller', {
+        getRandgen: function(event) { 
+          event.detail.randgen = this.$.randgen;
+        }
+      });
+    </script>
+  </polymer-element>
+
+   
+  <h1>Using x-controller-randgen</h1>
+  <x-controller></x-controller>
+    
+</body>
+</html>

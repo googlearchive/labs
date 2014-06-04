@@ -1,0 +1,56 @@
+<link rel="import" href="components/paper-input/paper-input.html">
+<link rel="import" href="components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="components/paper-slider/paper-slider.html">
+<link rel="import" href="components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="components/core-menu-button/core-menu-button.html">
+<link rel="import" href="data-field.html">
+  
+<polymer-element name="input-field" extends="data-field" kind="input" noscript>
+<template>
+  <paper-input style="width: 100%; padding-right: 26px; box-sizing: border-box;" label="{{name}}" floatinglabel inputValue="{{value}}"></paper-input>
+</template>
+</polymer-element>
+
+<polymer-element name="checkbox-field" extends="data-field" kind="checkbox" noscript>
+<template>
+  <paper-checkbox style="margin: 10px 0;" label="{{name}}" value="{{value}}"></paper-checkbox>
+</template>
+</polymer-element>
+
+<polymer-element name="toggle-field" extends="data-field" kind="toggle" noscript>
+<template>
+  <div style="color: silver; padding: 12px 0px;">{{name}}</div>
+  <paper-toggle-button checked="{{value}}"></paper-toggle-button>
+</template>
+</polymer-element>
+
+<polymer-element name="slider-field" extends="data-field" kind="slider" noscript>
+<template>
+  <span style="color: silver; display: inline-block; width: 20%; padding: 8px 0px; vertical-align: middle;">{{name}}</span>
+  <paper-slider style="width: 70%; box-sizing: border-box; vertical-align: middle;" value="{{value}}"></paper-slider>
+</template>
+</polymer-element>
+
+<polymer-element name="radio-field" extends="data-field" kind="radio-group" noscript>
+<template>
+  <div style="color: silver; padding: 12px 0px;">{{name}}</div>
+  <paper-radio-group selected="{{value}}">
+    <content></content>
+  </paper-radio-group>
+</template>
+</polymer-element>
+
+<polymer-element name="dropdown-field" extends="data-field" kind="dropdown" noscript>
+<template>
+  <style>
+    :host {
+      margin-top: 8px;
+    }
+  </style>
+  <span style="color: silver; vertical-align: middle;">{{name}}</span>&nbsp;
+  <core-menu-button selected="{{value}}" icon="arrow-drop-down">
+    <content></content>
+  </core-menu-button>
+</template>
+</polymer-element>
