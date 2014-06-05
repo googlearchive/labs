@@ -5,61 +5,341 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Untitled Document</title>
+<title>Semantic Layout</title>
 
-<style>
-  body {
-    font-family: sans-serif;
-    background-color: whitesmoke;
-  }
-</style>
+<link rel="stylesheet" href="index.css">
 
 <script src="components/platform/platform.js"></script>
-<link rel="import" href="components/polymer/polymer.html">
+<link rel="import" href="marked-highlightjs.html">
 
 </head>
 <body>
 
-<segment><span>segment</span></segment>
+<marked-highlightjs>
+<template>
+## Semantic Layout Attributes
 
-<br>
+Polymer 0.3.0 introduced a new experimental syntax for declarative element positioning (aka _layout_). 
+The system is built on the `flexible box model` CSS tools.
+As an exploration of semantic, or _natural-language_, markup, we've implemented various styling directives as _attributes_.
+For example, to make a horizontal layout, one does like so:
 
-<span>horizontal layout</span>
-<segment horizontal layout>
-  <segment></segment>
-  <segment flex>flex</segment>
-  <segment></segment>
-</segment>
+    <div horizontal layout>
+      <div>One</div>
+      <div>Two</div>
+      <div>Three</div>
+    </div>
 
-<br>
+</template> 
+</marked-highlightjs>
 
-<span>horizontal layout</span>
-<segment horizontal layout>
-  <segment flex two>flex two</segment>
-  <segment flex two>flex two</segment>
-  <segment flex one>flex one</segment>
-</segment>
+<box horizontal layout>
+  <box>One</box>
+  <box>Two</box>
+  <box>Three</box>
+</box>
 
-<br>
+<marked-highlightjs>
+<template>
+As mentioned, this system is largely experimental.
 
-<span>horizontal center-justified center layout</span>
-<segment horizontal center-justified center layout style="height: 140px">
-  <segment>Center</segment>
-</segment>
+General notes:
+  - these attributes are implemented using `/deep/` rules and therefore work across all shadow-dom boundaries.
+  - choosing attributes that represent `natural language` while also being compact and easy to remember
+    is a work in progress
+  - using attributes for styling is known slower than classes
+  - it is known that using simple attributes globally can cause conflicts with custom element
+    attributes
 
-<span>horizontal end-justified end layout</span>
-<segment horizontal end-justified end layout style="height: 140px">
-  <segment>Bottom Right</segment>
-</segment>
+## Additional Examples  
 
-<br>
+### Flexible Children
 
-<span>vertical layout</span>
-<segment vertical layout style="height: 300px">
-  <segment></segment>
-  <segment flex>flex</segment>
-  <segment></segment>
-</segment>
+Children of a layout can use `flex` attributes to control sizing.    
+
+    <div horizontal layout>
+      <div>Alpha</div>
+      <div flex>Beta (flex)</div>
+      <div>Gamma</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout>
+  <box>Alpha</box>
+  <box flex>Beta</box>
+  <box>Gamma</box>
+</box>
+
+<marked-highlightjs>
+<template>
+    <div vertical layout>
+      <div>Alpha</div>
+      <div flex>Beta (flex)</div>
+      <div>Gamma</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box vertical layout>
+  <box>Alpha</box>
+  <box flex>Beta (flex)</box>
+  <box>Gamma</box>
+</box>
+
+<marked-highlightjs>
+<template>
+Flex ratios can be set with Engligh numbers (_one, two, three ..._):
+
+    <div horizontal layout>
+      <div flex three>Alpha</div>
+      <div>Beta</div>
+      <div flex two>Gamma</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout>
+  <box flex three>Alpha</box>
+  <box>Beta</box>
+  <box flex two>Gamma</box>
+</box>
+
+<marked-highlightjs>
+<template>
+### Cross-axis Alignment
+
+By default, children stretch to fit the cross-axis (e.g. _vertical_ stretching in a _horizontal_ layout).
+
+    <div horizontal layout>
+      <div>Stretch Fill</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout tall>
+  <box>Stretch Fill</box>
+</box>
+
+<marked-highlightjs>
+<template>
+Center _across_ the main axis (e.g. _vertical_ centering elements in a _horizontal_ layout) 
+by adding `center`.
+
+    <div horizontal layout center>
+      <div>Center</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout center tall>
+  <box>Center</box>
+</box>
+
+<marked-highlightjs>
+<template>
+You can also position at the top/bottom (or left/right in _vertical_ layouts) using `start` or `end`.
+
+    <div horizontal layout start>
+      <div>Start</div>
+    </div>
+
+    <div horizontal layout end>
+      <div>End</div>
+    </div>
+
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout start tall>
+  <box>Start</box>
+</box>
+
+<box horizontal layout end tall>
+  <box>End</box>
+</box>
+
+<marked-highlightjs>
+<template>
+### Justification
+
+Justification is done with `*-justified` attributes:
+
+    <div horizontal start-justified layout>
+      <div>Start</div>
+    </div>
+
+</template> 
+</marked-highlightjs>
+
+<box horizontal start-justified layout>
+  <box>Start Justified</box>
+</box>
+
+<marked-highlightjs>
+<template>
+    <div horizontal center-justified end>
+      <div>Center Justified</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal center-justified layout>
+  <box>Center Justified</box>
+</box>
+
+<marked-highlightjs>
+<template>
+    <div horizontal end-justified end>
+      <div>End Justified</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal end-justified layout>
+  <box>End Justified</box>
+</box>
+
+<marked-highlightjs>
+<template>
+    <div horizontal justified end>
+      <div>Justified</div>
+      <div>Justified</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal justified layout>
+  <box>Justified</box>
+  <box>Justified</box>
+</box>
+
+<marked-highlightjs>
+<template>
+    <div horizontal around-justified end>
+      <div>Around Justified</div>
+      <div>Around Justified</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal around-justified layout>
+  <box>Around Justified</box>
+  <box>Around Justified</box>
+</box>
+
+<marked-highlightjs>
+<template>
+### Self Aligning
+
+Alignment can be also be set _per-child_ instead of _per-layout_.
+
+    <div horizontal layout>
+      <div flex self-start>Alpha</div>
+      <div flex self-center>Beta</div>
+      <div flex self-end>Gamma</div>
+      <div flex self-stretch>Delta</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout tall>
+  <box flex self-start>Alpha</box>
+  <box flex self-center>Beta</box>
+  <box flex self-end>Gamma</box>
+  <box flex self-stretch>Delta</box>
+</box>
+
+<marked-highlightjs>
+<template>
+### Additional Features
+
+Wrapped layouts can be enabled with the `wrap` attribute.
+
+    <div horizontal layout wrap style="width: 120px">
+      <div>Alpha</div>
+      <div>Beta</div>
+      <div>Gamma</div>
+      <div>Delta</div>
+    </div>
+    
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout wrap style="width: 220px">
+  <box>Alpha</box>
+  <box>Beta</box>
+  <box>Gamma</box>
+  <box>Delta</box>
+</box>
+
+<marked-highlightjs>
+<template>
+Layout direction can be mirrored with the `reverse` attribute.
+
+    <div horizontal layout reverse>
+      <div>Alpha</div>
+      <div>Beta</div>
+      <div>Gamma</div>
+      <div>Delta</div>
+    </div>
+</template> 
+</marked-highlightjs>
+
+<box horizontal layout reverse>
+  <box>Alpha</box>
+  <box>Beta</box>
+  <box>Gamma</box>
+  <box>Delta</box>
+</box>
+
+
+<marked-highlightjs>
+<template>
+### Fitting to &lt;body&gt; with `fullbleed`
+
+When using fitting styles, there always must be an element somewhere that has a fixed size (for other elements to fit to). 
+Frequently, one simply wants to fit to the viewport. By default however, layouts in body fit to `body` which needs fitting itself.
+To solve this problem, add the `fullbleed` attribute to body, which will cause it to be as high as the viewport (and remove margins).
+
+    <b0dy fullbleed vertical layout>
+      <box flex>Fitting a fullbleed body.</box>
+    </b0dy>
+
+</template> 
+</marked-highlightjs>
+
+<iframe src="frame.html" style="width: 100%; height: 150px;"></iframe>
+
+<marked-highlightjs>
+<template>
+### General Purpose Attributes
+
+Some other general purpose attributes are also provided:
+
+- `block`: assigns `display: block`
+- `hidden`: assigns `display: none`
+- `relative`: assigns `position: relative`
+- `fit`: sets `position: absolute` and sets `top`, `right`, `bottom`, and `left` to `0` (aka `trbl fitting`).
+Note that the fitting container must have _layout_ (e.g. must be `relative`).
+
+
+    <div>Before <span>[A Span]</span> After</div>
+    <div>Before <span block>A Block Span</span> After</div>
+    <div>Hidden: <span hidden>Not displayed</span></div>
+    <div relative style="height: 64px;">
+      <div fit style="background-color: lightblue;">Fit</div>
+    </div>
+
+</template> 
+</marked-highlightjs>
+
+    <box>Before <span>[A Span]</span> After</box>
+    <box>Before <span block>[A Block Span]</span> After</box>
+    <box>Hidden: <span hidden>Not displayed</span></box>
+    <box relative style="height: 64px;">
+      <box fit style="background-color: lightblue;">Fit</box>
+    </box>
 
 </body>
 </html>

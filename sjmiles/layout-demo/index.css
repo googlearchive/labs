@@ -1,0 +1,28 @@
+body {
+  font-family: sans-serif;
+  max-width: 720px;
+  margin: 20px auto;
+}
+
+box {
+  display: block;
+  background-color: whitesmoke;
+  padding: 4px;
+  margin: 12px;
+  border-radius: 4px;
+  border: 1px solid silver;
+}
+
+box box {
+  background-color: white;
+  padding: 12px;
+  margin: 4px;
+}
+
+[tall] {
+  height: 124px;
+}
+
+box[vertical] {
+  height: 200px;
+}
