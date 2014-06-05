@@ -8,6 +8,7 @@
   <link href="components/core-icon-button/core-icon-button.html" rel="import">
   <link href="components/core-toolbar/core-toolbar.html" rel="import"> 
   <link href="components/core-animated-pages/core-animated-pages.html" rel="import">
+  <link href="components/core-animated-pages/cross-fade.html" rel="import">
 
   <style>
     body {
@@ -47,11 +48,11 @@
       <div flex>Stuff</div>
       <core-icon-button icon="more-vert"></core-icon-button>
     </core-toolbar>
-    <core-animated-pages id="pages" flex selected="0" on-core-animated-pages-transition-end="{{transitionend}}">
+    <core-animated-pages id="pages" flex selected="0" on-core-animated-pages-transition-end="{{transitionend}}" transitions='["cross-fade"]' defaultTransition="cross-fade">
 
       <section vertical layout>
 
-        <div id="container" flex horizontal wrap around-justified layout>
+        <div id="container" flex horizontal wrap around-justified layout hero-p>
           <template repeat="{{item in items}}">
             <div class="card" vertical center center-justified layout on-tap="{{selectView}}">{{item}}</div>
           </template>
