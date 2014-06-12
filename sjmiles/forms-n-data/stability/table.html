@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Paper Table</title>
+  
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+    }
+    
+  </style>
+  
+  <script src="../components/platform/platform.js"></script>
+  
+  <link rel="import" href="../components/polymer/polymer.html">
+  <link rel="import" href="../components/core-icon-button/core-icon-button.html">
+
+</head>
+<body>
+
+<x-foo></x-foo>
+
+<polymer-element name="x-foo">
+<template>
+  <style>
+    :host {
+      display: block;
+    }
+    table {
+      border: none;
+    }
+    td, th {
+      padding: 4px 12px;
+    }
+    th {
+      border-bottom: 1px solid gray;
+    }
+    td {
+      border: 1px solid silver;
+      border-left: none;
+      border-right: none;
+    }
+    tr:nth-of-type(even) {
+      background-color: whitesmoke;
+    }
+  </style>
+  <table cellspacing="0">  
+    <tr on-tap="{{sorterize}}" >
+      <th>First <core-icon-button by="name" icon="arrow-drop-down"></core-icon-button></th>
+      <th>Last <core-icon-button by="value" icon="arrow-drop-down"></core-icon-button></th>
+      <th>Count <core-icon-button by="count" icon="arrow-drop-down"></core-icon-button></th>
+    </tr>  
+    <tr template repeat="{{foo in foos | sort(kick)}}">
+      <td>{{foo.name}}</td>
+      <td>{{foo.value}}</td>
+      <td>{{foo.count}}</td>
+    </tr>
+  </table>
+</template>
+<script>
+  Polymer('x-foo', {
+    count: 20,
+    kick: 0,
+    created: function() {
+      this.data = [];
+      for (var i=0; i<this.count; i++) {
+        this.data.push({
+          name: ['Abel', 'Baker', 'Charlie', 'Delta', 'Echo'][Math.floor(Math.random()*5)],
+          value: ['Abel', 'Baker', 'Charlie', 'Delta', 'Echo'][Math.floor(Math.random()*5)],
+          count: Math.floor(Math.random()*100) + 100
+        });
+      }
+      this.foos = this.data;
+    },
+    sort: function(data) {
+      return data;
+    },
+    sorterize: function(e) {
+      this.sort = this.sortFactory(e.target.getAttribute('by'));
+      this.kick++;
+    },
+    sortFactory: function(field) {
+      if (!field) {
+        return this.__proto__.sort;
+      }
+      return function(data) {
+        data.sort(function(a, b) {
+          if (a[field] < b[field]) {
+            return -1;
+          } else if (a[field] > b[field]) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        return data;
+      }
+    }
+  });
+</script>
+</polymer-element>
+
+</body>
+</html>

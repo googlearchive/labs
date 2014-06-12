@@ -1,0 +1,39 @@
+<polymer-element name="form-group" segment layout horizontal wrap noscript></polymer-element>
+
+<polymer-element name="form-row" layout horizontal center wrap noscript></polymer-element>
+
+<polymer-element name="data-form">
+<script>
+  Polymer({
+    eventDelegates: {
+      'add-data-field': 'addField',
+      'remove-data-field': 'removeField'
+    },
+    created: function() {
+      this.fields = [];
+    },
+    addField: function(e) {
+      this.fields.push(e.target);
+    },
+    removeField: function(e) {
+      var i = this.fields.indexOf(e.target);
+      if (i >= 0) {
+        this.fields.splice(i, 1);
+      }
+    },
+    dump: function() {
+      var data = {};
+      this.fields.forEach(function(f) {
+        data[f.name] = f.value;
+      }, this);
+      return data;
+    },
+    validate: function() {
+      var valid = this.fields.every(function(f) {
+        return !f.invalidated;        
+      }, this);
+      return valid;
+    }
+  });
+</script>
+</polymer-element>

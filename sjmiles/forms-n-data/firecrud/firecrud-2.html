@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Firebase CRUD</title>
+
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+    }
+    [xfield] {
+      border: 1px dotted lightblue;
+      margin: -1px -1px;
+    }
+    polymer-element {
+      display: none !important;
+    }
+    paper-appbar {
+      background-color: #4285F4;
+    }
+  </style>
+
+  <script src="components/platform/platform.js"></script>
+
+  <link rel="import" href="components/firebase-element/firebase-element.html">
+  <link rel="import" href="components/core-item/core-item.html">
+  <link rel="import" href="components/core-menu/core-menu.html">
+  <link rel="import" href="components/core-toolbar/core-toolbar.html">
+  <link rel="import" href="components/core-icon-button/core-icon-button.html">
+  <link rel="import" href="components/paper-drawer-panel/paper-drawer-panel.html">
+  <link rel="import" href="components/paper-appbar/paper-appbar.html">
+  <link rel="import" href="paper-fields.html">
+
+</head>
+<body unresolved fullbleed vertical layout>
+
+  <polymer-element name="form-group" segment layout horizontal wrap noscript></polymer-element>
+
+  <template is="auto-binding">
+
+    <firebase-element id="crudData" on-data-change="{{dataChange}}" data="{{records}}" keys="{{keys}}" location="https://treedata-demo.firebaseio.com/crud/"></firebase-element>
+
+    <paper-drawer-panel flex>
+
+      <paper-header-panel drawer mode="waterfall-tall">
+
+        <paper-appbar class="tall seamed">
+          <span>Crudfire</span>
+        </paper-appbar>
+
+        <core-menu selected="{{selected}}" valueattr="key" on-core-select="{{selectAction}}">
+          <template repeat="{{key in keys}}">
+            <core-item icon="event" key="{{key}}">{{records[key].orderId}}</core-item>
+          </template>
+        </core-menu>
+
+      </paper-header-panel>
+
+      <paper-header-panel main mode="waterfall-tall">
+
+        <paper-appbar class="tall seamed">
+          <core-icon-button icon="menu" on-tap="{{openNav}}" title="Open Drawer"></core-icon-button>
+          <core-icon-button icon="add-box" on-tap="{{addItem}}" title="Add Item"></core-icon-button>
+          <core-icon-button icon="delete" on-tap="{{deleteItem}}" title="Delete Item"></core-icon-button>
+          <span flex></span>
+        </paper-appbar>
+
+        <firebase-element id="itemData" data="{{item}}"></firebase-element>
+
+        <div style="max-width: 640px; margin: 0 auto;">
+
+          <form-group>
+            <input-field four-column name="Order Id" value="{{item.orderId}}"></input-field>
+          </form-group>
+
+          <form-group>
+            <input-field two-column name="Flan Flavor" value="{{item.flavor}}"></input-field>
+            <slider-field two-column name="Flan Viscosity" value="{{item.viscosity}}"></slider-field>
+            <!-- -->
+            <toggle-field one-column name="Whip Cream" value="{{item.whipCream}}"></toggle-field>  
+            <toggle-field one-column name="Egg Cream" value="{{item.eggCream}}"></toggle-field>  
+            <toggle-field one-column name="Sweet Cream" value="{{item.sweetCream}}"></toggle-field>
+            <toggle-field one-column name="Heavy Cream" value="{{item.heavyCream}}"></toggle-field>
+            <!-- -->
+            <dropdown-field one-column name="Layers" value="{{item.layers}}">
+              <core-item>One</core-item>
+              <core-item>Two</core-item>
+              <core-item>Three</core-item>
+              <core-item>Four</core-item>
+            </dropdown-field>
+          </form-group>
+
+        </div>
+        
+      </paper-header-panel>
+
+    </paper-drawer-panel>
+
+  </template>
+
+  <script>
+
+    // note: too late for defining filters    
+
+    addEventListener('template-bound', function(e) {
+
+      scope = e.target;
+
+      scope.selectAction = function(e) {
+        if (this.selected) {
+          this.$.itemData.location = 'https://treedata-demo.firebaseio.com/crud/' + this.selected;
+        }
+      };
+
+      scope.addItem = function() {
+        this.selected = this.$.crudData.push({ orderId: "New Order" }).name(); 
+      };
+
+      scope.deleteItem = function() {
+        this.$.crudData.remove(this.selected);
+      };
+
+      scope.dataChange = function() {
+        if (!this.selected && this.keys) {
+          this.selected = this.keys[0];
+        }
+        //console.log(this.keys, this.records);
+      };
+
+      scope.reset = function() {
+        this.records = {};
+        //
+        this.$.crudData.push({
+          orderId: 'SamTuesday',
+          flavor: 'Chalky Choco',
+          viscosity: 55,
+          sweetCream: true
+        });
+        //
+        this.$.crudData.push({
+          orderId: 'FiggityFog',
+          flavor: 'Death by Vanilla',
+          viscosity: 100,
+          sweetCream: true,
+          heavyCream: true,
+          whipCream: true,
+          eggCream: true
+        });
+        //
+        this.$.crudData.push({
+          orderId: 'Moob',
+          flavor: 'Strawlabury',
+          viscosity: 20
+        });
+      };
+
+    });
+  </script>
+
+</body>
+</html>

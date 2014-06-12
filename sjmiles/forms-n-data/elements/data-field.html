@@ -1,0 +1,104 @@
+<style>
+  html /deep/ [field][one-column] {
+    width: 25%;
+  }
+  html /deep/ [field][two-column] {
+    width: 50%;
+  }
+  html /deep/ [field][three-column] {
+    width: 75%;
+  }
+  html /deep/ [field][four-column] {
+    width: 100%;
+  }
+</style>
+
+<script>
+  modularize('data-fields', function() {
+    return {
+      kinds: [],
+      register: function(polymerElement) {
+        var kind = polymerElement.getAttribute('kind');
+        if (kind) {
+          this.kinds.push(kind);
+          polymerElement.removeAttribute('kind');
+        }
+      }
+    };
+  });
+</script>
+
+<polymer-element name="data-field" attributes="name value meta editValue invalidated error" field flex>
+<template>
+  <style>
+    :host {
+      min-width: 146px;
+      margin-right: 4px;
+    }
+  </style>
+</template>
+<script>
+  Polymer({
+    registerCallback: function(polymerElement) {
+      // TODO: `using` seems to force async (even when not necessary)
+      // which breaks the timeline if the using() is outside of the 
+      // Polymer invocation
+      using('data-fields', function(df) {
+        df.register(polymerElement);
+      });
+    },
+    attached: function() {
+      this.fire('add-data-field');
+    },
+    detached: function() {
+      this.fire('remove-data-field');
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="default-field" extends="data-field" kind="default" noscript>
+<template>
+  <style>
+    :host {
+      line-height: 42px;
+      min-height: 42px;
+    }
+  </style>
+  {{name}}: <span><b>{{value}}</b></span>
+</template>
+</polymer-element>
+
+<polymer-element name="collapsed-field" extends="default-field" kind="collapsed" noscript>
+<template>
+  {{name}}
+</template>
+</polymer-element>
+
+<polymer-element name="date-field" extends="data-field" kind="date">
+<template>
+  <span style="color: blue; font-style: italic;">{{value | filter}}</span>
+</template>
+<script>
+  Polymer({
+    filter: function() {
+      return new Date(-this.value).toLocaleDateString();
+    }
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="json-field" extends="data-field" kind="json">
+<template>
+  <b>{{name}}</b>
+  <pre>{{value | json}}</pre>
+</template>
+<script>
+  Polymer({
+    json: function(value) {
+      return JSON.stringify(value, null, '  ');
+    }
+  });
+</script>
+</polymer-element>
+
