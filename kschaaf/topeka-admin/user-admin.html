@@ -54,18 +54,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <firebase-login id="fbLogin" location="https://polymer-topeka.firebaseio.com" provider="google" user="{{user}}"></firebase-login>
-    <firebase-element id="fbUsers" location="https://polymer-topeka.firebaseio.com/users" data="{{users}}" on-data-change="{{updateUserList}}"></firebase-element>
+    <firebase-element id="fbUsers" location="https://polymer-topeka.firebaseio.com/users" data="{{users}}" on-data-change="{{updateUserList}}" limit="{{limit}}"></firebase-element>
 
     <button hidden?="{{user}}" on-tap="{{login}}">Login</button>
     <button hidden?="{{!user}}" on-tap="{{logout}}">Logout</button>
     <span hidden?="{{!user.email}}"> Logged in as: {{user.email}}</span>
     <span hidden?="{{!user || user.email}}">Invalid login</span>
 
+    <br>
+    <div>Limit: <input value="{{limit}}"></div>
+
     <div hidden?="{{!user.email}}">
       <button on-tap="{{nuke}}" class="nuke">Nuke Leaderboard</button>
 
       <br>
-      <div>User count: {{userList.length}}</div>
+      <div>User count: {{userCount}}</div>
       <br>
 
       <table>
@@ -95,6 +98,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     t.sort = 'score';
     t.sortDir = -1;
     t.props = ['uid', 'name', 'score', 'avatar'];
+    t.limit = 50;
+    t.userCount = 0;
+
+    document.addEventListener('template-bound', function() {
+      t.$.fbUsers.ref.on('value', function(v) { t.userCount = v.numChildren(); });
+    });
     
     t.login = function() {
       t.$.fbLogin.login();
