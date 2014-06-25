@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Form</title>
+  
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+    }
+    [column] {
+      min-width: 320px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    #form {
+      background-color: whitesmoke;
+    }
+  </style>
+  
+  <script src="../components/platform-dev/platform.js"></script>
+  
+  <link rel="import" href="../elements/paper-fields.html">
+  <link rel="import" href="../elements/data-form.html">
+
+  <link rel="import" href="../components/core-item/core-item.html">
+
+</head>
+<body unresolved fullbleed vertical layout>
+
+  <br>
+  
+  <div column>
+    <template is="auto-binding">
+  
+      <data-form segment id="form">
+        
+        <h2>Form-factor</h2>
+      
+        <segment>
+          <form-row>
+            <input-field name="Order Name" value="{{item.orderId}}" editValue="{{orderId}}" invalidated="{{orderId | validateOrderId}}" error="Must be at least five characters long"></input-field>
+          </form-row>
+          <form-row>
+            <ssn-field name="SSN" value="{{item.ssn}}"></ssn-field>
+          </form-row>
+        </segment>
+        
+        <segment>
+          <form-row>
+            <input-field name="Flan Flavor" value="{{item.flavor}}" editValue="{{flavor}}" invalidated="{{flavor | validateFlavor}}" error="Any flavor is fine, as long as it contains chocolate"></input-field>
+            <slider-field name="Viscosity" value="{{item.viscosity}}"></slider-field>
+          </form-row>
+          
+          <form-row>
+            <toggle-field name="Whip Cream" value="{{item.whipCream}}"></toggle-field>  
+            <checkbox-field name="Egg Cream" value="{{item.eggCream}}"></checkbox-field>  
+            <toggle-field name="Heavy Cream" value="{{item.heavyCream}}"></toggle-field>
+            <checkbox-field name="Sweet Cream" value="{{item.sweetCream}}"></checkbox-field>
+          </form-row>
+        </segment>
+        
+        <segment>
+          <form-row>
+            <radio-field name="Shape" value="{{item.shape}}">
+              <paper-radio-button label="Square" active></paper-radio-button>
+              <paper-radio-button label="Circle"></paper-radio-button>
+              <paper-radio-button label="Tubular"></paper-radio-button>
+              <paper-radio-button label="Mobius"></paper-radio-button>
+            </radio-field>  
+          </form-row>
+  
+          <dropdown-field one-column name="Extra Layers ({{item.layers || 0}})" value="{{item.layers}}">
+            <core-item>Single Layer</core-item>
+            <core-item>One Extra Layer</core-item>
+            <core-item>Two Extra Layers</core-item>
+            <core-item>Three Extra Layers</core-item>
+          </dropdown-field>
+        </segment>
+        
+        <div><button on-tap="{{submit}}">Submit</button></div>
+      
+      </data-form>
+  
+      <br>
+      
+      <segment>
+        Your form submission:
+        <pre><code id="data"></code></pre>
+      </segment>
+    </template>
+
+  </div>
+    
+  <script>
+  
+    scope = document.querySelector('template');
+    
+    scope.item = {
+      shape: 0
+    };
+
+    scope.submit = function(e) {
+      if (!this.$.form.validate()) {
+        var info = 'form is not yet valid';
+      } else {
+        var data = this.$.form.dump();
+        var info = JSON.stringify(data, null, '  ');
+      }
+      this.$.data.textContent = info;
+    };
+    
+    scope.validateOrderId = function(value) {
+      return !value || value.length < 5;
+    };
+    
+    scope.validateFlavor = function(value) {
+      return !value || value.toLowerCase().indexOf('chocolate') < 0;
+    };
+    
+/*
+    addEventListener('template-bound', function(e) {
+
+      // note: too late for defining filters      
+      
+    });
+*/  
+
+  </script>
+  
+</body>
+</html>

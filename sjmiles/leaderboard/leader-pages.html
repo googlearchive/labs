@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Untitled Document</title>
+
+<script src="../components/platform/platform.js"></script>
+
+<link rel="import" href="../components/core-localstorage/core-localstorage.html">
+<link rel="import" href="../components/firebase-element/firebase-element.html">
+<link rel="import" href="../components/core-animated-pages/core-animated-pages.html">
+
+<style>
+  body {
+    font-family: sans-serif;
+    font-size: small;
+    -webkit-user-select: none;
+  }
+  
+  .dot {
+    border-radius: 32px;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+  }   
+
+  core-animated-pages {
+    height: 700px;
+    Xoverflow: none auto;
+  }
+  
+  section {
+    xbackground-color: white;
+    height: 100%;
+  }
+</style>
+  
+</head>
+<body>
+
+  <template is="auto-binding">
+  
+    <firebase-element id="gameData" on-data-change="{{dataChange}}" data="{{players}}" location="'https://polygame.firebaseio.com/players/"></firebase-element>
+    
+    <segment id="leaderboard">
+   
+      <core-animated-pages selected="{{selected}}" on-core-animated-pages-transition-end="{{done}}" transitions='["cross-fade-all"]'>
+      
+        <section>
+          <template repeat="{{name in cachedNames}}">
+            <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{cached[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{cached[name].score}}</b></span></p>
+          </template>
+        </section>
+        
+        <section>
+          <template repeat="{{name in names}}">
+            <p class="item" on-tap="{{points}}" key="{{name}}" horizontal center layout><span class="dot" style="background-color: {{players[name].color || 'lightblue'}}"></span>&nbsp;<span>{{name}}: <b>{{players[name].score}}</b></span></p>
+          </template>
+        </section>
+        
+      </core-animated-pages>
+  
+    </segment>
+    
+  </template>
+  
+  <script>
+    
+    addEventListener('template-bound', function(e) {
+
+      var scope = e.target;
+      
+      scope.selected = 0;
+      
+      reset = function() {
+        var irand = function(n) { return Math.floor(Math.random() * n); }
+        scope.players = {
+          'Steve': {score: irand(1e9) + 1e4, color: 'lightblue'},
+          'Frankie': {score: irand(100) + 500, color: 'lightgreen'},
+          'Daniel': {score: irand(100) + 500, color: 'magenta'},
+          'Yvonne': {score: irand(100) + 500, color: 'tomato'},
+          'Scott': {score: irand(100), color: 'orange'}
+        };
+        scope.$.gameData.commit();
+      };
+
+      scope.cloneData = function() {
+        var clone = {};
+        var players = this.players;
+        this.names.forEach(function(n, i) {
+          var player = players[n];
+          clone[n] = { 
+            score: player.score, 
+            color: player.color 
+          };
+        });
+        return clone;
+      };
+     
+      scope.dataChange = function() {
+        var players = this.players;
+        this.names = Object.keys(players);
+        this.names.sort(function(n0, n1) {
+          var s0 = players[n0].score, s1 = players[n1].score;
+          return s1 - s0;
+        });
+        //
+        var indices = this.indices = [];
+        this.names.forEach(function(n, i) {
+          indices[n] = i;
+        });
+        //
+        this.pnames = Object.keys(this.players);
+        //
+        this.selected = 1;
+        if (!this.cached) {
+          this.done();
+        }
+      };
+           
+      scope.done = function() {
+        this.cachedNames = this.names;
+        this.cached = this.cloneData();
+        this.selected = 0;
+      };
+      
+      scope.points = function(event) {
+        var name = event.target.templateInstance.model.name;
+        this.players[name].score++;
+        //
+        /*
+        var irand = function(n) { return Math.floor(Math.random() * n); }
+        var name = this.names[irand(this.names.length)];
+        this.players[name].score++;
+        */
+        //
+        this.$.gameData.commit();
+      };
+      
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Thing</title>
+  
+  <style>
+    body, button, pre, input {
+      font-family: sans-serif;
+    }
+    
+  </style>
+  
+  <script src="components/platform/platform.js"></script>
+  
+  <link rel="import" href="components/polymer/polymer.html">
+
+</head>
+<body>
+
+<x-foo></x-foo>
+
+<polymer-element name="x-foo">
+<template>
+  <style>
+    :host {
+      display: block;
+    }
+    list {
+      position: relative;
+      display: block;
+      height: 800px;
+    }
+    item {
+      position: absolute;
+      display: block;
+      -webkit-transition: top 100ms; 
+    }
+  </style>
+  <div>
+    <button on-tap="{{randomize}}">Randomize</button>
+    <button on-tap="{{shuffle}}">Shuffle</button>
+  </div>
+  <list>    
+    <template repeat="{{foo, i in foos}}">
+      <item style="top: {{i*40}}px; left: 0;">{{foo.name}}: {{foo.value}}</item>
+    </template>
+  </list>
+</template>
+<script>
+  Polymer('x-foo', {
+    count: 20,
+    created: function() {
+      this.data = [];
+      for (var i=0; i<this.count; i++) {
+        this.data.push({
+          name: ['Abel', 'Baker', 'Charlie', 'Delta', 'Echo'][Math.floor(Math.random()*5)],
+          value: ['Abel', 'Baker', 'Charlie', 'Delta', 'Echo'][Math.floor(Math.random()*5)]
+        });
+      }
+      //this.randomize();
+    },
+    randomize: function() {
+      this.foos = [];
+      for (var i=0; i<this.count; i++) {
+        var j = Math.floor(Math.random()*this.count);
+        while (this.foos[j]) {
+          j = (j + 1) % this.count;
+        }
+        this.foos[j] = this.data[i];
+      }
+    },
+    shuffle: function() {
+      for (var i=0; i<this.count; i++) {
+        var j0 = Math.floor(Math.random()*this.count);
+        var j1 = Math.floor(Math.random()*this.count);
+        var t = this.foos[j0];
+        this.foos[j0] = this.foos[j1];
+        this.foos[j1] = t;
+      }
+    }
+  });
+</script>
+</polymer-element>
+
+</body>
+</html>
