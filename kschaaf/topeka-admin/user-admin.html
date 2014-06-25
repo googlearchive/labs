@@ -1,0 +1,172 @@
+<!doctype html>
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE
+The complete set of authors may be found at http://polymer.github.io/AUTHORS
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS
+-->
+<html>
+<head>
+  <title>Quiz App User Admin</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <script src="../../../platform/platform.js"></script>
+    
+  <link rel="import" href="../../../firebase-element/firebase-login.html">
+  <link rel="import" href="../../../firebase-element/firebase-element.html">
+  
+</head>
+<body unresolved>
+
+  <template is="auto-binding" id="view">
+
+    <style>
+      .sort:before {
+        background: orange;
+        margin-right: 5px;
+        padding: 0 3px;
+        border-radius: 3px;
+        content: '^';
+      }
+      .sort.down:before {
+        content: 'v';
+      }
+      input {
+        border: 0;
+        width: 100px;
+      }
+      input[data-prop="uid"] {
+        width: 250px;
+      }
+      td {
+        border-bottom: 1px solid gray;
+      }
+      .nuke {
+        background: red;
+        color: white;
+        float: right;
+      }
+    </style>
+
+    <firebase-login id="fbLogin" location="https://polymer-topeka.firebaseio.com" provider="google" user="{{user}}"></firebase-login>
+    <firebase-element id="fbUsers" location="https://polymer-topeka.firebaseio.com/users" data="{{users}}" on-data-change="{{updateUserList}}"></firebase-element>
+
+    <button hidden?="{{user}}" on-tap="{{login}}">Login</button>
+    <button hidden?="{{!user}}" on-tap="{{logout}}">Logout</button>
+    <span hidden?="{{!user.email}}"> Logged in as: {{user.email}}</span>
+    <span hidden?="{{!user || user.email}}">Invalid login</span>
+
+    <div hidden?="{{!user.email}}">
+      <button on-tap="{{nuke}}" class="nuke">Nuke Leaderboard</button>
+
+      <br>
+      <div>User count: {{userList.length}}</div>
+      <br>
+
+      <table>
+        <tr>
+          <td>no</td>
+          <template repeat="{{p in props}}">
+            <td on-tap="{{changeSort}}" data-sort="{{p}}" class="{{ {sort: sort==p, down: sortDir<0} | tokenList }}">{{p}}</td>
+          </template>
+        </tr>
+        <template repeat="{{u, i in userList}}">
+          <tr>
+            <td>{{i+1}}</td>
+            <template repeat="{{p in props}}">
+              <td><input data-prop="{{p}}" value="{{u[p]}}" on-change="{{propValueChanged}}"></td>
+            </template>
+            <td><button on-tap="{{blacklist}}">Blacklist & Delete</button>
+          </tr>
+        </template>
+      </table>
+    </div>
+
+  </template>
+
+  <script>
+    
+    var t = document.querySelector("#view");
+    t.sort = 'score';
+    t.sortDir = -1;
+    t.props = ['uid', 'name', 'score', 'avatar'];
+    
+    t.login = function() {
+      t.$.fbLogin.login();
+    };
+    
+    t.logout = function() {
+      t.$.fbLogin.logout();
+    };
+    
+    t.changeSort = function(e) {
+      var s = e.target.getAttribute('data-sort');
+      if (t.sort == s) {
+        t.sortDir = t.sortDir * -1;
+      } else {
+        t.sort = s;
+      }
+      t.updateUserList();
+    };
+
+    t.updateUserList = function() {
+      var u = [];
+      for (uid in t.users) {
+        var user = t.users[uid];
+        u.push(
+          Platform.mixin({uid: uid}, user)
+        );
+      }
+      u.sort(function(a, b) {
+        var ap = a && a[t.sort];
+        var bp = b && b[t.sort];
+        var d;
+        if (typeof ap == 'number') {
+          d = (ap - bp) * t.sortDir;
+        } else {
+          d = (ap && bp && ap.toString().localeCompare(bp.toString())) * t.sortDir;
+        }
+        return d || a.uid.localeCompare(b.uid.localeCompare) * t.sortDir;
+      });
+      t.userList = u;
+    };
+
+    t.propValueChanged = function(e) {
+      var uid = e.target.templateInstance.model.u.uid;
+      var prop = e.target.getAttribute('data-prop');
+      var val = e.target.value;
+      if (prop == 'score' || prop == 'avatar') {
+        val = parseInt(val);
+      }
+      var ref = new Firebase("https://polymer-topeka.firebaseio.com/users/" + uid);
+      ref.child(prop).set(val);
+      if (prop == 'score') {
+        ref.setPriority(val);
+      }
+    };
+
+    t.blacklist = function(e) {
+      var uid = e.target.templateInstance.model.u.uid;
+      var ref = new Firebase("https://polymer-topeka.firebaseio.com/users/" + uid);
+      var bl = new Firebase("https://polymer-topeka.firebaseio.com/blacklist");
+      bl.child(uid).set(true);
+      ref.remove();
+    };
+
+    t.nuke = function() {
+      if (window.confirm("Are you sure you want to nuke the leaderboard?")) {
+        if (window.confirm("Really really sure?")) {
+          new Firebase("https://polymer-topeka.firebaseio.com/users").remove();
+        }
+      }
+    }
+
+  </script>
+  
+</body>
+</html>
