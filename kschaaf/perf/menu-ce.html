@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <title>Perf: menu using raw CE</title>
+  <script>
+    window.performance = window.performance||(function(){var g=Date.now();return {now:function(){return Date.now()-g;}}})();
+    window.docStart = window.docStart || performance.now();
+    document.querySelector('script').remove();
+  </script>
+
+  <script src="../../components/platform/platform.js"></script>
+  <script>
+    Platform.enableBindingsReflection = true;
+  </script>
+  <script>window.platformLoaded = performance.now();</script>
+
+  <script src="../stats/stats.js"></script>
+
+  <style>
+    body {
+      font-family: RobotoDraft, Helvetica, Arial, sans-serif;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .drawer {
+      padding-left: 44px;
+      overflow: hidden;
+      height: 0;
+    }
+    menu-ce {
+      display: block;
+      margin: 12px;
+    }
+    .item, .submenu {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      min-height: 40px;
+    }
+    menu-ce > .item > :first-child:not(.icon) {
+      padding-left: 44px;
+    }
+    .submenu.selected, .item.selected {
+      font-weight: bold;
+    }
+    .icon {
+      display: inline-block;
+      height: 24px;
+      width: 24px;
+      margin: 0 16px 0 4px;
+    }
+    .icon.polymer {
+      background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgaGVpZ2h0PSIxMDAlIiB3aWR0aD0iMTAwJSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgbWVldCIgZml0PSIiIHN0eWxlPSJwb2ludGVyLWV2ZW50czogbm9uZTsgZGlzcGxheTogYmxvY2s7Ij48Zz48cG9seWdvbiBwb2ludHM9IjE5LDQgMTUsNCA3LjEsMTYuNiA0LjUsMTIgOSw0IDUsNCAwLjUsMTIgNSwyMCA5LDIwIDE2LjksNy40IDE5LjUsMTIgMTUsMjAgMTksMjAgMjMuNSwxMiAiLz48L2c+PC9zdmc+);
+    }
+    .icon.cloud {
+      background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgaGVpZ2h0PSIxMDAlIiB3aWR0aD0iMTAwJSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgbWVldCIgZml0PSIiIHN0eWxlPSJwb2ludGVyLWV2ZW50czogbm9uZTsgZGlzcGxheTogYmxvY2s7Ij48Zz48cGF0aCBkPSJNMTkuNCwxMGMtMC43LTMuNC0zLjctNi03LjQtNkM5LjEsNCw2LjYsNS42LDUuNCw4QzIuMyw4LjQsMCwxMC45LDAsMTRjMCwzLjMsMi43LDYsNiw2aDEzYzIuOCwwLDUtMi4yLDUtNUMyNCwxMi40LDIxLjksMTAuMiwxOS40LDEweiIvPjwvZz48L3N2Zz4=);
+    }
+  </style>
+
+  <script>
+    Stats.testInPage(function() {
+      var tmpl = document.querySelector('template');
+      document.body.appendChild(document.importNode(tmpl.content.cloneNode(true), true));
+    });
+    Stats.go('perf-menu', 1);
+  </script>
+</head>
+<body>
+
+<script>
+  (function() {
+    var inPath = function(target, classes) {
+      classes = Array.isArray(classes) ? classes : [classes];
+      while (target) {
+        for (var i=0; i<classes.length; i++) {
+          if (target.classList.contains(classes[i])) {
+            return target;
+          }
+        }
+        target = target.parentElement;
+      }
+    }
+    var toggleDrawer = function(drawer, open) {
+      open = (open != null) ? open : !drawer.classList.contains('open');
+      drawer.classList.toggle('open', open);
+      drawer.style.height = drawer.scrollHeight + 'px';
+      drawer.style.transition = 'height 300ms';
+      if (!open) {
+        drawer.offsetHeight;
+        drawer.style.height = 0;
+      } else {
+        if (!drawer.transitionListener) {
+          drawer.transitionListener = drawer.addEventListener('transitionend', function(e) {
+            if (e.target.classList.contains('open')) {
+              e.target.style.height = 'auto';
+            }
+          });
+        }
+      }
+    }
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attachedCallback = function() {
+      this.select(this.querySelector('.item.selected'));
+      this.addEventListener('click', function(e) {
+        var t = e.target;
+        var el;
+        if (el = inPath(t, 'submenu')) {
+          toggleDrawer(el.nextElementSibling);
+          this.select(el);
+        }
+        if (el = inPath(t, 'item')) {
+          this.select(el);
+        }
+      });
+    };
+    proto.select = function(el) {
+      if (this.selected == el) {
+        return;
+      }
+      var parent = el.parentElement;
+      if (this.selected) {
+        this.selected.classList.remove('selected');
+        if (this.selected.classList.contains('submenu')) {
+          toggleDrawer(this.selected.nextElementSibling, false);
+        }
+        var d = this.selected;
+        while ((d = inPath(d, 'drawer')) && (d != parent)) {
+          d.previousElementSibling.classList.remove('selected');
+          toggleDrawer(d, false);
+          d = d.parentElement;
+        }
+      }
+      if (el) {
+        this.selected = el;
+        el.classList.add('selected');
+      }
+      while (el) {
+        if (el.classList.contains('drawer')) {
+          el.previousElementSibling.classList.add('selected');
+          el.classList.add('open');
+          el.style.height = 'auto';
+        }
+        el = el.parentElement;
+      }
+    }
+    document.registerElement('menu-ce', {prototype: proto});  
+  })();
+</script>
+
+<template>
+  <menu-ce>
+    <div class="submenu"><div class="icon polymer"></div>Getting started</div>
+    <div class="drawer">
+      <div class="item"><a href="#">Get the Code</a></div>
+      <div class="item"><a href="#">Tutorial</a></div>
+      <div class="item"><a href="#">Using elements</a></div>
+      <div class="submenu">Creating elements &#x25BE;</div>
+      <div class="drawer">
+        <div class="item"><a href="#">The basics</a></div>
+        <div class="item"><a href="#">Reusable elements</a></div>
+      </div>
+      <div class="item"><a href="#">The Platform</a></div>
+      <div class="submenu">Concepts &#x25BE;</div>
+      <div class="drawer">
+        <div class="item"><a href="#">Understanding Polymer</a></div>
+        <div class="item"><a href="#">Custom elements 101</a></div>
+      </div>
+    </div>
+    <div class="submenu"><div class="icon polymer"></div>Polymer</div>
+    <div class="drawer">
+      <div class="item"><a href="#">API developer guide</a></div>
+      <div class="submenu">Data binding &#x25BE;</div>
+      <div class="drawer">
+        <div class="item"><a href="#">Overview</a></div>
+        <div class="item"><a href="#">Types of bindings</a></div>
+        <div class="item"><a href="#">Expressions</a></div>
+        <div class="item"><a href="#">Compatibility notes</a></div>
+        <div class="item"><a href="#">Advanced topics</a></div>
+        <div class="submenu">Related libraries &#x25BE;</div>
+        <div class="drawer">
+          <div class="item selected"><a href="#">Template Binding</a></div>
+          <div class="item"><a href="#">Node.bind()</a></div>
+        </div>
+      </div>
+      <div class="item"><a href="#">Layout attributes</a></div>
+      <div class="item"><a href="#">Styling elements</a></div>
+      <div class="item"><a href="#">Touch &amp; gestures</a></div>
+      <div class="item"><a href="#">Runtime configuration</a></div>
+    </div>
+    <div class="submenu"><div class="icon polymer"></div>Platform</div>
+    <div class="drawer">
+      <div class="item"><a href="#">Custom Elements</a></div>
+      <div class="item"><a href="#">Shadow DOM</a></div>
+      <div class="item"><a href="#">HTML Imports</a></div>
+      <div class="item"><a href="#">Web Animations</a></div>
+    </div>
+    <div class="item"><div class="icon cloud"><a href="#"></div>Articles</a></div>
+    <div class="item"><div class="icon cloud"><a href="#"></div>Videos</a></div>
+    <div class="submenu"><div class="icon polymer"></div>Resources</div>
+    <div class="drawer">
+      <div class="item"><a href="#">Tools &amp; testing</a></div>
+      <div class="item"><a href="#">Browser compatibility</a></div>
+      <div class="item"><a href="#">Build status</a></div>
+      <div class="item"><a href="#">Releases</a></div>
+      <div class="item"><a href="#">FAQ</a></div>
+    </div>
+    <div class="item"><div class="icon polymer"></div><a href="#">Community</a></div>
+  </menu-ce>
+</template>
+  
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+  <title>Perf: menu using raw CE (data-driven)</title>
+  <script>
+    window.performance = window.performance||(function(){var g=Date.now();return {now:function(){return Date.now()-g;}}})();
+    window.docStart = window.docStart || performance.now();
+    document.querySelector('script').remove();
+  </script>
+
+  <script src="../../components/platform/platform.js"></script>
+  <script>
+    Platform.enableBindingsReflection = true;
+  </script>
+  <script>window.platformLoaded = performance.now();</script>
+
+  <script src="../stats/stats.js"></script>
+
+  <style>
+    body {
+      font-family: RobotoDraft, Helvetica, Arial, sans-serif;
+    }
+    .drawer {
+      padding-left: 24px;
+      transition: height 500ms;
+      overflow: hidden;
+      height: 0;
+    }
+    .item.selected > .drawer {
+      height: auto;
+    }
+    .item.selected > .label,
+    .item.selected.label {
+      font-weight: bold;
+    }
+  </style>
+
+  <script>
+    Stats.testInPage(function() {
+      var menu = [
+        {n: 'Getting started', s: true, c: [
+          {n: 'Get the Code'},
+          {n: 'Tutorial'},
+          {n: 'Using elements'},
+          {n: 'Creating elements &#x25BE;', c: [
+            {n: 'The basics'},
+            {n: 'Reusable elements'}
+          ]},
+          {n: 'The Platform'},
+          {n: 'Concepts', c: [
+            {n: 'Understanding Polymer'},
+            {n: 'Custom elements 101'}
+          ]},
+        ]},
+        {n: 'Polymer', s: true, c: [
+          {n: 'API developer guide'},
+          {n: 'Data binding &#x25BE;', s: true, c: [
+            {n: 'Overview'},
+            {n: 'Types of bindings'},
+            {n: 'Expressions'},
+            {n: 'Compatibility notes'},
+            {n: 'Advanced topics'},
+            {n: 'Related libraries &#x25BE;', s: true, c: [
+              {n: 'Template Binding', s: true},
+              {n: 'Node.bind()'}
+            ]},
+          ]},
+          {n: 'Layout attributes'},
+          {n: 'Styling elements'},
+          {n: 'Touch &amp; gestures'},
+          {n: 'Runtime configuration'}
+        ]},
+        {n: 'Platform', c: [
+          {n: 'Custom Elements'},
+          {n: 'Shadow DOM'},
+          {n: 'HTML Imports'},
+          {n: 'Web Animations'}
+        ]},
+        {n: 'Articles'},
+        {n: 'Videos'},
+        {n: 'Resources', c: [
+          {n: 'Tools &amp; testing'},
+          {n: 'Browser compatibility'},
+          {n: 'Build status'},
+          {n: 'Releases'},
+          {n: 'FAQ'}
+        ]},
+        {n: 'Community'}
+      ];
+      var el = document.createElement('menu-ce');
+      el.data = menu;
+      document.body.appendChild(el);
+    });
+    Stats.go('perf-menu', 1);
+  </script>
+</head>
+<body>
+
+<script>
+  (function() {
+    function createMenu(el, data) {
+      for (var i=0; i<data.length; i++) {
+        var d = data[i];
+        var item = document.createElement('div');
+        item.classList.add('item');
+        item.classList.toggle('selected', d.s);
+        var label;
+        if (d.c) {
+          label = document.createElement('div');
+          item.appendChild(label);
+          var drawer = document.createElement('div');
+          drawer.classList.add('drawer');
+          item.appendChild(drawer);
+          createMenu(drawer, d.c);
+          label.drawer = drawer;
+        } else {
+          label = item;
+        }
+        label.item = item;
+        label.parentItem = el;
+        label.innerHTML = d.n;
+        label.classList.add('label');
+        label.addEventListener('click', function(e) {
+          if (!e.target.classList.contains('selected')) {
+            var pi = e.target.parentItem;
+            for (var j=0; j<pi.children.length; j++) {
+              var p = pi.children[j];
+              p.classList.toggle('selected', (p == e.target.item));
+            }
+          } else {
+            e.target.item.classList.toggle('selected');
+          }
+        });
+        el.appendChild(item);
+      }
+    }
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {};
+    proto.attachedCallback = function() {
+      createMenu(this, this.data);
+    };
+    proto.detachedCallback = function() {};
+    proto.attributeChangedCallback = function() {};
+    document.registerElement('menu-ce', {prototype: proto});  
+  })();
+</script>
+  
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <title>Perf: menu using core-menu</title>
+  <script>
+    window.performance = window.performance||(function(){var g=Date.now();return {now:function(){return Date.now()-g;}}})();
+    window.docStart = window.docStart || performance.now();
+    document.querySelector('script').remove();
+  </script>
+
+  <script src="../../components/platform/platform.js"></script>
+  <script>
+    Platform.enableBindingsReflection = true;
+  </script>
+  <script>window.platformLoaded = performance.now();</script>
+
+  <script src="../stats/stats.js"></script>
+  <script>
+    Stats.testInPage(function() {
+      var el = document.createElement('menu-core');
+      document.body.appendChild(el);
+    });
+    Stats.go('perf-menu', 1);
+  </script>
+</head>
+<body unresolved>
+
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/core-icons/core-icons.html">
+<link rel="import" href="../../components/core-item/core-item.html">
+<link rel="import" href="../../components/core-menu/core-menu.html">
+<link rel="import" href="../../components/core-menu/core-submenu.html">
+<polymer-element name="menu-core">
+  <template>
+    <style>
+      :host {
+        font-family: RobotoDraft, Helvetica, Arial, sans-serif;
+      }
+    </style>
+    <core-menu selected="1">
+      <core-submenu label="Getting started" icon="polymer">
+        <core-item label="Get the Code"><a href="#foo"></a></core-item>
+        <core-item label="Tutorial"><a href="#foo"></a></core-item>
+        <core-item label="Using elements"><a href="#foo"></a></core-item>
+        <core-submenu label="Creating elements &#x25BE;">
+          <core-item label="The basics"><a href="#foo"></a></core-item>
+          <core-item label="Reusable elements"><a href="#foo"></a></core-item>
+        </core-submenu>
+        <core-item label="The Platform"><a href="#foo"></a></core-item>
+        <core-submenu label="Concepts" class="{{ {show: menu == 'docs'} | tokenList}}">
+          <core-item label="Understanding Polymer"><a href="#foo"></a></core-item>
+          <core-item label="Custom elements 101"><a href="#foo"></a></core-item>
+        </core-submenu>
+      </core-submenu>
+      <core-submenu id="coremenu" label="Polymer" icon="polymer" selected="1">
+        <core-item label="API developer guide"><a href="#foo"></a></core-item>
+        <core-submenu label="Data binding &#x25BE;" selected="5">
+          <core-item label="Overview"><a href="#foo"></a></core-item>
+          <core-item label="Types of bindings"><a href="#foo"></a></core-item>
+          <core-item label="Expressions"><a href="#foo"></a></core-item>
+          <core-item label="Compatibility notes"><a href="#foo"></a></core-item>
+          <core-item label="Advanced topics"><a href="#foo"></a></core-item>
+          <core-submenu label="Related libraries &#x25BE;" selected="0">
+            <core-item label="Template Binding" selected><a href="#foo"></a></core-item>
+            <core-item label="Node.bind()"><a href="#foo"></a></core-item>
+          </core-submenu>
+        </core-submenu>
+        <core-item label="Layout attributes"><a href="#foo"></a></core-item>
+        <core-item label="Styling elements"><a href="#foo"></a></core-item>
+        <core-item label="Touch &amp; gestures"><a href="#foo"></a></core-item>
+        <core-item label="Runtime configuration"><a href="#foo"></a></core-item>
+      </core-submenu>
+      <core-submenu id="platformmenu" label="Platform" icon="polymer">
+        <core-item label="Custom Elements"><a href="#foo"></a></core-item>
+        <core-item label="Shadow DOM"><a href="#foo"></a></core-item>
+        <core-item label="HTML Imports"><a href="#foo"></a></core-item>
+        <core-item label="Web Animations"><a href="#foo"></a></core-item>
+      </core-submenu>
+      <core-item id="articles" label="Articles" icon="cloud"><a href="#foo"></a></core-item>
+      <core-item label="Videos" icon="cloud"><a href="#foo"></a></core-item>
+      <core-submenu label="Resources" icon="polymer">
+        <core-item label="Tools &amp; testing"><a href="#foo"></a></core-item>
+        <core-item label="Browser compatibility"><a href="#foo"></a></core-item>
+        <core-item label="Build status"><a href="#foo"></a></core-item>
+        <core-item label="Releases"><a href="#foo"></a></core-item>
+        <core-item label="FAQ"><a href="#foo"></a></core-item>
+      </core-submenu>
+      <core-item label="Community" icon="polymer"><a href="#foo"></a></core-item>
+    </core-menu>
+  </template>
+  <script>
+    Polymer({
+    });
+  </script>
+</polymer-element>
+  
+</body>
+</html>
