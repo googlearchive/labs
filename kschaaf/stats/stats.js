@@ -159,6 +159,9 @@
     if (finallyFn) {
       finallyFn();
     }
+    if (Platform.enableBindingsReflection) {
+      console.log('Binding count', Stats.countBindings(document.body));    
+    }
     if (stats) {
       stats.count++;
       accumulate(stats, 'startToPlatform', window.platformLoaded - window.docStart);
@@ -169,7 +172,20 @@
         accumulate(stats, 'inPageTest', inPageTestTime);
         accumulate(stats, 'inPageTestPaint', inPageTestPaintTime);
       }
-      Stats.print();
+      if (count > 1) {
+        Stats.print();
+      } else {
+        console.log('Single Run');
+        console.log('=============');
+        console.log('startToPlatform', window.platformLoaded - window.docStart);
+        console.log('startToImports', importsReady - window.docStart);
+        console.log('startToPolymer', polymerReady - window.docStart);
+        console.log('startToPaint', paintDone - window.docStart);
+        if (inPageTestFn) {
+          console.log('inPageTest', inPageTestTime);
+          console.log('inPageTestPaint', inPageTestPaintTime);
+        }
+      }
       localStorage.setItem(PREFIX + name, JSON.stringify(stats));
       if (count > stats.count && !stop) {
         setTimeout(function() {
