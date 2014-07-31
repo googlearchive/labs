@@ -1,0 +1,66 @@
+<!doctype html>
+<title>order</title>
+<script>
+	(function() {
+		var p = Object.create(HTMLElement.prototype);
+		p.createdCallback = function() {
+			console.log(this.getAttribute('name'));
+		}
+
+		document.registerElement('order-test', {prototype: p});
+	})();
+</script>
+<link rel="import" href="a.html">
+<link rel="import" href="b.html">
+
+<h3>Import diagram</h3>
+
+<ul>
+	<li>import a
+		<ul>
+			<li>import a.1
+				<ul>
+					<li>import elt-1
+						<ul>
+							<li>import elt-1-dep
+								<ul>
+									<li>import elt-1-dep-dep
+										<ul>
+											<li>order-test name="elt-1-dep-dep"</li>
+										</ul>
+									</li>
+									<li>order-test name="elt-1-dep"</li>
+								</ul>
+							</li>
+							<li>order-test name="elt-1"</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	
+	<li>import b
+		<ul>
+			<li>import elt-1-dep
+				<ul>
+					<li>import elt-1-dep-dep
+						<ul>
+							<li>order-test name="elt-1-dep-dep"</li>
+						</ul>
+					</li>
+					<li>order-test name="elt-1-dep"</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+</ul>
+
+<h3>Expected element creation order</h3>
+<ul>
+	<li>elt-1-dep-dep</li>
+	<li>elt-1-dep</li>
+	<li>elt-1</li>
+</ul>
+
+<h4>NOTE: See console for actual upgrade order</h4>

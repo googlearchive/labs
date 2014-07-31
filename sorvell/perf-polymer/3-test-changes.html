@@ -1,0 +1,81 @@
+<!doctype html>
+<script>
+  if (window.gc) {
+    gc();
+    gc();
+    gc();
+  }
+
+  Object.observe = null;
+</script>
+<script src="../../../components/platform/platform.js"></script>
+<link rel="import" href="../../../components/polymer/polymer.html">
+<link rel="import" href="elements/repeat-basic.html">
+
+<repeat-test></repeat-test>
+
+<polymer-element name="test-item" attributes="data">
+
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    hi
+  </template>
+  <script>
+    Polymer('test-item', {
+      //dataChanged: function() {}
+      //bind: function() {}
+      //setAttribute: function() {},
+      //notifyPropertyChanges: function() {}
+      // 35ms -> 25ms (10k)
+      // 70ms -> 60ms (20k)
+      // 115ms -> 127ms? (30k)
+      emitPropertyChangeRecord: function() {},
+      attachedCallback: function() {}
+    })
+  </script>
+</polymer-element>
+
+<polymer-element name="repeat-test">
+  
+  <template>
+    <div id="container" hidden>
+    <template repeat="{{item in list}}">
+      <test-item data="{{item.data}}"></test-item>
+    </template>
+    </div>
+  </template>
+
+  <script>
+    Polymer('repeat-test', {
+      count: 30000,
+      created: function() {
+        //console.profile();
+        this.list = [];
+        for (var i=0; i < this.count; i++) {
+          this.list.push({data: i});
+        }
+      },
+      attached: function() {
+        //console.log('attached')
+        this.async('test', null, 1000);
+      },
+      test: function() {
+        for (var i=0; i < this.count; i++) {
+          this.list[i].data = 10 + i;
+        }
+        console.time('dirtycheck');
+        //console.profile()
+        Platform.performMicrotaskCheckpoint();
+        //console.profileEnd();
+        console.timeEnd('dirtycheck');
+        //console.profileEnd();
+      }
+    });
+  </script>
+
+</polymer-element>
+

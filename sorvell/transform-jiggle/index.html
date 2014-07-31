@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>stuff</title>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/polymer/polymer.html">
+  <!-- <link rel="import" href="foo.html"> -->
+</head>
+<body>
+  <style>
+      .color-box {
+        display: block;
+        background: orange;
+        cursor: pointer;
+        z-index:100;
+        height: 200px;
+        width: 100%;
+        position: relative;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.4, 0.75, 0.45, 0.37);
+        transition: transform 0.5s cubic-bezier(0.4, 0.75, 0.45, 0.37);
+        -webkit-transform-origin: 50% 100%;
+        transform-origin: 50% 100%;
+      }
+      .color-box:hover {
+          -webkit-transform: rotateY(180deg);
+                transform: rotateY(180deg);
+      }
+      </style>
+
+    <div class="color-box">
+        <div class="front">{{name}} {{shade}} <span>{{color}}</span></div>
+        <div class="back">Click To Copy</div>
+    </div>
+ 
+    <polymer-element name="x-test" noscript>
+      <template>
+      <style>
+      .color-box {
+        display: block;
+        background: orange;
+        cursor: pointer;
+        z-index:100;
+        height: 200px;
+        width: 100%;
+        position: relative;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.4, 0.75, 0.45, 0.37);
+        transition: transform 0.5s cubic-bezier(0.4, 0.75, 0.45, 0.37);
+        -webkit-transform-origin: 50% 100%;
+        transform-origin: 50% 100%;
+      }
+      .color-box:hover {
+          -webkit-transform: rotateY(180deg);
+                transform: rotateY(180deg);
+      }
+      </style>
+
+    <div class="color-box">
+        <div class="front">{{name}} {{shade}} <span>{{color}}</span></div>
+        <div class="back">Click To Copy</div>
+    </div>
+      </template>
+    </polymer-element>
+    <br><br><br>
+    <x-test></x-test>
+</body>
+</html>

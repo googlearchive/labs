@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <script src="components/platform/platform.js"></script>
+  <link rel="import" href="components/core-splitter/core-splitter.html">
+  <style>
+    .container {
+      height: 300px;
+      width: 300px;
+      border: 10px solid black;
+    }
+
+    iframe {
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" horizontal layout>
+    <iframe></iframe>
+    <core-splitter direction="left"></core-splitter>
+    <div flex>right</div>
+  </div>
+  <!-- <host></host> -->
+  <script>
+    // document.querySelector('host').createShadowRoot();
+    /*
+      The only way to get mousemove events when over an iframe
+      is to install a listener on mousemove and preventDefault.
+      Note, this listener must be installed, at the latest, by 
+      the time of the *mousedown* event.
+    */
+
+    var splitter = document.querySelector('core-splitter');
+
+    function fixIframe(e) {
+      console.log(e.type, e.target.localName, e.which);
+      e.preventDefault();
+      // NOTE: we can't get mouseup when over an iframe, so we stop preventing events
+      // when there's a move with no mouse button down.
+      if (e.which === 0) {
+        document.removeEventListener(e.type, fixIframe, true);
+      }
+    }
+
+    document.addEventListener('mousedown', function() {
+      document.addEventListener('mousemove', fixIframe, true);
+    }, true);
+      
+    // It sucks that this does not work =(
+    /*
+    splitter.addEventListener('trackstart', function(e) {
+      console.log('start');
+      document.addEventListener('mousemove', fixIframe, true);
+    }, false);
+    */
+  </script>
+</body>
+</html>

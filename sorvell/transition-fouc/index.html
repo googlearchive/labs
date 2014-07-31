@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>polymer</title>
+</head>
+<body>
+  <style>
+    div {
+      background: green;
+      padding: 20px;
+      font-size: 50px;
+    }
+    
+    .transform {
+      transform: translateY(100%);
+      -webkit-transform: translateY(100%);
+    }
+    
+    .transition {
+      transition: all 1s;
+      -webkit-transition: all 1s;
+    }
+  
+  </style>
+  
+  <script>
+    addEventListener('load', testAsync3);
+
+    function testSync() {
+      var d = document.createElement('div');
+      d.textContent = 'Hi!';
+      document.body.appendChild(d);
+      d.classList.add('transform');
+      d.classList.add('transition');
+    }
+
+    function testAsync1() {
+      var d = document.createElement('div');
+      d.textContent = 'Hi!';
+      document.body.appendChild(d);
+      d.classList.add('transition');
+      requestAnimationFrame(function() {
+        d.classList.add('transform');
+      });
+    }
+
+    function testAsync2() {
+      var d = document.createElement('div');
+      d.textContent = 'Hi!';
+      document.body.appendChild(d);
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          d.classList.add('transform');
+          d.classList.add('transition');
+        });
+      });
+    }
+
+    function testAsync3() {
+      var d = document.createElement('div');
+      d.textContent = 'Hi!';
+      document.body.appendChild(d);
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          d.classList.add('transform');
+          requestAnimationFrame(function() {
+            d.classList.add('transition');
+          });
+        });
+      });
+    }
+
+    
+
+    // mental model:
+    // I want to move this thing on the screen
+    // appendChild
+    // transition
+    // requestAnimationFrame(transform)
+
+    // I want to place this thing and subsequenctly move it
+    // appendChild
+    // transform
+    // transition
+
+    
+  </script>
+  
+</body>
+
+</html>

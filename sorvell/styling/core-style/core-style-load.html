@@ -1,0 +1,235 @@
+<script>
+(function() {
+
+window.CoreStyle = window.CoreSTyle || {
+  g: {},
+  list: {},
+  refMap: {}
+};
+
+Polymer('core-style', {
+  
+  publish: {
+    ref: null
+  },
+
+  g: CoreStyle.g,
+
+  // static
+  refMap: CoreStyle.refMap,
+  list: CoreStyle.list,
+
+  ready: function() {
+    //console.log('ready', this.id ? 'id: ' + this.id : 'ref: ' + this.ref, this.m);
+    this.setupRoot();
+    if (this.id) {
+      this.register();
+      this.provide();
+    } else {
+      this.registerRef(this.ref);
+      if (!window.ShadowDOMPolyfill) {
+        this.require();
+      }  
+    }
+  },
+
+  // can't shim until attached if using SD polyfill because need to find host
+  attached: function() {
+    if (window.ShadowDOMPolyfill) {
+      this.require();
+    }
+  },
+
+  setupRoot: function() {
+    this.createShadowRoot();
+    this.domObserver = new MutationObserver(this.domModified.bind(this)).observe(
+        this.shadowRoot, {subtree: true, 
+        characterData: true, childList: true});
+  },
+
+  register: function() {
+    //console.log('register');
+    this.list[this.id] = this.list[this.id] || []; 
+    this.list[this.id].push(this);
+  },
+
+  byId: function(id) {
+    return this.list[id];
+  },
+
+  registerRef: function(ref) {
+    //console.log('register', ref);
+    this.refMap[this.ref] = this.refMap[this.ref] || [];
+    this.refMap[this.ref].push(this);
+  },
+
+  provide: function() {
+    //console.log('providing...', this.id);
+    // make Polymer wait until this element is finished until allowing other
+    // elements to register
+
+    Polymer.queue.wait(this, this.checkLoaded, this.provided);
+
+    // TODO(sorvell): there's no good signal to know when/if we have children
+    // when we're in an import.
+    if (this.textContent) {
+      this.load();
+    } else {
+      this.async(this.load);
+    }
+  },
+
+  load: function() {
+    this.template = this.querySelector('template');
+    if (!this.template) {
+      this.template = document.createElement('template');
+      this.template.content.textContent = this.textContent;
+    }
+    //this.loaded();
+    Platform.styleResolver.loadStyles([this.template.content],
+        this.ownerDocument.baseURI, this.loaded.bind(this));
+  },
+
+  loaded: function() {
+    this.createStyle();
+    this.hasLoaded = true;
+    this.checkLoaded();
+  },
+
+  checkLoaded: function() {
+    if (this.hasLoaded) {
+      Polymer.queue.go(this);
+    }
+  },
+
+  provided: function() {
+    //console.log('provided...', this.id);
+    this.notify();
+  },
+
+  // notify instances that reference this element
+  notify: function() {
+    var s$ = this.refMap[this.id];
+    if (s$) {
+      for (var i=0, s; (s=s$[i]); i++) {
+        s.require();
+      }
+    }
+  },
+
+  domModified: function() {
+    this.cssText = this.styleElement.textContent;
+    this.notify();
+  },
+
+  require: function() {
+    var cssText = this.cssTextForRef(this.ref);
+    //console.log('require', this.ref, cssText);
+    if (cssText) {
+      this.ensureStyleElement();
+      if (this.styleElement._cssText === cssText) {
+        return;
+      }
+      this.styleElement._cssText = cssText;
+      if (window.ShadowDOMPolyfill) {
+        this.styleElement.textContent = cssText;
+        cssText = Platform.ShadowCSS.shimStyle(this.styleElement,
+            this.getScopeSelector());
+      }
+      this.styleElement.textContent = cssText;      
+    }
+  },
+
+  createStyle: function() {
+    this.shadowRoot.textContent = '';
+    this.styleElement = this.ownerDocument.createElement('style');
+    this.styleElement.appendChild(this.instanceTemplate(this.template));
+    this.shadowRoot.appendChild(this.styleElement);
+    this.cssText = this.styleElement.textContent;
+  },
+
+  
+  cssTextForRef: function(ref) {
+    var s$ = this.byId(ref);
+    var cssText = '';
+    if (s$) {
+      var p = [];
+      for (var i=0; i<s$.length; i++) {
+        p.push(s$[i].cssText);
+      }
+      cssText = p.join('\n\n');
+    }
+    if (!cssText) {
+      console.warn('No styles provided for ref:', ref);
+    }
+    return cssText;
+  },
+
+  ensureStyleElement: function() {
+    if (!this.styleElement) {
+      this.styleElement = window.ShadowDOMPolyfill ? 
+          this.makeShimStyle() :
+          this.makeRootStyle();
+    }
+    if (!this.styleElement) {
+      console.warn(this.localName, 'could not setup style.');
+    }
+  },
+
+  makeRootStyle: function() {
+    var style = document.createElement('style');
+    this.appendChild(style);
+    return style;
+  },
+
+  makeShimStyle: function() {
+    var host = findHost(this);
+    if (host) {
+      var name = host.localName;
+      var style = document.querySelector('style[' + name + ']');
+      if (!style) {
+        style = document.createElement('style');
+        style.setAttribute(name, '');
+        document.head.appendChild(style);
+      }
+      return style;
+    }
+  },
+
+  getScopeSelector: function() {
+    if (!this._scopeSelector) {
+      var selector = '', host = findHost(this);
+      if (host) {
+        var typeExtension = host.hasAttribute('is');
+        var name = typeExtension ? host.getAttribute('is') : host.localName;
+        selector = Platform.ShadowCSS.makeScopeSelector(name, 
+            typeExtension);
+      }
+      this._scopeSelector = selector;
+    }
+    return this._scopeSelector;
+  }
+
+});
+
+function findHost(node) {
+  while (node.parentNode) {
+    if (node.lightDomController) {
+      return node;
+    }
+    node = node.parentNode;
+  }
+  return node.host;
+};
+
+// create imperatively to avoid timing issues under polyfill
+var element = document.createElement('polymer-element');
+element.setAttribute('name', 'core-style');
+element.setAttribute('hidden', '');
+element.init();
+
+// force core-style to register
+Polymer.queue.force(element);
+
+})();
+</script>

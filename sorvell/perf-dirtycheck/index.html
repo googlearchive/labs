@@ -1,0 +1,113 @@
+<!doctype html>
+<script src="components/platform/platform.js"></script>
+<link rel="import" href="components/polymer/polymer.html">
+
+<!-- <script src="//www.polymer-project.org/platform.js?20140701"></script>
+<link rel="import" href="//www.polymer-project.org/components/polymer/polymer.html"> -->
+
+<polymer-element name="test-binding" attributes="foo">
+<script>
+  Polymer('test-binding', {
+    fooChanged: function() {},
+    notifyPropertyChanges: function() {}
+  });
+</script>
+</polymer-element>
+
+<polymer-element name="test-nada" noscript constructor="TestNada">
+</polymer-element>
+
+<script>
+var pathObservers = [], polymerElems = [];
+
+(function() {
+    addEventListener('WebComponentsReady', function() {
+        // Clear the default dirty check microtask
+        clearInterval(Platform.flushPoll);
+    });
+
+    addEventListener('polymer-ready', function() {
+      //addProp(TestNada.prototype);
+
+      //test
+      console.log('path', go(checkTest, createPathObservers, cleanup));
+      setTimeout(function() {
+        console.log('element', go(checkTest, createPolymerElements, cleanup));
+      });
+    });
+
+    function addProp(obj) {
+      //var store = {};
+      var store = obj;
+      var name = 'foo';
+      var privateName = name + '_';
+      var privateObservable  = name + 'Observable_';
+      Object.defineProperty(obj, name, {
+        get: function() {
+          store[privateObservable];
+          return store[privateName];
+        },
+        set: function(value) {
+          var oldValue = store[privateName];
+          store[privateName] = value;
+          return value;
+        },
+        configurable: true
+      });
+    }
+
+    function go(test, setup, teardown, count) {
+      count = count || 10;
+      for (var i=0, t=0, s; i < count; i++) {
+        if (setup) {
+          setup();
+        }
+        s = performance.now();
+        test();
+        t += performance.now() - s;
+        if (teardown) {
+          teardown();
+        }
+      }
+      return t;
+    }
+
+    function checkTest() {
+      Platform.performMicrotaskCheckpoint();
+    }
+    
+    function createPathObservers() {
+      var obj, observer;
+      for(var i=0; i < 1000; i++) {
+        //obj = document.createElement('test-nada');
+        obj = {foo: 'zonk'};
+        observer = new CompoundObserver(true);
+        observer.addPath(obj, 'foo');
+        observer.open(function() {});
+
+        obj.foo = i;
+        //polymerElems.push(obj);
+        pathObservers.push(observer);
+      }
+    }
+
+    function createPolymerElements() {
+      for (var i=0; i<1000; i++) {
+        var elem = document.createElement('test-binding');
+        elem.foo = i;
+        polymerElems.push(elem);
+      }
+    }
+
+    
+    function cleanup() {
+      while (pathObservers.length) {
+        pathObservers.pop().close();
+      }
+
+      while (polymerElems.length) {
+        polymerElems.pop().unbindAll();
+      }
+    }
+})();
+</script>

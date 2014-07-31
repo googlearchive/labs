@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="components/platform/platform.js"></script>  
+  <link rel="import" href="components/polymer/polymer.html">
+    
+  <polymer-element id="child-component" name="child-component" attributes="elementisready" elementisready="false">
+      <script>
+          var childData = null;
+          Polymer('child-component', {
+              ready: function() {
+                  console.log("child-component: ready");
+                  this.childData = childData = this.attributes["data-globals"].value;
+                  
+                  for (var i = 0; i < this.attributes.length; ++i) {
+                      var attr = this.attributes[i];
+                      console.log("    child-component attribute:", attr.nodeName, "value:", attr.nodeValue)
+                  }
+                  
+              },
+              elementisreadyChanged: function(oldValue, newValue) {
+                  if(newValue == "true") {
+                      console.log("child-component: REALLY ready");
+
+                      for (var i = 0; i < this.attributes.length; ++i) {
+                          var attr = this.attributes[i];
+                          console.log("    child-component attribute:", attr.nodeName, "value:", attr.nodeValue)
+                      }
+                      
+                      // Do Whatever needs to be done
+                      this.childData = this.attributes["data-globals"];
+                      
+                      // Then fire an event to let every one know you are REALLY ready.
+                      this.fire('childreallyready', {msg: 'I feel much better now.'}); // fire(inType, inDetail, inToNode)
+                  }
+              }
+          });
+      </script>
+  </polymer-element>
+    
+    <polymer-element id="parent-component" name="parent-component">
+        <template>
+            <child-component id="childComponent" data-globals="[[attributes.is.value || nodeName]]" on-childreallyready="{{childReallyReady}}"></child-component>
+        </template>
+        <script>
+            var sizes;
+            Polymer('parent-component', {
+                ready: function() {
+                    console.log("parent-component: ready");
+                    this.$.childComponent.setAttribute("elementisready",true);
+                    
+                    // Don't do anything that needs child-component.
+                    console.log("childData exists?", this.$.childComponent.childData);
+                    
+                    for (var i = 0; i < this.$.childComponent.attributes.length; ++i) {
+                        var attr = this.$.childComponent.attributes[i];
+                        console.log("    child-component attribute:", attr.nodeName, "value:", attr.nodeValue)
+                    }
+                    
+                },
+                childReallyReady: function(theEvent) {
+                    console.log("parent-component: childReallyReady");
+                    
+                    // Now you can do things that need child-component.
+                    console.log("childData exists?", this.$.childComponent.childData);
+                    
+                    for (var i = 0; i < this.$.childComponent.attributes.length; ++i) {
+                        var attr = this.$.childComponent.attributes[i];
+                        console.log("    child-component attribute:", attr.nodeName, "value:", attr.nodeValue)
+                    }
+                    
+                }
+            });
+        </script>
+    </polymer-element>
+</head>
+<body>
+    <parent-component></parent-component>
+</body>
+</html>
