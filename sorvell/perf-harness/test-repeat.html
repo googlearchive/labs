@@ -1,0 +1,144 @@
+<script>
+  if (window.gc) {
+    gc();
+    gc();
+    gc();
+  }
+</script>
+
+<polymer-element name="test-repeat" attributes="count data datum paint">
+  
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #output {
+        position: fixed;
+        top: calc(50% - 100px);
+        left: calc(50% - 250px);
+        width: 500px;
+        background: white;
+        border: 2px solid black;
+        margin: 4px;
+        padding: 4px;
+        border-radius: 4px;
+        font-size: 50px;
+        text-align: center;
+      }
+    </style>
+    <content></content>
+    <div id="output" hidden>
+      <div>Avg: {{results.average}}ms</div>
+      <div>Dev: {{results.sd}}ms</div>
+      <div>Per: {{results.per}}ms</div>
+    </div>
+  </template>
+  
+  <script>
+  (function() {
+    var nob = {};
+
+    Polymer({
+
+      count: 500,
+      data: null,
+      runs: 5,
+      datum: nob,
+      paint: false,
+
+      domReady: function() {
+        this.boundNextIteration = this.nextIteration.bind(this);
+        this.test();
+      },
+
+      test: function() {
+        this.$.output.hidden = true;
+        this.testTemplate = this.querySelector('template');
+        this.testTemplate.setAttribute('repeat', '');
+        this.data = this.data || this.generateData();
+        this.testData = [];
+        this.runIteration();
+      },
+
+      generateData: function() {
+        var data = [];
+        for (var i=0; i < this.count; i++) {
+          data.push(this.datum != nob ? Object.create(this.datum) : {index: i});
+        }
+        return data;
+      },
+
+      runIteration: function() {
+        this.testTemplate.clear();
+        this._iterationStart = performance.now();
+        this.testTemplate.modelDelegate = this.syntax;
+        this.testTemplate.model = this.data;
+        Platform.flush();
+        var self = this;
+        if (this.paint) {
+          requestAnimationFrame(this.boundNextIteration);
+        } else {
+          this.onMutation(this, this.boundNextIteration);
+        }
+      },
+
+      nextIteration: function() {
+        this.testData.push(performance.now() - this._iterationStart);
+        if (this.testData.length < this.runs) {
+          this.runIteration();
+        } else {
+          this.report();
+        }
+      },
+
+      report: function() {
+        var average = getAverageFromNumArr(this.testData, 2);
+        this.results = {
+          average: average,
+          sd: getStandardDeviation(this.testData, 2),
+          per: (average / this.count).toFixed(2) 
+        };
+        this.$.output.hidden = false;
+      }
+    });
+
+    function getNumWithSetDec( num, numOfDec ){
+      var pow10s = Math.pow( 10, numOfDec || 0 );
+      return ( numOfDec ) ? Math.round( pow10s * num ) / pow10s : num;
+    }
+
+    function getAverageFromNumArr( numArr, numOfDec ){
+      if( !Array.isArray( numArr ) ){ return false; }
+      var i = numArr.length, 
+        sum = 0;
+      while( i-- ){
+        sum += numArr[ i ];
+      }
+      return getNumWithSetDec( (sum / numArr.length ), numOfDec );
+    }
+
+    function getVariance( numArr, numOfDec ){
+      if( !Array.isArray(numArr) ){ return false; }
+      var avg = getAverageFromNumArr( numArr, numOfDec ), 
+        i = numArr.length,
+        v = 0;
+     
+      while( i-- ){
+        v += Math.pow( (numArr[ i ] - avg), 2 );
+      }
+      v /= numArr.length;
+      return getNumWithSetDec( v, numOfDec );
+    }
+
+    function getStandardDeviation( numArr, numOfDec ){
+      if( !Array.isArray(numArr) ){ return false; }
+      var stdDev = Math.sqrt( getVariance( numArr, numOfDec ) );
+      return getNumWithSetDec( stdDev, numOfDec );
+    }
+
+  })();
+  </script>
+
+</polymer-element>
