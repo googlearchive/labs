@@ -1,0 +1,83 @@
+<link href="../../../components/polymer/polymer.html" rel="import">
+
+<polymer-element name="autogrow-textarea">
+<template>
+
+  <style>
+    :host {
+      display: inline-block;
+      position: relative;
+    }
+
+    textarea {
+      font: inherit;
+      margin: 0;
+      padding: 0;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      overflow: hidden;
+    }
+
+    #mirror {
+      background-color: red;
+      opacity: 0.2;
+      color: transparent;
+      position: absolute;
+      top: 0;
+      left: 0;
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+  </style>
+
+  <div id="mirror">&nbsp;</div>
+
+  <textarea id="textarea" value="{{value}}"></textarea>
+
+</template>
+<script>
+
+  (function() {
+
+    PolymerExpressions.prototype.replace = function (str, old, new_, maxCount) {
+      var res = str;
+      var last = res;
+      var count = 1;
+      res = res.replace(old, new_);
+
+      while (last != res) {
+        if (count >= maxCount) {
+            break;
+        }
+
+        last = res;
+        res = res.replace(old, new_);
+        count++;
+      }
+
+      return res;
+    };
+
+    Polymer({
+
+      publish: {
+        value: ''
+      },
+
+      get escapedValue() {
+        return this.value.replace(/&/gm, '&amp;').replace(/"/gm, '&quot;').replace(/'/gm, '&#39;').replace(/</gm, '&lt;').replace(/>/gm, '&gt;').replace(/\n$/gm, '<br>&nbsp;').replace(/\n/gm, '<br>') || '&nbsp;';
+      },
+
+      valueChanged: function() {
+        this.$.mirror.innerHTML = this.escapedValue;
+        this.$.textarea.style.height = this.$.mirror.getBoundingClientRect().height + 'px';
+      }
+
+    });
+
+  })();
+
+</script>
+</polymer-element>
