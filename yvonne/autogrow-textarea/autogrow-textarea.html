@@ -7,9 +7,11 @@
     :host {
       display: inline-block;
       position: relative;
+      width: 300px;
     }
 
     textarea {
+      background-color: rgba(0,0,255,0.2) !important;
       font: inherit;
       margin: 0;
       padding: 0;
@@ -20,21 +22,40 @@
       overflow: hidden;
     }
 
+    textarea[fit] {
+      width: 100%;
+    }
+
     #mirror {
-      background-color: red;
-      opacity: 0.2;
-      color: transparent;
+      background-color: rgba(255,0,0,0.2);
+      width: 100%;
+      word-wrap: break-word;
+    }
+
+    #mirror.absolute {
       position: absolute;
       top: 0;
       left: 0;
-      max-width: 100%;
-      word-wrap: break-word;
+    }
+
+    #mirrorValue {
+      color: transparent;
+      opacity: 0.2;
+    }
+
+    #underline {
+      height: 1px;
+      width: 100%;
+      background-color: lime;
     }
   </style>
 
-  <div id="mirror">&nbsp;</div>
+  <div id="mirror" relative>
+    <span id="mirrorValue">&nbsp;</span>
+    <textarea id="textarea" fit value="{{value}}"></textarea>
+  </div>
+  <div id="underline"></div>
 
-  <textarea id="textarea" value="{{value}}"></textarea>
 
 </template>
 <script>
@@ -71,8 +92,8 @@
       },
 
       valueChanged: function() {
-        this.$.mirror.innerHTML = this.escapedValue;
-        this.$.textarea.style.height = this.$.mirror.getBoundingClientRect().height + 'px';
+        this.$.mirrorValue.innerHTML = this.escapedValue;
+        // this.$.textarea.style.height = this.$.mirror.getBoundingClientRect().height + 'px';
       }
 
     });
