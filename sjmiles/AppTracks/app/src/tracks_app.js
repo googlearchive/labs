@@ -1,4 +1,4 @@
-﻿Polymer('tracks-app', {
+Polymer('tracks-app', {
   arrangements: [
     [
       [1, 1, 1],

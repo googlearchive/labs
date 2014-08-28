@@ -1,4 +1,4 @@
-﻿document.addEventListener('WebComponentsReady', function() {
+document.addEventListener('WebComponentsReady', function() {
   // unwind stack
   requestAnimationFrame(function() {
     console.profile();

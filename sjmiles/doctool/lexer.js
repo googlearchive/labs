@@ -1,4 +1,4 @@
-﻿(function(scope){
+(function(scope){
 
 AbstractLexer = function(text) {
   if (text) {

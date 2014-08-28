@@ -1,3 +1,3 @@
-﻿module('module-B', null, function() {
+module('module-B', null, function() {
   return 'Module-B';
 });

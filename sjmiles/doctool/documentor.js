@@ -1,4 +1,4 @@
-﻿(function(scope){
+(function(scope){
 
 var Documentor = function(tokens) {
   this.comment = [];
