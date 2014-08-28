@@ -1,4 +1,4 @@
-﻿function line(axis, p, d) {
+function line(axis, p, d) {
   var l = document.createElement('line');
   var extent = (axis === 'left' ? 'width' : (axis === 'top' ? 'height' : axis));
   l.setAttribute('extent', extent);

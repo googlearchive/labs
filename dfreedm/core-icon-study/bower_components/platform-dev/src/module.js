@@ -1,4 +1,4 @@
-﻿(function(scope) {
+(function(scope) {
 
   function withDependencies(task, depends) {
     depends = depends || [];

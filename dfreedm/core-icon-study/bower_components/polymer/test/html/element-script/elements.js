@@ -1,4 +1,4 @@
-﻿Polymer('x-foo', {
+Polymer('x-foo', {
   ready: function() {
     this.style.color = 'blue';
   }

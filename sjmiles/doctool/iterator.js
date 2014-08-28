@@ -1,4 +1,4 @@
-﻿(function(scope){
+(function(scope){
 
 var Iterator = function(stream) {
   // Assign a unique ID to each Iterator

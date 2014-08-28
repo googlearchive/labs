@@ -1,4 +1,4 @@
-﻿(function(scope){
+(function(scope){
 
 var Parser = function(tokens) {
   return this.parse(tokens);
