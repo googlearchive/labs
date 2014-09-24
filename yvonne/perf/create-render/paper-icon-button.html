@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+<title>paper-icon-button creation + render</title>
+
+<link href="../../../components/font-roboto/roboto.html" rel="import">
+<link href="../../../components/core-icons/core-icons.html" rel="import">
+<link href="../../../components/paper-icon-button/paper-icon-button.html" rel="import">
+
+</head>
+
+<body unresolved>
+
+  <template repeat="{{}}">
+    <paper-icon-button icon="{{}}"></paper-icon-button>
+  </template>
+
+  <core-meta id="meta" type="iconset"></core-meta>
+
+<script>
+
+document.addEventListener('polymer-ready', function() {
+  var meta = document.querySelector('#meta')
+  var template = document.querySelector('template');
+  var iconsets = meta.metaArray;
+  var model = [];
+  for (var i = 0; i < 5; i++) {
+    model = model.concat(iconsets.map(function(ic) {
+      return {set: ic.id, icons: ic.iconNames};
+    })[0].icons);
+  }
+
+  var scope = document.querySelector('template');
+  scope.bindingDelegate = new PolymerExpressions();
+  scope.model = model;
+
+  new MutationObserver(function() {
+    var now = performance.now();
+    console.timeline('render');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        console.timelineEnd('render');
+        console.log('time', performance.now() - now);
+      });
+    });
+  }).observe(document.body, {childList: true, subtree: true});
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!--
+`<paper-fab>` is a floating action button with an icon. It comes in two sizes: regular
+size and a smaller size by applying the class `mini`.
+
+Example:
+
+    <paper-fab icon="favorite"></paper-fab>
+    <paper-fab class="mini"></paper-fab>
+
+@group Paper Elements
+@element paper-fab
+@homepage github.io
+@extends paper-icon-button
+-->
+
+<link href="../../../../components/polymer/polymer.html" rel="import">
+<!-- <link href="../paper-icon-button/paper-icon-button.html" rel="import"> -->
+<link href="../../../../components/paper-button/paper-button-base.html" rel="import">
+<link href="../../../../components/paper-ripple/paper-ripple.html" rel="import">
+<link href="../../../../components/paper-shadow/paper-shadow.html" rel="import">
+
+<polymer-element name="paper-fab" extends="paper-button-base" xextends="paper-icon-button" attributes="mini raised">
+
+<!--
+  <template>
+
+    <style>
+      :host {
+        box-sizing: border-box;
+        width: 56px;
+        height: 56px;
+        background: #d23f31;
+        color: #fff;
+        border-radius: 50%;
+        padding: 16px;
+      }
+
+      :host([mini]) {
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+      }
+    </style>
+
+    <shadow></shadow>
+
+  </template>
+
+  <script>
+    Polymer('paper-fab', {
+
+      publish: {
+
+        /**
+         * Set this to true to style this is a "mini" FAB.
+         *
+         * @attribute mini
+         * @type boolean
+         * @default false
+         */
+        mini: false,
+
+        raised: true
+
+      }
+
+    });
+  </script>
+  -->
+
+    <template>
+
+    <style>
+      :host {
+        display: inline-block;
+        position: relative;
+        outline: none;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: pointer;
+        z-index: 0;
+
+        box-sizing: border-box;
+        width: 56px;
+        height: 56px;
+        background: #d23f31;
+        color: #fff;
+        border-radius: 50%;
+        padding: 16px;
+      }
+
+      :host([mini]) {
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+      }
+
+      :host([disabled]) {
+        color: #c9c9c9;
+        pointer-events: none;
+        cursor: auto;
+      }
+
+      #ripple {
+        pointer-events: none;
+        z-index: -1;
+      }
+    </style>
+
+    <template if="{{raised}}">
+      <paper-shadow id="shadow" z="{{z}}" animated></paper-shadow>
+    </template>
+
+    <!-- to position to ripple behind the icon -->
+    <core-icon relative id="icon" src="{{src}}" icon="{{icon}}"></core-icon>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      publish: {
+
+        /**
+         * The URL of an image for the icon. If the src property is specified,
+         * the icon property should not be.
+         *
+         * @attribute src
+         * @type string
+         * @default ''
+         */
+        src: '',
+
+        /**
+         * Specifies the icon name or index in the set of icons available in
+         * the icon's icon set. If the icon property is specified,
+         * the src property should not be.
+         *
+         * @attribute icon
+         * @type string
+         * @default ''
+         */
+        icon: '',
+
+        /**
+         * If true, the button will be styled as a "raised" button.
+         *
+         * @attribute raised
+         * @type boolean
+         * @default false
+         */
+        raised: true,
+
+        /**
+         * By default the ripple emanates from the center of the button.
+         * Set this to false to make it ripple from the touch.
+         *
+         * @attribute recenteringTouch
+         * @type boolean
+         * @default true
+         */
+        recenteringTouch: true,
+
+        /**
+         * By default the ripple expands to a circle within the containing box. Set
+         * this to true to make the ripple fill the containing box.
+         *
+         * @attribute fill
+         * @type boolean
+         * @default false
+         */
+        fill: false
+
+      },
+
+      iconChanged: function(oldIcon) {
+        this.setAttribute('aria-label', this.icon);
+      }
+
+    });
+
+  </script>
+</polymer-element>
