@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <title>mixins</title>
+
+  <script src="../../../components/platform/platform.js"></script>
+  <link href="../../../components/polymer/polymer.html" rel="import">
+
+  <script src="mixins.js"></script>
+
+  <style shim-shadowdom>
+    body {
+      font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+      font-size: 14px;
+      margin: 0;
+      padding: 24px;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      -webkit-touch-callout: none;
+    }
+
+    section {
+      padding: 20px 0;
+    }
+
+    section > div {
+      padding: 14px;
+      font-size: 16px;
+    }
+
+  </style>
+</head>
+<body unresolved>
+
+  <polymer-element name="x-mixin" tabindex="0" xon-down="{{downAction}}">
+  <script>
+    (function() {
+      var p = {
+
+        xeventDelegates: {
+          down: 'downAction'
+        },
+
+        downAction: function() {
+          console.log('down');
+        },
+
+      };
+
+      Polymer.mixin2(p, MyMixin);
+      Polymer.mixin2(p, OtherMixin);
+      Polymer(p);
+    })();
+  </script>
+  </polymer-element>
+
+  <x-mixin>Hi!</x-mixin>
+
+</body>
+</html>
