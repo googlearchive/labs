@@ -1,0 +1,105 @@
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!--
+`lazy-ivew` is used to defer component loading and creation until needed.
+When the element's `active` property is set for the first time, the `lazy-page`
+becomes `activated` and loads and creates its `template` which default to its
+the first <template> elemnt child. Any HTMLImports in the tempalte are loaded.
+While this is happening, the `loading` property is true. When complete, the 
+`load` event is fired. To perform additional loading tasks, call
+`preventDefault()` on the load event. If you do so, you'll need to call
+the `loadComplete()` method when the resources have loaded. When loading is
+complete, the template stamps into the `lazy-page` and the `loading` property
+becomes false.
+
+The `lazy-page` element is convenient to use inside a `core-pages` element
+since it automatically sets `active` on the selected page.
+
+Example: 
+
+    <core-pages selected="0">
+      <lazy-page>
+        <template>
+          <link rel="import" href="a-element.html">
+          <a-element></a-element>
+        </template>
+      </lazy-page>
+      <lazy-page loading="{{loading}}">
+        <div hidden?="{{!loading}}">Loading...</div>
+        <template>
+          <link rel="import" href="b-element.html">
+          <link rel="import" href="c-element.html">
+          <b-element></b-element>
+          <c-element></c-element>
+        </template>
+      </lazy-page>
+
+@class lazy-page
+-->
+<polymer-element name="lazy-page">
+  <script>
+    Polymer({
+
+      publish: {
+        active: false,
+        activated: false,
+        loading: {value: false, reflect: true}
+      },
+
+      ready: function() {
+        this.template = this.querySelector('template');
+      },
+
+      activeChanged: function() {
+        if (this.active && !this.activated) {
+          this.activated = true;
+          this.async('load');
+        }
+      },
+
+      load: function() {
+        this.loading = true;
+        var urls = this.getImportUrls();
+        Polymer.import(urls, function() {
+          var e = this.fire('load');
+          if (!e.defaultPrevented) {
+            this.loadComplete();
+          }
+        }.bind(this));
+      },
+
+      getImportUrls: function() {
+        var urls = [];
+        var ref = this.template && (this.template.ref_ || this.template.ref);
+        if (ref) {
+          var imports = ref.content.querySelectorAll('link[rel=import]');
+          for (var i=0, l=imports.length, p; (i<l) && (p=imports[i]); i++) {
+            urls.push(p.href);
+          }
+        }
+        return urls;
+      },
+
+      loadComplete: function() {
+        this.loading = false;
+        this.stamp();
+      },
+
+      stamp: function() {
+        if (this.template) {
+          var model = this.templateInstance ? this.templateInstance.model :
+            this;
+          var dom = this.template.createInstance(model);
+          this.insertBefore(dom, this.template.nextSibling);
+        }
+      }
+    });
+  </script>
+</polymer-element>

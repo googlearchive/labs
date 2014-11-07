@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <title>pages-lazy</title>
+  <script src="components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="components/core-pages/core-pages.html">
+  <link rel="import" href="components/paper-tabs/paper-tabs.html">
+  <link rel="import" href="lazy-page.html">
+    
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #eee;
+    }
+
+    paper-tabs {
+    	background: seagreen;
+    }
+
+    core-pages > * {
+    	font-size: 50px;
+    }
+  </style>
+</head>
+<body unresolved fullbleed vertical layout>
+  <template is="auto-binding">
+	  <paper-tabs selected="{{selected}}">
+	  	<paper-tab>1</paper-tab>
+	  	<paper-tab>2</paper-tab>
+	  	<paper-tab>3</paper-tab>
+	  	<paper-tab>4</paper-tab>
+	  </paper-tabs>
+	  <core-pages flex selected="{{selected}}">
+	  	<lazy-page center center-justified vertical layout>
+	  		<template>
+	  			<link rel="import" href="components/paper-slider/paper-slider.html">
+	  			Slide me...
+	  			<paper-slider value="{{slide}}"></paper-slider>
+	  		</template>
+	  	</lazy-page>
+	  	
+	  	<lazy-page center center-justified vertical layout loading="{{loading}}" on-load="{{loadView}}">
+	  		<div hidden?="{{!loading}}">Loading...</div>
+	  		<template>
+	  			<link rel="import" href="components/paper-input/paper-input.html">
+	  			Look, I'm bound to the slider!
+	  			<paper-input value="{{slide}}"></paper-slider>
+	  		</template>
+	  	</lazy-page>
+	  	
+	  	<lazy-page center center-justified vertical layout>
+	  		<template>
+	  			I am too: {{slide}}!
+	  		</template>
+	  	</lazy-page center center-justified vertical layout>
+	  	
+	  	<section center center-justified vertical layout>Selected tab: {{selected + 1}}</section>
+	  </core-pages>
+
+	  <script>
+	  	var t = document.querySelector('template');
+	  	t.selected = 0;
+	  	t.loadView = function(e) {
+	  		var target = e.target;
+	  		e.preventDefault();
+	  		setTimeout(function() {
+	  			target.loadComplete();
+	  		}, 1000);
+	  	};
+	  </script>
+ </body>
+</html>
