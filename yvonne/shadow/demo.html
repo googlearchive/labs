@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <title>shadow</title>
+
+  <script src="victor.min.js"></script>
+  <script src="quantumShadow-victor.js"></script>
+
+  <style>
+    .container {
+      margin: 30px;
+      width: 50px;
+      height: 50px;
+      transition: box-shadow 100ms;
+    }
+  </style>
+</head>
+<body>
+
+  <input type="range" min="0" max="20" step="2" oninput="dpChange(event)" value="2">
+
+  <div class="container"></div>
+
+  <pre class="label"></pre>
+
+  <script>
+
+    function dpChange(e) {
+      var dp = e.target.value;
+      var el = document.querySelector('.container');
+      var er = el.getBoundingClientRect();
+
+      var css = quantumShadowCSS([er.left, er.top], [er.left + (er.width / 2), 0], dp);
+      el.style.boxShadow = css;
+
+      var l = document.querySelector('.label');
+      l.innerText += dp + 'px  box-shadow: ' + css + '\n';
+    }
+
+    dpChange({target: {value: 2}});
+
+  </script>
+
+</body>
+</html>
