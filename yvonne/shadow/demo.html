@@ -7,8 +7,13 @@
   <script src="quantumShadow-victor.js"></script>
 
   <style>
-    .container {
+    section {
+      text-align: center;
       margin: 30px;
+    }
+
+    .container {
+      display: inline-block;
       width: 50px;
       height: 50px;
       transition: box-shadow 100ms;
@@ -17,21 +22,46 @@
 </head>
 <body>
 
-  <input type="range" min="0" max="20" step="2" oninput="dpChange(event)" value="2">
+  <input type="range" min="0" max="36" step="2" oninput="dpChange(event)" value="2">
 
-  <div class="container"></div>
+  <section>
+
+    <div class="container container-1"></div>
+
+    <br>
+    <br>
+
+    <div class="container container-2"></div>
+
+  </section>
 
   <pre class="label"></pre>
 
   <script>
 
+    function simCssBoxShadow(dp) {
+      return {
+        offsetX: dp * -0.01,
+        offsetY: dp,
+        blur: dp * 2.85,
+        aBlur: dp * 2
+      };
+    }
+
     function dpChange(e) {
       var dp = e.target.value;
-      var el = document.querySelector('.container');
+      var el = document.querySelector('.container-1');
       var er = el.getBoundingClientRect();
 
-      var css = quantumShadowCSS([er.left, er.top], [er.left + (er.width / 2), 0], dp);
+      var css = quantumShadowCSS([er.left, er.top], [er.left + (er.width / 2), -1 * window.innerWidth * (Math.tan(45))], dp);
       el.style.boxShadow = css;
+      el.innerText = dp + 'px';
+
+      var el2 = document.querySelector('.container-2');
+      var simCss = simCssBoxShadow(dp);
+      var boxShadow = 'rgba(0, 0, 0, 0.24) ' + simCss.offsetX + 'px ' + simCss.offsetY + 'px ' + simCss.blur + 'px 0px, rgba(0, 0, 0, 0.12) 0px 0px ' + simCss.aBlur + 'px 0px';
+      el2.style.boxShadow = boxShadow;
+      el2.innerText = dp + 'px';
 
       var l = document.querySelector('.label');
       l.innerText += dp + 'px  box-shadow: ' + css + '\n';

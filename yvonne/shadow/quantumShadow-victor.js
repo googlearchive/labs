@@ -131,7 +131,8 @@ quantumShadowCSS = function(objPos, lightPos, zHeight, options) {
   (options === undefined) ? options = {}: options = options;
   var densityMult = (options.hasOwnProperty('densityMult')) ? options.densityMult : 1; // scaling for DPs to PX, default of 1 means 1dp = 1px
   var keyLightAngle = (options.hasOwnProperty('keyLightAngle')) ? options.keyLightAngle : 45; // key light angle in degrees
-  var keyLightHeight = (options.hasOwnProperty('keyLightHeight')) ? options.keyLightHeight : 800; // light height in density-indepenedent pixels
+  // var keyLightHeight = (options.hasOwnProperty('keyLightHeight')) ? options.keyLightHeight : 800; // light height in density-indepenedent pixels
+  var keyLightHeight = (options.hasOwnProperty('keyLightHeight')) ? options.keyLightHeight : 600; // light height in density-indepenedent pixels
   var keyLightDiameter = (options.hasOwnProperty('keyLightDiameter')) ? options.keyLightDiameter : 800; // light diameter in density-indepenedent pixels
   var keyShadowOpacity = (options.hasOwnProperty('keyShadowOpacity')) ? options.keyShadowOpacity : .24; // default key shadow opacity
   var ambientShadowOpacity = (options.hasOwnProperty('ambientShadowOpacity')) ? options.ambientShadowOpacity : .12; // default fill shadow opacity
