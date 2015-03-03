@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+  <head>
+
+    <script src="components/webcomponentsjs/webcomponents.js"></script>
+
+    <link rel="import" href="components/polymer/polymer.html">
+
+    <link rel="import" href="components/paper-dropdown-menu/paper-dropdown-menu.html">
+    <link rel="import" href="components/paper-dropdown/paper-dropdown.html">
+    <link rel="import" href="components/paper-item/paper-item.html">
+    <link rel="import" href="components/core-menu/core-menu.html">
+  </head>
+
+  <body>
+
+    <template is="auto-binding">
+
+      <paper-dropdown-menu label="Your favorite pastry">
+        <paper-dropdown id="dropdown" class="dropdown">
+          <core-menu class="menu">
+            <template repeat="{{pastries}}">
+              <paper-item>{{}}</paper-item>
+            </template>
+          </core-menu>
+        </paper-dropdown>
+      </paper-dropdown-menu>
+
+      <br>
+      <br>
+
+      <button on-click="{{swap}}">swap!</button>
+
+    </template>
+
+    <script>
+
+      var pastries = [
+        'Apple fritter',
+        'Croissant',
+        'Donut',
+        'Financier'
+      ];
+
+      var morePastries = [
+        'Apple fritter',
+        'Croissant',
+        'Donut',
+        'Financier',
+        'Jello',
+        'Madeleine',
+        'Pound cake',
+        'Pretzel',
+        'Sfogliatelle'
+      ];
+
+      var scope = document.querySelector('template[is=auto-binding]');
+
+      scope.pastries = pastries;
+
+      scope.swap = function() {
+        if (this.pastries === pastries) {
+          this.pastries = morePastries;
+        } else {
+          this.pastries = pastries;
+        }
+
+        this.$.dropdown.sizingTarget.style.width = null;
+        this.$.dropdown.sizingTarget.style.height = null;
+      }
+
+    </script>
+
+  </body>
+
+</html>
